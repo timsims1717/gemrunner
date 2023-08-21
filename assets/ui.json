@@ -1,0 +1,47 @@
+{
+  "img": "ui.png",
+  "sprites": [
+    {
+      "key": "menu_corner",
+      "x": 0,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "menu_straight",
+      "x": 0,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "black_square",
+      "x": 16,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "white_outline",
+      "x": 16,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "editor_tile_bg",
+      "x": 32,
+      "y": 0,
+      "h": 32,
+      "w": 32
+    },
+    {
+      "key": "black_square_big",
+      "x": 64,
+      "y": 0,
+      "h": 18,
+      "w": 18
+    }
+  ]
+}

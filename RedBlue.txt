@@ -1,0 +1,43 @@
+RedBlue Sprites
+
+Additions:
+	Join game animation for player
+	Join game animation for Devil
+	Ladder climb animation for player
+	Ladder climb animation for Devil
+	White player
+
+RedBlue Tileset
+Block types:
+	Red Stone
+	Red Brick
+	Red Rock
+	Blue Dirt
+	Blue Stone
+	Blue Grass
+	Blue Shale
+Ladders
+Phase Platforms
+Girders
+Spikes (instant death)
+Water (instant death)
+Boxes (pushable?)
+Overhead spikes (instant death)
+	White doesn't fall, Red does fall
+Doors
+
+Doodads:
+Flowers (redblue)
+Moss (redblue)
+Grass (redblue)
+Tall Grass
+Chain
+Rocks
+Stone
+Window
+Skull (gets put down whenever you die)
+
+Additions:
+	White skull for White player
+	Phasing in between animation for platforms
+	A non-key door (don't need both open doors, I think remove the full red one)

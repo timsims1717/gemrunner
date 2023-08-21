@@ -1,0 +1,131 @@
+{
+  "img": "tileset.png",
+  "sprites": [
+    {
+      "key": "ladder_bottom",
+      "x": 0,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_middle",
+      "x": 0,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_top",
+      "x": 0,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_rock_top",
+      "x": 16,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_rock",
+      "x": 16,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_rock_bottom_top",
+      "x": 0,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_rock_bottom",
+      "x": 16,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_stone_top",
+      "x": 48,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_stone",
+      "x": 48,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_stone_bottom_top",
+      "x": 32,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_brick_bottom",
+      "x": 80,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_brick",
+      "x": 80,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_brick_bottom_top",
+      "x": 64,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_brick_bottom",
+      "x": 80,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_dirt_bottom",
+      "x": 112,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_dirt",
+      "x": 112,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_dirt_bottom_top",
+      "x": 96,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_dirt_bottom",
+      "x": 112,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    }
+  ]
+}
