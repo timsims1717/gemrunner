@@ -57,7 +57,7 @@ func UpdateManager() {
 			FullCount++
 			if t.ID != "" {
 				IDCount++
-				if t.Load {
+				if t.Loaded {
 					LoadedCount++
 				}
 			}

@@ -5,17 +5,27 @@ Additions:
 	Join game animation for Devil
 	Ladder climb animation for player
 	Ladder climb animation for Devil
-	White player
+	three other players
 
 RedBlue Tileset
 Block types:
 	Red Stone
+		Gray/Green
+	Red Shale
+		Orange/Red
 	Red Brick
+		Red/Blue (original)
 	Red Rock
+		Blue/Gray
 	Blue Dirt
+		Brown/Red
 	Blue Stone
+		Green/Blue
 	Blue Grass
-	Blue Shale
+		Purple/Orange
+	Blue seashells
+		Tan/
+	Blue birds
 Ladders
 Phase Platforms
 Girders
@@ -27,9 +37,9 @@ Overhead spikes (instant death)
 Doors
 
 Doodads:
-Flowers (redblue)
-Moss (redblue)
-Grass (redblue)
+Flowers
+Moss
+Grass
 Tall Grass
 Chain
 Rocks

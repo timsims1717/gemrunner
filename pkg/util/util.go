@@ -55,10 +55,6 @@ func PointInside(p pixel.Vec, r pixel.Rect, m pixel.Matrix) bool {
 	return r.Moved(pixel.V(-(r.W() / 2.0), -(r.H() / 2.0))).Contains(m.Unproject(p))
 }
 
-func ProjectedPoint(p pixel.Vec, r pixel.Rect, m pixel.Matrix) pixel.Vec {
-	return m.Unproject(p).Add(pixel.V(r.W()*0.5, r.H()*0.5))
-}
-
 // Normalize takes a pixel.Vec and returns a normalized vector, or
 // one with a magnitude of 1.0
 func Normalize(p pixel.Vec) pixel.Vec {
@@ -67,6 +63,11 @@ func Normalize(p pixel.Vec) pixel.Vec {
 		p.Y = 1.
 	}
 	return p.Scaled(1 / math.Sqrt(p.X*p.X+p.Y*p.Y))
+}
+
+// RectToOrigin moves a rectangle's min to (0,0)
+func RectToOrigin(r pixel.Rect) pixel.Rect {
+	return r.Moved(pixel.V(-r.Min.X, -r.Min.Y))
 }
 
 // Magnitude takes a pixel.Vec and returns the magnitude of the vector
@@ -146,24 +147,4 @@ func RandomSample(k int, l []int, rando *rand.Rand) []int {
 		res[i], res[j] = res[j], res[i]
 	}
 	return res[:k]
-}
-
-func Cardinal(orig, tar pixel.Vec) pixel.Vec {
-	facing := pixel.ZV
-	angle := orig.Sub(tar).Angle()
-	if angle > math.Pi*(5./8.) || angle < math.Pi*-(5./8.) {
-		facing.X = 1
-	} else if angle < math.Pi*(3./8.) && angle > math.Pi*-(3./8.) {
-		facing.X = -1
-	} else {
-		facing.X = 0
-	}
-	if angle > math.Pi/8. && angle < math.Pi*(7./8.) {
-		facing.Y = -1
-	} else if angle < math.Pi/-8. && angle > math.Pi*-(7./8.) {
-		facing.Y = 1
-	} else {
-		facing.Y = 0
-	}
-	return facing
 }

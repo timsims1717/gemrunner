@@ -2,19 +2,18 @@ package object
 
 import (
 	"fmt"
+	"gemrunner/pkg/util"
 	"github.com/faiface/pixel"
 	"golang.org/x/image/colornames"
-	"image/color"
 )
 
 var objIndex = uint32(0)
 
 type Object struct {
-	ID   string
-	Hide bool
-	Load bool
-	Keep bool
-	Kill bool
+	ID     string
+	Hidden bool
+	Loaded bool
+	Killed bool
 
 	Pos  pixel.Vec
 	Mat  pixel.Matrix
@@ -28,10 +27,11 @@ type Object struct {
 	LastPos pixel.Vec
 	Offset  pixel.Vec
 
-	Mask  color.RGBA
+	Mask  pixel.RGBA
 	Layer int
 
-	ILock bool
+	ILock        bool
+	HideChildren bool
 }
 
 func New() *Object {
@@ -40,16 +40,20 @@ func New() *Object {
 			X: 1.,
 			Y: 1.,
 		},
-		Mask: colornames.White,
+		Mask: pixel.ToRGBA(colornames.White),
 	}
 }
 
-func (o *Object) WithID(code string) *Object {
-	o.ID = fmt.Sprintf("%s-%d", code, objIndex)
+func (obj *Object) WithID(code string) *Object {
+	obj.ID = fmt.Sprintf("%s-%d", code, objIndex)
 	objIndex++
-	return o
+	return obj
 }
 
-func (o *Object) PointInside(vec pixel.Vec) bool {
-	return o.Rect.Moved(pixel.V(-(o.Rect.W() * 0.5), -(o.Rect.H() * 0.5))).Contains(vec)
+func (obj *Object) PointInside(vec pixel.Vec) bool {
+	return obj.Rect.Moved(obj.PostPos).Contains(vec)
+}
+
+func (obj *Object) SetRect(r pixel.Rect) {
+	obj.Rect = util.RectToOrigin(r).Moved(pixel.V(r.W()*-0.5, r.H()*-0.5))
 }

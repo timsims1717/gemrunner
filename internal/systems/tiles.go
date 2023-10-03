@@ -14,33 +14,14 @@ var (
 	TileUpdate = false
 )
 
-func PuzzleInit() {
-	for _, result := range myecs.Manager.Query(myecs.IsTile) {
-		myecs.Manager.DisposeEntity(result)
-	}
-	if data.CurrPuzzle != nil {
-		for _, row := range data.CurrPuzzle.Tiles {
-			for _, tile := range row {
-				obj := object.New()
-				obj.Pos = world.MapToWorld(tile.Coords)
-				obj.Layer = 2
-				myecs.Manager.NewEntity().
-					AddComponent(myecs.Object, obj).
-					AddComponent(myecs.Tile, tile)
-			}
-		}
-		TileUpdate = true
-	}
-}
-
-func TileSystem() {
+func TileSpriteSystem() {
 	if TileUpdate {
 		for _, result := range myecs.Manager.Query(myecs.IsTile) {
 			_, okO := result.Components[myecs.Object].(*object.Object)
 			tile, ok := result.Components[myecs.Tile].(*data.Tile)
 			if okO && ok {
 				switch tile.Block {
-				case data.RedRock:
+				case data.RedRock, data.RedStone, data.RedBrick, data.RedDirt:
 					// main block, check position to get correct sprite
 					top := true
 					bottom := true

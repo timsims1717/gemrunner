@@ -13,7 +13,7 @@ func AnimationSystem() {
 	for _, result := range myecs.Manager.Query(myecs.HasAnimation) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		anim, ok := result.Components[myecs.Animation].(*reanimator.Tree)
-		if okO && ok && !obj.Hide {
+		if okO && ok && !obj.Hidden {
 			anim.Update()
 		}
 	}

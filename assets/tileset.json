@@ -72,9 +72,16 @@
       "w": 16
     },
     {
-      "key": "red_brick_bottom",
-      "x": 80,
+      "key": "red_stone_bottom",
+      "x": 48,
       "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "red_brick_top",
+      "x": 80,
+      "y": 112,
       "h": 16,
       "w": 16
     },
@@ -100,9 +107,9 @@
       "w": 16
     },
     {
-      "key": "red_dirt_bottom",
+      "key": "red_dirt_top",
       "x": 112,
-      "y": 80,
+      "y": 112,
       "h": 16,
       "w": 16
     },

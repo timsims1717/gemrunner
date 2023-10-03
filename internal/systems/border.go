@@ -83,11 +83,11 @@ func InitMainBorder() {
 		borderObj.Pos.Y = world.TileSize * 0.5 * constants.PuzzleHeight
 		borderObj.Layer = 1
 		data.MainBorder = myecs.Manager.NewEntity()
-		data.MainBorder.AddComponent(myecs.Border, &data.Border{
-			Width:  constants.PuzzleWidth,
-			Height: constants.PuzzleHeight,
-			Empty:  false,
-		}).
-			AddComponent(myecs.Object, borderObj)
+		data.MainBorder.AddComponent(myecs.Object, borderObj).
+			AddComponent(myecs.Border, &data.Border{
+				Width:  constants.PuzzleWidth,
+				Height: constants.PuzzleHeight,
+				Empty:  false,
+			})
 	}
 }
