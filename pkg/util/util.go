@@ -148,3 +148,19 @@ func RandomSample(k int, l []int, rando *rand.Rand) []int {
 	}
 	return res[:k]
 }
+
+// ConstrainR returns vec1 moved into r2 (at vec2), restrained by r1.
+func ConstrainR(vec1, vec2 pixel.Vec, r1, r2 pixel.Rect) pixel.Vec {
+	newPos := vec1
+	if vec2.X+r2.W()*0.5 < vec1.X+r1.W()*0.5 {
+		newPos.X = vec2.X + r2.W()*0.5 - r1.W()*0.5
+	} else if vec2.X-r2.W()*0.5 > vec1.X-r1.W()*0.5 {
+		newPos.X = vec2.X - r2.W()*0.5 + r1.W()*0.5
+	}
+	if vec2.Y+r2.H()*0.5 < vec1.Y+r1.H()*0.5 {
+		newPos.Y = vec2.Y + r2.H()*0.5 - r1.H()*0.5
+	} else if vec2.Y-r2.H()*0.5 > vec1.Y-r1.H()*0.5 {
+		newPos.Y = vec2.Y - r2.H()*0.5 + r1.H()*0.5
+	}
+	return newPos
+}

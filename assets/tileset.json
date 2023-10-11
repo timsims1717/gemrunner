@@ -1,136 +1,185 @@
 {
-  "img": "tileset.png",
+  "img": "tileset_full.png",
   "sprites": [
     {
       "key": "ladder_bottom",
-      "x": 0,
-      "y": 0,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "ladder_middle",
-      "x": 0,
-      "y": 16,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "ladder_top",
       "x": 0,
       "y": 32,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_rock_top",
-      "x": 16,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_rock",
-      "x": 16,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_rock_bottom_top",
+      "key": "ladder_middle",
       "x": 0,
-      "y": 96,
+      "y": 48,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_rock_bottom",
+      "key": "ladder_top",
+      "x": 0,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_top",
+      "x": 16,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock",
+      "x": 16,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_bottom_top",
+      "x": 0,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_bottom",
+      "x": 16,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_alt",
+      "x": 0,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_top",
+      "x": 48,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate",
+      "x": 48,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bottom_top",
+      "x": 32,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bottom",
+      "x": 48,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_alt",
+      "x": 32,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "box",
+      "x": 32,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_pink",
+      "x": 16,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_pink",
+      "x": 32,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_pink",
+      "x": 48,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue",
+      "x": 16,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_blue",
+      "x": 32,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_blue",
+      "x": 48,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_1",
+      "x": 0,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "devil",
       "x": 16,
       "y": 80,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_stone_top",
-      "x": 48,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_stone",
-      "x": 48,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_stone_bottom_top",
+      "key": "gem",
       "x": 32,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_stone_bottom",
-      "x": 48,
       "y": 80,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_brick_top",
-      "x": 80,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_brick",
-      "x": 80,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_brick_bottom_top",
+      "key": "chain",
       "x": 64,
-      "y": 96,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_brick_bottom",
+      "key": "reeds",
       "x": 80,
-      "y": 80,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
-      "key": "red_dirt_top",
-      "x": 112,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_dirt",
-      "x": 112,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_dirt_bottom_top",
+      "key": "flowers",
       "x": 96,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "red_dirt_bottom",
-      "x": 112,
-      "y": 80,
+      "y": 64,
       "h": 16,
       "w": 16
     }

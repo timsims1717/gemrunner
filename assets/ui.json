@@ -30,6 +30,13 @@
       "w": 16
     },
     {
+      "key": "white_checker",
+      "x": 0,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "editor_tile_bg",
       "x": 32,
       "y": 0,

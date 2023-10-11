@@ -3,26 +3,30 @@ package img
 import (
 	"encoding/json"
 	"fmt"
+	"gemrunner/pkg/util"
 	"github.com/faiface/pixel"
 	"github.com/pkg/errors"
-	"golang.org/x/image/colornames"
-	"image/color"
 	"os"
 	"path/filepath"
 )
 
 var (
-	IM       = pixel.IM
-	Flip     = pixel.IM.ScaledXY(pixel.ZV, pixel.V(-1., 1.))
-	Flop     = pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., -1.))
-	FlipFlop = pixel.IM.ScaledXY(pixel.ZV, pixel.V(-1., -1.))
-	Batchers = map[string]*Batcher{}
-	batchers []*Batcher
+	IM        = pixel.IM
+	Flip      = pixel.IM.ScaledXY(pixel.ZV, pixel.V(-1., 1.))
+	Flop      = pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., -1.))
+	FlipFlop  = pixel.IM.ScaledXY(pixel.ZV, pixel.V(-1., -1.))
+	Batchers  = map[string]*Batcher{}
+	batchers  []*Batcher
+	IMDrawers = map[string]*IMDrawer{}
+	imdraws   []*IMDrawer
 )
 
 func FullClear() {
 	for _, batcher := range batchers {
 		batcher.Clear()
+	}
+	for _, imd := range imdraws {
+		imd.Clear()
 	}
 }
 
@@ -40,115 +44,37 @@ func Draw(target pixel.Target) {
 			batcher.Draw(target)
 		}
 	}
-}
-
-type Batcher struct {
-	Key        string
-	Index      int
-	Sprites    map[string]*pixel.Sprite
-	Animations map[string]*Animation
-	batch      *pixel.Batch
-	AutoDraw   bool
-	AutoClear  bool
-}
-
-func AddBatcher(key string, sheet *SpriteSheet, autoDraw, autoClear bool) {
-	if _, ok := Batchers[key]; ok {
-		Batchers[key].SetSpriteSheet(sheet)
-		Batchers[key].AutoDraw = autoDraw
-		Batchers[key].AutoClear = autoClear
-	} else {
-		Batchers[key] = NewBatcher(key, sheet, autoDraw, autoClear)
-		batchers = append(batchers, Batchers[key])
-	}
-}
-
-func NewBatcher(key string, sheet *SpriteSheet, autoDraw, autoClear bool) *Batcher {
-	b := &Batcher{
-		Key:       key,
-		Index:     len(batchers),
-		AutoDraw:  autoDraw,
-		AutoClear: autoClear,
-	}
-	b.SetSpriteSheet(sheet)
-	return b
-}
-
-func (b *Batcher) GetFrame(key string, index int) *pixel.Sprite {
-	if a, ok := b.Animations[key]; ok {
-		if len(a.S) > index {
-			return a.S[index]
+	for _, imd := range imdraws {
+		if imd.AutoDraw {
+			imd.Draw(target)
+		}
+		if imd.AutoClear {
+			imd.Clear()
 		}
 	}
-	return nil
-}
-
-func (b *Batcher) GetSprite(key string) *pixel.Sprite {
-	if s, ok := b.Sprites[key]; ok {
-		return s
-	}
-	return nil
-}
-
-func (b *Batcher) GetAnimation(key string) *Animation {
-	if a, ok := b.Animations[key]; ok {
-		return a
-	}
-	return nil
-}
-
-func (b *Batcher) SetSpriteSheet(sheet *SpriteSheet) {
-	b.batch = pixel.NewBatch(&pixel.TrianglesData{}, sheet.Img)
-	b.Sprites = make(map[string]*pixel.Sprite)
-	b.Animations = make(map[string]*Animation)
-	for k, r := range sheet.SpriteMap {
-		b.Sprites[k] = pixel.NewSprite(sheet.Img, r)
-	}
-	for k, a := range sheet.AnimMap {
-		b.Animations[k] = NewAnimation(sheet, a.Sprites, a.Loop, a.Hold, a.dur)
-	}
-}
-
-func (b *Batcher) Clear() {
-	b.batch.Clear()
-}
-
-func (b *Batcher) Batch() *pixel.Batch {
-	return b.batch
-}
-
-func (b *Batcher) DrawSprite(key string, mat pixel.Matrix) {
-	if spr, ok := b.Sprites[key]; ok {
-		spr.Draw(b.batch, mat)
-	} else {
-		fmt.Printf("couldn't draw sprite '%s' with batch %s\n", key, b.Key)
-	}
-}
-
-func (b *Batcher) DrawSpriteColor(key string, mat pixel.Matrix, mask color.Color) {
-	if spr, ok := b.Sprites[key]; ok {
-		spr.DrawColorMask(b.batch, mat, mask)
-	} else {
-		fmt.Printf("couldn't draw sprite '%s' with batch %s\n", key, b.Key)
-	}
-}
-
-func (b *Batcher) Draw(target pixel.Target) {
-	b.batch.Draw(target)
 }
 
 type Sprite struct {
 	Key    string
 	Batch  string
 	Offset pixel.Vec
-	Color  color.RGBA
+	Color  pixel.RGBA
 }
 
 func NewSprite(key, batch string) *Sprite {
 	return &Sprite{
+		Key:   key,
+		Batch: batch,
+		Color: util.White,
+	}
+}
+
+func NewOffsetSprite(key, batch string, offset pixel.Vec) *Sprite {
+	return &Sprite{
 		Key:    key,
 		Batch:  batch,
-		Color:  colornames.White,
+		Offset: offset,
+		Color:  util.White,
 	}
 }
 
@@ -188,26 +114,6 @@ type sprite struct {
 	Frames int     `json:"frames"`
 }
 
-func LoadSpriteImg(path, imgFile string) (*SpriteSheet, error) {
-	errMsg := "load sprite sheet"
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, errors.Wrap(err, errMsg)
-	}
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	var fileSheet spriteFile
-	err = decoder.Decode(&fileSheet)
-	if err != nil {
-		return nil, errors.Wrap(err, errMsg)
-	}
-	img, err := LoadImage(fmt.Sprintf("%s/%s", filepath.Dir(path), imgFile))
-	if err != nil {
-		return nil, errors.Wrap(err, errMsg)
-	}
-	return loadSpriteSheet(img, fileSheet), nil
-}
-
 func LoadSpriteSheet(path string) (*SpriteSheet, error) {
 	errMsg := "load sprite sheet"
 	file, err := os.Open(path)
@@ -225,10 +131,6 @@ func LoadSpriteSheet(path string) (*SpriteSheet, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, errMsg)
 	}
-	return loadSpriteSheet(img, fileSheet), nil
-}
-
-func loadSpriteSheet(img pixel.Picture, fileSheet spriteFile) *SpriteSheet {
 	sheet := &SpriteSheet{
 		Img:       img,
 		Sprites:   make([]pixel.Rect, 0),
@@ -277,5 +179,5 @@ func loadSpriteSheet(img pixel.Picture, fileSheet spriteFile) *SpriteSheet {
 			}
 		}
 	}
-	return sheet
+	return sheet, nil
 }

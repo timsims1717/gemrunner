@@ -42,8 +42,8 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
-	img.AddBatcher(constants.TileBGBatch, tileSheet, true, true)
-	img.AddBatcher(constants.TileFGBatch, tileSheet, true, true)
+	img.AddBatcher(constants.BGBatch, tileSheet, true, true)
+	img.AddBatcher(constants.FGBatch, tileSheet, true, true)
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Text = true

@@ -2,83 +2,93 @@ package data
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
 )
 
 type Block int
 
 const (
-	RedRock = iota
-	RedStone
-	RedBrick
-	RedDirt
+	Turf = iota
+	Fall
+	Ladder
+	DoorPink
+	LockPink
+	DoorBlue
+	LockBlue
+	Player1
+	Devil
+	Box
+	KeyPink
+	KeyBlue
+	Gem
+	Chain
+	Reeds
+	Flowers
 	Empty
 )
 
 func (b Block) String() string {
 	switch b {
-	case RedRock:
-		return "red_rock"
-	case RedStone:
-		return "red_stone"
-	case RedBrick:
-		return "red_brick"
-	case RedDirt:
-		return "red_dirt"
+	case Turf, Fall:
+		if CurrPuzzle != nil && CurrPuzzle.World != "" {
+			return CurrPuzzle.World
+		}
+		return constants.WorldRock
+	case Ladder:
+		return constants.TileLadderMiddle
+	case DoorPink:
+		return constants.TileDoorPink
+	case LockPink:
+		return constants.TileLockPink
+	case DoorBlue:
+		return constants.TileDoorBlue
+	case LockBlue:
+		return constants.TileLockBlue
+	case Player1:
+		return constants.CharPlayer1
+	case Devil:
+		return constants.CharDevil
+	case Box:
+		return constants.ItemBox
+	case KeyPink:
+		return constants.ItemKeyPink
+	case KeyBlue:
+		return constants.ItemKeyBlue
+	case Gem:
+		return constants.ItemGem
+	case Chain:
+		return constants.DoodadChain
+	case Reeds:
+		return constants.DoodadReeds
+	case Flowers:
+		return constants.DoodadFlowers
 	}
 	return "empty"
 }
 
 type Tile struct {
 	Block  Block
-	Doodad Block
-	Object Block
 	Ladder bool
-	Fall   bool
 	Coords world.Coords
+	Object *object.Object
+	Update bool
 }
 
-var (
-	CurrPuzzle *Puzzle
-)
-
-type Puzzle struct {
-	Tiles [constants.PuzzleHeight][constants.PuzzleWidth]*Tile
+func (t *Tile) Copy() *Tile {
+	return &Tile{
+		Block:  t.Block,
+		Ladder: t.Ladder,
+		Coords: t.Coords,
+	}
 }
 
-func CreateBlankPuzzle() *Puzzle {
-	puz := &Puzzle{
-		Tiles: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
-	}
-	for y := 0; y < constants.PuzzleHeight; y++ {
-		for x := 0; x < constants.PuzzleWidth; x++ {
-			puz.Tiles[y][x] = &Tile{
-				Ladder: false,
-				Fall:   false,
-				Coords: world.Coords{X: x, Y: y},
-			}
-		}
-	}
-	return puz
+func (t *Tile) CopyInto(c *Tile) {
+	c.Block = t.Block
+	c.Ladder = t.Ladder
 }
 
-func CreateTestPuzzle() *Puzzle {
-	puz := &Puzzle{
-		Tiles: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
-	}
-	for y := 0; y < constants.PuzzleHeight; y++ {
-		for x := 0; x < constants.PuzzleWidth; x++ {
-			block := Empty
-			if (x+y)%2 == 0 {
-				block = RedRock
-			}
-			puz.Tiles[y][x] = &Tile{
-				Block:  Block(block),
-				Ladder: false,
-				Fall:   false,
-				Coords: world.Coords{X: x, Y: y},
-			}
-		}
-	}
-	return puz
+func (t *Tile) Empty() {
+	t.Block = Empty
+	t.Ladder = false
 }

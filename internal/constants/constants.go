@@ -17,10 +17,9 @@ const (
 	BlockSelectWidth = 6.
 
 	// Batches
-	TileBGBatch = "tile_bg"
-	TileFGBatch = "tile_fg"
-	UIBatch     = "ui"
-	UITile      = "ui_tile"
+	BGBatch = "tile_bg"
+	FGBatch = "tile_fg"
+	UIBatch = "ui"
 )
 
 var (
@@ -28,6 +27,12 @@ var (
 		R: 19,
 		G: 19,
 		B: 19,
+		A: 255,
+	}
+	WhiteColor = color.RGBA{
+		R: 245,
+		G: 245,
+		B: 245,
 		A: 255,
 	}
 )

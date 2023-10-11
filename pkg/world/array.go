@@ -117,3 +117,13 @@ func Contiguous(a []Coords) [][]Coords {
 	}
 	return groups
 }
+
+func Reduce(a []Coords) []Coords {
+	var r []Coords
+	for _, c := range a {
+		if !CoordsIn(c, r) {
+			r = append(r, c)
+		}
+	}
+	return r
+}
