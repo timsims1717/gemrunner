@@ -51,6 +51,9 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	case data.Empty, data.Ladder:
 	case data.Turf, data.Fall:
 		spr = append(spr, img.NewSprite(GetBlockSprite(tile), constants.FGBatch))
+		if tile.Block == data.Fall {
+			spr = append(spr, img.NewSprite(constants.TileFall, constants.FGBatch))
+		}
 	default:
 		spr = append(spr, img.NewSprite(tile.Block.String(), constants.FGBatch))
 	}

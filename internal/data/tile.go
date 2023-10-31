@@ -1,6 +1,8 @@
 package data
 
 import (
+	"bytes"
+	"encoding/json"
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
@@ -67,12 +69,56 @@ func (b Block) String() string {
 	return "empty"
 }
 
+var toID = map[string]Block{
+	constants.TileTurf:         Turf,
+	constants.TileFall:         Fall,
+	constants.TileLadderMiddle: Ladder,
+	constants.TileDoorPink:     DoorPink,
+	constants.TileLockPink:     LockPink,
+	constants.TileDoorBlue:     DoorBlue,
+	constants.TileLockBlue:     LockBlue,
+	constants.CharPlayer1:      Player1,
+	constants.CharDevil:        Devil,
+	constants.ItemBox:          Box,
+	constants.ItemKeyPink:      KeyPink,
+	constants.ItemKeyBlue:      KeyBlue,
+	constants.ItemGem:          Gem,
+	constants.DoodadChain:      Chain,
+	constants.DoodadReeds:      Reeds,
+	constants.DoodadFlowers:    Flowers,
+	constants.TileEmpty:        Empty,
+}
+
+func (b Block) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`"`)
+	switch b {
+	case Turf:
+		buffer.WriteString(constants.TileTurf)
+	case Fall:
+		buffer.WriteString(constants.TileFall)
+	default:
+		buffer.WriteString(b.String())
+	}
+	buffer.WriteString(`"`)
+	return buffer.Bytes(), nil
+}
+
+func (b *Block) UnmarshalJSON(bts []byte) error {
+	var j string
+	err := json.Unmarshal(bts, &j)
+	if err != nil {
+		return err
+	}
+	*b = toID[j]
+	return nil
+}
+
 type Tile struct {
-	Block  Block
-	Ladder bool
-	Coords world.Coords
-	Object *object.Object
-	Update bool
+	Block  Block          `json:"tile"`
+	Ladder bool           `json:"ladder"`
+	Coords world.Coords   `json:"-"`
+	Object *object.Object `json:"-"`
+	Update bool           `json:"-"`
 }
 
 func (t *Tile) Copy() *Tile {

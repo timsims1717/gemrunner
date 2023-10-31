@@ -1,12 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/load"
 	"gemrunner/internal/states"
 	"gemrunner/internal/systems"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
+	"gemrunner/pkg/options"
+	"gemrunner/pkg/shaders"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/viewport"
@@ -22,6 +26,8 @@ func run() {
 		Bounds: pixel.R(0, 0, 1600, 900),
 		VSync:  true,
 	}
+	options.BilinearFilter = false
+	options.VSync = true
 	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
@@ -45,9 +51,16 @@ func run() {
 	img.AddBatcher(constants.BGBatch, tileSheet, true, true)
 	img.AddBatcher(constants.FGBatch, tileSheet, true, true)
 
+	sh, err := shaders.LoadFileToString("assets/shaders/puzzle-shader.frag.glsl")
+	if err != nil {
+		panic(err)
+	}
+	data.PuzzleShader = sh
+
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Text = true
 
+	load.Dialogs()
 	systems.InitMainBorder()
 
 	win.Show()
@@ -55,20 +68,34 @@ func run() {
 	for !win.Closed() {
 		timing.Update()
 		debug.Clear()
+		options.WindowUpdate(win)
+		if options.Updated {
+			viewport.MainCamera.CamPos = pixel.V(viewport.MainCamera.Rect.W()*0.5, viewport.MainCamera.Rect.H()*0.5)
+		}
+
+		data.MainInput.Update(win, viewport.MainCamera.Mat)
 		data.DebugInput.Update(win, viewport.MainCamera.Mat)
-		//options.WindowUpdate(win)
-		//if options.Updated {
-		//	viewport.MainCamera.CamPos = pixel.V(viewport.MainCamera.Rect.W()*0.5, viewport.MainCamera.Rect.H()*0.5)
-		//}
+		if data.DebugInput.Get("debugPause").JustPressed() {
+			fmt.Println("BREAKPOINT")
+		}
+		if data.DebugInput.Get("fullscreen").JustPressed() {
+			options.FullScreen = !options.FullScreen
+		}
+		if data.DebugInput.Get("fuzzy").JustPressed() {
+			options.BilinearFilter = !options.BilinearFilter
+		}
+		if data.DebugInput.Get("debugText").JustPressed() {
+			debug.Text = !debug.Text
+		}
 
 		state.Update(win)
+		win.Clear(constants.ColorBlack)
 		viewport.MainCamera.Update()
 		state.Draw(win)
 
-		//win.SetSmooth(false)
+		win.SetSmooth(false)
 		debug.Draw(win)
-		//win.SetSmooth(true)
-		//win.SetSmooth(options.BilinearFilter)
+		win.SetSmooth(options.BilinearFilter)
 
 		//sfx.MusicPlayer.Update()
 		win.Update()

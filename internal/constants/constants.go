@@ -1,7 +1,5 @@
 package constants
 
-import "image/color"
-
 const (
 	Title   = "Gem Runner"
 	Release = 0
@@ -20,19 +18,4 @@ const (
 	BGBatch = "tile_bg"
 	FGBatch = "tile_fg"
 	UIBatch = "ui"
-)
-
-var (
-	BlackColor = color.RGBA{
-		R: 19,
-		G: 19,
-		B: 19,
-		A: 255,
-	}
-	WhiteColor = color.RGBA{
-		R: 245,
-		G: 245,
-		B: 245,
-		A: 255,
-	}
 )

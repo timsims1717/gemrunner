@@ -50,11 +50,17 @@ func DrawSystem(win *pixelgl.Window, layer int) {
 				continue
 			} else if draws, okD := draw.([]*img.Sprite); okD {
 				for _, d := range draws {
+					if d == nil {
+						continue
+					}
 					DrawThing(d, obj, target)
 					count++
 				}
 			} else if anims, okA := draw.([]*reanimator.Tree); okA {
 				for _, d := range anims {
+					if d == nil {
+						continue
+					}
 					DrawThing(d, obj, target)
 					count++
 				}

@@ -73,6 +73,8 @@ const (
 	Undo
 	Redo
 	Delete
+	Save
+	Open
 	EndModeList
 )
 
@@ -112,6 +114,10 @@ func (m EditorMode) String() string {
 		return "Redo"
 	case Delete:
 		return "Delete"
+	case Save:
+		return "Save"
+	case Open:
+		return "Open"
 	}
 	return ""
 }

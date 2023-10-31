@@ -8,10 +8,10 @@ import (
 	"gemrunner/internal/systems"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
+	"gemrunner/pkg/options"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"image/color"
 )
@@ -32,7 +32,7 @@ func (s *editorState) Load() {
 	data.CurrPuzzle = data.CreateBlankPuzzle()
 	systems.PuzzleInit()
 	systems.EditorInit()
-	s.UpdateViews()
+	systems.UpdateViews()
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {
@@ -68,15 +68,19 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
 
+	systems.DialogSystem()
+
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		if data.CurrPuzzle != nil {
 			switch data.CurrPuzzle.World {
 			case constants.WorldRock:
-				data.CurrPuzzle.World = constants.WorldSlate
+				systems.ChangeWorld(constants.WorldSlate, constants.ColorOrange, constants.ColorRed)
 			case constants.WorldSlate:
-				data.CurrPuzzle.World = constants.WorldRock
+				systems.ChangeWorld(constants.WorldBrick, constants.ColorRed, constants.ColorBlue)
+			case constants.WorldBrick:
+				systems.ChangeWorld(constants.WorldGravel, constants.ColorBlue, constants.ColorGray)
 			default:
-				data.CurrPuzzle.World = constants.WorldRock
+				systems.ChangeWorld(constants.WorldRock, constants.ColorGray, constants.ColorGreen)
 			}
 			data.CurrPuzzle.Update = true
 		}
@@ -84,11 +88,14 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.FunctionSystem()
-	// custom systems
-	systems.TileSpriteSystemPre()
-	systems.UpdateEditorModeHotKey()
-	systems.PuzzleEditSystem()
-	systems.TileSpriteSystem()
+	
+	if !data.DialogOpen {
+		// custom systems
+		systems.TileSpriteSystemPre()
+		systems.UpdateEditorModeHotKey()
+		systems.PuzzleEditSystem()
+		systems.TileSpriteSystem()
+	}
 	// object systems
 	systems.ParentSystem()
 	systems.ObjectSystem()
@@ -113,13 +120,13 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 func (s *editorState) Draw(win *pixelgl.Window) {
 	// draw border
-	data.BorderView.Canvas.Clear(constants.BlackColor)
+	data.BorderView.Canvas.Clear(constants.ColorBlack)
 	systems.BorderSystem(1)
 	img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
 	img.Clear()
 	data.BorderView.Draw(win)
 	// draw puzzle
-	data.PuzzleView.Canvas.Clear(constants.BlackColor)
+	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
 	systems.DrawSystem(win, 2) // normal tiles
 	img.Batchers[constants.BGBatch].Draw(data.PuzzleView.Canvas)
 	img.Batchers[constants.FGBatch].Draw(data.PuzzleView.Canvas)
@@ -154,25 +161,14 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		img.Clear()
 		data.EditorPanel.BlockSelect.Draw(win)
 	}
+	// dialog draw system
+	systems.DialogDrawSystem(win)
 	systems.TemporarySystem()
+	if options.Updated {
+		systems.UpdateViews()
+	}
 }
 
 func (s *editorState) SetAbstract(aState *state.AbstractState) {
 	s.AbstractState = aState
-}
-
-func (s *editorState) UpdateViews() {
-	data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
-	data.BorderView.PortPos = viewport.MainCamera.PostCamPos
-	wRatio := viewport.MainCamera.Rect.W() / data.PuzzleView.Rect.W()
-	hRatio := viewport.MainCamera.Rect.H() / data.PuzzleView.Rect.H()
-	pickedRatio := wRatio
-	if hRatio < wRatio {
-		pickedRatio = hRatio
-	}
-	pickedRatio *= 0.9
-	data.PuzzleView.PortSize = pixel.V(pickedRatio, pickedRatio)
-	data.BorderView.PortSize = pixel.V(pickedRatio, pickedRatio)
-	data.EditorPanel.ViewPort.PortSize = pixel.V(pickedRatio, pickedRatio)
-	data.EditorPanel.ViewPort.PortPos = pixel.V((viewport.MainCamera.Rect.W()-(data.BorderView.Rect.W()-data.EditorPanel.ViewPort.Rect.W())*pickedRatio)*0.5, (viewport.MainCamera.Rect.H()+(data.BorderView.Rect.H()-data.EditorPanel.ViewPort.Rect.H())*pickedRatio)*0.5)
 }

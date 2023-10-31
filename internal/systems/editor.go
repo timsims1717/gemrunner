@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
@@ -12,6 +13,7 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"image/color"
 )
 
 func EditorInit() {
@@ -25,6 +27,14 @@ func EditorInit() {
 	data.EditorPanel.ViewPort.SetRect(pixel.R(0, 0, world.TileSize*3., world.TileSize*8.))
 	data.EditorPanel.ViewPort.CamPos = pixel.V(world.TileSize*-2.-3., world.TileSize*4.5+3.)
 
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
+	data.EditorPanel.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+
 	// border
 	borderObj := object.New()
 	borderObj.Pos = pixel.V(world.TileSize*-2., world.TileSize*4.5)
@@ -35,6 +45,13 @@ func EditorInit() {
 	vp := viewport.New(nil)
 	vp.SetRect(pixel.R(0, 0, world.TileSize*6.+2., world.TileSize*3.+2))
 	vp.CamPos = pixel.V(world.TileSize*3., -world.TileSize*1.5)
+	vp.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
+	vp.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
+	vp.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
+	vp.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
+	vp.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
+	vp.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
+	vp.Canvas.SetFragmentShader(data.PuzzleShader)
 	data.EditorPanel.BlockSelect = vp
 
 	// the block selectors
@@ -48,26 +65,32 @@ func EditorInit() {
 		sprB := img.NewSprite("black_square_big", constants.UIBatch)
 		spr := img.NewSprite(data.Block(b).String(), constants.BGBatch)
 		bId := data.Block(b)
+		sprs := []*img.Sprite{sprB, spr}
+		if b == data.Fall {
+			sprs = append(sprs, img.NewSprite(constants.TileFall, constants.BGBatch))
+		}
 		myecs.Manager.NewEntity().
 			AddComponent(myecs.Object, obj).
-			AddComponent(myecs.Drawable, []*img.Sprite{sprB, spr}).
+			AddComponent(myecs.Drawable, sprs).
 			AddComponent(myecs.Block, data.Block(b)).
 			AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.BlockSelect, func(hvc *data.HoverClick) {
-				click := hvc.Input.Get("click")
-				if hvc.Hover && data.EditorPanel.SelectVis {
-					data.EditorPanel.SelectObj.Pos = obj.Pos
-					if click.JustPressed() || click.JustReleased() {
-						data.EditorPanel.CurrBlock = bId
-						data.EditorPanel.SelectVis = false
-						data.EditorPanel.SelectQuick = false
-						data.EditorPanel.SelectTimer = nil
-						data.EditorPanel.Consume = ""
-						switch data.EditorPanel.Mode {
-						case data.Brush, data.Line, data.Square, data.Fill:
-						default:
-							data.EditorPanel.Mode = data.Brush
+				if !data.DialogOpen {
+					click := hvc.Input.Get("click")
+					if hvc.Hover && data.EditorPanel.SelectVis {
+						data.EditorPanel.SelectObj.Pos = obj.Pos
+						if click.JustPressed() || click.JustReleased() {
+							data.EditorPanel.CurrBlock = bId
+							data.EditorPanel.SelectVis = false
+							data.EditorPanel.SelectQuick = false
+							data.EditorPanel.SelectTimer = nil
+							data.EditorPanel.Consume = ""
+							switch data.EditorPanel.Mode {
+							case data.Brush, data.Line, data.Square, data.Fill:
+							default:
+								data.EditorPanel.Mode = data.Brush
+							}
+							click.Consume()
 						}
-						click.Consume()
 					}
 				}
 			}))
@@ -98,36 +121,45 @@ func EditorInit() {
 	blockObj.Rect = pixel.R(-16., -16., 16., 16.)
 	beBG := img.NewSprite("editor_tile_bg", constants.UIBatch)
 	beFG := img.NewSprite(data.Block(data.Turf).String(), constants.BGBatch)
+	beEx := img.NewSprite("", constants.BGBatch)
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, blockObj).
-		AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG}).
+		AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG, beEx}).
 		AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.ViewPort, func(hvc *data.HoverClick) {
-			beFG.Key = data.EditorPanel.CurrBlock.String()
-			data.EditorPanel.Hover = hvc.Hover
-			click := hvc.Input.Get("click")
-			if hvc.Hover && (data.EditorPanel.Consume == "select" || data.EditorPanel.Consume == "") {
-				if data.EditorPanel.Consume == "" {
-					data.EditorPanel.SelectQuick = false
-					if click.JustPressed() {
-						data.EditorPanel.Consume = "select"
-						data.EditorPanel.SelectTimer = timing.New(0.2)
-					}
-				} else if data.EditorPanel.Consume == "select" {
-					if click.JustPressed() {
-						data.EditorPanel.Consume = ""
-						data.EditorPanel.SelectTimer = nil
-						data.EditorPanel.SelectQuick = false
-					} else if click.JustReleased() {
-						if data.EditorPanel.SelectTimer != nil && !data.EditorPanel.SelectTimer.Done() {
-							data.EditorPanel.SelectQuick = true
-							data.EditorPanel.Consume = "select"
-						}
-					} else if !click.Pressed() && !data.EditorPanel.SelectQuick {
-						data.EditorPanel.Consume = ""
-						data.EditorPanel.SelectTimer = nil
-					}
+			if !data.DialogOpen {
+				beFG.Key = data.EditorPanel.CurrBlock.String()
+				switch data.EditorPanel.CurrBlock {
+				case data.Fall:
+					beEx.Key = constants.TileFall
+				default:
+					beEx.Key = ""
 				}
-				data.EditorPanel.SelectVis = data.EditorPanel.Consume == "select"
+				data.EditorPanel.Hover = hvc.Hover
+				click := hvc.Input.Get("click")
+				if hvc.Hover && (data.EditorPanel.Consume == "select" || data.EditorPanel.Consume == "") {
+					if data.EditorPanel.Consume == "" {
+						data.EditorPanel.SelectQuick = false
+						if click.JustPressed() {
+							data.EditorPanel.Consume = "select"
+							data.EditorPanel.SelectTimer = timing.New(0.2)
+						}
+					} else if data.EditorPanel.Consume == "select" {
+						if click.JustPressed() {
+							data.EditorPanel.Consume = ""
+							data.EditorPanel.SelectTimer = nil
+							data.EditorPanel.SelectQuick = false
+						} else if click.JustReleased() {
+							if data.EditorPanel.SelectTimer != nil && !data.EditorPanel.SelectTimer.Done() {
+								data.EditorPanel.SelectQuick = true
+								data.EditorPanel.Consume = "select"
+							}
+						} else if !click.Pressed() && !data.EditorPanel.SelectQuick {
+							data.EditorPanel.Consume = ""
+							data.EditorPanel.SelectTimer = nil
+						}
+					}
+					data.EditorPanel.SelectVis = data.EditorPanel.Consume == "select"
+				}
 			}
 		}))
 
@@ -140,20 +172,22 @@ func EditorInit() {
 	}).
 		AddComponent(myecs.Object, borderObj).
 		AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.ViewPort, func(hvc *data.HoverClick) {
-			data.EditorPanel.Hover = hvc.Hover
-			click := hvc.Input.Get("click")
-			if hvc.Hover {
-				if data.EditorPanel.Consume == "move" || data.EditorPanel.Consume == "" {
-					if click.JustPressed() {
-						data.EditorPanel.Offset = data.EditorPanel.ViewPort.PostPortPos.Sub(hvc.Input.World)
-						data.EditorPanel.Consume = "move"
+			if !data.DialogOpen {
+				data.EditorPanel.Hover = hvc.Hover
+				click := hvc.Input.Get("click")
+				if hvc.Hover {
+					if data.EditorPanel.Consume == "move" || data.EditorPanel.Consume == "" {
+						if click.JustPressed() {
+							data.EditorPanel.Offset = data.EditorPanel.ViewPort.PostPortPos.Sub(hvc.Input.World)
+							data.EditorPanel.Consume = "move"
+						}
 					}
 				}
-			}
-			if click.JustReleased() && data.EditorPanel.Offset != pixel.ZV {
-				data.EditorPanel.ViewPort.PortPos = hvc.Input.World.Add(data.EditorPanel.Offset)
-				data.EditorPanel.Offset = pixel.ZV
-				data.EditorPanel.Consume = ""
+				if click.JustReleased() && data.EditorPanel.Offset != pixel.ZV {
+					data.EditorPanel.ViewPort.PortPos = hvc.Input.World.Add(data.EditorPanel.Offset)
+					data.EditorPanel.Offset = pixel.ZV
+					data.EditorPanel.Consume = ""
+				}
 			}
 		}))
 	data.EditorPanel.Entity = e
@@ -165,39 +199,37 @@ func EditorInit() {
 	PushUndoArray(true)
 }
 
-func PuzzleInit() {
-	for _, result := range myecs.Manager.Query(myecs.IsTile) {
-		myecs.Manager.DisposeEntity(result)
-	}
-	if data.CurrPuzzle != nil {
-		for _, row := range data.CurrPuzzle.Tiles {
-			for _, tile := range row {
-				obj := object.New()
-				obj.Pos = world.MapToWorld(tile.Coords)
-				obj.Pos.X += world.TileSize * 0.5
-				obj.Pos.Y += world.TileSize * 0.5
-				obj.Layer = 2
-				myecs.Manager.NewEntity().
-					AddComponent(myecs.Object, obj).
-					AddComponent(myecs.Tile, tile)
-				tile.Object = obj
-			}
-		}
-		data.CurrPuzzle.Update = true
-	}
+func ChangeWorld(world string, primary color.RGBA, secondary color.RGBA) {
+	data.CurrPuzzle.World = world
+	data.CurrPuzzle.PrimaryColor = pixel.ToRGBA(primary)
+	data.CurrPuzzle.SecondaryColor = pixel.ToRGBA(secondary)
+	// set puzzle shader uniforms
+	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
+	// set editor panel shader uniforms
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
+	data.EditorPanel.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
+	// set editor select shader uniforms
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
+	data.EditorPanel.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
 
-	data.PuzzleView = viewport.New(nil)
-	data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
-	data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
-	data.PuzzleView.PortPos = viewport.MainCamera.CamPos
-	data.BorderView = viewport.New(nil)
-	data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(constants.PuzzleWidth+1), world.TileSize*(constants.PuzzleHeight+1)))
-	data.BorderView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
 }
 
 func UpdateEditorModeHotKey() {
 	oldMode := data.EditorPanel.Mode
-	if data.EditorInput.Get("ctrl").Pressed() {
+	if data.EditorInput.Get("ctrl").Pressed() || data.EditorInput.Get("rCtrl").Pressed() {
 		if data.EditorInput.Get("ctrlCopy").JustPressed() {
 			// copy
 			data.EditorPanel.Mode = data.Copy
@@ -207,13 +239,19 @@ func UpdateEditorModeHotKey() {
 		} else if data.EditorInput.Get("ctrlPaste").JustPressed() {
 			// paste
 			data.EditorPanel.Mode = data.Paste
-		} else if data.EditorInput.Get("shift").Pressed() &&
+		} else if (data.EditorInput.Get("shift").Pressed() || data.EditorInput.Get("rShift").Pressed()) &&
 			data.EditorInput.Get("ctrlShiftRedo").JustPressed() {
 			// redo
 			data.EditorPanel.Mode = data.Redo
 		} else if data.EditorInput.Get("ctrlUndo").JustPressed() {
 			// undo
 			data.EditorPanel.Mode = data.Undo
+		} else if data.EditorInput.Get("ctrlSave").JustPressed() {
+			// save
+			data.EditorPanel.Mode = data.Save
+		} else if data.EditorInput.Get("ctrlOpen").JustPressed() {
+			// load
+			data.EditorPanel.Mode = data.Open
 		}
 	} else {
 		for i := 0; i < data.EndModeList; i++ {
@@ -576,6 +614,18 @@ func PuzzleEditSystem() {
 			} else {
 				data.EditorPanel.Mode, data.EditorPanel.LastMode = data.EditorPanel.LastMode, data.Brush
 			}
+		case data.Save:
+			PlaceSelection()
+			if err := SavePuzzle(); err != nil {
+				fmt.Println("Error:", err)
+			}
+			data.EditorPanel.Mode, data.EditorPanel.LastMode = data.EditorPanel.LastMode, data.Brush
+		case data.Open:
+			//if err := LoadPuzzle(); err != nil {
+			//	fmt.Println("Error:", err)
+			//}
+			OpenDialogbox("open_puzzle")
+			data.EditorPanel.Mode, data.EditorPanel.LastMode = data.EditorPanel.LastMode, data.Brush
 		}
 	}
 	if data.EditorPanel.Mode == data.Move {
@@ -683,7 +733,7 @@ func CreateSquareSelect(a, b world.Coords) {
 	b1.X++
 	posA := world.MapToWorld(a1)
 	posB := world.MapToWorld(b1)
-	data.IMDraw.Color = constants.WhiteColor
+	data.IMDraw.Color = constants.ColorWhite
 	data.IMDraw.EndShape = imdraw.RoundEndShape
 	data.IMDraw.Push(posA, pixel.V(posA.X, posB.Y), posB, pixel.V(posB.X, posA.Y))
 	data.IMDraw.Polygon(2)
@@ -865,4 +915,8 @@ func PopRedoStack() {
 		data.EditorPanel.RedoStack = data.EditorPanel.RedoStack[:len(data.EditorPanel.RedoStack)-1]
 		data.EditorPanel.LastChange = puz
 	}
+}
+
+func DisposeEditor() {
+
 }

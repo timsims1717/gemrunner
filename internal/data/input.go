@@ -26,10 +26,22 @@ var (
 			"Pliers":         pxginput.NewJoyless(pixelgl.KeyP),
 			"ctrlUndo":       pxginput.NewJoyless(pixelgl.KeyZ),
 			"ctrlShiftRedo":  pxginput.NewJoyless(pixelgl.KeyZ),
+			"ctrlSave":       pxginput.NewJoyless(pixelgl.KeyS),
+			"ctrlOpen":       pxginput.NewJoyless(pixelgl.KeyO),
 			"Delete":         pxginput.NewJoyless(pixelgl.KeyDelete),
 			//"altEyedrop":     pxginput.NewJoyless(pixelgl.KeyLeftAlt),
-			"ctrl":  pxginput.NewJoyless(pixelgl.KeyLeftControl),
-			"shift": pxginput.NewJoyless(pixelgl.KeyLeftShift),
+			"ctrl":   pxginput.NewJoyless(pixelgl.KeyLeftControl),
+			"rCtrl":  pxginput.NewJoyless(pixelgl.KeyRightControl),
+			"shift":  pxginput.NewJoyless(pixelgl.KeyLeftShift),
+			"rShift": pxginput.NewJoyless(pixelgl.KeyRightShift),
+		},
+		Mode: pxginput.KeyboardMouse,
+	}
+	MainInput = &pxginput.Input{
+		Buttons: map[string]*pxginput.ButtonSet{
+			"click":      pxginput.NewJoyless(pixelgl.MouseButtonLeft),
+			"rightClick": pxginput.NewJoyless(pixelgl.MouseButtonRight),
+			"escape":     pxginput.NewJoyless(pixelgl.KeyEscape),
 		},
 		Mode: pxginput.KeyboardMouse,
 	}
@@ -38,6 +50,8 @@ var (
 			"debugConsole": pxginput.NewJoyless(pixelgl.KeyGraveAccent),
 			"debug":        pxginput.NewJoyless(pixelgl.KeyF3),
 			"debugText":    pxginput.NewJoyless(pixelgl.KeyF4),
+			"fullscreen":   pxginput.NewJoyless(pixelgl.KeyF5),
+			"fuzzy":        pxginput.NewJoyless(pixelgl.KeyF6),
 			"debugMenu":    pxginput.NewJoyless(pixelgl.KeyF7),
 			"debugTest":    pxginput.NewJoyless(pixelgl.KeyF8),
 			"debugPause":   pxginput.NewJoyless(pixelgl.KeyF9),

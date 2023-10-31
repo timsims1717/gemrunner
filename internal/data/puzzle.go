@@ -4,6 +4,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
+	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 )
 
@@ -15,13 +16,21 @@ var (
 	CurrPuzzle *Puzzle
 	CurrSelect *Selection
 	ClipSelect *Selection
+
+	PuzzleShader string
 )
 
 type Puzzle struct {
-	Tiles  [constants.PuzzleHeight][constants.PuzzleWidth]*Tile
-	Click  bool
-	Update bool
-	World  string
+	Tiles [constants.PuzzleHeight][constants.PuzzleWidth]*Tile `json:"tiles"`
+
+	Click  bool   `json:"-"`
+	Update bool   `json:"-"`
+	World  string `json:"world"`
+
+	PrimaryColor   pixel.RGBA `json:"primaryColor"`
+	SecondaryColor pixel.RGBA `json:"secondaryColor"`
+
+	Filename string
 }
 
 type Selection struct {
@@ -34,7 +43,10 @@ type Selection struct {
 
 func CreateBlankPuzzle() *Puzzle {
 	puz := &Puzzle{
-		Tiles: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
+		Tiles:          [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
+		World:          constants.WorldRock,
+		PrimaryColor:   pixel.ToRGBA(constants.ColorGray),
+		SecondaryColor: pixel.ToRGBA(constants.ColorGreen),
 	}
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
