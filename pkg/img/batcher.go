@@ -2,7 +2,7 @@ package img
 
 import (
 	"fmt"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"image/color"
 )
 

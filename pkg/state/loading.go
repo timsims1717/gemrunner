@@ -1,6 +1,6 @@
 package state
 
-import "github.com/faiface/pixel/pixelgl"
+import "github.com/gopxl/pixel/pixelgl"
 
 type loadingScreen struct {
 	Init   func()

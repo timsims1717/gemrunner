@@ -1,7 +1,7 @@
 package img
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
 	"image"
 	_ "image/png"

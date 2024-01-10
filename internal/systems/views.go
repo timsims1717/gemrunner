@@ -3,7 +3,7 @@ package systems
 import (
 	"gemrunner/internal/data"
 	"gemrunner/pkg/viewport"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 func UpdateViews() {

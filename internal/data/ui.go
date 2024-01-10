@@ -4,7 +4,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"github.com/bytearena/ecs"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 type ButtonConstructor struct {

@@ -12,7 +12,7 @@ import (
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel/pixelgl"
 	"image/color"
 )
 

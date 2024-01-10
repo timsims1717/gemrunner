@@ -1,7 +1,7 @@
 package object
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"math"
 )
 

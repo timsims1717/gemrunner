@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"gemrunner/pkg/object"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"math"
 )
 
@@ -120,25 +120,35 @@ func (item *Text) SetText(raw string) {
 func (item *Text) updateText() {
 	item.Text.Clear()
 	item.Text.Color = item.Color
+	if item.Align.H == Center {
+		item.Text.Orig.X = item.Width * 0.25
+	} else if item.Align.H == Right {
+		item.Text.Orig.X = -item.Width * 0.5
+	}
+	if item.Align.V == Center {
+		item.Text.Orig.Y = item.fullHeight * 0.5
+	} else if item.Align.V == Top {
+		item.Text.Orig.Y = -item.fullHeight
+	}
 	//var colorStack []color.RGBA
 	item.Symbols = []symbolHandle{}
 	inBrackets := false
 	mode := ""
 	buf := bytes.NewBuffer(nil)
-	item.Text.Dot.Y -= item.Text.LineHeight
-	if item.Align.V == Center {
-		item.Text.Dot.Y += item.fullHeight * 0.5
-	} else if item.Align.V == Bottom {
-		item.Text.Dot.Y += item.fullHeight
-	}
-	for li, line := range item.rawLines {
+	//item.Text.Dot.Y -= item.Text.LineHeight
+	//if item.Align.V == Center {
+	//	item.Text.Dot.Y += item.fullHeight * 0.5
+	//} else if item.Align.V == Bottom {
+	//	item.Text.Dot.Y += item.fullHeight
+	//}
+	for _, line := range item.rawLines {
 		b := 0
 		inBrackets = false
-		if item.Align.H == Center {
-			item.Text.Dot.X -= item.lineWidths[li] * 0.5
-		} else if item.Align.H == Right {
-			item.Text.Dot.X -= item.lineWidths[li]
-		}
+		//if item.Align.H == Center {
+		//	item.Text.Dot.X -= item.lineWidths[li] * 0.5
+		//} else if item.Align.H == Right {
+		//	item.Text.Dot.X -= item.lineWidths[li]
+		//}
 		for i, r := range line {
 			if !inBrackets {
 				switch r {

@@ -3,7 +3,7 @@ package object
 import (
 	"fmt"
 	"gemrunner/pkg/util"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"golang.org/x/image/colornames"
 )
 

@@ -1,16 +1,16 @@
 package img
 
 import (
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/imdraw"
 )
 
 type IMDrawer struct {
-	Key        string
-	Index      int
-	imd        *imdraw.IMDraw
-	AutoDraw   bool
-	AutoClear  bool
+	Key       string
+	Index     int
+	imd       *imdraw.IMDraw
+	AutoDraw  bool
+	AutoClear bool
 }
 
 func AddIMDrawer(key string, autoDraw, autoClear bool) {

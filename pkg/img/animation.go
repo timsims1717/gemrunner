@@ -4,7 +4,7 @@ import (
 	gween "gemrunner/pkg/gween64"
 	"gemrunner/pkg/gween64/ease"
 	"gemrunner/pkg/timing"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 type Instance struct {

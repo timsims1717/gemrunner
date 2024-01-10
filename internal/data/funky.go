@@ -3,7 +3,7 @@ package data
 import (
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/viewport"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	pxginput "github.com/timsims1717/pixel-go-input"
 )
 

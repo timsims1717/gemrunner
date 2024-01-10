@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel/pixelgl"
 	pxginput "github.com/timsims1717/pixel-go-input"
 )
 

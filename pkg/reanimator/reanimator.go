@@ -3,7 +3,7 @@ package reanimator
 import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/util"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"image/color"
 	"time"
 )

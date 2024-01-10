@@ -5,7 +5,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/img"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel/pixelgl"
 	"image/color"
 )
 

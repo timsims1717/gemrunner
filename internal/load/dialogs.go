@@ -3,7 +3,7 @@ package load
 import (
 	"gemrunner/internal/data"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 func Dialogs() {

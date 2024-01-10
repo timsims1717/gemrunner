@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"math"
 	"math/rand"
 	"reflect"

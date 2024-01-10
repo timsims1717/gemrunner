@@ -2,7 +2,7 @@ package world
 
 import (
 	"gemrunner/pkg/util"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"math"
 )
 

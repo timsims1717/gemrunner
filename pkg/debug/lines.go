@@ -1,8 +1,8 @@
 package debug
 
 import (
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/imdraw"
 	"image/color"
 )
 

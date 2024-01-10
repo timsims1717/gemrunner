@@ -7,8 +7,8 @@ import (
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/viewport"
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/pixelgl"
 )
 
 func AnimationSystem() {

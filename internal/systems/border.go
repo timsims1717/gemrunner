@@ -7,7 +7,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"golang.org/x/image/colornames"
 	"math"
 )

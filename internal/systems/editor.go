@@ -12,8 +12,8 @@ import (
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/imdraw"
 	"image/color"
 )
 

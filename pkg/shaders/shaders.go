@@ -1,7 +1,7 @@
 package shaders
 
 import (
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel/pixelgl"
 	"os"
 )
 

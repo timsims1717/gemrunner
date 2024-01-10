@@ -2,7 +2,7 @@ package typeface
 
 import (
 	"gemrunner/pkg/object"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 var (

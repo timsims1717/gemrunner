@@ -1,8 +1,8 @@
 package typeface
 
 import (
-	"github.com/faiface/pixel/text"
 	"github.com/golang/freetype/truetype"
+	"github.com/gopxl/pixel/text"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"os"

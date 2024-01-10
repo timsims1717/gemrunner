@@ -2,7 +2,7 @@ package state
 
 import (
 	"fmt"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 	"image/color"
 )

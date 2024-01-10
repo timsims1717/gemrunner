@@ -3,8 +3,8 @@ package typeface
 import (
 	"fmt"
 	"gemrunner/pkg/object"
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/text"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/text"
 	"golang.org/x/image/colornames"
 )
 

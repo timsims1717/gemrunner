@@ -9,7 +9,7 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
 	"os"
 )

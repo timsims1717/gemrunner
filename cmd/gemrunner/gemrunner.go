@@ -15,8 +15,8 @@ import (
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/pixelgl"
 )
 
 func run() {

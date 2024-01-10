@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/typeface"
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/pixelgl"
 )
 
 var (

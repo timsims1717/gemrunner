@@ -1,7 +1,7 @@
 package world
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 var (

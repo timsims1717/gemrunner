@@ -8,7 +8,7 @@ import (
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 )
 
 var (

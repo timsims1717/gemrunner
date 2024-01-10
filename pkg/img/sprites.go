@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gemrunner/pkg/util"
-	"github.com/faiface/pixel"
+	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
