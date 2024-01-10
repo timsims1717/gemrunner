@@ -242,6 +242,23 @@ func CoordsLegal(coords world.Coords) bool {
 	return coords.X >= 0 && coords.Y >= 0 && coords.X < constants.PuzzleWidth && coords.Y < constants.PuzzleHeight
 }
 
+func GetClosestLegal(coords world.Coords) world.Coords {
+	if CoordsLegal(coords) {
+		return coords
+	}
+	if coords.X < 0 {
+		coords.X = 0
+	} else if coords.X >= constants.PuzzleWidth {
+		coords.X = constants.PuzzleWidth - 1
+	}
+	if coords.Y < 0 {
+		coords.Y = 0
+	} else if coords.Y >= constants.PuzzleHeight {
+		coords.Y = constants.PuzzleHeight - 1
+	}
+	return coords
+}
+
 func CoordsLegalSelection(coords world.Coords) bool {
 	return coords.X >= 0 && coords.Y >= 0 && coords.X < data.CurrSelect.Width && coords.Y < data.CurrSelect.Height
 }

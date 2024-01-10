@@ -59,6 +59,7 @@ func run() {
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Text = true
+	debug.Debug = true
 
 	load.Dialogs()
 	systems.InitMainBorder()

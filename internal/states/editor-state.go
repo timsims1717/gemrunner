@@ -140,7 +140,6 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	img.Clear()
 	data.IMDraw.Draw(data.PuzzleView.Canvas)
 	data.PuzzleView.Draw(win)
-	data.IMDraw.Clear()
 	// draw editor panel
 	data.EditorPanel.ViewPort.Canvas.Clear(color.RGBA{})
 	systems.BorderSystem(10)
@@ -163,7 +162,9 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
+	data.IMDraw.Draw(win)
 	systems.TemporarySystem()
+	data.IMDraw.Clear()
 	if options.Updated {
 		systems.UpdateViews()
 	}

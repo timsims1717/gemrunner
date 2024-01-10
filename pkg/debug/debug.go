@@ -19,6 +19,9 @@ func Initialize(v *pixel.Vec) {
 }
 
 func Draw(win *pixelgl.Window) {
+	if Debug {
+		DrawLines(win)
+	}
 	if Text {
 		DrawText(win)
 	}

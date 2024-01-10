@@ -272,6 +272,7 @@ func UpdateEditorModeHotKey() {
 	}
 	if oldMode != data.EditorPanel.Mode {
 		data.EditorPanel.LastMode = oldMode
+		data.EditorPanel.LastCoords = world.Coords{X: -1, Y: -1}
 	}
 	if data.EditorPanel.LastMode >= data.EndModeList {
 		data.EditorPanel.LastMode = data.Brush
@@ -295,11 +296,10 @@ func PuzzleEditSystem() {
 		}
 	} else {
 		if !data.EditorPanel.Hover {
-			//data.EditorPanel.SelectVis = false
 			projPos := data.PuzzleView.ProjectWorld(data.EditorInput.World)
-			// switch editor mode
 			x, y := world.WorldToMap(projPos.X, projPos.Y)
 			coords := world.Coords{X: x, Y: y}
+			// special check for a weird bug
 			if coords.X < -1000 || coords.X > 1000 || coords.Y < -1000 || coords.Y > 1000 {
 				return
 			}
@@ -311,10 +311,12 @@ func PuzzleEditSystem() {
 			if !rClick.Pressed() && !rClick.JustReleased() &&
 				!click.Pressed() && !click.JustReleased() && legal {
 				CreateHighlight(coords)
-			} else {
+				data.EditorPanel.NoInput = false
+				data.EditorPanel.LastCoords = world.Coords{X: -1, Y: -1}
+			} else if !data.EditorPanel.NoInput {
 				switch data.EditorPanel.Mode {
 				case data.Brush:
-					if rClick.JustPressed() || click.JustPressed() || !lastLegal {
+					if rClick.JustPressed() || click.JustPressed() && !lastLegal {
 						data.EditorPanel.LastCoords = coords
 						lastLegal = CoordsLegal(data.EditorPanel.LastCoords)
 					}
@@ -337,7 +339,7 @@ func PuzzleEditSystem() {
 					}
 				case data.Line:
 					if lastLegal {
-						if click.Pressed() && !data.EditorPanel.NoInput {
+						if click.Pressed() {
 							if click.JustPressed() {
 								data.EditorPanel.LastCoords = coords
 							} else if rClick.JustPressed() {
@@ -348,7 +350,7 @@ func PuzzleEditSystem() {
 							for _, c := range line {
 								CreateHighlight(c)
 							}
-						} else if click.JustReleased() && !data.EditorPanel.NoInput {
+						} else if click.JustReleased() {
 							line := world.Line(data.EditorPanel.LastCoords, coords)
 							for _, c := range line {
 								SetBlock(c, data.EditorPanel.CurrBlock)
@@ -357,7 +359,7 @@ func PuzzleEditSystem() {
 							if legal {
 								CreateHighlight(coords)
 							}
-						} else if rClick.Pressed() && !data.EditorPanel.NoInput {
+						} else if rClick.Pressed() {
 							if rClick.JustPressed() {
 								data.EditorPanel.LastCoords = coords
 							} else if click.JustPressed() {
@@ -368,7 +370,7 @@ func PuzzleEditSystem() {
 							for _, c := range line {
 								CreateHighlight(c)
 							}
-						} else if rClick.JustReleased() && !data.EditorPanel.NoInput {
+						} else if rClick.JustReleased() {
 							line := world.Line(data.EditorPanel.LastCoords, coords)
 							for _, c := range line {
 								DeleteBlock(c)
@@ -376,12 +378,6 @@ func PuzzleEditSystem() {
 							PushUndoArray(true)
 							if legal {
 								CreateHighlight(coords)
-							}
-						} else if !click.Pressed() && !rClick.Pressed() {
-							data.EditorPanel.NoInput = false
-							if legal {
-								CreateHighlight(coords)
-								data.EditorPanel.LastCoords = coords
 							}
 						}
 					} else {
@@ -393,7 +389,7 @@ func PuzzleEditSystem() {
 					}
 				case data.Square:
 					if lastLegal {
-						if click.Pressed() && !data.EditorPanel.NoInput {
+						if click.Pressed() {
 							if click.JustPressed() {
 								data.EditorPanel.LastCoords = coords
 							} else if rClick.JustPressed() {
@@ -404,7 +400,7 @@ func PuzzleEditSystem() {
 							for _, c := range square {
 								CreateHighlight(c)
 							}
-						} else if click.JustReleased() && !data.EditorPanel.NoInput {
+						} else if click.JustReleased() {
 							square := world.Square(data.EditorPanel.LastCoords, coords)
 							for _, c := range square {
 								SetBlock(c, data.EditorPanel.CurrBlock)
@@ -413,7 +409,7 @@ func PuzzleEditSystem() {
 							if legal {
 								CreateHighlight(coords)
 							}
-						} else if rClick.Pressed() && !data.EditorPanel.NoInput {
+						} else if rClick.Pressed() {
 							if rClick.JustPressed() {
 								data.EditorPanel.LastCoords = coords
 							} else if click.JustPressed() {
@@ -424,7 +420,7 @@ func PuzzleEditSystem() {
 							for _, c := range square {
 								CreateHighlight(c)
 							}
-						} else if rClick.JustReleased() && !data.EditorPanel.NoInput {
+						} else if rClick.JustReleased() {
 							square := world.Square(data.EditorPanel.LastCoords, coords)
 							for _, c := range square {
 								DeleteBlock(c)
@@ -432,12 +428,6 @@ func PuzzleEditSystem() {
 							PushUndoArray(true)
 							if legal {
 								CreateHighlight(coords)
-							}
-						} else if !click.Pressed() && !rClick.Pressed() {
-							data.EditorPanel.NoInput = false
-							if legal {
-								CreateHighlight(coords)
-								data.EditorPanel.LastCoords = coords
 							}
 						}
 					} else {
@@ -487,16 +477,16 @@ func PuzzleEditSystem() {
 					}
 				case data.Select:
 					if lastLegal {
-						if click.Pressed() && !data.EditorPanel.NoInput {
-							if click.JustPressed() {
+						if click.Pressed() {
+							if click.JustPressed() && legal {
 								data.EditorPanel.LastCoords = coords
 							} else if rClick.JustPressed() {
 								data.EditorPanel.NoInput = true
 								break
 							}
-							CreateSquareSelect(data.EditorPanel.LastCoords, coords)
-						} else if click.JustReleased() && !data.EditorPanel.NoInput {
-							CreateSelection(data.EditorPanel.LastCoords, coords)
+							CreateSquareSelect(data.EditorPanel.LastCoords, GetClosestLegal(coords))
+						} else if click.JustReleased() {
+							CreateSelection(data.EditorPanel.LastCoords, GetClosestLegal(coords))
 							data.EditorPanel.Mode = data.Move
 						} else if !click.Pressed() && !rClick.Pressed() {
 							data.EditorPanel.NoInput = false
@@ -515,23 +505,22 @@ func PuzzleEditSystem() {
 				case data.Move:
 					if legal {
 						CreateHighlight(coords)
-					}
-					if lastLegal {
-						if click.Pressed() && !data.EditorPanel.NoInput {
+						if rClick.JustPressed() {
+							// todo: change behavior to return selection to where you picked it up from
+							data.EditorPanel.Mode = data.Brush
+							data.EditorPanel.NoInput = true
+							data.CurrSelect.Offset = data.CurrSelect.Origin
+							break
+						} else if click.Pressed() {
 							if click.JustPressed() {
 								inTest := coords
 								inTest.X -= data.CurrSelect.Offset.X
 								inTest.Y -= data.CurrSelect.Offset.Y
 								if !CoordsLegalSelection(inTest) {
 									data.EditorPanel.Mode = data.Select
-									data.EditorPanel.NoInput = true
 									break
 								}
 								data.EditorPanel.LastCoords = coords
-							} else if rClick.JustPressed() {
-								data.EditorPanel.NoInput = true
-								data.CurrSelect.Offset = data.CurrSelect.Origin
-								break
 							} else {
 								var move world.Coords
 								move.X = coords.X - data.EditorPanel.LastCoords.X
@@ -544,26 +533,13 @@ func PuzzleEditSystem() {
 								Y: data.CurrSelect.Offset.Y + data.CurrSelect.Height - 1,
 							}
 							CreateSquareSelect(data.CurrSelect.Offset, end)
-						} else if click.JustReleased() && !data.EditorPanel.NoInput {
+						} else if click.JustReleased() {
 							var move world.Coords
 							move.X = coords.X - data.EditorPanel.LastCoords.X
 							move.Y = coords.Y - data.EditorPanel.LastCoords.Y
 							data.CurrSelect.Offset.X = data.CurrSelect.Origin.X + move.X
 							data.CurrSelect.Offset.Y = data.CurrSelect.Origin.Y + move.Y
 							data.CurrSelect.Origin = data.CurrSelect.Offset
-							if legal {
-								data.EditorPanel.LastCoords = coords
-							}
-						} else if !click.Pressed() && !rClick.Pressed() {
-							data.EditorPanel.NoInput = false
-							if legal {
-								data.EditorPanel.LastCoords = coords
-							}
-						}
-					} else {
-						if legal {
-							data.EditorPanel.NoInput = false
-							data.EditorPanel.LastCoords = coords
 						}
 					}
 				}
