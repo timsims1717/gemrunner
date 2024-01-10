@@ -121,12 +121,12 @@ func (item *Text) updateText() {
 	item.Text.Clear()
 	item.Text.Color = item.Color
 	if item.Align.H == Center {
-		item.Text.Orig.X = item.Width * 0.25
+		item.Text.Orig.X = -item.Width * 0.25
 	} else if item.Align.H == Right {
 		item.Text.Orig.X = -item.Width * 0.5
 	}
 	if item.Align.V == Center {
-		item.Text.Orig.Y = item.fullHeight * 0.5
+		item.Text.Orig.Y = -item.fullHeight * 0.5
 	} else if item.Align.V == Top {
 		item.Text.Orig.Y = -item.fullHeight
 	}
