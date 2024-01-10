@@ -18,6 +18,7 @@ type Button struct {
 	Key      string
 	Sprite   *img.Sprite
 	ClickSpr *img.Sprite
+	Delay    float64
 	HelpText string
 	Object   *object.Object
 	Entity   *ecs.Entity

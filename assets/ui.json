@@ -51,46 +51,410 @@
       "w": 18
     },
     {
-      "key": "save_btn",
+      "key": "save_btn_big",
       "x": 82,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
-      "key": "save_btn_click",
+      "key": "save_btn_click_big",
       "x": 100,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
-      "key": "cancel_btn",
+      "key": "cancel_btn_big",
       "x": 118,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
-      "key": "cancel_btn_click",
+      "key": "cancel_btn_click_big",
       "x": 136,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
-      "key": "open_btn",
+      "key": "open_btn_big",
       "x": 82,
-      "y": 0,
+      "y": 18,
       "h": 18,
       "w": 18
     },
     {
-      "key": "open_btn_click",
+      "key": "open_btn_click_big",
       "x": 100,
-      "y": 0,
+      "y": 18,
       "h": 18,
       "w": 18
+    },
+    {
+      "key": "world_btn_big",
+      "x": 118,
+      "y": 18,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "world_btn_click_big",
+      "x": 136,
+      "y": 18,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "quit_btn_big",
+      "x": 82,
+      "y": 36,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "quit_btn_click_big",
+      "x": 100,
+      "y": 36,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "play_btn_big",
+      "x": 118,
+      "y": 36,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "play_btn_click_big",
+      "x": 136,
+      "y": 36,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "brush_btn",
+      "x": 0,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "brush_btn_click",
+      "x": 16,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "line_btn",
+      "x": 32,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "line_btn_click",
+      "x": 48,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "square_btn",
+      "x": 64,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "eyedrop_btn",
+      "x": 0,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "eyedrop_btn_click",
+      "x": 16,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "select_btn",
+      "x": 32,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "select_btn_click",
+      "x": 48,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "square_btn_click",
+      "x": 64,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flipv_btn",
+      "x": 0,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flipv_btn_click",
+      "x": 16,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fliph_btn",
+      "x": 32,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fliph_btn_click",
+      "x": 48,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cut_btn",
+      "x": 64,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fill_btn",
+      "x": 0,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fill_btn_click",
+      "x": 16,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "erase_btn",
+      "x": 32,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "erase_btn_click",
+      "x": 48,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cut_btn_click",
+      "x": 64,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "copy_btn",
+      "x": 0,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "copy_btn_click",
+      "x": 16,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "paste_btn",
+      "x": 32,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "paste_btn_click",
+      "x": 48,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "wrench_btn",
+      "x": 64,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "undo_btn",
+      "x": 0,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "undo_btn_click",
+      "x": 16,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "redo_btn",
+      "x": 32,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "redo_btn_click",
+      "x": 48,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "wrench_btn_click",
+      "x": 64,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "quit_btn",
+      "x": 0,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "quit_btn_click",
+      "x": 16,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "test_btn",
+      "x": 32,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "test_btn_click",
+      "x": 48,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "prev_btn",
+      "x": 64,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "prev_btn_click",
+      "x": 80,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_btn",
+      "x": 0,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_btn_click",
+      "x": 16,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "save_btn",
+      "x": 32,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "save_btn_click",
+      "x": 48,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "next_btn",
+      "x": 64,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "next_btn_click",
+      "x": 80,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "world_btn",
+      "x": 0,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "world_btn_click",
+      "x": 16,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "new_btn",
+      "x": 32,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "new_btn_click",
+      "x": 48,
+      "y": 176,
+      "h": 16,
+      "w": 16
     }
   ]
 }

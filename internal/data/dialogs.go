@@ -12,15 +12,19 @@ import (
 )
 
 var (
-	DialogStack []*dialog
-	DialogOpen  bool
-	Dialogs     = map[string]*dialog{}
+	DialogStack     []*Dialog
+	DialogsOpen     []*Dialog
+	DialogStackOpen bool
+	Dialogs         = map[string]*Dialog{}
 
-	OpenPuzzleConstructor *DialogConstructor
+	OpenPuzzleConstructor  *DialogConstructor
+	EditorPanelConstructor *DialogConstructor
+	EditorOptConstructor   *DialogConstructor
 )
 
-type dialog struct {
+type Dialog struct {
 	Key          string
+	Pos          pixel.Vec
 	ViewPort     *viewport.ViewPort
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
@@ -35,6 +39,7 @@ type DialogConstructor struct {
 	Key     string
 	Width   float64
 	Height  float64
+	Pos     pixel.Vec
 	Buttons []ButtonConstructor
 }
 
@@ -42,15 +47,16 @@ func NewDialog(dc *DialogConstructor) {
 	vp := viewport.New(nil)
 	vp.SetRect(pixel.R(0, 0, dc.Width*world.TileSize, dc.Height*world.TileSize))
 	vp.CamPos = pixel.V(0, 0)
-	vp.PortPos = viewport.MainCamera.PostCamPos
+	vp.PortPos = viewport.MainCamera.PostCamPos.Add(dc.Pos)
 
 	bvp := viewport.New(nil)
 	bvp.SetRect(pixel.R(0, 0, (dc.Width+1)*world.TileSize, (dc.Height+1)*world.TileSize))
 	bvp.CamPos = pixel.V(0, 0)
-	bvp.PortPos = viewport.MainCamera.PostCamPos
+	bvp.PortPos = viewport.MainCamera.PostCamPos.Add(dc.Pos)
 
 	bObj := object.New()
 	bObj.Layer = 99
+	//bObj.Pos = dc.Pos
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, bObj).
 		AddComponent(myecs.Border, &Border{
@@ -58,8 +64,9 @@ func NewDialog(dc *DialogConstructor) {
 			Height: int(dc.Height),
 		})
 
-	dlg := &dialog{
+	dlg := &Dialog{
 		Key:          dc.Key,
+		Pos:          dc.Pos,
 		ViewPort:     vp,
 		BorderVP:     bvp,
 		BorderObject: bObj,
@@ -86,20 +93,24 @@ func NewDialog(dc *DialogConstructor) {
 			Entity:   btnE,
 		}
 		btnE.AddComponent(myecs.Update, NewHoverClickFn(MainInput, vp, func(hvc *HoverClick) {
-			if dlg.Open && hvc.Input.Get("click").JustPressed() {
-				if !dlg.Click && b.OnClick != nil && hvc.Hover {
-					click := hvc.Input.Get("click")
-					if click.JustPressed() {
-						dlg.Click = true
-						btnE.AddComponent(myecs.Drawable, cSpr)
-						e := myecs.Manager.NewEntity()
-						e.AddComponent(myecs.Update, NewTimerFunc(func() bool {
-							dlg.Click = false
-							btnE.AddComponent(myecs.Drawable, spr)
+			click := hvc.Input.Get("click")
+			if dlg.Open {
+				if hvc.Hover && click.JustPressed() {
+					dlg.Click = true
+				}
+				if hvc.Hover && click.Pressed() && dlg.Click {
+					btnE.AddComponent(myecs.Drawable, cSpr)
+				} else {
+					if hvc.Hover && click.JustReleased() && dlg.Click {
+						dlg.Click = false
+						if b.OnClick != nil {
 							b.OnClick()
-							myecs.Manager.DisposeEntity(e)
-							return false
-						}, 0.2))
+						}
+					} else if !click.Pressed() && !click.JustReleased() && dlg.Click {
+						dlg.Click = false
+						btnE.AddComponent(myecs.Drawable, spr)
+					} else {
+						btnE.AddComponent(myecs.Drawable, spr)
 					}
 				}
 			}
@@ -112,5 +123,9 @@ func NewDialog(dc *DialogConstructor) {
 }
 
 func ClearDialogStack() {
-	DialogStack = []*dialog{}
+	DialogStack = []*Dialog{}
+}
+
+func ClearDialogsOpen() {
+	DialogsOpen = []*Dialog{}
 }

@@ -8,6 +8,7 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/faiface/pixel"
+	"strings"
 )
 
 var (
@@ -69,7 +70,7 @@ const (
 	Paste
 	FlipVertical
 	FlipHorizontal
-	Pliers
+	Wrench
 	Undo
 	Redo
 	Delete
@@ -106,8 +107,8 @@ func (m EditorMode) String() string {
 		return "FlipVertical"
 	case FlipHorizontal:
 		return "FlipHorizontal"
-	case Pliers:
-		return "Pliers"
+	case Wrench:
+		return "Wrench"
 	case Undo:
 		return "Undo"
 	case Redo:
@@ -120,4 +121,44 @@ func (m EditorMode) String() string {
 		return "Open"
 	}
 	return ""
+}
+
+func ModeFromSprString(s string) EditorMode {
+	ss := strings.Split(s, "_")
+	ms := ss[0]
+	switch ms {
+	case "brush":
+		return Brush
+	case "line":
+		return Line
+	case "square":
+		return Square
+	case "fill":
+		return Fill
+	case "erase":
+		return Erase
+	case "eyedrop":
+		return Eyedrop
+	case "select":
+		return Select
+	case "move":
+		return Move
+	case "cut":
+		return Cut
+	case "copy":
+		return Copy
+	case "paste":
+		return Paste
+	case "flipv":
+		return FlipVertical
+	case "fliph":
+		return FlipHorizontal
+	case "wrench":
+		return Wrench
+	case "undo":
+		return Undo
+	case "redo":
+		return Redo
+	}
+	return EndModeList
 }

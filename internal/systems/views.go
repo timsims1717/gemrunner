@@ -26,8 +26,8 @@ func UpdateViews() {
 		data.EditorPanel.ViewPort.PortPos = pixel.V((viewport.MainCamera.Rect.W()-(data.BorderView.Rect.W()-data.EditorPanel.ViewPort.Rect.W())*pickedRatio)*0.5, (viewport.MainCamera.Rect.H()+(data.BorderView.Rect.H()-data.EditorPanel.ViewPort.Rect.H())*pickedRatio)*0.5)
 	}
 	for _, dialog := range data.Dialogs {
-		dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos
-		dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos
+		dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(dialog.Pos)
+		dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos.Add(dialog.Pos)
 		dialog.BorderVP.PortSize = pixel.V(pickedRatio, pickedRatio)
 		dialog.ViewPort.PortSize = pixel.V(pickedRatio, pickedRatio)
 	}

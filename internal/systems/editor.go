@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/timing"
@@ -19,6 +20,10 @@ import (
 func EditorInit() {
 	// initialize imDraw
 	data.IMDraw = imdraw.New(nil)
+
+	// open editor dialogs
+	OpenDialog("editor_panel")
+	OpenDialog("editor_options")
 
 	// initialize editor panel
 	data.NewEditorPane()
@@ -74,7 +79,7 @@ func EditorInit() {
 			AddComponent(myecs.Drawable, sprs).
 			AddComponent(myecs.Block, data.Block(b)).
 			AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.BlockSelect, func(hvc *data.HoverClick) {
-				if !data.DialogOpen {
+				if !data.DialogStackOpen {
 					click := hvc.Input.Get("click")
 					if hvc.Hover && data.EditorPanel.SelectVis {
 						data.EditorPanel.SelectObj.Pos = obj.Pos
@@ -126,7 +131,7 @@ func EditorInit() {
 	be.AddComponent(myecs.Object, blockObj).
 		AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG, beEx}).
 		AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.ViewPort, func(hvc *data.HoverClick) {
-			if !data.DialogOpen {
+			if !data.DialogStackOpen {
 				beFG.Key = data.EditorPanel.CurrBlock.String()
 				switch data.EditorPanel.CurrBlock {
 				case data.Fall:
@@ -172,7 +177,7 @@ func EditorInit() {
 	}).
 		AddComponent(myecs.Object, borderObj).
 		AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.EditorPanel.ViewPort, func(hvc *data.HoverClick) {
-			if !data.DialogOpen {
+			if !data.DialogStackOpen {
 				data.EditorPanel.Hover = hvc.Hover
 				click := hvc.Input.Get("click")
 				if hvc.Hover {
@@ -624,7 +629,7 @@ func PuzzleEditSystem() {
 			//if err := LoadPuzzle(); err != nil {
 			//	fmt.Println("Error:", err)
 			//}
-			OpenDialogbox("open_puzzle")
+			OpenDialogInStack("open_puzzle")
 			data.EditorPanel.Mode, data.EditorPanel.LastMode = data.EditorPanel.LastMode, data.Brush
 		}
 	}
@@ -737,6 +742,19 @@ func CreateSquareSelect(a, b world.Coords) {
 	data.IMDraw.EndShape = imdraw.RoundEndShape
 	data.IMDraw.Push(posA, pixel.V(posA.X, posB.Y), posB, pixel.V(posB.X, posA.Y))
 	data.IMDraw.Polygon(2)
+}
+
+func CreateDebugSquare(a, b world.Coords) {
+	a1, b1 := a, b
+	a1.X = util.Min(a.X, b.X)
+	a1.Y = util.Min(a.Y, b.Y)
+	b1.X = util.Max(a.X, b.X)
+	b1.Y = util.Max(a.Y, b.Y)
+	b1.Y++
+	b1.X++
+	posA := world.MapToWorld(a1)
+	//posB := world.MapToWorld(b1)
+	debug.AddRect(constants.ColorWhite, posA, pixel.R(0, 0, 64., 64.), 2)
 }
 
 func CreateSelection(a, b world.Coords) {

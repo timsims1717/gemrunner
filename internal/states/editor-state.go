@@ -88,8 +88,8 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.FunctionSystem()
-	
-	if !data.DialogOpen {
+
+	if !data.DialogStackOpen {
 		// custom systems
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
