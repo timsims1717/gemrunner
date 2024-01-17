@@ -43,15 +43,16 @@ const (
 
 // World Names
 const (
-	WorldRock      = "rock"
-	WorldSlate     = "slate"
-	WorldBrick     = "brick"
-	WorldGravel    = "gravel"
-	WorldDirt      = "dirt"
-	WorldSolidRock = "solid_stone"
-	WorldShell     = "shell"
-	WorldMetal     = "metal"
-	WorldCustom    = "custom"
+	WorldRock = iota
+	WorldSlate
+	WorldBrick
+	WorldGravel
+	WorldDirt
+	WorldStone
+	WorldShell
+	WorldMetal
+	WorldIce
+	WorldCustom
 )
 
 var (
@@ -114,5 +115,48 @@ var (
 		G: 95,
 		B: 67,
 		A: 255,
+	}
+	ColorCyan = color.RGBA{
+		R: 26,
+		G: 202,
+		B: 202,
+		A: 255,
+	}
+
+	WorldSprites = map[int]string{
+		WorldRock:   "rock",
+		WorldSlate:  "slate",
+		WorldBrick:  "brick",
+		WorldGravel: "gravel",
+		WorldDirt:   "dirt",
+		WorldStone:  "stone",
+		WorldShell:  "shell",
+		WorldMetal:  "metal",
+		WorldIce:    "ice",
+		WorldCustom: "custom",
+	}
+
+	WorldPrimary = map[int]color.RGBA{
+		WorldRock:   ColorGray,
+		WorldSlate:  ColorBlue,
+		WorldBrick:  ColorRed,
+		WorldGravel: ColorOrange,
+		WorldDirt:   ColorBrown,
+		WorldStone:  ColorGreen,
+		WorldShell:  ColorYellow,
+		WorldMetal:  ColorPurple,
+		WorldIce:    ColorCyan,
+	}
+
+	WorldSecondary = map[int]color.RGBA{
+		WorldRock:   ColorGreen,
+		WorldSlate:  ColorCyan,
+		WorldBrick:  ColorBlue,
+		WorldGravel: ColorYellow,
+		WorldDirt:   ColorGray,
+		WorldStone:  ColorOrange,
+		WorldShell:  ColorBrown,
+		WorldMetal:  ColorRed,
+		WorldIce:    ColorWhite,
 	}
 )

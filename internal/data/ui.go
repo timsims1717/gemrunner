@@ -7,11 +7,20 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-type ButtonConstructor struct {
+type Element int
+
+const (
+	ButtonElement = iota
+	SpriteElement
+	CustomElement
+)
+
+type ElementConstructor struct {
 	SprKey      string
 	ClickSprKey string
 	HelpText    string
 	Position    pixel.Vec
+	Element     Element
 }
 
 type Button struct {
@@ -23,4 +32,11 @@ type Button struct {
 	Object   *object.Object
 	Entity   *ecs.Entity
 	OnClick  func()
+}
+
+type SprElement struct {
+	Key    string
+	Sprite *img.Sprite
+	Object *object.Object
+	Entity *ecs.Entity
 }

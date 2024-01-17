@@ -21,16 +21,30 @@ var (
 )
 
 type Puzzle struct {
-	Tiles [constants.PuzzleHeight][constants.PuzzleWidth]*Tile `json:"tiles"`
+	Tiles      *Tiles   `json:"tiles"`
+	UndoStack  []*Tiles `json:"-"`
+	LastChange *Tiles   `json:"-"`
+	RedoStack  []*Tiles `json:"-"`
 
-	Click  bool   `json:"-"`
-	Update bool   `json:"-"`
-	World  string `json:"world"`
+	Click  bool `json:"-"`
+	Update bool `json:"-"`
 
+	WorldSprite    string     `json:"sprite"`
+	WorldNumber    int        `json:"world"`
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`
 	SecondaryColor pixel.RGBA `json:"secondaryColor"`
 
 	Filename string
+}
+
+type Tiles struct {
+	T [constants.PuzzleHeight][constants.PuzzleWidth]*Tile
+}
+
+func NewTiles() *Tiles {
+	return &Tiles{
+		T: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
+	}
 }
 
 type Selection struct {
@@ -42,15 +56,17 @@ type Selection struct {
 }
 
 func CreateBlankPuzzle() *Puzzle {
+	worldNum := constants.WorldRock
 	puz := &Puzzle{
-		Tiles:          [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
-		World:          constants.WorldRock,
-		PrimaryColor:   pixel.ToRGBA(constants.ColorGray),
-		SecondaryColor: pixel.ToRGBA(constants.ColorGreen),
+		Tiles:          NewTiles(),
+		WorldNumber:    worldNum,
+		WorldSprite:    constants.WorldSprites[worldNum],
+		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
+		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
 	}
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
-			puz.Tiles[y][x] = &Tile{
+			puz.Tiles.T[y][x] = &Tile{
 				Block:  Block(Empty),
 				Coords: world.Coords{X: x, Y: y},
 			}
@@ -61,7 +77,7 @@ func CreateBlankPuzzle() *Puzzle {
 
 func CreateTestPuzzle() *Puzzle {
 	puz := &Puzzle{
-		Tiles: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
+		Tiles: NewTiles(),
 	}
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
@@ -69,7 +85,7 @@ func CreateTestPuzzle() *Puzzle {
 			if (x+y)%2 == 0 {
 				block = Turf
 			}
-			puz.Tiles[y][x] = &Tile{
+			puz.Tiles.T[y][x] = &Tile{
 				Block:  Block(block),
 				Ladder: false,
 				Coords: world.Coords{X: x, Y: y},
@@ -79,15 +95,12 @@ func CreateTestPuzzle() *Puzzle {
 	return puz
 }
 
-func (p *Puzzle) Copy() *Puzzle {
-	puz := &Puzzle{
-		Tiles: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
-	}
+func (p *Puzzle) CopyTiles() *Tiles {
+	tiles := NewTiles()
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
-			puz.Tiles[y][x] = p.Tiles[y][x].Copy()
+			tiles.T[y][x] = p.Tiles.T[y][x].Copy()
 		}
 	}
-	puz.Update = true
-	return puz
+	return tiles
 }

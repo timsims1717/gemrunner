@@ -33,10 +33,10 @@ const (
 func (b Block) String() string {
 	switch b {
 	case Turf, Fall:
-		if CurrPuzzle != nil && CurrPuzzle.World != "" {
-			return CurrPuzzle.World
+		if CurrPuzzle != nil && CurrPuzzle.WorldSprite != "" {
+			return CurrPuzzle.WorldSprite
 		}
-		return constants.WorldRock
+		return constants.WorldSprites[constants.WorldRock]
 	case Ladder:
 		return constants.TileLadderMiddle
 	case DoorPink:

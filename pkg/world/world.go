@@ -23,5 +23,13 @@ func MapToWorld(a Coords) pixel.Vec {
 }
 
 func WorldToMap(x, y float64) (int, int) {
-	return int(x / TileSize), int(y / TileSize)
+	xi := int(x / TileSize)
+	yi := int(y / TileSize)
+	if x < 0 && x != float64(xi) {
+		xi--
+	}
+	if y < 0 && y != float64(yi) {
+		yi--
+	}
+	return xi, yi
 }

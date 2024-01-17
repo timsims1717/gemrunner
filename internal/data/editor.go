@@ -1,25 +1,19 @@
 package data
 
 import (
-	"gemrunner/internal/constants"
-	"gemrunner/pkg/object"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
 	"strings"
 )
 
 var (
-	EditorPanel *editorPane
+	Editor *editor
 )
 
-type editorPane struct {
-	ViewPort  *viewport.ViewPort
-	Entity    *ecs.Entity
+type editor struct {
 	CurrBlock Block
-	SelectObj *object.Object
 	Offset    pixel.Vec
 	Mode      EditorMode
 	LastMode  EditorMode
@@ -31,27 +25,27 @@ type editorPane struct {
 	SelectTimer *timing.Timer
 	SelectQuick bool
 	LastCoords  world.Coords
+	PosTop      bool
 
-	BlockView   *BlockView
 	BlockSelect *viewport.ViewPort
-	UndoStack   []*Puzzle
-	LastChange  *Puzzle
-	RedoStack   []*Puzzle
 }
 
-func NewEditorPane() {
-	EditorPanel = &editorPane{
+func NewEditor() {
+	Editor = &editor{
 		LastCoords: world.Coords{X: -1, Y: -1},
 	}
 }
 
-type BlockView struct {
-	Entity *ecs.Entity
-	Object *object.Object
-}
-
-func BlockSelectPlacement(b int) pixel.Vec {
-	return pixel.V(world.TileSize*float64(b%constants.BlockSelectWidth)+world.TileSize*0.5, -world.TileSize*float64(b/constants.BlockSelectWidth)-world.TileSize*0.5)
+func BlockSelectPlacement(b, w, h int) pixel.Vec {
+	wo := float64(w) / 2
+	if w%2 == 0 {
+		wo -= 0.5
+	}
+	ho := float64(h) / 2
+	if w%2 == 0 {
+		ho -= 0.5
+	}
+	return pixel.V(world.TileSize*(float64(b%w)-wo), world.TileSize*(-float64(b/w)+ho))
 }
 
 type EditorMode int

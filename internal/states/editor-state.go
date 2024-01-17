@@ -10,10 +10,10 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/timing"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel/pixelgl"
-	"image/color"
 )
 
 var (
@@ -38,25 +38,23 @@ func (s *editorState) Load() {
 func (s *editorState) Update(win *pixelgl.Window) {
 	data.EditorInput.Update(win, viewport.MainCamera.Mat)
 	debug.AddText("Editor State")
-	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.EditorPanel.Mode.String()))
+	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.Editor.Mode.String()))
 	debug.AddIntCoords("World", int(data.EditorInput.World.X), int(data.EditorInput.World.Y))
 	inPos := data.PuzzleView.ProjectWorld(data.EditorInput.World)
 	debug.AddIntCoords("Puzzle View In", int(inPos.X), int(inPos.Y))
-	//inPos = data.EditorPanel.ViewPort.ProjectWorld(data.EditorInput.World)
-	//debug.AddIntCoords("Editor Pane In", int(inPos.X), int(inPos.Y))
-	//inPos = data.EditorPanel.BlockSelect.ProjectWorld(data.EditorInput.World)
-	//debug.AddIntCoords("Block Select In", int(inPos.X), int(inPos.Y))
+	debug.AddIntCoords("BlockSelect Pos", int(data.Editor.BlockSelect.PortPos.X), int(data.Editor.BlockSelect.PortPos.Y))
 
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
 	debug.AddIntCoords("Puzzle Coords", x, y)
-	debug.AddIntCoords("Last Coords", data.EditorPanel.LastCoords.X, data.EditorPanel.LastCoords.Y)
-	debug.AddText(fmt.Sprintf("NoInput: %t", data.EditorPanel.NoInput))
+	debug.AddIntCoords("Last Coords", data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
+	debug.AddText(fmt.Sprintf("NoInput: %t", data.Editor.NoInput))
+	debug.AddText(fmt.Sprintf("SelectVis: %t", data.Editor.SelectVis))
 
-	//if data.DebugInput.Get("camUp").Pressed() {
-	//	data.PuzzleView.PortSize.Y += 1. * timing.DT
-	//} else if data.DebugInput.Get("camDown").Pressed() {
-	//	data.PuzzleView.PortSize.Y -= 1. * timing.DT
-	//}
+	if data.DebugInput.Get("camUp").Pressed() {
+		data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT
+	} else if data.DebugInput.Get("camDown").Pressed() {
+		data.Editor.BlockSelect.PortPos.Y -= 100. * timing.DT
+	}
 	//if data.DebugInput.Get("camRight").Pressed() {
 	//	data.PuzzleView.PortSize.X += 1. * timing.DT
 	//} else if data.DebugInput.Get("camLeft").Pressed() {
@@ -67,21 +65,19 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//} else if data.DebugInput.Get("debugSM").JustPressed() {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
+	if data.DebugInput.Get("debugTest").JustPressed() {
+
+	}
 
 	systems.DialogSystem()
 
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		if data.CurrPuzzle != nil {
-			switch data.CurrPuzzle.World {
-			case constants.WorldRock:
-				systems.ChangeWorld(constants.WorldSlate, constants.ColorOrange, constants.ColorRed)
-			case constants.WorldSlate:
-				systems.ChangeWorld(constants.WorldBrick, constants.ColorRed, constants.ColorBlue)
-			case constants.WorldBrick:
-				systems.ChangeWorld(constants.WorldGravel, constants.ColorBlue, constants.ColorGray)
-			default:
-				systems.ChangeWorld(constants.WorldRock, constants.ColorGray, constants.ColorGreen)
+			data.CurrPuzzle.WorldNumber++
+			if data.CurrPuzzle.WorldNumber >= constants.WorldCustom {
+				data.CurrPuzzle.WorldNumber %= constants.WorldCustom
 			}
+			systems.ChangeWorld(data.CurrPuzzle.WorldNumber)
 			data.CurrPuzzle.Update = true
 		}
 	}
@@ -95,6 +91,8 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.UpdateEditorModeHotKey()
 		systems.PuzzleEditSystem()
 		systems.TileSpriteSystem()
+	} else {
+
 	}
 	// object systems
 	systems.ParentSystem()
@@ -105,14 +103,12 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
-	data.EditorPanel.ViewPort.Update()
 
-	bSelect := data.EditorPanel.BlockSelect
-	bSelect.PortSize = data.EditorPanel.ViewPort.PortSize
-	bSelect.PortPos = data.EditorPanel.ViewPort.PortPos
-	bSelect.PortPos.X += (bSelect.Canvas.Bounds().W() + world.TileSize + 8.) * bSelect.PortSize.X * 0.5
-	bSelect.PortPos.Y -= (data.EditorPanel.ViewPort.Canvas.Bounds().H() - world.TileSize + 6.) * bSelect.PortSize.Y * 0.5
-	data.EditorPanel.BlockSelect.Update()
+	if data.Editor.SelectVis && !data.Dialogs["block_select"].Open {
+		systems.OpenDialog("block_select")
+	} else if !data.Editor.SelectVis && data.Dialogs["block_select"].Open {
+		data.CloseDialog("block_select")
+	}
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
@@ -140,29 +136,8 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	img.Clear()
 	data.IMDraw.Draw(data.PuzzleView.Canvas)
 	data.PuzzleView.Draw(win)
-	// draw editor panel
-	data.EditorPanel.ViewPort.Canvas.Clear(color.RGBA{})
-	systems.BorderSystem(10)
-	systems.DrawSystem(win, 10)
-	img.Batchers[constants.UIBatch].Draw(data.EditorPanel.ViewPort.Canvas)
-	img.Batchers[constants.BGBatch].Draw(data.EditorPanel.ViewPort.Canvas)
-	img.Clear()
-	data.EditorPanel.ViewPort.Draw(win)
-	// draw block selector
-	if data.EditorPanel.SelectVis {
-		data.EditorPanel.BlockSelect.Canvas.Clear(color.RGBA{})
-		systems.DrawSystem(win, 11)
-		img.Batchers[constants.UIBatch].Draw(data.EditorPanel.BlockSelect.Canvas)
-		img.Batchers[constants.BGBatch].Draw(data.EditorPanel.BlockSelect.Canvas)
-		img.Clear()
-		systems.DrawSystem(win, 12)
-		img.Batchers[constants.UIBatch].Draw(data.EditorPanel.BlockSelect.Canvas)
-		img.Clear()
-		data.EditorPanel.BlockSelect.Draw(win)
-	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
-	data.IMDraw.Draw(win)
 	systems.TemporarySystem()
 	data.IMDraw.Clear()
 	if options.Updated {

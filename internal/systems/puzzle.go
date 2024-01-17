@@ -17,7 +17,7 @@ import (
 func PuzzleInit() {
 	PuzzleDispose(false)
 	if data.CurrPuzzle != nil {
-		for _, row := range data.CurrPuzzle.Tiles {
+		for _, row := range data.CurrPuzzle.Tiles.T {
 			for _, tile := range row {
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
-	"gemrunner/internal/systems"
+	"gemrunner/pkg/world"
 )
 
 func Test() {
@@ -13,13 +13,18 @@ func Test() {
 
 func CancelDialog(key string) func() {
 	return func() {
-		systems.CloseDialog(key)
+		data.CloseDialog(key)
 	}
 }
 
 func EditorMode(mode data.EditorMode, btn *data.Button, dialog *data.Dialog) func() {
 	return func() {
-		data.EditorPanel.Mode = mode
+		data.Editor.SelectVis = false
+		if data.Editor.Mode != mode {
+			data.Editor.LastMode = data.Editor.Mode
+			data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
+		}
+		data.Editor.Mode = mode
 		for _, b := range dialog.Buttons {
 			b.Entity.AddComponent(myecs.Drawable, b.Sprite)
 		}

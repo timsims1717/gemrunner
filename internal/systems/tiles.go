@@ -73,7 +73,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	below := tile.Coords
 	below.Y--
 	if CoordsLegal(above) {
-		a := data.CurrPuzzle.Tiles[above.Y][above.X].Block
+		a := data.CurrPuzzle.Tiles.T[above.Y][above.X].Block
 		if a == data.Turf || a == data.Fall {
 			top = false
 		}
@@ -81,7 +81,7 @@ func GetBlockSprite(tile *data.Tile) string {
 		top = false
 	}
 	if CoordsLegal(below) {
-		b := data.CurrPuzzle.Tiles[below.Y][below.X].Block
+		b := data.CurrPuzzle.Tiles.T[below.Y][below.X].Block
 		if b == data.Turf || b == data.Fall {
 			bottom = false
 		}
@@ -106,7 +106,7 @@ func GetLadderSprite(tile *data.Tile) string {
 	below := tile.Coords
 	below.Y--
 	if CoordsLegal(below) {
-		if data.CurrPuzzle.Tiles[below.Y][below.X].Ladder {
+		if data.CurrPuzzle.Tiles.T[below.Y][below.X].Ladder {
 			bottom = true
 		}
 	}
@@ -196,7 +196,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 	if data.CurrPuzzle != nil {
 		if CoordsLegal(coords) {
 			// add to puzzle
-			tile := data.CurrPuzzle.Tiles[coords.Y][coords.X]
+			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 			if !tile.Update {
 				if block == data.Ladder {
 					if tile.Ladder {
@@ -222,7 +222,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 func DeleteBlock(coords world.Coords) {
 	if data.CurrPuzzle != nil {
 		if CoordsLegal(coords) {
-			tile := data.CurrPuzzle.Tiles[coords.Y][coords.X]
+			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 			if !tile.Update {
 				if tile.Ladder {
 					tile.Ladder = false

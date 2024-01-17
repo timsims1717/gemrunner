@@ -18,4 +18,7 @@ const (
 	BGBatch = "tile_bg"
 	FGBatch = "tile_fg"
 	UIBatch = "ui"
+
+	// Layers
+	BlockSelectLayer = 250
 )

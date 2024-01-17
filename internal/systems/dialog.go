@@ -17,9 +17,14 @@ func DialogSystem() {
 	}
 	layer := 100
 	for _, dialog := range data.DialogsOpen {
-		dialog.BorderVP.Update()
+		if !dialog.NoBorder {
+			dialog.BorderVP.Update()
+			dialog.BorderObject.Layer = layer
+		}
 		dialog.ViewPort.Update()
-		dialog.BorderObject.Layer = layer
+		for _, spr := range dialog.Sprites {
+			spr.Object.Layer = layer
+		}
 		for _, btn := range dialog.Buttons {
 			btn.Object.Layer = layer
 		}
@@ -31,9 +36,14 @@ func DialogSystem() {
 	}
 	closeKey := ""
 	for i, dialog := range data.DialogStack {
-		dialog.BorderVP.Update()
+		if !dialog.NoBorder {
+			dialog.BorderVP.Update()
+			dialog.BorderObject.Layer = layer
+		}
 		dialog.ViewPort.Update()
-		dialog.BorderObject.Layer = layer
+		for _, spr := range dialog.Sprites {
+			spr.Object.Layer = layer
+		}
 		for _, btn := range dialog.Buttons {
 			btn.Object.Layer = layer
 		}
@@ -47,7 +57,7 @@ func DialogSystem() {
 		layer++
 	}
 	if closeKey != "" {
-		CloseDialog(closeKey)
+		data.CloseDialog(closeKey)
 	}
 }
 
@@ -71,71 +81,35 @@ func OpenDialogInStack(key string) {
 	data.DialogStack = append(data.DialogStack, dialog)
 }
 
-func CloseDialog(key string) {
-	dialog, ok := data.Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: CloseDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = false
-	index := -1
-	stack := false
-	for i, d := range data.DialogsOpen {
-		if d.Key == key {
-			index = i
-			break
-		}
-	}
-	for i, d := range data.DialogStack {
-		if d.Key == key {
-			index = i
-			stack = true
-			break
-		}
-	}
-	if index == -1 {
-		fmt.Printf("Warning: CloseDialog: %s not open\n", key)
-		return
-	} else {
-		if stack {
-			if len(data.DialogStack) == 1 {
-				data.ClearDialogStack()
-			} else {
-				data.DialogStack = append(data.DialogStack[:index], data.DialogStack[index+1:]...)
-			}
-		} else {
-			if len(data.DialogsOpen) == 1 {
-				data.ClearDialogsOpen()
-			} else {
-				data.DialogsOpen = append(data.DialogsOpen[:index], data.DialogsOpen[index+1:]...)
-			}
-		}
-	}
-}
-
 func DialogDrawSystem(win *pixelgl.Window) {
 	layer := 100
 	for _, dialog := range data.DialogsOpen {
-		dialog.BorderVP.Canvas.Clear(color.RGBA{})
-		BorderSystem(layer)
-		img.Batchers[constants.UIBatch].Draw(dialog.BorderVP.Canvas)
-		dialog.BorderVP.Draw(win)
-		img.Clear()
+		if !dialog.NoBorder {
+			dialog.BorderVP.Canvas.Clear(color.RGBA{})
+			BorderSystem(layer)
+			img.Batchers[constants.UIBatch].Draw(dialog.BorderVP.Canvas)
+			dialog.BorderVP.Draw(win)
+			img.Clear()
+		}
 		dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
 		DrawSystem(win, layer)
+		img.Batchers[constants.BGBatch].Draw(dialog.ViewPort.Canvas)
 		img.Batchers[constants.UIBatch].Draw(dialog.ViewPort.Canvas)
 		dialog.ViewPort.Draw(win)
 		img.Clear()
 		layer++
 	}
 	for _, dialog := range data.DialogStack {
-		dialog.BorderVP.Canvas.Clear(color.RGBA{})
-		BorderSystem(layer)
-		img.Batchers[constants.UIBatch].Draw(dialog.BorderVP.Canvas)
-		dialog.BorderVP.Draw(win)
-		img.Clear()
+		if !dialog.NoBorder {
+			dialog.BorderVP.Canvas.Clear(color.RGBA{})
+			BorderSystem(layer)
+			img.Batchers[constants.UIBatch].Draw(dialog.BorderVP.Canvas)
+			dialog.BorderVP.Draw(win)
+			img.Clear()
+		}
 		dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
 		DrawSystem(win, layer)
+		img.Batchers[constants.BGBatch].Draw(dialog.ViewPort.Canvas)
 		img.Batchers[constants.UIBatch].Draw(dialog.ViewPort.Canvas)
 		dialog.ViewPort.Draw(win)
 		img.Clear()
