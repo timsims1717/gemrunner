@@ -72,14 +72,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	systems.DialogSystem()
 
 	if data.DebugInput.Get("switchWorld").JustPressed() {
-		if data.CurrPuzzle != nil {
-			data.CurrPuzzle.WorldNumber++
-			if data.CurrPuzzle.WorldNumber >= constants.WorldCustom {
-				data.CurrPuzzle.WorldNumber %= constants.WorldCustom
-			}
-			systems.ChangeWorld(data.CurrPuzzle.WorldNumber)
-			data.CurrPuzzle.Update = true
-		}
+
 	}
 
 	// function systems
@@ -105,7 +98,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	data.PuzzleView.Update()
 
 	if data.Editor.SelectVis && !data.Dialogs["block_select"].Open {
-		systems.OpenDialog("block_select")
+		data.OpenDialog("block_select")
 	} else if !data.Editor.SelectVis && data.Dialogs["block_select"].Open {
 		data.CloseDialog("block_select")
 	}
@@ -123,16 +116,11 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	data.BorderView.Draw(win)
 	// draw puzzle
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-	systems.DrawSystem(win, 2) // normal tiles
-	img.Batchers[constants.BGBatch].Draw(data.PuzzleView.Canvas)
-	img.Batchers[constants.FGBatch].Draw(data.PuzzleView.Canvas)
+	systems.NewDrawSystem(data.PuzzleView.Canvas, 2) // normal tiles
 	img.Clear()
-	systems.DrawSystem(win, 3) // selected tiles
-	img.Batchers[constants.BGBatch].Draw(data.PuzzleView.Canvas)
-	img.Batchers[constants.FGBatch].Draw(data.PuzzleView.Canvas)
+	systems.NewDrawSystem(data.PuzzleView.Canvas, 3) // selected tiles
 	img.Clear()
-	systems.DrawSystem(win, 4) // ui
-	img.Batchers[constants.UIBatch].Draw(data.PuzzleView.Canvas)
+	systems.NewDrawSystem(data.PuzzleView.Canvas, 4) // ui
 	img.Clear()
 	data.IMDraw.Draw(data.PuzzleView.Canvas)
 	data.PuzzleView.Draw(win)

@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
@@ -26,9 +27,10 @@ type Dialog struct {
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
 	BorderEntity *ecs.Entity
-	Buttons      []*Button
-	Sprites      []*SprElement
+	Elements     []interface{}
 	NoBorder     bool
+	OnOpen       func()
+	OnClose      func()
 
 	Open  bool
 	Click bool
@@ -78,22 +80,23 @@ func NewDialog(dc *DialogConstructor) {
 		dlg.BorderEntity = be
 	}
 
-	var buttons []*Button
-	var sprites []*SprElement
 	for _, element := range dc.Elements {
-		obj := object.New()
-		obj.Pos = element.Position
-		obj.Layer = 99
-		obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
-		spr := img.NewSprite(element.SprKey, constants.UIBatch)
-		cSpr := img.NewSprite(element.ClickSprKey, constants.UIBatch)
-		e := myecs.Manager.NewEntity()
-		e.AddComponent(myecs.Object, obj).
-			AddComponent(myecs.Drawable, spr)
+		if element.Key == "" {
+			fmt.Println("WARNING: element constructor has no key")
+		}
 		switch element.Element {
 		case ButtonElement:
+			obj := object.New()
+			obj.Pos = element.Position
+			obj.Layer = 99
+			obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
+			spr := img.NewSprite(element.SprKey, constants.UIBatch)
+			cSpr := img.NewSprite(element.ClickSprKey, constants.UIBatch)
+			e := myecs.Manager.NewEntity()
+			e.AddComponent(myecs.Object, obj).
+				AddComponent(myecs.Drawable, spr)
 			b := &Button{
-				Key:      element.SprKey,
+				Key:      element.Key,
 				Sprite:   spr,
 				ClickSpr: cSpr,
 				HelpText: element.HelpText,
@@ -134,19 +137,40 @@ func NewDialog(dc *DialogConstructor) {
 					}
 				}
 			}))
-			buttons = append(buttons, b)
+			dlg.Elements = append(dlg.Elements, b)
 		case SpriteElement:
+			obj := object.New()
+			obj.Pos = element.Position
+			obj.Layer = 99
+			obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
+			spr := img.NewSprite(element.SprKey, constants.UIBatch)
+			e := myecs.Manager.NewEntity()
+			e.AddComponent(myecs.Object, obj).
+				AddComponent(myecs.Drawable, spr)
 			s := &SprElement{
-				Key:    element.SprKey,
+				Key:    element.Key,
 				Sprite: spr,
 				Object: obj,
 				Entity: e,
 			}
-			sprites = append(sprites, s)
+			dlg.Elements = append(dlg.Elements, s)
+		case TextElement:
+			tf := typeface.New("main", typeface.NewAlign(typeface.Bottom, typeface.Left), 1, 0.0625, 0, 0)
+			tf.SetPos(element.Position)
+			tf.SetColor(pixel.ToRGBA(constants.ColorWhite))
+			tf.SetText(element.Text)
+			e := myecs.Manager.NewEntity()
+			e.AddComponent(myecs.Object, tf.Obj)
+			e.AddComponent(myecs.Drawable, tf)
+			e.AddComponent(myecs.DrawTarget, dlg.ViewPort.Canvas)
+			t := &Text{
+				Key:    element.Key,
+				Text:   tf,
+				Entity: e,
+			}
+			dlg.Elements = append(dlg.Elements, t)
 		}
 	}
-	dlg.Buttons = buttons
-	dlg.Sprites = sprites
 
 	Dialogs[dc.Key] = dlg
 }
@@ -157,6 +181,32 @@ func ClearDialogStack() {
 
 func ClearDialogsOpen() {
 	DialogsOpen = []*Dialog{}
+}
+
+func OpenDialog(key string) {
+	dialog, ok := Dialogs[key]
+	if !ok {
+		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
+		return
+	}
+	dialog.Open = true
+	DialogsOpen = append(DialogsOpen, dialog)
+	if dialog.OnOpen != nil {
+		dialog.OnOpen()
+	}
+}
+
+func OpenDialogInStack(key string) {
+	dialog, ok := Dialogs[key]
+	if !ok {
+		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
+		return
+	}
+	dialog.Open = true
+	DialogStack = append(DialogStack, dialog)
+	if dialog.OnOpen != nil {
+		dialog.OnOpen()
+	}
 }
 
 func CloseDialog(key string) {
@@ -197,6 +247,9 @@ func CloseDialog(key string) {
 			} else {
 				DialogsOpen = append(DialogsOpen[:index], DialogsOpen[index+1:]...)
 			}
+		}
+		if dialog.OnClose != nil {
+			dialog.OnClose()
 		}
 	}
 }

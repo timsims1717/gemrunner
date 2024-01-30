@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/img"
@@ -22,11 +21,14 @@ func DialogSystem() {
 			dialog.BorderObject.Layer = layer
 		}
 		dialog.ViewPort.Update()
-		for _, spr := range dialog.Sprites {
-			spr.Object.Layer = layer
-		}
-		for _, btn := range dialog.Buttons {
-			btn.Object.Layer = layer
+		for _, e := range dialog.Elements {
+			if spr, okS := e.(*data.SprElement); okS {
+				spr.Object.Layer = layer
+			} else if btn, okB := e.(*data.Button); okB {
+				btn.Object.Layer = layer
+			} else if txt, okT := e.(*data.Text); okT {
+				txt.Text.Obj.Layer = layer
+			}
 		}
 		// update this dialog box with input
 		if !data.DialogStackOpen {
@@ -41,11 +43,14 @@ func DialogSystem() {
 			dialog.BorderObject.Layer = layer
 		}
 		dialog.ViewPort.Update()
-		for _, spr := range dialog.Sprites {
-			spr.Object.Layer = layer
-		}
-		for _, btn := range dialog.Buttons {
-			btn.Object.Layer = layer
+		for _, e := range dialog.Elements {
+			if spr, okS := e.(*data.SprElement); okS {
+				spr.Object.Layer = layer
+			} else if btn, okB := e.(*data.Button); okB {
+				btn.Object.Layer = layer
+			} else if txt, okT := e.(*data.Text); okT {
+				txt.Text.Obj.Layer = layer
+			}
 		}
 		if i == len(data.DialogStack)-1 {
 			// update this dialog box with input
@@ -61,26 +66,6 @@ func DialogSystem() {
 	}
 }
 
-func OpenDialog(key string) {
-	dialog, ok := data.Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = true
-	data.DialogsOpen = append(data.DialogsOpen, dialog)
-}
-
-func OpenDialogInStack(key string) {
-	dialog, ok := data.Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = true
-	data.DialogStack = append(data.DialogStack, dialog)
-}
-
 func DialogDrawSystem(win *pixelgl.Window) {
 	layer := 100
 	for _, dialog := range data.DialogsOpen {
@@ -92,9 +77,7 @@ func DialogDrawSystem(win *pixelgl.Window) {
 			img.Clear()
 		}
 		dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
-		DrawSystem(win, layer)
-		img.Batchers[constants.BGBatch].Draw(dialog.ViewPort.Canvas)
-		img.Batchers[constants.UIBatch].Draw(dialog.ViewPort.Canvas)
+		NewDrawSystem(dialog.ViewPort.Canvas, layer)
 		dialog.ViewPort.Draw(win)
 		img.Clear()
 		layer++
@@ -108,9 +91,7 @@ func DialogDrawSystem(win *pixelgl.Window) {
 			img.Clear()
 		}
 		dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
-		DrawSystem(win, layer)
-		img.Batchers[constants.BGBatch].Draw(dialog.ViewPort.Canvas)
-		img.Batchers[constants.UIBatch].Draw(dialog.ViewPort.Canvas)
+		NewDrawSystem(dialog.ViewPort.Canvas, layer)
 		dialog.ViewPort.Draw(win)
 		img.Clear()
 		layer++

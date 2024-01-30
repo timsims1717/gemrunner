@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2  vTexCoords;
+in vec4  vColor;
 out vec4 fragColor;
 
 uniform vec4 uTexBounds;
@@ -24,6 +25,9 @@ void main() {
 
     // get our current coordinates' color
     vec4 col = texture(uTexture, t);
+//    if (vColor.a > 0.) {
+//        col = vColor;
+//    }
 
     // primary
     if (col.r == 1. && col.b == 1. && col.g == 0.) {

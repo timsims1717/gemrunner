@@ -20,87 +20,15 @@ func EditorInit() {
 	// initialize editor panel
 	data.NewEditor()
 	//data.Editor.PosTop = true
-
-	// the viewport for the block selectors
-	//data.Editor.BlockSelect = viewport.New(nil)
-	//data.Editor.BlockSelect.SetRect(pixel.R(0, 0, world.TileSize*6.+2., world.TileSize*3.+2))
-	//data.Editor.BlockSelect.CamPos = pixel.V(world.TileSize*3., -world.TileSize*1.5)
-	//data.Editor.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
-	//data.Editor.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
-	//data.Editor.BlockSelect.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
-	//data.Editor.BlockSelect.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
-	//data.Editor.BlockSelect.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
-	//data.Editor.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
-	//data.Editor.BlockSelect.Canvas.SetFragmentShader(data.PuzzleShader)
-
-	// the block selectors
-	//b := 0
-	//for ; b < data.Empty; b++ {
-	//	obj := object.New()
-	//	obj.Pos = data.BlockSelectPlacement(b)
-	//	//fmt.Printf("Tile %d: (%d,%d)\n", b, int(obj.Pos.X), int(obj.Pos.Y))
-	//	obj.Layer = constants.BlockSelectLayer
-	//	obj.SetRect(pixel.R(0., 0., 16., 16.))
-	//	sprB := img.NewSprite("black_square_big", constants.UIBatch)
-	//	spr := img.NewSprite(data.Block(b).String(), constants.BGBatch)
-	//	bId := data.Block(b)
-	//	sprs := []*img.Sprite{sprB, spr}
-	//	if b == data.Fall {
-	//		sprs = append(sprs, img.NewSprite(constants.TileFall, constants.BGBatch))
-	//	}
-	//	myecs.Manager.NewEntity().
-	//		AddComponent(myecs.Object, obj).
-	//		AddComponent(myecs.Drawable, sprs).
-	//		AddComponent(myecs.Block, data.Block(b)).
-	//		AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, data.Editor.BlockSelect, func(hvc *data.HoverClick) {
-	//			if !data.DialogStackOpen {
-	//				click := hvc.Input.Get("click")
-	//				if hvc.Hover && data.Editor.SelectVis {
-	//					data.Editor.SelectObj.Pos = obj.Pos
-	//					if click.JustPressed() || click.JustReleased() {
-	//						data.Editor.CurrBlock = bId
-	//						data.Editor.SelectVis = false
-	//						data.Editor.SelectQuick = false
-	//						data.Editor.SelectTimer = nil
-	//						switch data.Editor.Mode {
-	//						case data.Brush, data.Line, data.Square, data.Fill:
-	//						default:
-	//							data.Editor.Mode = data.Brush
-	//						}
-	//						click.Consume()
-	//					}
-	//				}
-	//			}
-	//		}))
-	//}
-	//objOutline := object.New()
-	//objOutline.Pos = data.BlockSelectPlacement(0)
-	//objOutline.Layer = constants.BlockSelectLayer + 1
-	//sprO := img.NewSprite("white_outline", constants.UIBatch)
-	//myecs.Manager.NewEntity().
-	//	AddComponent(myecs.Object, objOutline).
-	//	AddComponent(myecs.Drawable, sprO)
-	//data.Editor.SelectObj = objOutline
-	blockSelect := data.Dialogs["block_select"]
-	data.Editor.BlockSelect = blockSelect.ViewPort
-
-	//for ; b < 18; b++ {
-	//	obj := object.New()
-	//	obj.Pos = data.BlockSelectPlacement(b)
-	//	obj.Layer = constants.BlockSelectLayer
-	//	spr := img.NewSprite("black_square_big", constants.UIBatch)
-	//	myecs.Manager.NewEntity().
-	//		AddComponent(myecs.Object, obj).
-	//		AddComponent(myecs.Drawable, spr)
-	//}
+	data.Editor.BlockSelect = data.Dialogs["block_select"].ViewPort
 
 	// open editor dialogs
 	if data.Editor.PosTop {
-		OpenDialog("editor_panel_top")
-		OpenDialog("editor_options_bot")
+		data.OpenDialog("editor_panel_top")
+		data.OpenDialog("editor_options_bot")
 	} else {
-		OpenDialog("editor_panel_left")
-		OpenDialog("editor_options_right")
+		data.OpenDialog("editor_panel_left")
+		data.OpenDialog("editor_options_right")
 	}
 	UpdateWorldShaders()
 	PushUndoArray(true)
@@ -138,7 +66,18 @@ func UpdateWorldShaders() {
 	data.Editor.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
 }
 
-func ChangeWorld(world int) {
+func ChangeWorldToNext() {
+	if data.CurrPuzzle != nil {
+		data.CurrPuzzle.WorldNumber++
+		if data.CurrPuzzle.WorldNumber >= constants.WorldCustom {
+			data.CurrPuzzle.WorldNumber %= constants.WorldCustom
+		}
+		ChangeWorldTo(data.CurrPuzzle.WorldNumber)
+		data.CurrPuzzle.Update = true
+	}
+}
+
+func ChangeWorldTo(world int) {
 	data.CurrPuzzle.WorldSprite = constants.WorldSprites[world]
 	data.CurrPuzzle.PrimaryColor = pixel.ToRGBA(constants.WorldPrimary[world])
 	data.CurrPuzzle.SecondaryColor = pixel.ToRGBA(constants.WorldSecondary[world])
@@ -524,14 +463,14 @@ func PuzzleEditSystem() {
 		case data.Save:
 			PlaceSelection()
 			if err := SavePuzzle(); err != nil {
-				fmt.Println("Error:", err)
+				fmt.Println("ERROR:", err)
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Brush
 		case data.Open:
 			//if err := LoadPuzzle(); err != nil {
 			//	fmt.Println("Error:", err)
 			//}
-			OpenDialogInStack("open_puzzle")
+			data.OpenDialogInStack("open_puzzle")
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Brush
 		}
 	}
@@ -581,23 +520,15 @@ func PuzzleEditSystem() {
 }
 
 func EditorPanelButtons() {
+	var panel *data.Dialog
 	if data.Editor.PosTop {
-		panelT := data.Dialogs["editor_panel_top"]
-		if !panelT.Click {
-			for _, btn := range panelT.Buttons {
-				if data.ModeFromSprString(btn.Sprite.Key) == data.Editor.Mode ||
-					(data.ModeFromSprString(btn.Sprite.Key) == data.Select &&
-						data.Editor.Mode == data.Move) {
-					btn.Entity.AddComponent(myecs.Drawable, btn.ClickSpr)
-				} else {
-					btn.Entity.AddComponent(myecs.Drawable, btn.Sprite)
-				}
-			}
-		}
+		panel = data.Dialogs["editor_panel_top"]
 	} else {
-		panelL := data.Dialogs["editor_panel_left"]
-		if !panelL.Click {
-			for _, btn := range panelL.Buttons {
+		panel = data.Dialogs["editor_panel_left"]
+	}
+	if !panel.Click {
+		for _, e := range panel.Elements {
+			if btn, ok := e.(*data.Button); ok {
 				if data.ModeFromSprString(btn.Sprite.Key) == data.Editor.Mode ||
 					(data.ModeFromSprString(btn.Sprite.Key) == data.Select &&
 						data.Editor.Mode == data.Move) {
@@ -670,6 +601,10 @@ func CreateSquareSelect(a, b world.Coords) {
 	b1.X++
 	posA := world.MapToWorld(a1)
 	posB := world.MapToWorld(b1)
+	posA.X++
+	posA.Y++
+	posB.X--
+	posB.Y--
 	data.IMDraw.Color = constants.ColorWhite
 	data.IMDraw.EndShape = imdraw.RoundEndShape
 	data.IMDraw.Push(posA, pixel.V(posA.X, posB.Y), posB, pixel.V(posB.X, posA.Y))
@@ -729,6 +664,21 @@ func CreateClip() bool {
 func PlaceSelection() {
 	if data.CurrSelect == nil {
 		return
+	}
+	hasP1 := false
+	for _, row := range data.CurrSelect.Tiles {
+		for _, tile := range row {
+			if tile.Block == data.Player1 {
+				hasP1 = true
+			}
+		}
+	}
+	for _, row := range data.CurrPuzzle.Tiles.T {
+		for _, tile := range row {
+			if tile.Block == data.Player1 && hasP1 {
+				tile.Block = data.Empty
+			}
+		}
 	}
 	for _, row := range data.CurrSelect.Tiles {
 		for _, tile := range row {

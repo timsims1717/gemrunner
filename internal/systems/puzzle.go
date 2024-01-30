@@ -69,9 +69,9 @@ func SavePuzzle() error {
 	if data.CurrPuzzle == nil {
 		return errors.Wrap(errors.New("no puzzle to save"), errMsg)
 	}
-	var svgPath = "assets/save.savegame"
+	var svgPath = "assets/test.puzzle"
 	if data.CurrPuzzle.Filename != "" {
-		svgPath = data.CurrPuzzle.Filename
+		svgPath = fmt.Sprintf("assets/%s", data.CurrPuzzle.Filename)
 	}
 	saveFile, err := os.Create(svgPath)
 	if err != nil {

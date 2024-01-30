@@ -129,6 +129,9 @@ func GetTileSpritesSelection(tile *data.Tile) []*img.Sprite {
 	case data.Empty:
 	case data.Turf, data.Fall:
 		spr = append(spr, img.NewSprite(GetSpriteSelection(tile), constants.FGBatch))
+		if tile.Block == data.Fall {
+			spr = append(spr, img.NewSprite(constants.TileFall, constants.FGBatch))
+		}
 	default:
 		spr = append(spr, img.NewSprite(tile.Block.String(), constants.FGBatch))
 	}
@@ -198,21 +201,32 @@ func SetBlock(coords world.Coords, block data.Block) {
 			// add to puzzle
 			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 			if !tile.Update {
-				if block == data.Ladder {
-					if tile.Ladder {
+				switch block {
+				case data.Ladder:
+					if tile.Ladder || tile.Block != data.Turf {
 						tile.Block = data.Empty
-					} else {
-						tile.Ladder = true
 					}
-				} else {
-					if tile.Ladder && (tile.Block == block || tile.Block != data.Turf) {
+					tile.Ladder = true
+				case data.Player1:
+					tile.Ladder = false
+					// ensure no other player of that type are in puzzle
+					for _, row := range data.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == block {
+								t.Block = data.Empty
+							}
+						}
+					}
+					tile.Block = block
+				default:
+					if tile.Ladder && !(block == data.Turf && tile.Block == data.Empty) {
 						tile.Ladder = false
 					}
 					tile.Block = block
 				}
-				data.CurrPuzzle.Update = true
-				tile.Update = true
 			}
+			data.CurrPuzzle.Update = true
+			tile.Update = true
 		}
 	} else {
 		fmt.Println("error: attempted to change tile when no puzzle is loaded")

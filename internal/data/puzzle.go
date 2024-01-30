@@ -34,6 +34,7 @@ type Puzzle struct {
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`
 	SecondaryColor pixel.RGBA `json:"secondaryColor"`
 
+	Title    string
 	Filename string
 }
 

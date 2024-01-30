@@ -13,10 +13,12 @@ import (
 	"gemrunner/pkg/shaders"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
+	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
+	"github.com/gopxl/pixel/text"
 )
 
 func run() {
@@ -38,6 +40,9 @@ func run() {
 	viewport.MainCamera.CamPos = pixel.V(1600*0.5, 900*0.5)
 
 	state.Register(states.EditorStateKey, state.New(states.EditorState))
+
+	mainFont, err := typeface.LoadTTF("assets/Jive_Talking.ttf", 128.)
+	typeface.Atlases["main"] = text.NewAtlas(mainFont, text.ASCII)
 
 	uiSheet, err := img.LoadSpriteSheet("assets/ui.json")
 	if err != nil {
@@ -61,7 +66,7 @@ func run() {
 	debug.Text = true
 	debug.Debug = true
 
-	load.Dialogs()
+	load.Dialogs(win)
 	systems.InitMainBorder()
 
 	win.Show()
