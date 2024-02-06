@@ -28,9 +28,10 @@ type Text struct {
 	SymbolSize   float64
 	Obj          *object.Object
 
-	rawLines   []string
-	lineWidths []float64
-	fullHeight float64
+	rawLines    []string
+	lineWidths  []float64
+	dotPosArray []pixel.Vec
+	fullHeight  float64
 }
 
 func New(atlas string, align Alignment, lineHeight, relativeSize, maxWidth, maxHeight float64) *Text {

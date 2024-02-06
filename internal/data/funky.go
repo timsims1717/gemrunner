@@ -16,11 +16,12 @@ func NewFn(fn func()) *Funky {
 }
 
 type HoverClick struct {
-	Input *pxginput.Input
-	View  *viewport.ViewPort
-	Func  func(*HoverClick)
-	Hover bool
-	Pos   pixel.Vec
+	Input     *pxginput.Input
+	View      *viewport.ViewPort
+	Func      func(*HoverClick)
+	Hover     bool
+	ViewHover bool
+	Pos       pixel.Vec
 }
 
 func NewHoverClickFn(in *pxginput.Input, vp *viewport.ViewPort, fn func(*HoverClick)) *HoverClick {

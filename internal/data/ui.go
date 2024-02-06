@@ -14,6 +14,7 @@ type Element int
 const (
 	ButtonElement = iota
 	ContainerElement
+	InputElement
 	ScrollElement
 	SpriteElement
 	TextElement
@@ -22,6 +23,8 @@ const (
 
 type ElementConstructor struct {
 	Key         string
+	Width       float64
+	Height      float64
 	SprKey      string
 	ClickSprKey string
 	Text        string
@@ -51,19 +54,45 @@ type Container struct {
 	Elements     []interface{}
 }
 
+type Input struct {
+	Key          string
+	Value        string
+	Active       bool
+	Text         *typeface.Text
+	TextEntity   *ecs.Entity
+	CaretObj     *object.Object
+	CaretSpr     *img.Sprite
+	CaretIndex   int
+	BorderVP     *viewport.ViewPort
+	BorderObject *object.Object
+	BorderEntity *ecs.Entity
+	ViewPort     *viewport.ViewPort
+	Entity       *ecs.Entity
+	Layer        int
+}
+
 type Scroll struct {
-	Key         string
-	UpSprite    *img.Sprite
-	UpSprClick  *img.Sprite
-	UpObject    *object.Object
-	DwnSprite   *img.Sprite
-	DwnSprClick *img.Sprite
-	DwnObject   *object.Object
-	BarSprite   []*img.Sprite
-	BarObject   *object.Object
-	BarEntity   *ecs.Entity
-	Viewport    viewport.ViewPort
-	Elements    []interface{}
+	Key          string
+	UpSprite     *img.Sprite
+	UpSprClick   *img.Sprite
+	UpObject     *object.Object
+	UpEntity     *ecs.Entity
+	DwnSprite    *img.Sprite
+	DwnSprClick  *img.Sprite
+	DwnObject    *object.Object
+	DwnEntity    *ecs.Entity
+	BarSprite    []*img.Sprite
+	BarObject    *object.Object
+	BarEntity    *ecs.Entity
+	BorderVP     *viewport.ViewPort
+	BorderObject *object.Object
+	BorderEntity *ecs.Entity
+	Entity       *ecs.Entity
+	ViewPort     *viewport.ViewPort
+	Layer        int
+	Elements     []interface{}
+	YTop         float64
+	YBot         float64
 }
 
 type SprElement struct {

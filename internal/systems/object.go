@@ -49,21 +49,28 @@ func FunctionSystem() {
 				}
 			}
 		} else if hcF, ok := fnA.(*data.HoverClick); ok {
+			pos := hcF.Input.World
+			if hcF.View != nil {
+				hcF.Pos = hcF.View.ProjectWorld(pos)
+				hcF.ViewHover = hcF.View.PointInside(hcF.Pos)
+			} else {
+				hcF.Pos = pos
+				hcF.ViewHover = true
+			}
+			hcF.Hover = false
 			if objC, okOC := result.Entity.GetComponentData(myecs.Object); okOC {
 				if obj, okO := objC.(*object.Object); okO {
 					if !obj.Hidden {
-						pos := hcF.Input.World
 						if hcF.View != nil {
-							pos = hcF.View.ProjectWorld(pos)
-							hcF.Hover = obj.PointInside(pos) && hcF.View.PointInside(pos)
+							hcF.Hover = obj.PointInside(hcF.Pos) && hcF.ViewHover
 						} else {
-							hcF.Hover = obj.PointInside(pos)
-						}
-						if hcF.Func != nil {
-							hcF.Func(hcF)
+							hcF.Hover = obj.PointInside(hcF.Pos)
 						}
 					}
 				}
+			}
+			if hcF.Func != nil {
+				hcF.Func(hcF)
 			}
 		} else if fnF, ok := fnA.(*data.FrameFunc); ok {
 			if fnF.Func() {

@@ -118,6 +118,7 @@ func (item *Text) SetText(raw string) {
 }
 
 func (item *Text) updateText() {
+	item.dotPosArray = []pixel.Vec{}
 	item.Text.Clear()
 	item.Text.Color = item.Color
 	if item.Align.H == Center {
@@ -142,20 +143,22 @@ func (item *Text) updateText() {
 	//	item.Text.Dot.Y += item.fullHeight
 	//}
 	for _, line := range item.rawLines {
-		b := 0
+		//b := 0
 		inBrackets = false
 		//if item.Align.H == Center {
 		//	item.Text.Dot.X -= item.lineWidths[li] * 0.5
 		//} else if item.Align.H == Right {
 		//	item.Text.Dot.X -= item.lineWidths[li]
 		//}
-		for i, r := range line {
+		for _, r := range line {
+			item.roundDot()
 			if !inBrackets {
 				switch r {
 				case OpenMarker:
-					item.roundDot()
-					fmt.Fprintf(item.Text, "%s", line[b:i])
 					inBrackets = true
+				default:
+					item.dotPosArray = append(item.dotPosArray, item.Text.Dot.Scaled(item.RelativeSize))
+					item.Text.WriteRune(r)
 				}
 			} else {
 				switch r {
@@ -164,19 +167,20 @@ func (item *Text) updateText() {
 					case "symbol":
 						if sym, ok := theSymbols[buf.String()]; ok {
 							item.roundDot()
-							trans := object.New()
-							trans.Sca = pixel.V(item.SymbolSize, item.SymbolSize).Scaled(sym.sca)
-							trans.Pos = item.Obj.Pos
-							trans.Pos = trans.Pos.Add(item.Text.Dot.Scaled(item.RelativeSize))
-							trans.Pos = trans.Pos.Add(pixel.V(sym.spr.Frame().W()*0.5, sym.spr.Frame().H()*0.25).Scaled(item.SymbolSize * sym.sca))
+							item.dotPosArray = append(item.dotPosArray, item.Text.Dot.Scaled(item.RelativeSize))
+							obj := object.New()
+							obj.Sca = pixel.V(item.SymbolSize, item.SymbolSize).Scaled(sym.sca)
+							obj.Pos = item.Obj.Pos
+							obj.Pos = obj.Pos.Add(item.Text.Dot.Scaled(item.RelativeSize))
+							obj.Pos = obj.Pos.Add(pixel.V(sym.spr.Frame().W()*0.5, sym.spr.Frame().H()*0.25).Scaled(item.SymbolSize * sym.sca))
 							item.Symbols = append(item.Symbols, symbolHandle{
 								symbol: sym,
-								trans:  trans,
+								trans:  obj,
 							})
 							item.Text.Dot.X += sym.spr.Frame().W() * item.SymbolSize * sym.sca / item.RelativeSize
 						}
 					}
-					b = i + 1
+					//b = i + 1
 					inBrackets = false
 					mode = ""
 					buf.Reset()
@@ -189,8 +193,21 @@ func (item *Text) updateText() {
 			}
 		}
 		item.roundDot()
-		fmt.Fprintf(item.Text, "%s\n", line[b:])
+		item.dotPosArray = append(item.dotPosArray, item.Text.Dot.Scaled(item.RelativeSize))
+		item.Text.WriteRune('\n')
 	}
+	bounds := item.Text.Bounds()
+	item.Obj.SetRect(pixel.R(0, 0, bounds.W()*item.RelativeSize, bounds.H()*item.RelativeSize))
+	if item.Align.H == Left {
+		item.Obj.Rect = item.Obj.Rect.Moved(pixel.V(item.Obj.Rect.W()*0.5, 0))
+	} else if item.Align.H == Right {
+		//item.Obj.Rect = item.Obj.Rect.Moved(pixel.V(item.Obj.Rect.W(), 0))
+	}
+	//if item.Align.V == Bottom {
+	//	item.Obj.Rect = item.Obj.Rect.Moved(pixel.V(item.Obj.Rect.H()*-0.5, 0))
+	//} else if item.Align.V == Top {
+	//	item.Obj.Rect = item.Obj.Rect.Moved(pixel.V(item.Obj.Rect.H(), 0))
+	//}
 }
 
 func (item *Text) roundDot() {

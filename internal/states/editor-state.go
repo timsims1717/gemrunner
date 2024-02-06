@@ -11,7 +11,6 @@ import (
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
-	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel/pixelgl"
 )
@@ -36,11 +35,10 @@ func (s *editorState) Load() {
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {
-	data.EditorInput.Update(win, viewport.MainCamera.Mat)
 	debug.AddText("Editor State")
 	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.Editor.Mode.String()))
-	debug.AddIntCoords("World", int(data.EditorInput.World.X), int(data.EditorInput.World.Y))
-	inPos := data.PuzzleView.ProjectWorld(data.EditorInput.World)
+	debug.AddIntCoords("World", int(data.MenuInput.World.X), int(data.MenuInput.World.Y))
+	inPos := data.PuzzleView.ProjectWorld(data.MenuInput.World)
 	debug.AddIntCoords("Puzzle View In", int(inPos.X), int(inPos.Y))
 	debug.AddIntCoords("BlockSelect Pos", int(data.Editor.BlockSelect.PortPos.X), int(data.Editor.BlockSelect.PortPos.Y))
 
@@ -69,14 +67,14 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	}
 
-	systems.DialogSystem()
-
 	if data.DebugInput.Get("switchWorld").JustPressed() {
-
+		systems.ChangeWorldToNext()
 	}
 
 	// function systems
 	systems.FunctionSystem()
+
+	systems.DialogSystem()
 
 	if !data.DialogStackOpen {
 		// custom systems

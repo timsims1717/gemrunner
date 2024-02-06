@@ -79,7 +79,7 @@ func run() {
 			viewport.MainCamera.CamPos = pixel.V(viewport.MainCamera.Rect.W()*0.5, viewport.MainCamera.Rect.H()*0.5)
 		}
 
-		data.MainInput.Update(win, viewport.MainCamera.Mat)
+		data.MenuInput.Update(win, viewport.MainCamera.Mat)
 		data.DebugInput.Update(win, viewport.MainCamera.Mat)
 		if data.DebugInput.Get("debugPause").JustPressed() {
 			fmt.Println("BREAKPOINT")

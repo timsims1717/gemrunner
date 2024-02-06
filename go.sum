@@ -22,6 +22,8 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72 h1:b+9H1GAsx5
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240108052320-294b0144ba39 h1:Fyfrfr+TP8w6ZQ2UXX2Slz8zMCPV/2d4WF78C39zGU0=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240108052320-294b0144ba39/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
+github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240118000515-a250818d05e3 h1:nanQfMsOs3gnuKRm0E5jXWomedE/9YIFXdmHJNZYeqc=
+github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240118000515-a250818d05e3/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7 h1:THttjeRn1iiz69E875U6gAik8KTWk/JYAHoSVpUxBBI=
 github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7/go.mod h1:yhpkQzEiH9yPyxDUGzkmgScbaBVlhC06qodikEM0ZwQ=
 github.com/go-gl/mathgl v1.0.0/go.mod h1:yhpkQzEiH9yPyxDUGzkmgScbaBVlhC06qodikEM0ZwQ=
@@ -44,6 +46,8 @@ github.com/timsims1717/pixel-go-input v0.0.0-20220809154241-bd3c6f7600c7 h1:Dpld
 github.com/timsims1717/pixel-go-input v0.0.0-20220809154241-bd3c6f7600c7/go.mod h1:nv6+kRPa90HKrEHcEzUJvmVIiYB86vg8YNZfq6ZpQ+k=
 github.com/timsims1717/pixel-go-input v0.0.0-20240109213931-e42ddf29d602 h1:dcUU881Vygc0BPKCEqzRuxZsaReNczAKSdYEmJOf6HU=
 github.com/timsims1717/pixel-go-input v0.0.0-20240109213931-e42ddf29d602/go.mod h1:U7TKKE0HNurOpVOAdWGhXAKn4zsuzIK+G/z655TtGT4=
+github.com/timsims1717/pixel-go-input v0.0.0-20240206213319-7046e7712047 h1:4h4wZlG5SDHjpBFjPegaHRW0P0KhCUolVk0DhemQuh4=
+github.com/timsims1717/pixel-go-input v0.0.0-20240206213319-7046e7712047/go.mod h1:U7TKKE0HNurOpVOAdWGhXAKn4zsuzIK+G/z655TtGT4=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff h1:+2zgJKVDVAz/BWSsuniCmU1kLCjL88Z8/kv39xCI9NQ=
 golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=

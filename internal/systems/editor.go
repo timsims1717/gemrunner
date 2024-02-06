@@ -86,33 +86,33 @@ func ChangeWorldTo(world int) {
 
 func UpdateEditorModeHotKey() {
 	oldMode := data.Editor.Mode
-	if data.EditorInput.Get("ctrl").Pressed() || data.EditorInput.Get("rCtrl").Pressed() {
-		if data.EditorInput.Get("ctrlCopy").JustPressed() {
+	if data.MenuInput.Get("ctrl").Pressed() || data.MenuInput.Get("rCtrl").Pressed() {
+		if data.MenuInput.Get("ctrlCopy").JustPressed() {
 			// copy
 			data.Editor.Mode = data.Copy
-		} else if data.EditorInput.Get("ctrlCut").JustPressed() {
+		} else if data.MenuInput.Get("ctrlCut").JustPressed() {
 			// cut
 			data.Editor.Mode = data.Cut
-		} else if data.EditorInput.Get("ctrlPaste").JustPressed() {
+		} else if data.MenuInput.Get("ctrlPaste").JustPressed() {
 			// paste
 			data.Editor.Mode = data.Paste
-		} else if (data.EditorInput.Get("shift").Pressed() || data.EditorInput.Get("rShift").Pressed()) &&
-			data.EditorInput.Get("ctrlShiftRedo").JustPressed() {
+		} else if (data.MenuInput.Get("shift").Pressed() || data.MenuInput.Get("rShift").Pressed()) &&
+			data.MenuInput.Get("ctrlShiftRedo").JustPressed() {
 			// redo
 			data.Editor.Mode = data.Redo
-		} else if data.EditorInput.Get("ctrlUndo").JustPressed() {
+		} else if data.MenuInput.Get("ctrlUndo").JustPressed() {
 			// undo
 			data.Editor.Mode = data.Undo
-		} else if data.EditorInput.Get("ctrlSave").JustPressed() {
+		} else if data.MenuInput.Get("ctrlSave").JustPressed() {
 			// save
 			data.Editor.Mode = data.Save
-		} else if data.EditorInput.Get("ctrlOpen").JustPressed() {
+		} else if data.MenuInput.Get("ctrlOpen").JustPressed() {
 			// load
 			data.Editor.Mode = data.Open
 		}
 	} else {
 		for i := 0; i < data.EndModeList; i++ {
-			hotkey := data.EditorInput.Get(data.EditorMode(i).String())
+			hotkey := data.MenuInput.Get(data.EditorMode(i).String())
 			if hotkey != nil && hotkey.JustPressed() {
 				hotkey.Consume()
 				data.Editor.Mode = data.EditorMode(i)
@@ -137,7 +137,7 @@ func PuzzleEditSystem() {
 	if data.Editor.SelectTimer != nil {
 		data.Editor.SelectTimer.Update()
 	}
-	projPos := data.PuzzleView.ProjectWorld(data.EditorInput.World)
+	projPos := data.PuzzleView.ProjectWorld(data.MenuInput.World)
 	x, y := world.WorldToMap(projPos.X, projPos.Y)
 	coords := world.Coords{X: x, Y: y}
 	// special check for a weird bug
@@ -146,9 +146,9 @@ func PuzzleEditSystem() {
 	}
 	legal := CoordsLegal(coords)
 	lastLegal := CoordsLegal(data.Editor.LastCoords)
-	rClick := data.EditorInput.Get("rightClick")
-	click := data.EditorInput.Get("click")
-	inInside := data.Editor.BlockSelect.PointInside(data.Editor.BlockSelect.ProjectWorld(data.EditorInput.World))
+	rClick := data.MenuInput.Get("rightClick")
+	click := data.MenuInput.Get("click")
+	inInside := data.Editor.BlockSelect.PointInside(data.Editor.BlockSelect.ProjectWorld(data.MenuInput.World))
 	if data.Editor.SelectVis && legal && !inInside &&
 		(click.JustPressed() || rClick.JustPressed()) {
 		data.Editor.SelectVis = false
@@ -161,7 +161,7 @@ func PuzzleEditSystem() {
 		//switch data.Editor.Consume {
 		//case "move":
 		//	if data.Editor.Offset.X != 0 || data.Editor.Offset.Y != 0 {
-		//		data.Editor.ViewPort.PortPos = data.EditorInput.World.Add(data.Editor.Offset)
+		//		data.Editor.ViewPort.PortPos = data.MenuInput.World.Add(data.Editor.Offset)
 		//	}
 		//}
 	} else {

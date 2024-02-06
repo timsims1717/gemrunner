@@ -16,15 +16,21 @@ import (
 func Dialogs(win *pixelgl.Window) {
 	openPuzzleConstructor := &data.DialogConstructor{
 		Key:    "open_puzzle",
-		Width:  7,
-		Height: 7,
+		Width:  11,
+		Height: 10,
 		Elements: []data.ElementConstructor{
+			{
+				Key:      "open_title",
+				Text:     "Open Puzzle Group",
+				Position: pixel.V(-80, 72),
+				Element:  data.TextElement,
+			},
 			{
 				Key:         "cancel_open_puzzle",
 				SprKey:      "cancel_btn_big",
 				ClickSprKey: "cancel_btn_click_big",
 				HelpText:    "Cancel",
-				Position:    pixel.V(32, -32),
+				Position:    pixel.V(72, -64),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -32,18 +38,60 @@ func Dialogs(win *pixelgl.Window) {
 				SprKey:      "open_btn_big",
 				ClickSprKey: "open_btn_click_big",
 				HelpText:    "Open",
-				Position:    pixel.V(0, -32),
+				Position:    pixel.V(52, -64),
 				Element:     data.ButtonElement,
 			},
 			{
-				Key:      "open_title",
-				Text:     "Open Puzzle Group",
-				Position: pixel.V(-48, 48),
-				Element:  data.TextElement,
+				Key:      "puzzle_list",
+				HelpText: "The list of puzzles.",
+				Element:  data.ScrollElement,
+				Position: pixel.V(0, 8),
+				Width:    10,
+				Height:   7,
 			},
 		},
 	}
 	data.NewDialog(openPuzzleConstructor)
+	// change_name
+	changeNameConstructor := &data.DialogConstructor{
+		Key:    "change_name",
+		Width:  12,
+		Height: 4,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "change_name_title",
+				Text:     "Change Puzzle Name",
+				Position: pixel.V(-92, 24),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cancel_puzzle_name",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(84, -20),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "check_puzzle_name",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(64, -20),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "puzzle_name",
+				Text:     "Untitled",
+				HelpText: "Enter the name of the puzzle here.",
+				Element:  data.InputElement,
+				Position: pixel.V(0, 4),
+				Width:    11,
+				Height:   1,
+			},
+		},
+	}
+	data.NewDialog(changeNameConstructor)
 	editorPanels()
 	editorOptPanels()
 	customizeDialogs(win)
@@ -56,10 +104,10 @@ func customizeDialogs(win *pixelgl.Window) {
 		for _, e := range dialog.Elements {
 			if btn, okB := e.(*data.Button); okB {
 				switch btn.Key {
-				case "cancel_open_puzzle":
+				case "cancel_open_puzzle", "cancel_puzzle_name":
 					btn.OnClick = CloseDialog(key)
 				case "open_puzzle":
-					btn.OnClick = Test("open puzzle")
+					btn.OnClick = OpenPuzzle
 				case "new_btn":
 					btn.OnClick = NewPuzzle
 				case "open_btn":
@@ -70,11 +118,15 @@ func customizeDialogs(win *pixelgl.Window) {
 					btn.OnClick = SavePuzzle
 				case "world_btn":
 					btn.OnClick = systems.ChangeWorldToNext
+				case "name_btn":
+					btn.OnClick = OpenDialog("change_name")
+				case "check_puzzle_name":
+					btn.OnClick = ChangeName
 				default:
 					switch key {
 					case "editor_panel_top", "editor_panel_left":
 						btn.OnClick = EditorMode(data.ModeFromSprString(btn.Sprite.Key), btn, dialog)
-					case "editor_options_bot", "editor_options_right":
+					default:
 						btn.OnClick = Test(fmt.Sprintf("pressed button %s", btn.Key))
 					}
 				}
@@ -88,7 +140,7 @@ func customizeDialogs(win *pixelgl.Window) {
 					beFG := img.NewSprite(data.Block(data.Turf).String(), constants.BGBatch)
 					beEx := img.NewSprite("", constants.BGBatch)
 					spr.Entity.AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG, beEx})
-					spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+					spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 						if data.Editor != nil && dialog.Open && !data.DialogStackOpen {
 							beFG.Key = data.Editor.CurrBlock.String()
 							switch data.Editor.CurrBlock {
@@ -136,7 +188,7 @@ func customizeDialogs(win *pixelgl.Window) {
 						obj := spr.Object
 						spr.Entity.AddComponent(myecs.Drawable, sprs)
 						spr.Entity.AddComponent(myecs.Block, bId)
-						spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.EditorInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+						spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 							if data.Editor != nil && dialog.Open && !data.DialogStackOpen {
 								sprS.Key = bId.String()
 								click := hvc.Input.Get("click")
@@ -168,6 +220,8 @@ func customizeDialogs(win *pixelgl.Window) {
 		switch key {
 		case "open_puzzle":
 			dialog.OnOpen = OnOpenPuzzleDialog
+		case "change_name":
+			dialog.OnOpen = OnChangeNameDialog
 		}
 	}
 }
@@ -498,7 +552,7 @@ func editorPanels() {
 func editorOptPanels() {
 	editorOptBottomConstructor := &data.DialogConstructor{
 		Key:    "editor_options_bot",
-		Width:  8,
+		Width:  9,
 		Height: 1,
 		Pos:    pixel.V(0, -400),
 		Elements: []data.ElementConstructor{
@@ -507,56 +561,63 @@ func editorOptPanels() {
 				SprKey:      "quit_btn",
 				ClickSprKey: "quit_btn_click",
 				HelpText:    "Quit (Ctrl+Q)",
-				Position:    pixel.V(-3.5*world.TileSize, 0),
+				Position:    pixel.V(-4*world.TileSize, 0),
 			},
 			{
 				Key:         "new_btn",
 				SprKey:      "new_btn",
 				ClickSprKey: "new_btn_click",
 				HelpText:    "New Puzzle Group (Ctrl+N)",
-				Position:    pixel.V(-2.5*world.TileSize, 0),
+				Position:    pixel.V(-3*world.TileSize, 0),
 			},
 			{
 				Key:         "save_btn",
 				SprKey:      "save_btn",
 				ClickSprKey: "save_btn_click",
 				HelpText:    "Save Puzzle Group (Ctrl+S)",
-				Position:    pixel.V(-1.5*world.TileSize, 0),
+				Position:    pixel.V(-2*world.TileSize, 0),
 			},
 			{
 				Key:         "open_btn",
 				SprKey:      "open_btn",
 				ClickSprKey: "open_btn_click",
 				HelpText:    "Open Puzzle Group (Ctrl+O)",
-				Position:    pixel.V(-0.5*world.TileSize, 0),
+				Position:    pixel.V(-world.TileSize, 0),
 			},
 			{
 				Key:         "prev_btn",
 				SprKey:      "prev_btn",
 				ClickSprKey: "prev_btn_click",
 				HelpText:    "Previous Puzzle",
-				Position:    pixel.V(0.5*world.TileSize, 0),
+				Position:    pixel.V(0, 0),
 			},
 			{
 				Key:         "next_btn",
 				SprKey:      "next_btn",
 				ClickSprKey: "next_btn_click",
 				HelpText:    "Next Puzzle",
-				Position:    pixel.V(1.5*world.TileSize, 0),
+				Position:    pixel.V(1*world.TileSize, 0),
+			},
+			{
+				Key:         "name_btn",
+				SprKey:      "name_btn",
+				ClickSprKey: "name_btn_click",
+				HelpText:    "Change Name",
+				Position:    pixel.V(2*world.TileSize, 0),
 			},
 			{
 				Key:         "world_btn",
 				SprKey:      "world_btn",
 				ClickSprKey: "world_btn_click",
 				HelpText:    "Change World (Tab)",
-				Position:    pixel.V(2.5*world.TileSize, 0),
+				Position:    pixel.V(3*world.TileSize, 0),
 			},
 			{
 				Key:         "test_btn",
 				SprKey:      "test_btn",
 				ClickSprKey: "test_btn_click",
 				HelpText:    "Test Puzzle",
-				Position:    pixel.V(3.5*world.TileSize, 0),
+				Position:    pixel.V(4*world.TileSize, 0),
 			},
 		},
 	}
@@ -564,7 +625,7 @@ func editorOptPanels() {
 	editorOptRightConstructor := &data.DialogConstructor{
 		Key:    "editor_options_right",
 		Width:  1,
-		Height: 8,
+		Height: 9,
 		Pos:    pixel.V(670, 0),
 		Elements: []data.ElementConstructor{
 			{
@@ -572,56 +633,63 @@ func editorOptPanels() {
 				SprKey:      "quit_btn",
 				ClickSprKey: "quit_btn_click",
 				HelpText:    "Quit (Ctrl+Q)",
-				Position:    pixel.V(0, 3.5*world.TileSize),
+				Position:    pixel.V(0, 4*world.TileSize),
 			},
 			{
 				Key:         "new_btn",
 				SprKey:      "new_btn",
 				ClickSprKey: "new_btn_click",
 				HelpText:    "New Puzzle Group (Ctrl+N)",
-				Position:    pixel.V(0, 2.5*world.TileSize),
+				Position:    pixel.V(0, 3*world.TileSize),
 			},
 			{
 				Key:         "save_btn",
 				SprKey:      "save_btn",
 				ClickSprKey: "save_btn_click",
 				HelpText:    "Save Puzzle Group (Ctrl+S)",
-				Position:    pixel.V(0, 1.5*world.TileSize),
+				Position:    pixel.V(0, 2*world.TileSize),
 			},
 			{
 				Key:         "open_btn",
 				SprKey:      "open_btn",
 				ClickSprKey: "open_btn_click",
 				HelpText:    "Open Puzzle Group (Ctrl+O)",
-				Position:    pixel.V(0, 0.5*world.TileSize),
+				Position:    pixel.V(0, world.TileSize),
 			},
 			{
 				Key:         "prev_btn",
 				SprKey:      "prev_btn",
 				ClickSprKey: "prev_btn_click",
 				HelpText:    "Previous Puzzle",
-				Position:    pixel.V(0, -0.5*world.TileSize),
+				Position:    pixel.V(0, 0),
 			},
 			{
 				Key:         "next_btn",
 				SprKey:      "next_btn",
 				ClickSprKey: "next_btn_click",
 				HelpText:    "Next Puzzle",
-				Position:    pixel.V(0, -1.5*world.TileSize),
+				Position:    pixel.V(0, -world.TileSize),
+			},
+			{
+				Key:         "name_btn",
+				SprKey:      "name_btn",
+				ClickSprKey: "name_btn_click",
+				HelpText:    "Change Name",
+				Position:    pixel.V(0, -2*world.TileSize),
 			},
 			{
 				Key:         "world_btn",
 				SprKey:      "world_btn",
 				ClickSprKey: "world_btn_click",
 				HelpText:    "Change World (Tab)",
-				Position:    pixel.V(0, -2.5*world.TileSize),
+				Position:    pixel.V(0, -3*world.TileSize),
 			},
 			{
 				Key:         "test_btn",
 				SprKey:      "test_btn",
 				ClickSprKey: "test_btn_click",
 				HelpText:    "Test Puzzle",
-				Position:    pixel.V(0, -3.5*world.TileSize),
+				Position:    pixel.V(0, -4*world.TileSize),
 			},
 		},
 	}

@@ -2,18 +2,32 @@
   "img": "ui.png",
   "sprites": [
     {
-      "key": "menu_corner",
+      "key": "border_corner",
       "x": 0,
       "y": 0,
       "h": 16,
       "w": 16
     },
     {
-      "key": "menu_straight",
+      "key": "border_straight",
       "x": 0,
       "y": 16,
       "h": 16,
       "w": 16
+    },
+    {
+      "key": "white_dot",
+      "x": 7,
+      "y": 7,
+      "h": 1,
+      "w": 1
+    },
+    {
+      "key": "blue_dot",
+      "x": 4,
+      "y": 4,
+      "h": 1,
+      "w": 1
     },
     {
       "key": "black_square",
@@ -35,6 +49,13 @@
       "y": 32,
       "h": 16,
       "w": 16
+    },
+    {
+      "key": "text_caret",
+      "x": 16,
+      "y": 33,
+      "h": 14,
+      "w": 1
     },
     {
       "key": "editor_tile_bg",
@@ -131,6 +152,20 @@
       "key": "play_btn_click_big",
       "x": 136,
       "y": 36,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "check_btn_big",
+      "x": 82,
+      "y": 54,
+      "h": 18,
+      "w": 18
+    },
+    {
+      "key": "check_btn_click_big",
+      "x": 100,
+      "y": 54,
       "h": 18,
       "w": 18
     },
@@ -452,6 +487,20 @@
     {
       "key": "new_btn_click",
       "x": 48,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "name_btn",
+      "x": 64,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "name_btn_click",
+      "x": 80,
       "y": 176,
       "h": 16,
       "w": 16

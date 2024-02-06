@@ -6,10 +6,18 @@ import (
 )
 
 var (
-	EditorInput = &pxginput.Input{
+	MenuInput = &pxginput.Input{
 		Buttons: map[string]*pxginput.ButtonSet{
 			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft),
 			"rightClick":     pxginput.NewJoyless(pixelgl.MouseButtonRight),
+			"left":           pxginput.NewJoyless(pixelgl.KeyLeft),
+			"right":          pxginput.NewJoyless(pixelgl.KeyRight),
+			"up":             pxginput.NewJoyless(pixelgl.KeyUp),
+			"down":           pxginput.NewJoyless(pixelgl.KeyDown),
+			"backspace":      pxginput.NewJoyless(pixelgl.KeyBackspace),
+			"delete":         pxginput.NewJoyless(pixelgl.KeyDelete),
+			"home":           pxginput.NewJoyless(pixelgl.KeyHome),
+			"end":            pxginput.NewJoyless(pixelgl.KeyEnd),
 			"Brush":          pxginput.NewJoyless(pixelgl.KeyB),
 			"Line":           pxginput.NewJoyless(pixelgl.KeyL),
 			"Square":         pxginput.NewJoyless(pixelgl.KeyH),
@@ -33,14 +41,6 @@ var (
 			"rCtrl":  pxginput.NewJoyless(pixelgl.KeyRightControl),
 			"shift":  pxginput.NewJoyless(pixelgl.KeyLeftShift),
 			"rShift": pxginput.NewJoyless(pixelgl.KeyRightShift),
-		},
-		Mode: pxginput.KeyboardMouse,
-	}
-	MainInput = &pxginput.Input{
-		Buttons: map[string]*pxginput.ButtonSet{
-			"click":      pxginput.NewJoyless(pixelgl.MouseButtonLeft),
-			"rightClick": pxginput.NewJoyless(pixelgl.MouseButtonRight),
-			"escape":     pxginput.NewJoyless(pixelgl.KeyEscape),
 		},
 		Mode: pxginput.KeyboardMouse,
 	}
