@@ -115,11 +115,13 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "quit_btn":
 					btn.OnClick = QuitEditor(win)
 				case "save_btn":
-					btn.OnClick = SavePuzzle
+					btn.OnClick = systems.SavePuzzle
 				case "world_btn":
 					btn.OnClick = systems.ChangeWorldToNext
 				case "name_btn":
 					btn.OnClick = OpenDialog("change_name")
+				case "test_btn":
+					btn.OnClick = TestPuzzle()
 				case "check_puzzle_name":
 					btn.OnClick = ChangeName
 				default:
@@ -137,8 +139,8 @@ func customizeDialogs(win *pixelgl.Window) {
 					if dialog.Key == "editor_panel_top" {
 						beBG = nil
 					}
-					beFG := img.NewSprite(data.Block(data.Turf).String(), constants.BGBatch)
-					beEx := img.NewSprite("", constants.BGBatch)
+					beFG := img.NewSprite(data.Block(data.Turf).String(), constants.TileBatch)
+					beEx := img.NewSprite("", constants.TileBatch)
 					spr.Entity.AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG, beEx})
 					spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 						if data.Editor != nil && dialog.Open && !data.DialogStackOpen {
@@ -180,10 +182,10 @@ func customizeDialogs(win *pixelgl.Window) {
 					if b < data.Empty {
 						bId := data.Block(b)
 						//sprB := img.NewSprite("black_square_big", constants.UIBatch)
-						sprS := img.NewSprite(bId.String(), constants.BGBatch)
+						sprS := img.NewSprite(bId.String(), constants.TileBatch)
 						sprs := []*img.Sprite{sprS}
 						if b == data.Fall {
-							sprs = append(sprs, img.NewSprite(constants.TileFall, constants.BGBatch))
+							sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
 						}
 						obj := spr.Object
 						spr.Entity.AddComponent(myecs.Drawable, sprs)

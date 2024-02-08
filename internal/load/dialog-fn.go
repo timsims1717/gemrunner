@@ -6,7 +6,9 @@ import (
 	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/states"
 	"gemrunner/internal/systems"
+	"gemrunner/pkg/state"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -61,24 +63,9 @@ func QuitEditor(win *pixelgl.Window) func() {
 	}
 }
 
-func SavePuzzle() {
-	if data.Editor != nil {
-		if data.CurrPuzzle.PuzzleInfo == nil {
-			data.CurrPuzzle.PuzzleInfo = &data.PuzzleInfo{}
-			data.CurrPuzzle.PuzzleInfo.Name = "test"
-			data.CurrPuzzle.PuzzleInfo.Filename = "test.puzzle"
-		}
-		if data.CurrPuzzle.PuzzleInfo.Name == "" {
-			data.CurrPuzzle.PuzzleInfo.Name = "test"
-			data.CurrPuzzle.PuzzleInfo.Filename = "test.puzzle"
-		}
-		//} else {
-		data.CurrPuzzle.PuzzleInfo.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzle.PuzzleInfo.Name)
-		err := systems.SavePuzzle()
-		if err != nil {
-			fmt.Println("ERROR:", err)
-		}
-		//}
+func TestPuzzle() func() {
+	return func() {
+		state.PushState(states.TestStateKey)
 	}
 }
 
@@ -159,13 +146,17 @@ func OnChangeNameDialog() {
 		changeName := data.Dialogs["change_name"]
 		for _, ele := range changeName.Elements {
 			if in, ok := ele.(*data.Input); ok {
-				if data.CurrPuzzle.PuzzleInfo == nil {
-					data.CurrPuzzle.PuzzleInfo = &data.PuzzleInfo{}
+				if data.CurrPuzzle.Metadata == nil {
+					data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
 				}
-				if data.CurrPuzzle.PuzzleInfo.Name != "" {
-					in.Value = data.CurrPuzzle.PuzzleInfo.Name
+				if data.CurrPuzzle.Metadata.Name != "" {
+					if in.Value != data.CurrPuzzle.Metadata.Name {
+						in.Value = data.CurrPuzzle.Metadata.Name
+						in.Text.SetText(in.Value)
+					}
 				} else {
 					in.Value = "Untitled"
+					in.Text.SetText("Untitled")
 				}
 				break
 			}
@@ -178,11 +169,11 @@ func ChangeName() {
 		changeName := data.Dialogs["change_name"]
 		for _, ele := range changeName.Elements {
 			if in, ok := ele.(*data.Input); ok {
-				if data.CurrPuzzle.PuzzleInfo == nil {
-					data.CurrPuzzle.PuzzleInfo = &data.PuzzleInfo{}
+				if data.CurrPuzzle.Metadata == nil {
+					data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
 				}
 				if in.Value != "" {
-					data.CurrPuzzle.PuzzleInfo.Name = in.Value
+					data.CurrPuzzle.Metadata.Name = in.Value
 					data.CloseDialog("change_name")
 				}
 				break

@@ -9,6 +9,7 @@ import (
 	"gemrunner/internal/systems"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
+	"gemrunner/pkg/object"
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/shaders"
 	"gemrunner/pkg/state"
@@ -40,6 +41,13 @@ func run() {
 	viewport.MainCamera.CamPos = pixel.V(1600*0.5, 900*0.5)
 
 	state.Register(states.EditorStateKey, state.New(states.EditorState))
+	state.Register(states.TestStateKey, state.New(states.TestState))
+	//state.PushState(states.TestStateKey)
+	//filename := fmt.Sprintf("%s/%s", constants.PuzzlesDir, "Get Those Gems.puzzle")
+	//err = systems.OpenPuzzle(filename)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	mainFont, err := typeface.LoadTTF("assets/Jive_Talking.ttf", 128.)
 	typeface.Atlases["main"] = text.NewAtlas(mainFont, text.ASCII)
@@ -53,8 +61,7 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
-	img.AddBatcher(constants.BGBatch, tileSheet, true, true)
-	img.AddBatcher(constants.FGBatch, tileSheet, true, true)
+	img.AddBatcher(constants.TileBatch, tileSheet, true, true)
 
 	sh, err := shaders.LoadFileToString("assets/shaders/puzzle-shader.frag.glsl")
 	if err != nil {
@@ -65,6 +72,8 @@ func run() {
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Text = true
 	debug.Debug = true
+
+	object.ILock = true
 
 	load.Dialogs(win)
 	systems.InitMainBorder()

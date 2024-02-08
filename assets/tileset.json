@@ -434,6 +434,113 @@
       "y": 64,
       "h": 16,
       "w": 16
+    },
+
+
+
+    {
+      "key": "player_idle",
+      "anim": true,
+      "x": 0,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_idle",
+      "anim": true,
+      "x": 16,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_idle",
+      "anim": true,
+      "x": 32,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_run",
+      "anim": true,
+      "x": 0,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_run",
+      "anim": true,
+      "x": 16,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_run",
+      "anim": true,
+      "x": 32,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_jump",
+      "anim": true,
+      "x": 0,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_fall",
+      "anim": true,
+      "x": 16,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_slide",
+      "anim": true,
+      "x": 32,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_climb",
+      "anim": true,
+      "x": 0,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_climb",
+      "anim": true,
+      "x": 16,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_climb",
+      "anim": true,
+      "x": 32,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_climb",
+      "anim": true,
+      "x": 48,
+      "y": 192,
+      "h": 16,
+      "w": 16
     }
   ]
 }

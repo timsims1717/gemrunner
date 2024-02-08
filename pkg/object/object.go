@@ -9,6 +9,8 @@ import (
 
 var objIndex = uint32(0)
 
+var ILock bool
+
 type Object struct {
 	ID     string
 	Hidden bool
@@ -22,6 +24,9 @@ type Object struct {
 	Flip bool
 	Flop bool
 	Rect pixel.Rect
+
+	HalfWidth  float64
+	HalfHeight float64
 
 	PostPos pixel.Vec
 	LastPos pixel.Vec
@@ -40,7 +45,8 @@ func New() *Object {
 			X: 1.,
 			Y: 1.,
 		},
-		Mask: pixel.ToRGBA(colornames.White),
+		Mask:  pixel.ToRGBA(colornames.White),
+		ILock: ILock,
 	}
 }
 
@@ -56,4 +62,6 @@ func (obj *Object) PointInside(vec pixel.Vec) bool {
 
 func (obj *Object) SetRect(r pixel.Rect) {
 	obj.Rect = util.RectToOrigin(r).Moved(pixel.V(r.W()*-0.5, r.H()*-0.5))
+	obj.HalfWidth = obj.Rect.W() * 0.5
+	obj.HalfHeight = obj.Rect.H() * 0.5
 }

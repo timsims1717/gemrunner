@@ -1,11 +1,18 @@
 package data
 
+import "github.com/gopxl/pixel"
+
 var (
-	PuzzleInfos         []PuzzleInfo
+	PuzzleInfos         []PuzzleMetadata
 	SelectedPuzzleIndex int
 )
 
-type PuzzleInfo struct {
-	Name     string `json:"title"`
-	Filename string `json:"-"`
+type PuzzleMetadata struct {
+	Name           string     `json:"title"`
+	Filename       string     `json:"-"`
+	WorldSprite    string     `json:"sprite"`
+	WorldNumber    int        `json:"world"`
+	PrimaryColor   pixel.RGBA `json:"primaryColor"`
+	SecondaryColor pixel.RGBA `json:"secondaryColor"`
+	Completed      bool       `json:"completed"`
 }

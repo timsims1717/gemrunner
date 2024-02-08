@@ -25,11 +25,16 @@ var (
 	Animated   = Manager.NewComponent()
 	DrawTarget = Manager.NewComponent()
 
-	Tile   = Manager.NewComponent()
-	Border = Manager.NewComponent()
-	Block  = Manager.NewComponent()
+	Tile       = Manager.NewComponent()
+	Border     = Manager.NewComponent()
+	Block      = Manager.NewComponent()
+	Character  = Manager.NewComponent()
+	Controller = Manager.NewComponent()
+	Interact   = Manager.NewComponent()
+	Collector  = Manager.NewComponent()
+	Gem        = Manager.NewComponent()
 
-	IsTemp    = ecs.BuildTag(Temp, Object)
+	IsTemp    = ecs.BuildTag(Temp)
 	HasUpdate = ecs.BuildTag(Update)
 
 	HasAnimation = ecs.BuildTag(Animated, Object)
@@ -38,9 +43,13 @@ var (
 	IsObject  = ecs.BuildTag(Object)
 	HasParent = ecs.BuildTag(Object, Parent)
 
-	IsTile    = ecs.BuildTag(Object, Tile)
-	HasBorder = ecs.BuildTag(Object, Border)
-	IsBlock   = ecs.BuildTag(Object, Block)
+	IsTile       = ecs.BuildTag(Object, Tile)
+	HasBorder    = ecs.BuildTag(Object, Border)
+	IsBlock      = ecs.BuildTag(Object, Block)
+	IsCharacter  = ecs.BuildTag(Object, Character, Controller)
+	IsInteract   = ecs.BuildTag(Object, Interact)
+	IsInteractor = ecs.BuildTag(Object, Character, Collector)
+	IsGem        = ecs.BuildTag(Object, Gem)
 )
 
 func UpdateManager() {

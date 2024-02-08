@@ -6,10 +6,23 @@ import (
 )
 
 var (
+	GameInput = &pxginput.Input{
+		Key: "game_input",
+		Buttons: map[string]*pxginput.ButtonSet{
+			"left":   pxginput.New(pixelgl.KeyA, pixelgl.ButtonDpadLeft),
+			"right":  pxginput.New(pixelgl.KeyD, pixelgl.ButtonDpadRight),
+			"up":     pxginput.New(pixelgl.KeyW, pixelgl.ButtonDpadUp),
+			"down":   pxginput.New(pixelgl.KeyS, pixelgl.ButtonDpadDown),
+			"jump":   pxginput.New(pixelgl.KeySpace, pixelgl.ButtonA),
+			"action": pxginput.New(pixelgl.KeyLeftShift, pixelgl.ButtonX),
+		},
+		Mode: pxginput.Any,
+	}
 	MenuInput = &pxginput.Input{
 		Buttons: map[string]*pxginput.ButtonSet{
 			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft),
 			"rightClick":     pxginput.NewJoyless(pixelgl.MouseButtonRight),
+			"escape":         pxginput.NewJoyless(pixelgl.KeyEscape),
 			"left":           pxginput.NewJoyless(pixelgl.KeyLeft),
 			"right":          pxginput.NewJoyless(pixelgl.KeyRight),
 			"up":             pxginput.NewJoyless(pixelgl.KeyUp),

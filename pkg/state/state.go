@@ -77,7 +77,8 @@ func Update(win *pixelgl.Window) {
 				LoadingScreen.Update(win)
 			}
 		}
-	} else {
+	}
+	if !loading {
 		if len(stateStack) > 0 && stackPtr > -1 {
 			if cState, ok := states[stateStack[stackPtr]]; ok {
 				cState.Update(win)
@@ -91,12 +92,14 @@ func Update(win *pixelgl.Window) {
 func Draw(win *pixelgl.Window) {
 	win.Clear(clearColor)
 	if loading {
-		if lState, ok2 := states[stateStack[stackPtr]]; ok2 && lState.ShowLoad && LoadingScreen != nil {
+		if lState, ok2 := states[stateStack[stackPtr]]; ok2 &&
+			lState.ShowLoad && LoadingScreen != nil {
 			LoadingScreen.Draw(win)
 			return
 		}
-	} else {
-		for _, state := range stateStack {
+	}
+	for i, state := range stateStack {
+		if !loading || i < len(stateStack)-1 {
 			cState, ok1 := states[state]
 			if !ok1 {
 				panic(fmt.Sprintf("state.Draw - state %s doesn't exist\n", state))

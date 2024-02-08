@@ -26,22 +26,19 @@ func TileSpriteSystemPre() {
 }
 
 func TileSpriteSystem() {
-	if data.CurrPuzzle.Update {
-		for _, result := range myecs.Manager.Query(myecs.IsTile) {
-			_, okO := result.Components[myecs.Object].(*object.Object)
-			tile, ok := result.Components[myecs.Tile].(*data.Tile)
-			if okO && ok {
-				spr := GetTileSprites(tile)
-				if len(spr) == 1 {
-					result.Entity.AddComponent(myecs.Drawable, spr[0])
-				} else if len(spr) > 0 {
-					result.Entity.AddComponent(myecs.Drawable, spr)
-				} else {
-					result.Entity.RemoveComponent(myecs.Drawable)
-				}
+	for _, result := range myecs.Manager.Query(myecs.IsTile) {
+		_, okO := result.Components[myecs.Object].(*object.Object)
+		tile, ok := result.Components[myecs.Tile].(*data.Tile)
+		if okO && ok {
+			spr := GetTileSprites(tile)
+			if len(spr) == 1 {
+				result.Entity.AddComponent(myecs.Drawable, spr[0])
+			} else if len(spr) > 0 {
+				result.Entity.AddComponent(myecs.Drawable, spr)
+			} else {
+				result.Entity.RemoveComponent(myecs.Drawable)
 			}
 		}
-		data.CurrPuzzle.Update = false
 	}
 }
 
@@ -50,16 +47,16 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	switch tile.Block {
 	case data.Empty, data.Ladder:
 	case data.Turf, data.Fall:
-		spr = append(spr, img.NewSprite(GetBlockSprite(tile), constants.FGBatch))
+		spr = append(spr, img.NewSprite(GetBlockSprite(tile), constants.TileBatch))
 		if tile.Block == data.Fall {
-			spr = append(spr, img.NewSprite(constants.TileFall, constants.FGBatch))
+			spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
 		}
 	default:
-		spr = append(spr, img.NewSprite(tile.Block.String(), constants.FGBatch))
+		spr = append(spr, img.NewSprite(tile.Block.String(), constants.TileBatch))
 	}
 	lStr := GetLadderSprite(tile)
 	if lStr != "" {
-		spr = append(spr, img.NewSprite(lStr, constants.FGBatch))
+		spr = append(spr, img.NewSprite(lStr, constants.TileBatch))
 	}
 	return spr
 }
@@ -128,16 +125,16 @@ func GetTileSpritesSelection(tile *data.Tile) []*img.Sprite {
 	switch tile.Block {
 	case data.Empty:
 	case data.Turf, data.Fall:
-		spr = append(spr, img.NewSprite(GetSpriteSelection(tile), constants.FGBatch))
+		spr = append(spr, img.NewSprite(GetSpriteSelection(tile), constants.TileBatch))
 		if tile.Block == data.Fall {
-			spr = append(spr, img.NewSprite(constants.TileFall, constants.FGBatch))
+			spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
 		}
 	default:
-		spr = append(spr, img.NewSprite(tile.Block.String(), constants.FGBatch))
+		spr = append(spr, img.NewSprite(tile.Block.String(), constants.TileBatch))
 	}
 	lStr := GetLadderSpriteSelection(tile)
 	if lStr != "" {
-		spr = append(spr, img.NewSprite(lStr, constants.FGBatch))
+		spr = append(spr, img.NewSprite(lStr, constants.TileBatch))
 	}
 	return spr
 }

@@ -86,7 +86,7 @@ func NewDrawThing(draw interface{}, obj *object.Object, target pixel.Target) {
 		if res != nil {
 			if _, okB := img.Batchers[res.Batch]; okB {
 				if !util.ContainsStr(res.Batch, currBatches) {
-					currBatches = append(currBatches, sprH.Batch)
+					currBatches = append(currBatches, res.Batch)
 				}
 				res.Spr.DrawColorMask(img.Batchers[res.Batch].Batch(), obj.Mat.Moved(res.Off), res.Col.Mul(obj.Mask))
 			}

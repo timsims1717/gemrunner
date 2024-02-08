@@ -10,8 +10,9 @@ import (
 
 var (
 	Timer       time.Time
-	FRate       int
+	FRate       = 10
 	inter       float64
+	FrameTime   float64
 	FrameSwitch bool
 )
 
@@ -29,6 +30,7 @@ type Tree struct {
 func SetFrameRate(fRate int) {
 	FRate = fRate
 	inter = 1. / float64(fRate)
+	FrameTime = inter
 }
 
 func Reset() {
@@ -46,8 +48,8 @@ func NewSimple(anim *Anim) *Tree {
 	t := &Tree{
 		Root: NewSwitch().
 			AddAnimation(anim).
-			SetChooseFn(func() int {
-				return 0
+			SetChooseFn(func() string {
+				return anim.Key
 			}),
 	}
 	t.Update()
@@ -84,7 +86,7 @@ func (t *Tree) Update() {
 				if t.anim.Key != t.animKey {
 					t.anim.Step = 0
 					trigger = 0
-				} else {
+				} else if !t.anim.Freeze {
 					t.anim.Step++
 					trigger = t.anim.Step
 					if t.anim.Step%len(t.anim.S) == 0 {
@@ -158,34 +160,37 @@ type switchEl struct {
 }
 
 type Switch struct {
-	Elements []*switchEl
-	Choose   func() int
+	Elements map[string]*switchEl
+	Choose   func() string
 }
 
 func NewSwitch() *Switch {
-	return &Switch{}
+	return &Switch{
+		Elements: map[string]*switchEl{},
+		Choose:   func() string { return "" },
+	}
 }
 
-func (s *Switch) AddNull() *Switch {
-	s.Elements = append(s.Elements, &switchEl{})
+func (s *Switch) AddNull(key string) *Switch {
+	s.Elements[key] = &switchEl{}
 	return s
 }
 
 func (s *Switch) AddAnimation(anim *Anim) *Switch {
-	s.Elements = append(s.Elements, &switchEl{
+	s.Elements[anim.Key] = &switchEl{
 		Anim: anim,
-	})
+	}
 	return s
 }
 
-func (s *Switch) AddSubSwitch(ss *Switch) *Switch {
-	s.Elements = append(s.Elements, &switchEl{
+func (s *Switch) AddSubSwitch(ss *Switch, key string) *Switch {
+	s.Elements[key] = &switchEl{
 		Switch: ss,
-	})
+	}
 	return s
 }
 
-func (s *Switch) SetChooseFn(fn func() int) *Switch {
+func (s *Switch) SetChooseFn(fn func() string) *Switch {
 	s.Choose = fn
 	return s
 }
@@ -206,6 +211,7 @@ type Anim struct {
 	S        []*pixel.Sprite
 	Step     int
 	Finish   Finish
+	Freeze   bool
 	Triggers map[int]func(*Anim, string, int)
 
 	Offset pixel.Vec
@@ -241,7 +247,6 @@ func NewAnimFromSprite(key string, spr *pixel.Sprite, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
 		S:      []*pixel.Sprite{spr},
-		Step:   0,
 		Finish: f,
 		Color:  util.White,
 	}
@@ -251,8 +256,52 @@ func NewAnimFromSprites(key string, spr []*pixel.Sprite, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
 		S:      spr,
-		Step:   0,
 		Finish: f,
+		Color:  util.White,
+	}
+}
+
+func NewBatchSprite(key string, batch *img.Batcher, spr string, f Finish) *Anim {
+	return &Anim{
+		Key:    key,
+		S:      []*pixel.Sprite{batch.GetSprite(spr)},
+		Finish: f,
+		Batch:  batch.Key,
+		Color:  util.White,
+	}
+}
+
+func NewBatchAnimation(key string, batch *img.Batcher, anim string, f Finish) *Anim {
+	return &Anim{
+		Key:    key,
+		S:      batch.GetAnimation(anim).S,
+		Finish: f,
+		Batch:  batch.Key,
+		Color:  util.White,
+	}
+}
+
+func NewBatchAnimationFrame(key string, batch *img.Batcher, anim string, frame int, f Finish) *Anim {
+	return &Anim{
+		Key:    key,
+		S:      []*pixel.Sprite{batch.GetAnimation(anim).S[frame]},
+		Finish: f,
+		Batch:  batch.Key,
+		Color:  util.White,
+	}
+}
+
+func NewBatchAnimationCustom(key string, batch *img.Batcher, anim string, frames []int, f Finish) *Anim {
+	spr := batch.GetAnimation(anim).S
+	var nSpr []*pixel.Sprite
+	for i := 0; i < len(frames); i++ {
+		nSpr = append(nSpr, spr[frames[i]])
+	}
+	return &Anim{
+		Key:    key,
+		S:      nSpr,
+		Finish: f,
+		Batch:  batch.Key,
 		Color:  util.White,
 	}
 }

@@ -28,7 +28,9 @@ func (s *editorState) Unload() {
 }
 
 func (s *editorState) Load() {
-	data.CurrPuzzle = data.CreateBlankPuzzle()
+	if data.CurrPuzzle == nil {
+		data.CurrPuzzle = data.CreateBlankPuzzle()
+	}
 	systems.PuzzleInit()
 	systems.EditorInit()
 	systems.UpdateViews()
@@ -40,13 +42,15 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddIntCoords("World", int(data.MenuInput.World.X), int(data.MenuInput.World.Y))
 	inPos := data.PuzzleView.ProjectWorld(data.MenuInput.World)
 	debug.AddIntCoords("Puzzle View In", int(inPos.X), int(inPos.Y))
-	debug.AddIntCoords("BlockSelect Pos", int(data.Editor.BlockSelect.PortPos.X), int(data.Editor.BlockSelect.PortPos.Y))
 
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
 	debug.AddIntCoords("Puzzle Coords", x, y)
 	debug.AddIntCoords("Last Coords", data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-	debug.AddText(fmt.Sprintf("NoInput: %t", data.Editor.NoInput))
-	debug.AddText(fmt.Sprintf("SelectVis: %t", data.Editor.SelectVis))
+	//debug.AddText(fmt.Sprintf("NoInput: %t", data.Editor.NoInput))
+	//debug.AddText(fmt.Sprintf("SelectVis: %t", data.Editor.SelectVis))
+	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzle.Metadata.Name))
+	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzle.Metadata.Filename))
+	debug.AddTruthText("Puzzle Completed", data.CurrPuzzle.Metadata.Completed)
 
 	if data.DebugInput.Get("camUp").Pressed() {
 		data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT
@@ -64,7 +68,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
 	if data.DebugInput.Get("debugTest").JustPressed() {
-
+		data.CurrPuzzle.Metadata.Completed = true
 	}
 
 	if data.DebugInput.Get("switchWorld").JustPressed() {
@@ -81,7 +85,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
 		systems.PuzzleEditSystem()
-		systems.TileSpriteSystem()
+		if data.CurrPuzzle.Update {
+			systems.TileSpriteSystem()
+			data.CurrPuzzle.Update = false
+		}
 	} else {
 
 	}
@@ -106,28 +113,30 @@ func (s *editorState) Update(win *pixelgl.Window) {
 }
 
 func (s *editorState) Draw(win *pixelgl.Window) {
-	// draw border
-	data.BorderView.Canvas.Clear(constants.ColorBlack)
-	systems.BorderSystem(1)
-	img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
-	img.Clear()
-	data.BorderView.Draw(win)
-	// draw puzzle
-	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 2) // normal tiles
-	img.Clear()
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 3) // selected tiles
-	img.Clear()
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 4) // ui
-	img.Clear()
-	data.IMDraw.Draw(data.PuzzleView.Canvas)
-	data.PuzzleView.Draw(win)
-	// dialog draw system
-	systems.DialogDrawSystem(win)
-	systems.TemporarySystem()
-	data.IMDraw.Clear()
-	if options.Updated {
-		systems.UpdateViews()
+	if data.CurrLevel == nil {
+		// draw border
+		data.BorderView.Canvas.Clear(constants.ColorBlack)
+		systems.BorderSystem(1)
+		img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
+		img.Clear()
+		data.BorderView.Draw(win)
+		// draw puzzle
+		data.PuzzleView.Canvas.Clear(constants.ColorBlack)
+		systems.NewDrawSystem(data.PuzzleView.Canvas, 2) // normal tiles
+		img.Clear()
+		systems.NewDrawSystem(data.PuzzleView.Canvas, 3) // selected tiles
+		img.Clear()
+		systems.NewDrawSystem(data.PuzzleView.Canvas, 4) // ui
+		img.Clear()
+		data.IMDraw.Draw(data.PuzzleView.Canvas)
+		data.PuzzleView.Draw(win)
+		// dialog draw system
+		systems.DialogDrawSystem(win)
+		systems.TemporarySystem()
+		data.IMDraw.Clear()
+		if options.Updated {
+			systems.UpdateViews()
+		}
 	}
 }
 

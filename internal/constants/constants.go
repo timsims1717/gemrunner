@@ -24,9 +24,8 @@ const (
 	BlockSelectWidth = 6.
 
 	// Batches
-	BGBatch = "tile_bg"
-	FGBatch = "tile_fg"
-	UIBatch = "ui"
+	TileBatch = "tiles"
+	UIBatch   = "ui"
 
 	// Layers
 	BlockSelectLayer = 250
@@ -37,6 +36,12 @@ const (
 	ThinBorderWhite     = "white_dot"
 	ThinBorderBlue      = "blue_dot"
 	TextCaret           = "text_caret"
+
+	// Game Constants
+	PlayerWalkSpeed  = 4.
+	PlayerClimbSpeed = 2.5
+	PlayerDownSpeed  = 4.5
+	PlayerGravity    = 5.
 )
 
 var (

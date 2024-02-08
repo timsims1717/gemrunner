@@ -13,6 +13,7 @@ var (
 	BorderView *viewport.ViewPort
 	IMDraw     *imdraw.IMDraw
 
+	CurrLevel  *Level
 	CurrPuzzle *Puzzle
 	CurrSelect *Selection
 	ClipSelect *Selection
@@ -20,8 +21,22 @@ var (
 	PuzzleShader string
 )
 
+type Level struct {
+	Tiles    *Tiles
+	Chars    []*Character
+	Player1  *Character
+	Stats1   *PlayerStats
+	Start    bool
+	Failed   bool
+	Complete bool
+
+	Puzzle   *Puzzle
+	Metadata *PuzzleMetadata
+}
+
 type Puzzle struct {
-	Tiles      *Tiles   `json:"tiles"`
+	Tiles *Tiles `json:"tiles"`
+
 	UndoStack  []*Tiles `json:"-"`
 	LastChange *Tiles   `json:"-"`
 	RedoStack  []*Tiles `json:"-"`
@@ -29,16 +44,18 @@ type Puzzle struct {
 	Click  bool `json:"-"`
 	Update bool `json:"-"`
 
-	WorldSprite    string     `json:"sprite"`
-	WorldNumber    int        `json:"world"`
-	PrimaryColor   pixel.RGBA `json:"primaryColor"`
-	SecondaryColor pixel.RGBA `json:"secondaryColor"`
-
-	PuzzleInfo *PuzzleInfo `json:"metadata"`
+	Metadata *PuzzleMetadata `json:"metadata"`
 }
 
 type Tiles struct {
 	T [constants.PuzzleHeight][constants.PuzzleWidth]*Tile
+}
+
+func (t *Tiles) Get(x, y int) *Tile {
+	if x < 0 || y < y || x >= constants.PuzzleWidth || y >= constants.PuzzleHeight {
+		return nil
+	}
+	return t.T[y][x]
 }
 
 func NewTiles() *Tiles {
@@ -57,37 +74,20 @@ type Selection struct {
 
 func CreateBlankPuzzle() *Puzzle {
 	worldNum := constants.WorldRock
-	puz := &Puzzle{
-		Tiles:          NewTiles(),
-		WorldNumber:    worldNum,
+	md := &PuzzleMetadata{
 		WorldSprite:    constants.WorldSprites[worldNum],
+		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
+	}
+	puz := &Puzzle{
+		Tiles:    NewTiles(),
+		Metadata: md,
 	}
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
 			puz.Tiles.T[y][x] = &Tile{
 				Block:  Block(Empty),
-				Coords: world.Coords{X: x, Y: y},
-			}
-		}
-	}
-	return puz
-}
-
-func CreateTestPuzzle() *Puzzle {
-	puz := &Puzzle{
-		Tiles: NewTiles(),
-	}
-	for y := 0; y < constants.PuzzleHeight; y++ {
-		for x := 0; x < constants.PuzzleWidth; x++ {
-			block := Empty
-			if (x+y)%2 == 0 {
-				block = Turf
-			}
-			puz.Tiles.T[y][x] = &Tile{
-				Block:  Block(block),
-				Ladder: false,
 				Coords: world.Coords{X: x, Y: y},
 			}
 		}

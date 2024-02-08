@@ -6,6 +6,7 @@ import (
 
 var (
 	TileSize float64
+	HalfSize float64
 	Origin   = Coords{
 		X: 0,
 		Y: 0,
@@ -15,6 +16,7 @@ var (
 
 func SetTileSize(s float64) {
 	TileSize = s
+	HalfSize = s * 0.5
 	TileRect = pixel.R(0, 0, s, s)
 }
 

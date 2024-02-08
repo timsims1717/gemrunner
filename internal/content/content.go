@@ -55,10 +55,10 @@ func LoadPuzzleContent() error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	var r []data.PuzzleInfo
+	var r []data.PuzzleMetadata
 	for _, d := range list {
 		if !d.IsDir() && filepath.Ext(d.Name()) == constants.PuzzleExt {
-			pi := data.PuzzleInfo{
+			pi := data.PuzzleMetadata{
 				Name:     d.Name(),
 				Filename: d.Name(),
 			}

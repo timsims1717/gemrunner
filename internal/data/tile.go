@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
+	"github.com/bytearena/ecs"
 )
 
 type Block int
@@ -33,8 +34,8 @@ const (
 func (b Block) String() string {
 	switch b {
 	case Turf, Fall:
-		if CurrPuzzle != nil && CurrPuzzle.WorldSprite != "" {
-			return CurrPuzzle.WorldSprite
+		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
+			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldRock]
 	case Ladder:
@@ -119,6 +120,7 @@ type Tile struct {
 	Coords world.Coords   `json:"-"`
 	Object *object.Object `json:"-"`
 	Update bool           `json:"-"`
+	Entity *ecs.Entity    `json:"-"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -137,4 +139,8 @@ func (t *Tile) CopyInto(c *Tile) {
 func (t *Tile) Empty() {
 	t.Block = Empty
 	t.Ladder = false
+}
+
+func (t *Tile) Solid() bool {
+	return !t.Ladder && (t.Block == Turf || t.Block == Fall)
 }

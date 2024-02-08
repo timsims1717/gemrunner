@@ -85,22 +85,37 @@ func FunctionSystem() {
 func TemporarySystem() {
 	for _, result := range myecs.Manager.Query(myecs.IsTemp) {
 		temp := result.Components[myecs.Temp]
-		obj, okT := result.Components[myecs.Object].(*object.Object)
-		if okT {
-			if timer, ok := temp.(*timing.Timer); ok {
-				if timer.UpdateDone() {
-					obj.Hidden = true
-					obj.Killed = true
-					myecs.Manager.DisposeEntity(result.Entity)
-				}
-			} else if check, ok := temp.(myecs.ClearFlag); ok {
-				if check {
-					obj.Hidden = true
-					obj.Killed = true
-					myecs.Manager.DisposeEntity(result.Entity)
-				}
+		del := false
+		if timer, ok := temp.(*timing.Timer); ok {
+			if timer.UpdateDone() {
+				del = true
+			}
+		} else if check, ok := temp.(myecs.ClearFlag); ok {
+			if check {
+				del = true
 			}
 		}
+		if del {
+			if objC, ok1 := result.Entity.GetComponentData(myecs.Object); ok1 {
+				if obj, ok2 := objC.(*object.Object); ok2 {
+					obj.Hidden = true
+					obj.Killed = true
+				}
+			}
+			myecs.Manager.DisposeEntity(result.Entity)
+		}
+	}
+}
+
+func ClearTemp() {
+	for _, result := range myecs.Manager.Query(myecs.IsTemp) {
+		if objC, ok1 := result.Entity.GetComponentData(myecs.Object); ok1 {
+			if obj, ok2 := objC.(*object.Object); ok2 {
+				obj.Hidden = true
+				obj.Killed = true
+			}
+		}
+		myecs.Manager.DisposeEntity(result.Entity)
 	}
 }
 

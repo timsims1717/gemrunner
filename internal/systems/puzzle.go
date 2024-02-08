@@ -24,29 +24,33 @@ func PuzzleInit() {
 				obj.Pos.X += world.TileSize * 0.5
 				obj.Pos.Y += world.TileSize * 0.5
 				obj.Layer = 2
-				myecs.Manager.NewEntity().
+				e := myecs.Manager.NewEntity().
 					AddComponent(myecs.Object, obj).
 					AddComponent(myecs.Tile, tile)
 				tile.Object = obj
+				tile.Entity = e
 			}
 		}
 		data.CurrPuzzle.Update = true
 	} else {
 		panic("no puzzle loaded")
 	}
+	PuzzleViewInit()
+}
 
+func PuzzleViewInit() {
 	if data.PuzzleView == nil {
 		data.PuzzleView = viewport.New(nil)
 		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
 		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
 		data.PuzzleView.PortPos = viewport.MainCamera.CamPos
 	}
-	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.PrimaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.PrimaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.PrimaryColor.B))
-	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.SecondaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.SecondaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.SecondaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
 	data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
 	if data.BorderView == nil {
 		data.BorderView = viewport.New(nil)
@@ -56,22 +60,43 @@ func PuzzleInit() {
 }
 
 func PuzzleDispose(full bool) {
-	for _, result := range myecs.Manager.Query(myecs.IsTile) {
-		myecs.Manager.DisposeEntity(result)
-	}
-	if full {
-		data.CurrPuzzle = nil
+	if data.CurrPuzzle != nil {
+		for _, row := range data.CurrPuzzle.Tiles.T {
+			for _, tile := range row {
+				myecs.Manager.DisposeEntity(tile.Entity)
+			}
+		}
+		if full {
+			data.CurrPuzzle = nil
+		}
 	}
 }
 
-func SavePuzzle() error {
+func SavePuzzle() {
+	if data.Editor != nil {
+		if data.CurrPuzzle.Metadata == nil {
+			data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
+		}
+		if data.CurrPuzzle.Metadata.Name == "" {
+			data.CurrPuzzle.Metadata.Name = "test"
+			data.CurrPuzzle.Metadata.Filename = "test.puzzle"
+		}
+		data.CurrPuzzle.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzle.Metadata.Name)
+		err := SavePuzzleToFile()
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+	}
+}
+
+func SavePuzzleToFile() error {
 	errMsg := "save puzzle"
 	if data.CurrPuzzle == nil {
 		return errors.Wrap(errors.New("no puzzle to save"), errMsg)
 	}
 	var svgFName = "test.puzzle"
-	if data.CurrPuzzle.PuzzleInfo.Filename != "" {
-		svgFName = data.CurrPuzzle.PuzzleInfo.Filename
+	if data.CurrPuzzle.Metadata.Filename != "" {
+		svgFName = data.CurrPuzzle.Metadata.Filename
 	}
 	svgPath := fmt.Sprintf("%s/%s", constants.PuzzlesDir, svgFName)
 	saveFile, err := os.Create(svgPath)
@@ -98,6 +123,9 @@ func OpenPuzzle(filename string) error {
 	pzlFile, err := os.ReadFile(filename)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
+	}
+	if data.CurrPuzzle == nil {
+		data.CurrPuzzle = data.CreateBlankPuzzle()
 	}
 	err = json.Unmarshal(pzlFile, data.CurrPuzzle)
 	if err != nil {
