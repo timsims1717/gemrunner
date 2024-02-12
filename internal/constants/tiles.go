@@ -13,8 +13,10 @@ const (
 	TileAlt          = "_alt"
 	TileDoorPink     = "door_pink"
 	TileLockPink     = "lock_pink"
+	TileUnlockPink   = "unlock_pink"
 	TileDoorBlue     = "door_blue"
 	TileLockBlue     = "lock_blue"
+	TileUnlockBlue   = "unlock_blue"
 	TileFall         = "fall"
 	TileTurf         = "turf"
 	TileEmpty        = "empty"
@@ -23,7 +25,7 @@ const (
 // Characters
 const (
 	CharPlayer1 = "player_1"
-	CharDevil   = "devil"
+	CharDemon   = "devil"
 )
 
 // Items

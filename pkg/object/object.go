@@ -34,6 +34,7 @@ type Object struct {
 
 	Mask  pixel.RGBA
 	Layer int
+	IntA  int
 
 	ILock        bool
 	HideChildren bool

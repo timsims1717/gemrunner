@@ -6,15 +6,33 @@ import (
 )
 
 var (
-	GameInput = &pxginput.Input{
-		Key: "game_input",
+	P1Input = &pxginput.Input{
+		Key: "p1_input",
 		Buttons: map[string]*pxginput.ButtonSet{
-			"left":   pxginput.New(pixelgl.KeyA, pixelgl.ButtonDpadLeft),
-			"right":  pxginput.New(pixelgl.KeyD, pixelgl.ButtonDpadRight),
-			"up":     pxginput.New(pixelgl.KeyW, pixelgl.ButtonDpadUp),
-			"down":   pxginput.New(pixelgl.KeyS, pixelgl.ButtonDpadDown),
-			"jump":   pxginput.New(pixelgl.KeySpace, pixelgl.ButtonA),
-			"action": pxginput.New(pixelgl.KeyLeftShift, pixelgl.ButtonX),
+			"p1_left":   pxginput.New(pixelgl.KeyKP4, pixelgl.ButtonDpadLeft),
+			"p1_right":  pxginput.New(pixelgl.KeyKP6, pixelgl.ButtonDpadRight),
+			"p1_up":     pxginput.New(pixelgl.KeyKP8, pixelgl.ButtonDpadUp),
+			"p1_down":   pxginput.New(pixelgl.KeyKP5, pixelgl.ButtonDpadDown),
+			"p1_jump":   pxginput.New(pixelgl.KeyKP0, pixelgl.ButtonA),
+			"p1_pickUp": pxginput.New(pixelgl.KeyKP1, pixelgl.ButtonX),
+			"p1_action": pxginput.New(pixelgl.KeyKP2, pixelgl.ButtonB),
+			"p1_kill":   pxginput.New(pixelgl.KeyK, pixelgl.ButtonBack),
+			"speedUp":   pxginput.New(pixelgl.KeyEqual, pixelgl.ButtonRightBumper),
+			"speedDown": pxginput.New(pixelgl.KeyMinus, pixelgl.ButtonLeftBumper),
+		},
+		Mode: pxginput.Any,
+	}
+	P2Input = &pxginput.Input{
+		Key: "p2_input",
+		Buttons: map[string]*pxginput.ButtonSet{
+			"p2_left":   pxginput.New(pixelgl.KeyA, pixelgl.ButtonDpadLeft),
+			"p2_right":  pxginput.New(pixelgl.KeyD, pixelgl.ButtonDpadRight),
+			"p2_up":     pxginput.New(pixelgl.KeyW, pixelgl.ButtonDpadUp),
+			"p2_down":   pxginput.New(pixelgl.KeyS, pixelgl.ButtonDpadDown),
+			"p2_jump":   pxginput.New(pixelgl.KeySpace, pixelgl.ButtonA),
+			"p2_pickUp": pxginput.New(pixelgl.KeyLeftShift, pixelgl.ButtonX),
+			"p2_action": pxginput.New(pixelgl.KeyLeftControl, pixelgl.ButtonB),
+			"p2_kill":   pxginput.New(pixelgl.KeyX, pixelgl.ButtonBack),
 		},
 		Mode: pxginput.Any,
 	}
@@ -67,15 +85,15 @@ var (
 			"debugMenu":    pxginput.NewJoyless(pixelgl.KeyF7),
 			"debugTest":    pxginput.NewJoyless(pixelgl.KeyF8),
 			"debugPause":   pxginput.NewJoyless(pixelgl.KeyF9),
-			"debugResume":  pxginput.NewJoyless(pixelgl.KeyF10),
+			"debugFrame":   pxginput.NewJoyless(pixelgl.KeyF10),
 			"debugInv":     pxginput.NewJoyless(pixelgl.KeyF11),
 			"switchWorld":  pxginput.NewJoyless(pixelgl.KeyTab),
 			//"debugSP":      pxginput.NewJoyless(pixelgl.KeyEqual),
 			//"debugSM":      pxginput.NewJoyless(pixelgl.KeyMinus),
-			"camUp":    pxginput.NewJoyless(pixelgl.KeyKP8),
-			"camRight": pxginput.NewJoyless(pixelgl.KeyKP6),
-			"camDown":  pxginput.NewJoyless(pixelgl.KeyKP5),
-			"camLeft":  pxginput.NewJoyless(pixelgl.KeyKP4),
+			//"camUp":    pxginput.NewJoyless(pixelgl.KeyKP8),
+			//"camRight": pxginput.NewJoyless(pixelgl.KeyKP6),
+			//"camDown":  pxginput.NewJoyless(pixelgl.KeyKP5),
+			//"camLeft":  pxginput.NewJoyless(pixelgl.KeyKP4),
 		},
 		Mode: pxginput.KeyboardMouse,
 	}

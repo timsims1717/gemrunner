@@ -41,6 +41,9 @@ var (
 	loading = false
 	done    = make(chan struct{})
 
+	debugPause = false
+	debugFrame = false
+
 	clearColor color.Color
 )
 
@@ -81,7 +84,10 @@ func Update(win *pixelgl.Window) {
 	if !loading {
 		if len(stateStack) > 0 && stackPtr > -1 {
 			if cState, ok := states[stateStack[stackPtr]]; ok {
-				cState.Update(win)
+				if !debugPause || debugFrame {
+					cState.Update(win)
+					debugFrame = false
+				}
 			} else {
 				panic(fmt.Sprintf("state.Update - state %s doesn't exist\n", stateStack[stackPtr]))
 			}
@@ -165,4 +171,17 @@ func PopState() {
 	} else {
 		stackPtr--
 	}
+}
+
+func ToggleDebugPause() {
+	if debugPause {
+		fmt.Println("DEBUG RESUME")
+	} else {
+		fmt.Println("DEBUG PAUSE")
+	}
+	debugPause = !debugPause
+}
+
+func DebugFrameAdvance() {
+	debugFrame = true
 }

@@ -55,17 +55,26 @@ func (s *testState) Load() {
 }
 
 func (s *testState) Update(win *pixelgl.Window) {
-	data.GameInput.Update(win, viewport.MainCamera.Mat)
+	data.P1Input.Update(win, viewport.MainCamera.Mat)
+	data.P2Input.Update(win, viewport.MainCamera.Mat)
 	debug.AddText("Test State")
-	p1 := data.CurrLevel.Player1
+	p1 := data.CurrLevel.Players[0]
 	p1Pos := p1.FauxObj.Pos
 	debug.AddIntCoords("Player Pos", int(p1Pos.X), int(p1Pos.Y))
 	cx, cy := world.WorldToMap(p1Pos.X, p1Pos.Y)
 	debug.AddIntCoords("Player Coords", cx, cy)
 	tile := data.CurrLevel.Tiles.Get(cx, cy)
 	debug.AddIntCoords("Tile Pos", int(tile.Object.Pos.X), int(tile.Object.Pos.Y))
-	debug.AddText(fmt.Sprintf("Player 1 Score: %d", data.CurrLevel.Stats1.Score))
+	debug.AddText(fmt.Sprintf("Player 1 Score: %d", data.CurrLevel.Stats[0].Score))
+	held := "None"
+	if data.CurrLevel.Players[0].Held != nil {
+		held = data.CurrLevel.Players[0].HeldObj.ID
+	}
+	debug.AddText(fmt.Sprintf("Player 1 Held Item: %s", held))
 
+	if reanimator.FRate != constants.FrameRate {
+		reanimator.SetFrameRate(constants.FrameRate)
+	}
 	reanimator.Update()
 
 	// function systems
@@ -76,7 +85,9 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	if !data.DialogStackOpen {
 		// custom systems
+		systems.InGameSystem()
 		systems.CollisionSystem()
+		systems.DynamicSystem()
 		systems.CharacterSystem()
 		systems.CollectSystem()
 		systems.TileSpriteSystemPre()
@@ -105,14 +116,18 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.BorderView.Draw(win)
 	// draw puzzle
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 10) // bg tiles/items/gems
+	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
 	img.Clear()
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 11) // characters
-	img.Clear()
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 12) // fg tiles
-	img.Clear()
-	systems.NewDrawSystem(data.PuzzleView.Canvas, 14) // ui
-	img.Clear()
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 10) // bg tiles, ladders
+	//img.Clear()
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 11) // gems
+	//img.Clear()
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 18) // other characters
+	//img.Clear()
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 19) // fg tiles, liquid, crushers
+	//img.Clear()
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 20) // ui
+	//img.Clear()
 	//data.IMDraw.Draw(data.PuzzleView.Canvas)
 	data.PuzzleView.Draw(win)
 	// dialog draw system

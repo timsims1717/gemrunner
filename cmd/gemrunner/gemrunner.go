@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/load"
@@ -91,7 +90,10 @@ func run() {
 		data.MenuInput.Update(win, viewport.MainCamera.Mat)
 		data.DebugInput.Update(win, viewport.MainCamera.Mat)
 		if data.DebugInput.Get("debugPause").JustPressed() {
-			fmt.Println("BREAKPOINT")
+			state.ToggleDebugPause()
+		}
+		if data.DebugInput.Get("debugFrame").JustPressed() || data.DebugInput.Get("debugFrame").Repeated() {
+			state.DebugFrameAdvance()
 		}
 		if data.DebugInput.Get("fullscreen").JustPressed() {
 			options.FullScreen = !options.FullScreen

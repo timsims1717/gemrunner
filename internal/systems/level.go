@@ -31,19 +31,31 @@ func LevelInit() {
 			tile.Entity = e
 			// replace characters and items
 			switch tile.Block {
-			case data.Player1:
-				tile.Block = data.Empty
+			case data.BlockPlayer1:
+				tile.Block = data.BlockEmpty
 				p1 := PlayerCharacter(obj.Pos, 0)
-				data.CurrLevel.Player1 = p1
+				data.CurrLevel.Players[0] = p1
 				data.CurrLevel.Chars = append(data.CurrLevel.Chars, p1)
-				data.CurrLevel.Stats1 = data.NewStats()
-			case data.Gem:
-				tile.Block = data.Empty
+				data.CurrLevel.Stats[0] = data.NewStats()
+			case data.BlockDemon:
+				tile.Block = data.BlockEmpty
+				demon := DemonCharacter(obj.Pos, 1)
+				//data.CurrLevel.Players[1] = demon
+				data.CurrLevel.Chars = append(data.CurrLevel.Chars, demon)
+			case data.BlockGem:
+				tile.Block = data.BlockEmpty
 				CreateGem(obj.Pos)
-			case data.DoorPink, data.DoorBlue:
+			case data.BlockDoorPink, data.BlockDoorBlue, data.BlockLockPink, data.BlockLockBlue:
 				doorKey := tile.Block.String()
-				tile.Block = data.Empty
-				CreateEmptyDoor(obj.Pos, doorKey)
+				tile.Block = data.BlockEmpty
+				CreateDoor(obj.Pos, doorKey)
+			case data.BlockBox:
+				tile.Block = data.BlockEmpty
+				CreateBox(obj.Pos)
+			case data.BlockKeyPink, data.BlockKeyBlue:
+				keyKey := tile.Block.String()
+				tile.Block = data.BlockEmpty
+				CreateKey(obj.Pos, keyKey)
 			}
 		}
 	}

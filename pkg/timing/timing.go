@@ -3,7 +3,6 @@ package timing
 import (
 	"fmt"
 	"math"
-	"strconv"
 	"time"
 )
 
@@ -12,7 +11,7 @@ var (
 	last   time.Time
 	frames int
 	second = time.Tick(time.Second)
-	FPS    = "0"
+	FPS    = 0
 )
 
 func init() {
@@ -32,7 +31,7 @@ func Update() {
 	frames++
 	select {
 	case <-second:
-		FPS = strconv.Itoa(frames)
+		FPS = frames
 		frames = 0
 	default:
 	}

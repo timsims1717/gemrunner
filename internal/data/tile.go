@@ -6,96 +6,97 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
+	"github.com/beefsack/go-astar"
 	"github.com/bytearena/ecs"
 )
 
 type Block int
 
 const (
-	Turf = iota
-	Fall
-	Ladder
-	DoorPink
-	LockPink
-	DoorBlue
-	LockBlue
-	Player1
-	Devil
-	Box
-	KeyPink
-	KeyBlue
-	Gem
-	Chain
-	Reeds
-	Flowers
-	Empty
+	BlockTurf = iota
+	BlockFall
+	BlockLadder
+	BlockDoorPink
+	BlockLockPink
+	BlockDoorBlue
+	BlockLockBlue
+	BlockPlayer1
+	BlockDemon
+	BlockBox
+	BlockKeyPink
+	BlockKeyBlue
+	BlockGem
+	BlockChain
+	BlockReeds
+	BlockFlowers
+	BlockEmpty
 )
 
 func (b Block) String() string {
 	switch b {
-	case Turf, Fall:
+	case BlockTurf, BlockFall:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldRock]
-	case Ladder:
+	case BlockLadder:
 		return constants.TileLadderMiddle
-	case DoorPink:
+	case BlockDoorPink:
 		return constants.TileDoorPink
-	case LockPink:
+	case BlockLockPink:
 		return constants.TileLockPink
-	case DoorBlue:
+	case BlockDoorBlue:
 		return constants.TileDoorBlue
-	case LockBlue:
+	case BlockLockBlue:
 		return constants.TileLockBlue
-	case Player1:
+	case BlockPlayer1:
 		return constants.CharPlayer1
-	case Devil:
-		return constants.CharDevil
-	case Box:
+	case BlockDemon:
+		return constants.CharDemon
+	case BlockBox:
 		return constants.ItemBox
-	case KeyPink:
+	case BlockKeyPink:
 		return constants.ItemKeyPink
-	case KeyBlue:
+	case BlockKeyBlue:
 		return constants.ItemKeyBlue
-	case Gem:
+	case BlockGem:
 		return constants.ItemGem
-	case Chain:
+	case BlockChain:
 		return constants.DoodadChain
-	case Reeds:
+	case BlockReeds:
 		return constants.DoodadReeds
-	case Flowers:
+	case BlockFlowers:
 		return constants.DoodadFlowers
 	}
 	return "empty"
 }
 
 var toID = map[string]Block{
-	constants.TileTurf:         Turf,
-	constants.TileFall:         Fall,
-	constants.TileLadderMiddle: Ladder,
-	constants.TileDoorPink:     DoorPink,
-	constants.TileLockPink:     LockPink,
-	constants.TileDoorBlue:     DoorBlue,
-	constants.TileLockBlue:     LockBlue,
-	constants.CharPlayer1:      Player1,
-	constants.CharDevil:        Devil,
-	constants.ItemBox:          Box,
-	constants.ItemKeyPink:      KeyPink,
-	constants.ItemKeyBlue:      KeyBlue,
-	constants.ItemGem:          Gem,
-	constants.DoodadChain:      Chain,
-	constants.DoodadReeds:      Reeds,
-	constants.DoodadFlowers:    Flowers,
-	constants.TileEmpty:        Empty,
+	constants.TileTurf:         BlockTurf,
+	constants.TileFall:         BlockFall,
+	constants.TileLadderMiddle: BlockLadder,
+	constants.TileDoorPink:     BlockDoorPink,
+	constants.TileLockPink:     BlockLockPink,
+	constants.TileDoorBlue:     BlockDoorBlue,
+	constants.TileLockBlue:     BlockLockBlue,
+	constants.CharPlayer1:      BlockPlayer1,
+	constants.CharDemon:        BlockDemon,
+	constants.ItemBox:          BlockBox,
+	constants.ItemKeyPink:      BlockKeyPink,
+	constants.ItemKeyBlue:      BlockKeyBlue,
+	constants.ItemGem:          BlockGem,
+	constants.DoodadChain:      BlockChain,
+	constants.DoodadReeds:      BlockReeds,
+	constants.DoodadFlowers:    BlockFlowers,
+	constants.TileEmpty:        BlockEmpty,
 }
 
 func (b Block) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
 	switch b {
-	case Turf:
+	case BlockTurf:
 		buffer.WriteString(constants.TileTurf)
-	case Fall:
+	case BlockFall:
 		buffer.WriteString(constants.TileFall)
 	default:
 		buffer.WriteString(b.String())
@@ -137,10 +138,59 @@ func (t *Tile) CopyInto(c *Tile) {
 }
 
 func (t *Tile) Empty() {
-	t.Block = Empty
+	t.Block = BlockEmpty
 	t.Ladder = false
 }
 
 func (t *Tile) Solid() bool {
-	return !t.Ladder && (t.Block == Turf || t.Block == Fall)
+	return !t.Ladder && (t.Block == BlockTurf || t.Block == BlockFall)
+}
+
+// a* implementation
+
+func (t *Tile) PathNeighbors() []astar.Pather {
+	if CurrLevel == nil {
+		return []astar.Pather{}
+	}
+	var neighbors []astar.Pather
+	// Down
+	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
+	if d != nil && !d.Solid() {
+		neighbors = append(neighbors, d)
+	}
+	notFalling := d == nil || d.Solid() || d.Ladder || t.Ladder
+	// Left
+	l := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y)
+	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
+	//if notFalling && l != nil && !l.Solid() &&
+	//	(l.Ladder || lb == nil || lb.Solid()) {
+	//	neighbors = append(neighbors, l)
+	//}
+	if notFalling && l != nil && !l.Solid() {
+		neighbors = append(neighbors, l)
+	}
+	// Right
+	r := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y)
+	//rb := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y-1)
+	//if notFalling && r != nil && !r.Solid() &&
+	//	(r.Ladder || rb == nil || rb.Solid()) {
+	//	neighbors = append(neighbors, r)
+	//}
+	if notFalling && r != nil && !r.Solid() {
+		neighbors = append(neighbors, r)
+	}
+	// Up
+	u := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y+1)
+	if notFalling && u != nil && !u.Solid() && t.Ladder {
+		neighbors = append(neighbors, u)
+	}
+	return neighbors
+}
+
+func (t *Tile) PathNeighborCost(to astar.Pather) float64 {
+	return 1.
+}
+
+func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
+	return 1.
 }

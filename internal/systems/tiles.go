@@ -45,10 +45,10 @@ func TileSpriteSystem() {
 func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	var spr []*img.Sprite
 	switch tile.Block {
-	case data.Empty, data.Ladder:
-	case data.Turf, data.Fall:
+	case data.BlockEmpty, data.BlockLadder:
+	case data.BlockTurf, data.BlockFall:
 		spr = append(spr, img.NewSprite(GetBlockSprite(tile), constants.TileBatch))
-		if tile.Block == data.Fall {
+		if tile.Block == data.BlockFall {
 			spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
 		}
 	default:
@@ -71,7 +71,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	below.Y--
 	if CoordsLegal(above) {
 		a := data.CurrPuzzle.Tiles.T[above.Y][above.X].Block
-		if a == data.Turf || a == data.Fall {
+		if a == data.BlockTurf || a == data.BlockFall {
 			top = false
 		}
 	} else {
@@ -79,7 +79,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	}
 	if CoordsLegal(below) {
 		b := data.CurrPuzzle.Tiles.T[below.Y][below.X].Block
-		if b == data.Turf || b == data.Fall {
+		if b == data.BlockTurf || b == data.BlockFall {
 			bottom = false
 		}
 	} else {
@@ -123,10 +123,10 @@ func GetLadderSprite(tile *data.Tile) string {
 func GetTileSpritesSelection(tile *data.Tile) []*img.Sprite {
 	var spr []*img.Sprite
 	switch tile.Block {
-	case data.Empty:
-	case data.Turf, data.Fall:
+	case data.BlockEmpty:
+	case data.BlockTurf, data.BlockFall:
 		spr = append(spr, img.NewSprite(GetSpriteSelection(tile), constants.TileBatch))
-		if tile.Block == data.Fall {
+		if tile.Block == data.BlockFall {
 			spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
 		}
 	default:
@@ -148,12 +148,12 @@ func GetSpriteSelection(tile *data.Tile) string {
 	below := tile.Coords
 	below.Y--
 	if CoordsLegalSelection(above) {
-		if data.CurrSelect.Tiles[above.Y][above.X].Block != data.Empty {
+		if data.CurrSelect.Tiles[above.Y][above.X].Block != data.BlockEmpty {
 			top = false
 		}
 	}
 	if CoordsLegalSelection(below) {
-		if data.CurrSelect.Tiles[below.Y][below.X].Block != data.Empty {
+		if data.CurrSelect.Tiles[below.Y][below.X].Block != data.BlockEmpty {
 			bottom = false
 		}
 	}
@@ -199,24 +199,24 @@ func SetBlock(coords world.Coords, block data.Block) {
 			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 			if !tile.Update {
 				switch block {
-				case data.Ladder:
-					if tile.Ladder || tile.Block != data.Turf {
-						tile.Block = data.Empty
+				case data.BlockLadder:
+					if tile.Ladder || tile.Block != data.BlockTurf {
+						tile.Block = data.BlockEmpty
 					}
 					tile.Ladder = true
-				case data.Player1:
+				case data.BlockPlayer1:
 					tile.Ladder = false
 					// ensure no other player of that type are in puzzle
 					for _, row := range data.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == block {
-								t.Block = data.Empty
+								t.Block = data.BlockEmpty
 							}
 						}
 					}
 					tile.Block = block
 				default:
-					if tile.Ladder && !(block == data.Turf && tile.Block == data.Empty) {
+					if tile.Ladder && !(block == data.BlockTurf && tile.Block == data.BlockEmpty) {
 						tile.Ladder = false
 					}
 					tile.Block = block
@@ -237,8 +237,8 @@ func DeleteBlock(coords world.Coords) {
 			if !tile.Update {
 				if tile.Ladder {
 					tile.Ladder = false
-				} else if tile.Block != data.Empty {
-					tile.Block = data.Empty
+				} else if tile.Block != data.BlockEmpty {
+					tile.Block = data.BlockEmpty
 				}
 				data.CurrPuzzle.Update = true
 				tile.Update = true

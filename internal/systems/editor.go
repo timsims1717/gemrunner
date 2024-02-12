@@ -325,7 +325,7 @@ func PuzzleEditSystem() {
 				if legal {
 					if rClick.JustReleased() || click.JustReleased() {
 						tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
-						if tile.Block != data.Empty {
+						if tile.Block != data.BlockEmpty {
 							data.Editor.CurrBlock = tile.Block
 						}
 						if data.Editor.LastMode > data.Fill {
@@ -665,15 +665,15 @@ func PlaceSelection() {
 	hasP1 := false
 	for _, row := range data.CurrSelect.Tiles {
 		for _, tile := range row {
-			if tile.Block == data.Player1 {
+			if tile.Block == data.BlockPlayer1 {
 				hasP1 = true
 			}
 		}
 	}
 	for _, row := range data.CurrPuzzle.Tiles.T {
 		for _, tile := range row {
-			if tile.Block == data.Player1 && hasP1 {
-				tile.Block = data.Empty
+			if tile.Block == data.BlockPlayer1 && hasP1 {
+				tile.Block = data.BlockEmpty
 			}
 		}
 	}

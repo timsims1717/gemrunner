@@ -139,14 +139,14 @@ func customizeDialogs(win *pixelgl.Window) {
 					if dialog.Key == "editor_panel_top" {
 						beBG = nil
 					}
-					beFG := img.NewSprite(data.Block(data.Turf).String(), constants.TileBatch)
+					beFG := img.NewSprite(data.Block(data.BlockTurf).String(), constants.TileBatch)
 					beEx := img.NewSprite("", constants.TileBatch)
 					spr.Entity.AddComponent(myecs.Drawable, []*img.Sprite{beBG, beFG, beEx})
 					spr.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 						if data.Editor != nil && dialog.Open && !data.DialogStackOpen {
 							beFG.Key = data.Editor.CurrBlock.String()
 							switch data.Editor.CurrBlock {
-							case data.Fall:
+							case data.BlockFall:
 								beEx.Key = constants.TileFall
 							default:
 								beEx.Key = ""
@@ -179,12 +179,12 @@ func customizeDialogs(win *pixelgl.Window) {
 						}
 					}))
 				case "block_select_tile":
-					if b < data.Empty {
+					if b < data.BlockEmpty {
 						bId := data.Block(b)
 						//sprB := img.NewSprite("black_square_big", constants.UIBatch)
 						sprS := img.NewSprite(bId.String(), constants.TileBatch)
 						sprs := []*img.Sprite{sprS}
-						if b == data.Fall {
+						if b == data.BlockFall {
 							sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
 						}
 						obj := spr.Object

@@ -22,7 +22,7 @@ func InitializeFPS() {
 }
 
 func DrawFPS(win *pixelgl.Window) {
-	fpsText.SetText(fmt.Sprintf("FPS: %s", timing.FPS))
+	fpsText.SetText(fmt.Sprintf("FPS: %d", timing.FPS))
 	fpsText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*-0.5+2., win.Bounds().H()*-0.5+2))
 	fpsText.Obj.Update()
 	fpsText.Draw(win)

@@ -122,11 +122,11 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		data.BorderView.Draw(win)
 		// draw puzzle
 		data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-		systems.NewDrawSystem(data.PuzzleView.Canvas, 2) // normal tiles
+		systems.DrawLayerSystem(data.PuzzleView.Canvas, 2) // normal tiles
 		img.Clear()
-		systems.NewDrawSystem(data.PuzzleView.Canvas, 3) // selected tiles
+		systems.DrawLayerSystem(data.PuzzleView.Canvas, 3) // selected tiles
 		img.Clear()
-		systems.NewDrawSystem(data.PuzzleView.Canvas, 4) // ui
+		systems.DrawLayerSystem(data.PuzzleView.Canvas, 4) // ui
 		img.Clear()
 		data.IMDraw.Draw(data.PuzzleView.Canvas)
 		data.PuzzleView.Draw(win)

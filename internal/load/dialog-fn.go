@@ -35,7 +35,15 @@ func OpenDialog(key string) func() {
 func NewPuzzle() {
 	if data.Editor != nil {
 		// todo: if changes exist, open save/new dialog
-		data.CurrPuzzle = data.CreateBlankPuzzle()
+		if data.CurrPuzzle == nil {
+			data.CurrPuzzle = data.CreateBlankPuzzle()
+		} else {
+			for _, row := range data.CurrPuzzle.Tiles.T {
+				for _, tile := range row {
+					tile.Empty()
+				}
+			}
+		}
 		systems.PuzzleInit()
 	}
 }

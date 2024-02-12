@@ -4,21 +4,21 @@
     {
       "key": "ladder_bottom",
       "x": 0,
-      "y": 32,
+      "y": 48,
       "h": 16,
       "w": 16
     },
     {
       "key": "ladder_middle",
       "x": 0,
-      "y": 48,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "ladder_top",
       "x": 0,
-      "y": 64,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -339,15 +339,15 @@
     },
     {
       "key": "box",
-      "x": 32,
-      "y": 32,
+      "x": 16,
+      "y": 80,
       "h": 16,
       "w": 16
     },
     {
       "key": "fall",
-      "x": 64,
-      "y": 32,
+      "x": 80,
+      "y": 48,
       "h": 16,
       "w": 16
     },
@@ -366,8 +366,15 @@
       "w": 16
     },
     {
-      "key": "key_pink",
+      "key": "unlock_pink",
       "x": 48,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_pink",
+      "x": 64,
       "y": 48,
       "h": 16,
       "w": 16
@@ -387,8 +394,15 @@
       "w": 16
     },
     {
-      "key": "key_blue",
+      "key": "unlock_blue",
       "x": 48,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_blue",
+      "x": 64,
       "y": 64,
       "h": 16,
       "w": 16
@@ -396,41 +410,41 @@
     {
       "key": "player_1",
       "x": 0,
-      "y": 80,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
       "key": "devil",
       "x": 16,
-      "y": 80,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem",
       "x": 32,
-      "y": 80,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
       "key": "chain",
-      "x": 64,
-      "y": 64,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "reeds",
       "x": 80,
       "y": 64,
       "h": 16,
       "w": 16
     },
     {
-      "key": "flowers",
+      "key": "reeds",
       "x": 96,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flowers",
+      "x": 112,
       "y": 64,
       "h": 16,
       "w": 16
@@ -463,6 +477,14 @@
       "w": 16
     },
     {
+      "key": "player_jump_hold_side",
+      "anim": true,
+      "x": 48,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "player_run",
       "anim": true,
       "x": 0,
@@ -482,6 +504,14 @@
       "key": "player_run",
       "anim": true,
       "x": 32,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_fall_hold_side",
+      "anim": true,
+      "x": 48,
       "y": 224,
       "h": 16,
       "w": 16
@@ -503,9 +533,17 @@
       "w": 16
     },
     {
-      "key": "player_slide",
+      "key": "player_jump_hold",
       "anim": true,
       "x": 32,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_fall_hold",
+      "anim": true,
+      "x": 48 ,
       "y": 208,
       "h": 16,
       "w": 16
@@ -539,6 +577,540 @@
       "anim": true,
       "x": 48,
       "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_leap",
+      "anim": true,
+      "x": 0,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_leap",
+      "anim": true,
+      "x": 16,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_leap",
+      "anim": true,
+      "x": 32,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_slide",
+      "anim": true,
+      "x": 48,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_pick_up",
+      "anim": true,
+      "x": 0,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_pick_up",
+      "anim": true,
+      "x": 0,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run",
+      "anim": true,
+      "x": 16,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run",
+      "anim": true,
+      "x": 32,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run",
+      "anim": true,
+      "x": 48,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run_side",
+      "anim": true,
+      "x": 16,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run_side",
+      "anim": true,
+      "x": 32,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hold_run_side",
+      "anim": true,
+      "x": 48,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hit",
+      "anim": true,
+      "x": 0,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hit",
+      "anim": true,
+      "x": 16,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hit",
+      "anim": true,
+      "x": 32,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_hit",
+      "anim": true,
+      "x": 48,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_attack",
+      "anim": true,
+      "x": 0,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_attack",
+      "anim": true,
+      "x": 16,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_attack",
+      "anim": true,
+      "x": 32,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player_attack",
+      "anim": true,
+      "x": 48,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 64,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 80,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 96,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump_hold_side",
+      "anim": true,
+      "x": 112,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 64,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 80,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 96,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 112,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 128,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall_hold_side",
+      "anim": true,
+      "x": 112,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump",
+      "anim": true,
+      "x": 64,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall",
+      "anim": true,
+      "x": 80,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump_hold",
+      "anim": true,
+      "x": 96,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall_hold",
+      "anim": true,
+      "x": 112 ,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 64,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 80,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 96,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 112,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 128,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 144,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 64,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 80,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 96,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 112,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_slide",
+      "anim": true,
+      "x": 112,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_pick_up",
+      "anim": true,
+      "x": 64,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_pick_up",
+      "anim": true,
+      "x": 64,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 80,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 96,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 112,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 80,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 96,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 112,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 64,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 80,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 96,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 112,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 128,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 64,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 80,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 96,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 112,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "gem_shimmer",
+      "anim": true,
+      "x": 192,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_shimmer",
+      "anim": true,
+      "x": 208,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_shimmer",
+      "anim": true,
+      "x": 224,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_shimmer",
+      "anim": true,
+      "x": 240,
+      "y": 240,
       "h": 16,
       "w": 16
     }

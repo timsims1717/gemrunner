@@ -23,9 +23,9 @@ var (
 
 type Level struct {
 	Tiles    *Tiles
-	Chars    []*Character
-	Player1  *Character
-	Stats1   *PlayerStats
+	Chars    []*Dynamic
+	Players  [constants.MaxPlayers]*Dynamic
+	Stats    [constants.MaxPlayers]*PlayerStats
 	Start    bool
 	Failed   bool
 	Complete bool
@@ -52,7 +52,7 @@ type Tiles struct {
 }
 
 func (t *Tiles) Get(x, y int) *Tile {
-	if x < 0 || y < y || x >= constants.PuzzleWidth || y >= constants.PuzzleHeight {
+	if x < 0 || y < 0 || x >= constants.PuzzleWidth || y >= constants.PuzzleHeight {
 		return nil
 	}
 	return t.T[y][x]
@@ -87,7 +87,7 @@ func CreateBlankPuzzle() *Puzzle {
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
 			puz.Tiles.T[y][x] = &Tile{
-				Block:  Block(Empty),
+				Block:  Block(BlockEmpty),
 				Coords: world.Coords{X: x, Y: y},
 			}
 		}

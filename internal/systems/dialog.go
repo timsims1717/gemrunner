@@ -106,7 +106,7 @@ func DrawDialog(dialog *data.Dialog, win *pixelgl.Window) {
 		img.Clear()
 	}
 	dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
-	NewDrawSystem(dialog.ViewPort.Canvas, dialog.Layer)
+	DrawLayerSystem(dialog.ViewPort.Canvas, dialog.Layer)
 	img.Clear()
 	for _, e := range dialog.Elements {
 		if in, okI := e.(*data.Input); okI {
@@ -134,11 +134,11 @@ func DrawDialog(dialog *data.Dialog, win *pixelgl.Window) {
 func DrawSubElement(element interface{}) {
 	if in, okI := element.(*data.Input); okI {
 		in.ViewPort.Canvas.Clear(pixel.RGBA{})
-		NewDrawSystem(in.ViewPort.Canvas, in.Layer)
+		DrawLayerSystem(in.ViewPort.Canvas, in.Layer)
 		img.Clear()
 	} else if scr, okScr := element.(*data.Scroll); okScr {
 		scr.ViewPort.Canvas.Clear(pixel.RGBA{})
-		NewDrawSystem(scr.ViewPort.Canvas, scr.Layer)
+		DrawLayerSystem(scr.ViewPort.Canvas, scr.Layer)
 		img.Clear()
 		for _, e := range scr.Elements {
 			if _, okScr2 := e.(*data.Scroll); okScr2 {
