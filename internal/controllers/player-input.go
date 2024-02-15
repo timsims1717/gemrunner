@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"gemrunner/internal/data"
-	"gemrunner/pkg/timing"
 	pxginput "github.com/timsims1717/pixel-go-input"
 )
 
@@ -16,20 +15,17 @@ type PlayerInput struct {
 	PickUpKey string
 	ActionKey string
 
-	LeftPriority  int
-	RightPriority int
-	UpPriority    int
-	DownPriority  int
+	LastActions data.Actions
+}
 
-	LastPressed string
-
-	Stack       []string
-	Buffer      string
-	BufferTimer *timing.Timer
+func (pi *PlayerInput) ClearPrev() {
+	pi.LastActions.PrevDirection = data.None
 }
 
 func (pi *PlayerInput) GetActions() data.Actions {
-	actions := data.Actions{}
+	actions := data.NewAction()
+	actions.Direction = pi.LastActions.Direction
+	actions.PrevDirection = pi.LastActions.PrevDirection
 	// get all inputs
 	left := pi.Input.Get(pi.LeftKey)
 	right := pi.Input.Get(pi.RightKey)
@@ -38,74 +34,121 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	jump := pi.Input.Get(pi.JumpKey)
 	pickUp := pi.Input.Get(pi.PickUpKey)
 	action := pi.Input.Get(pi.ActionKey)
+	if !left.Pressed() && !right.Pressed() && !up.Pressed() && !down.Pressed() {
+		actions.Direction = data.None
+		actions.PrevDirection = data.None
+	} else {
+		if left.JustPressed() {
+			actions.PrevDirection = actions.Direction
+			actions.Direction = data.Left
+		} else if right.JustPressed() {
+			actions.PrevDirection = actions.Direction
+			actions.Direction = data.Right
+		} else if up.JustPressed() {
+			actions.PrevDirection = actions.Direction
+			actions.Direction = data.Up
+		} else if down.JustPressed() {
+			actions.PrevDirection = actions.Direction
+			actions.Direction = data.Down
+		} else {
+			if (!left.Pressed() && actions.Direction == data.Left) ||
+				(!right.Pressed() && actions.Direction == data.Right) ||
+				(!up.Pressed() && actions.Direction == data.Up) ||
+				(!down.Pressed() && actions.Direction == data.Down) {
+				actions.Direction = actions.PrevDirection
+			}
+			if actions.Direction == data.None {
+				if up.Pressed() {
+					actions.Direction = data.Up
+				} else if down.Pressed() {
+					actions.Direction = data.Down
+				} else if left.Pressed() {
+					actions.Direction = data.Left
+				} else if right.Pressed() {
+					actions.Direction = data.Right
+				}
+			}
+			//if actions.PrevDirection == data.None {
+			//	if up.Pressed() && actions.Direction != data.Up {
+			//		actions.PrevDirection = data.Up
+			//	} else if down.Pressed() && actions.Direction != data.Down {
+			//		actions.PrevDirection = data.Down
+			//	} else if left.Pressed() && actions.Direction != data.Left {
+			//		actions.PrevDirection = data.Left
+			//	} else if right.Pressed() && actions.Direction != data.Right {
+			//		actions.PrevDirection = data.Right
+			//	}
+			//}
+		}
+	}
 	// set any missing directional priority to zero
 	// find the highest directional priority
-	high := 0
-	anyPressed := false
-	if !left.Pressed() {
-		pi.LeftPriority = 0
-	} else {
-		high = pi.LeftPriority
-		anyPressed = true
-	}
-	if !right.Pressed() {
-		pi.RightPriority = 0
-	} else if high < pi.RightPriority {
-		high = pi.RightPriority
-		anyPressed = true
-	}
-	if !up.Pressed() {
-		pi.UpPriority = 0
-	} else if high < pi.UpPriority {
-		high = pi.UpPriority
-		anyPressed = true
-	}
-	if !down.Pressed() {
-		pi.DownPriority = 0
-	} else if high < pi.DownPriority {
-		high = pi.DownPriority
-		anyPressed = true
-	}
-	// if any direction just pressed, set that priority to high+1
-	if left.JustPressed() {
-		pi.LeftPriority = high + 1
-	} else if right.JustPressed() {
-		pi.RightPriority = high + 1
-	} else if up.JustPressed() {
-		pi.UpPriority = high + 1
-	} else if down.JustPressed() {
-		pi.DownPriority = high + 1
-	}
-	// if any directions are released, put one into the LastPressed string
-	if anyPressed {
-		if left.JustReleased() {
-			pi.LastPressed = pi.LeftKey
-		} else if right.JustReleased() {
-			pi.LastPressed = pi.RightKey
-		} else if up.JustReleased() {
-			pi.LastPressed = pi.UpKey
-		} else if down.JustReleased() {
-			pi.LastPressed = pi.DownKey
-		}
-	} else {
-		pi.LastPressed = ""
-	}
-	// Assign up to two directions
-	assigned := 0
-	if pi.LeftPriority > 0 && pi.LeftPriority > pi.RightPriority {
-		actions.Left = true
-		assigned++
-	} else if pi.RightPriority > 0 && pi.RightPriority > pi.LeftPriority {
-		actions.Right = true
-		assigned++
-	}
-	if pi.UpPriority > 0 && pi.UpPriority > pi.DownPriority {
-		actions.Up = true
-		assigned++
-	} else if pi.DownPriority > 0 && pi.DownPriority > pi.UpPriority {
-		actions.Down = true
-		assigned++
-	}
+	//high := 0
+	//anyPressed := false
+	//if !left.Pressed() {
+	//	pi.LeftPriority = 0
+	//} else {
+	//	high = pi.LeftPriority
+	//	anyPressed = true
+	//}
+	//if !right.Pressed() {
+	//	pi.RightPriority = 0
+	//} else if high < pi.RightPriority {
+	//	high = pi.RightPriority
+	//	anyPressed = true
+	//}
+	//if !up.Pressed() {
+	//	pi.UpPriority = 0
+	//} else if high < pi.UpPriority {
+	//	high = pi.UpPriority
+	//	anyPressed = true
+	//}
+	//if !down.Pressed() {
+	//	pi.DownPriority = 0
+	//} else if high < pi.DownPriority {
+	//	high = pi.DownPriority
+	//	anyPressed = true
+	//}
+	//// if any direction just pressed, set that priority to high+1
+	//if left.JustPressed() {
+	//	pi.LeftPriority = high + 1
+	//} else if right.JustPressed() {
+	//	pi.RightPriority = high + 1
+	//} else if up.JustPressed() {
+	//	pi.UpPriority = high + 1
+	//} else if down.JustPressed() {
+	//	pi.DownPriority = high + 1
+	//}
+	//// if any directions are released, put one into the LastPressed string
+	//if anyPressed {
+	//	if left.JustReleased() {
+	//		pi.LastPressed = pi.LeftKey
+	//	} else if right.JustReleased() {
+	//		pi.LastPressed = pi.RightKey
+	//	} else if up.JustReleased() {
+	//		pi.LastPressed = pi.UpKey
+	//	} else if down.JustReleased() {
+	//		pi.LastPressed = pi.DownKey
+	//	}
+	//} else {
+	//	pi.LastPressed = ""
+	//}
+	//// Assign up to two directions
+	//assigned := 0
+	//if pi.LeftPriority > 0 && pi.LeftPriority > pi.RightPriority {
+	//	actions.Left = true
+	//	assigned++
+	//} else if pi.RightPriority > 0 && pi.RightPriority > pi.LeftPriority {
+	//	actions.Right = true
+	//	assigned++
+	//}
+	//if pi.UpPriority > 0 && pi.UpPriority > pi.DownPriority {
+	//	actions.Up = true
+	//	assigned++
+	//} else if pi.DownPriority > 0 && pi.DownPriority > pi.UpPriority {
+	//	actions.Down = true
+	//	assigned++
+	//}
 	//if assigned < 2 && pi.LastPressed != "" {
 	//	switch pi.LastPressed {
 	//	case pi.LeftKey:
@@ -207,6 +250,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 		actions.Action = true
 		action.Consume()
 	}
+	pi.LastActions = actions
 	return actions
 }
 

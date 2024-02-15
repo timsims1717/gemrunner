@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
+	"github.com/gopxl/pixel"
 )
 
 func LevelInit() {
@@ -21,15 +22,14 @@ func LevelInit() {
 		for _, tile := range row {
 			obj := object.New()
 			obj.Pos = world.MapToWorld(tile.Coords)
-			obj.Pos.X += world.TileSize * 0.5
-			obj.Pos.Y += world.TileSize * 0.5
+			obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 			obj.Layer = 10
 			tile.Object = obj
 			e := myecs.Manager.NewEntity().
 				AddComponent(myecs.Object, obj).
 				AddComponent(myecs.Tile, tile)
 			tile.Entity = e
-			// replace characters and items
+			// replace reanimator and items
 			switch tile.Block {
 			case data.BlockPlayer1:
 				tile.Block = data.BlockEmpty

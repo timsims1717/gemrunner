@@ -106,7 +106,7 @@ func UpdateEditorModeHotKey() {
 			// save
 			data.Editor.Mode = data.Save
 		} else if data.MenuInput.Get("ctrlOpen").JustPressed() {
-			// load
+			// open
 			data.Editor.Mode = data.Open
 		}
 	} else {
@@ -486,8 +486,7 @@ func PuzzleEditSystem() {
 					obj := object.New()
 					obj.Layer = 3
 					obj.Pos = world.MapToWorld(c)
-					obj.Pos.X += world.TileSize * 0.5
-					obj.Pos.Y += world.TileSize * 0.5
+					obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 					spr := GetTileSpritesSelection(tile)
 					if len(spr) > 0 {
 						myecs.Manager.NewEntity().
@@ -543,8 +542,7 @@ func CreateHighlight(coords world.Coords) {
 		obj := object.New()
 		obj.Layer = 4
 		obj.Pos = world.MapToWorld(coords)
-		obj.Pos.X += world.TileSize * 0.5
-		obj.Pos.Y += world.TileSize * 0.5
+		obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 		spr := img.NewSprite("white_checker", constants.UIBatch)
 		myecs.Manager.NewEntity().
 			AddComponent(myecs.Object, obj).

@@ -330,7 +330,7 @@ func (anim *Anim) SetEndTrigger(fn func()) *Anim {
 	if anim.Triggers == nil {
 		anim.Triggers = map[int]func(*Anim, string, int){}
 	}
-	anim.Triggers[len(anim.S)] = func(*Anim, string, int) {
+	anim.Triggers[len(anim.S)-1] = func(*Anim, string, int) {
 		fn()
 	}
 	return anim
@@ -361,7 +361,7 @@ func (anim *Anim) SetTriggerCAll(fn func(*Anim, string, int)) *Anim {
 	for i := range anim.S {
 		anim.SetTriggerC(i, fn)
 	}
-	anim.SetTriggerC(len(anim.S), fn)
+	//anim.SetTriggerC(len(anim.S), fn)
 	return anim
 }
 
@@ -372,7 +372,7 @@ func (anim *Anim) SetTriggerAll(fn func()) *Anim {
 	for i := range anim.S {
 		anim.SetTrigger(i, fn)
 	}
-	anim.SetTrigger(len(anim.S), fn)
+	//anim.SetTrigger(len(anim.S), fn)
 	return anim
 }
 

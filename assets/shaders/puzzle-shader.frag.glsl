@@ -25,9 +25,10 @@ void main() {
 
     // get our current coordinates' color
     vec4 col = texture(uTexture, t);
-//    if (vColor.a > 0.) {
-//        col = vColor;
-//    }
+    // hack for imdraw
+    if (col.r == 0. && col.b == 0. && col.g == 0. && col.a != 0.) {
+        col = vColor;
+    }
 
     // primary
     if (col.r == 1. && col.b == 1. && col.g == 0.) {

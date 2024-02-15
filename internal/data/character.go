@@ -12,16 +12,18 @@ type Player int
 
 type Dynamic struct {
 	Object  *object.Object
-	FauxObj *object.Object
 	Anim    *reanimator.Tree
 	Entity  *ecs.Entity
 	Held    *ecs.Entity
 	HeldObj *object.Object
+	Control Controller
 
-	Actions Actions
-	Flags   Flags
-	Vars    Vars
-	ATimer  *timing.Timer
+	Actions  Actions
+	State    CharacterState
+	Flags    Flags
+	Vars     Vars
+	ATimer   *timing.Timer
+	ACounter int
 	//BTimer  *timing.Timer
 	LastTile *Tile
 	MoveType MoveType
@@ -30,18 +32,72 @@ type Dynamic struct {
 
 func NewDynamic() *Dynamic {
 	return &Dynamic{
-		Player: Player(-1),
+		Player:  Player(-1),
+		Actions: NewAction(),
+		Flags: Flags{
+			Floor: true,
+		},
+		Vars: Vars{
+			Gravity:  constants.NormalGravity,
+			IdleFreq: constants.IdleFrequency,
+		},
+	}
+}
+
+type Direction int
+
+const (
+	Left = iota
+	Right
+	Up
+	Down
+	None
+)
+
+func (d Direction) String() string {
+	switch d {
+	case Left:
+		return "Left"
+	case Right:
+		return "Right"
+	case Up:
+		return "Up"
+	case Down:
+		return "Down"
+	default:
+		return "None"
 	}
 }
 
 type Actions struct {
-	Left   bool
-	Right  bool
-	Up     bool
-	Down   bool
-	Jump   bool
-	PickUp bool
-	Action bool
+	Direction     Direction
+	PrevDirection Direction
+	Jump          bool
+	PickUp        bool
+	Action        bool
+}
+
+func NewAction() Actions {
+	return Actions{
+		Direction:     None,
+		PrevDirection: None,
+	}
+}
+
+func (a Actions) Up() bool {
+	return a.Direction == Up || (a.PrevDirection == Up && a.Direction != Down)
+}
+
+func (a Actions) Down() bool {
+	return a.Direction == Down || (a.PrevDirection == Down && a.Direction != Up)
+}
+
+func (a Actions) Left() bool {
+	return a.Direction == Left || (a.PrevDirection == Left && a.Direction != Right)
+}
+
+func (a Actions) Right() bool {
+	return a.Direction == Right || (a.PrevDirection == Right && a.Direction != Left)
 }
 
 type Vars struct {
@@ -54,10 +110,47 @@ type Vars struct {
 	HiJumpVSpeed float64
 	HiJumpHSpeed float64
 	HiJumpTimer  float64
+	HiJumpCntr   float64
 	LgJumpVSpeed float64
 	LgJumpHSpeed float64
 	LgJumpTimer  float64
+	LgJumpCntr   float64
 	IdleFreq     int
+}
+
+type CharacterState int
+
+const (
+	Grounded = iota
+	Ladder
+	Falling
+	Jumping
+	Leaping
+	Attack
+	Hit
+	Dead
+)
+
+func (s CharacterState) String() string {
+	switch s {
+	case Grounded:
+		return "Grounded"
+	case Ladder:
+		return "Ladder"
+	case Falling:
+		return "Falling"
+	case Jumping:
+		return "Jumping"
+	case Leaping:
+		return "Leaping"
+	case Attack:
+		return "Attack"
+	case Hit:
+		return "Hit"
+	case Dead:
+		return "Dead"
+	}
+	return "Unknown"
 }
 
 type Flags struct {
@@ -65,12 +158,8 @@ type Flags struct {
 	RightWall  bool
 	Ceiling    bool
 	Floor      bool
-	CanRun     bool
-	OnLadder   bool
 	GoingUp    bool
 	Climbed    bool
-	LadderDown bool
-	LadderHere bool
 	LeapOn     bool
 	LeapOff    bool
 	LeapTo     bool
@@ -79,10 +168,10 @@ type Flags struct {
 	LongJump   bool
 	JumpR      bool
 	JumpL      bool
-	DropDown   bool
 	Action     bool
 	PickUp     bool
 	Drop       bool
+	HoldSwitch bool
 	HoldUp     bool
 	HoldSide   bool
 	HeldFlip   bool
@@ -90,10 +179,15 @@ type Flags struct {
 	Hit        bool
 	Dead       bool
 	Attack     bool
+	Frame      bool
+	JumpBuff   int
+	PickUpBuff int
+	ActionBuff int
 }
 
 type Controller interface {
 	GetActions() Actions
+	ClearPrev()
 }
 
 type MoveType int
@@ -114,9 +208,11 @@ func PlayerVars() Vars {
 		HiJumpVSpeed: constants.PlayerHighJumpSpeed,
 		HiJumpHSpeed: constants.PlayerHighJumpHSpeed,
 		HiJumpTimer:  constants.PlayerHighJumpTimer,
+		HiJumpCntr:   constants.PlayerHighJumpCounter,
 		LgJumpVSpeed: constants.PlayerLongJumpVSpeed,
 		LgJumpHSpeed: constants.PlayerLongJumpHSpeed,
 		LgJumpTimer:  constants.PlayerLongJumpTimer,
+		LgJumpCntr:   constants.PlayerLongJumpCounter,
 		IdleFreq:     constants.IdleFrequency,
 	}
 }
@@ -132,9 +228,11 @@ func DemonVars() Vars {
 		HiJumpVSpeed: constants.DemonHighJumpSpeed,
 		HiJumpHSpeed: constants.DemonHighJumpHSpeed,
 		HiJumpTimer:  constants.DemonHighJumpTimer,
+		HiJumpCntr:   constants.DemonHighJumpCounter,
 		LgJumpVSpeed: constants.DemonLongJumpVSpeed,
 		LgJumpHSpeed: constants.DemonLongJumpHSpeed,
 		LgJumpTimer:  constants.DemonLongJumpTimer,
+		LgJumpCntr:   constants.DemonLongJumpCounter,
 		IdleFreq:     constants.IdleFrequency,
 	}
 }

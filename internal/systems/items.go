@@ -17,7 +17,7 @@ import (
 func CreateGem(pos pixel.Vec) {
 	obj := object.New().WithID("gem")
 	obj.Pos = pos
-	obj.SetRect(pixel.R(0, 0, 8, 8))
+	obj.SetRect(pixel.R(0, 0, 10, 10))
 	obj.Layer = 11
 	gemShimmer := false
 	batch := img.Batchers[constants.TileBatch]
@@ -133,8 +133,6 @@ func CreateBox(pos pixel.Vec) {
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
-	fObj := object.New()
-	fObj.Pos = pos
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -143,7 +141,6 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.PickUp, data.NewPickUp(constants.PickUpPriority[key], true))
 	box := data.NewDynamic()
 	box.Object = obj
-	box.FauxObj = fObj
 	box.Entity = e
 	e.AddComponent(myecs.Dynamic, box)
 }
@@ -179,7 +176,7 @@ func KeyAction(keyType data.KeyType) *data.Interact {
 	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if o, okO := entity.GetComponentData(myecs.Object); okO {
 			obj := o.(*object.Object)
-			if KeyUnlock(level, obj.Pos.Add(obj.Offset), ch.FauxObj.Pos, keyType) {
+			if KeyUnlock(level, obj.Pos.Add(obj.Offset), ch.Object.Pos, keyType) {
 				myecs.Manager.DisposeEntity(entity)
 			}
 		}

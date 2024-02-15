@@ -1,4 +1,4 @@
-package characters
+package reanimator
 
 import (
 	"fmt"
@@ -23,13 +23,13 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
-		leapOnI = []int{1, 2}
-		leapOffI = []int{2, 1, 0}
-		leapToI = []int{2, 1, 2}
+		leapOnI = []int{2, 2}
+		leapOffI = []int{0, 1, 2}
+		leapToI = []int{0, 1, 2, 2}
 	} else {
 		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 3, 4, 1, 2, 3}, reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 5, 3, 2}, reanimator.Loop)
+		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 4, 3, 1}, reanimator.Loop)
 		slide.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 			if pre == "climb" {
 				switch f {
@@ -46,9 +46,9 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			slide.Freeze = !ch.Flags.Climbed
 			ch.Flags.Climbed = false
 		})
-		leapOnI = []int{1, 2, 3}
+		leapOnI = []int{0, 1, 2}
 		leapOffI = []int{3, 2, 1, 0}
-		leapToI = []int{3, 2, 1, 2}
+		leapToI = []int{3, 2, 1, 1, 2, 3}
 	}
 	climb.SetTriggerAll(func() {
 		climb.Freeze = !ch.Flags.Climbed
@@ -60,18 +60,19 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
 	leapOn.SetEndTrigger(func() {
 		ch.Flags.LeapOn = false
-		ch.Flags.OnLadder = true
+		ch.ACounter = 0
 		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
 	leapOff := reanimator.NewBatchAnimationCustom("leap_off", batch, fmt.Sprintf("%s_leap", sprPre), leapOffI, reanimator.Tran)
 	leapOff.SetEndTrigger(func() {
 		ch.Flags.LeapOff = false
+		ch.ACounter = 0
 		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
 	leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
 	leapTo.SetEndTrigger(func() {
 		ch.Flags.LeapTo = false
-		ch.Flags.OnLadder = true
+		ch.ACounter = 0
 		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
 	pickUp := reanimator.NewBatchSprite("pick_up", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Tran)
@@ -90,7 +91,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	fullAttack := []int{0, 1, 2, 3, 2, 3, 2, 3, 2, 3}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 	hit.SetEndTrigger(func() {
-		ch.Flags.Dead = true
+		ch.Flags.Hit = false
 	})
 	attack := reanimator.NewBatchAnimationCustom("attack", batch, fmt.Sprintf("%s_attack", sprPre), fullAttack, reanimator.Tran)
 	attack.SetEndTrigger(func() {
@@ -121,57 +122,41 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(attack).
 		AddNull("none").
 		SetChooseFn(func() string {
-			if ch.Flags.Dead {
+			switch ch.State {
+			case data.Dead:
 				return "none"
-			} else if ch.Flags.Hit {
+			case data.Hit:
 				return "hit"
-			} else if ch.Flags.Attack {
+			case data.Attack:
 				return "attack"
-			} else if ch.Flags.OnLadder {
-				if ch.Actions.Up || ch.Flags.GoingUp {
-					return "climb"
-				} else {
-					return "slide"
+			case data.Grounded:
+				if ch.Flags.PickUp {
+					return "pick_up"
 				}
-			} else if ch.Flags.LeapOff {
-				return "leap_off"
-			} else if ch.Flags.LeapOn {
-				return "leap_on"
-			} else if ch.Flags.LeapTo {
-				return "leap_to"
-			} else if ch.Flags.PickUp {
-				return "pick_up"
-			} else if ch.Flags.CanRun {
-				if ch.Flags.HoldUp {
-					if ch.Actions.Left || ch.Actions.Right {
-						if (ch.Actions.Left && ch.Flags.LeftWall) ||
-							(ch.Actions.Right && ch.Flags.RightWall) {
+				if ch.Actions.Left() || ch.Actions.Right() {
+					if (ch.Actions.Left() && ch.Flags.LeftWall) ||
+						(ch.Actions.Right() && ch.Flags.RightWall) {
+						if ch.Flags.HoldUp {
 							return "hold_idle"
-						} else {
-							return "hold_run"
-						}
-					} else {
-						return "hold_idle"
-					}
-				} else if ch.Flags.HoldSide {
-					if ch.Actions.Left || ch.Actions.Right {
-						if (ch.Actions.Left && ch.Flags.LeftWall) ||
-							(ch.Actions.Right && ch.Flags.RightWall) {
+						} else if ch.Flags.HoldSide {
 							return "hold_idle_side"
 						} else {
-							return "hold_run_side"
+							return "wall"
 						}
 					} else {
-						return "hold_idle_side"
-					}
-				} else {
-					if ch.Actions.Left || ch.Actions.Right {
-						if (ch.Actions.Left && ch.Flags.LeftWall) ||
-							(ch.Actions.Right && ch.Flags.RightWall) {
-							return "wall"
+						if ch.Flags.HoldUp {
+							return "hold_run"
+						} else if ch.Flags.HoldSide {
+							return "hold_run_side"
 						} else {
 							return "run"
 						}
+					}
+				} else {
+					if ch.Flags.HoldUp {
+						return "hold_idle"
+					} else if ch.Flags.HoldSide {
+						return "hold_idle_side"
 					} else {
 						if ch.Flags.Breath {
 							return "breath"
@@ -183,22 +168,41 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 						}
 					}
 				}
-			} else if ch.Flags.HighJump || ch.Flags.LongJump {
-				if ch.Flags.HoldUp {
+			case data.Ladder:
+				if ch.Actions.Up() || ch.Flags.GoingUp {
+					return "climb"
+				} else {
+					return "slide"
+				}
+			case data.Jumping:
+				if ch.Flags.PickUp {
+					return "pick_up"
+				} else if ch.Flags.HoldUp {
 					return "jump_hold"
 				} else if ch.Flags.HoldSide {
 					return "jump_hold_side"
 				} else {
 					return "jump"
 				}
-			} else {
-				if ch.Flags.HoldUp {
+			case data.Falling:
+				if ch.Flags.PickUp {
+					return "pick_up"
+				} else if ch.Flags.HoldUp {
 					return "fall_hold"
 				} else if ch.Flags.HoldSide {
 					return "fall_hold_side"
 				} else {
 					return "fall"
 				}
+			case data.Leaping:
+				if ch.Flags.LeapOff {
+					return "leap_off"
+				} else if ch.Flags.LeapOn {
+					return "leap_on"
+				} else if ch.Flags.LeapTo {
+					return "leap_to"
+				}
 			}
+			return "fall"
 		}), "breath")
 }

@@ -111,7 +111,8 @@ func run() {
 		state.Draw(win)
 
 		win.SetSmooth(false)
-		debug.Draw(win)
+		debug.DrawText(win)
+		debug.DrawFPS(win)
 		win.SetSmooth(options.BilinearFilter)
 
 		//sfx.MusicPlayer.Update()

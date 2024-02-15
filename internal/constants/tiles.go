@@ -54,6 +54,7 @@ const (
 	WorldShell
 	WorldMetal
 	WorldIce
+	WorldTree
 	WorldCustom
 )
 
@@ -125,6 +126,11 @@ var (
 		A: 255,
 	}
 
+	Player1Color = ColorBlue
+	Player2Color = ColorOrange
+	Player3Color = ColorPurple
+	Player4Color = ColorYellow
+
 	WorldSprites = map[int]string{
 		WorldRock:   "rock",
 		WorldSlate:  "slate",
@@ -135,6 +141,7 @@ var (
 		WorldShell:  "shell",
 		WorldMetal:  "metal",
 		WorldIce:    "ice",
+		WorldTree:   "tree",
 		WorldCustom: "custom",
 	}
 
@@ -148,6 +155,7 @@ var (
 		WorldShell:  ColorYellow,
 		WorldMetal:  ColorPurple,
 		WorldIce:    ColorCyan,
+		WorldTree:   ColorGreen,
 	}
 
 	WorldSecondary = map[int]color.RGBA{
@@ -160,5 +168,6 @@ var (
 		WorldShell:  ColorBrown,
 		WorldMetal:  ColorRed,
 		WorldIce:    ColorWhite,
+		WorldTree:   ColorBrown,
 	}
 )

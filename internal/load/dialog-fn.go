@@ -45,6 +45,7 @@ func NewPuzzle() {
 			}
 		}
 		systems.PuzzleInit()
+		systems.UpdateWorldShaders()
 	}
 }
 

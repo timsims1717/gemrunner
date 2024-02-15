@@ -59,7 +59,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	data.P2Input.Update(win, viewport.MainCamera.Mat)
 	debug.AddText("Test State")
 	p1 := data.CurrLevel.Players[0]
-	p1Pos := p1.FauxObj.Pos
+	p1Pos := p1.Object.Pos
 	debug.AddIntCoords("Player Pos", int(p1Pos.X), int(p1Pos.Y))
 	cx, cy := world.WorldToMap(p1Pos.X, p1Pos.Y)
 	debug.AddIntCoords("Player Coords", cx, cy)
@@ -71,6 +71,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		held = data.CurrLevel.Players[0].HeldObj.ID
 	}
 	debug.AddText(fmt.Sprintf("Player 1 Held Item: %s", held))
+	debug.AddText(fmt.Sprintf("Player 1 State: %s", data.CurrLevel.Players[0].State.String()))
 
 	if reanimator.FRate != constants.FrameRate {
 		reanimator.SetFrameRate(constants.FrameRate)
@@ -86,9 +87,13 @@ func (s *testState) Update(win *pixelgl.Window) {
 	if !data.DialogStackOpen {
 		// custom systems
 		systems.InGameSystem()
-		systems.CollisionSystem()
+		//systems.CollisionSystem()
+		//systems.DynamicSystem()
+		//systems.CollisionSystem()
+		systems.CharacterActionSystem()
 		systems.DynamicSystem()
-		systems.CharacterSystem()
+		systems.CollisionSystem()
+		systems.CharacterStateSystem()
 		systems.CollectSystem()
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
@@ -122,13 +127,16 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	//img.Clear()
 	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 11) // gems
 	//img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 18) // other characters
+	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 18) // other reanimator
 	//img.Clear()
 	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 19) // fg tiles, liquid, crushers
 	//img.Clear()
 	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 20) // ui
 	//img.Clear()
 	//data.IMDraw.Draw(data.PuzzleView.Canvas)
+	if debug.Debug {
+		debug.DrawLines(data.PuzzleView.Canvas)
+	}
 	data.PuzzleView.Draw(win)
 	// dialog draw system
 	systems.DialogDrawSystem(win)

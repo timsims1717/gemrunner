@@ -6,7 +6,7 @@ import (
 )
 
 func TestSystem() {
-	if data.CurrLevel.Players[0].Flags.Dead {
+	if data.CurrLevel.Players[0].State == data.Dead {
 		data.CurrLevel.Failed = true
 	}
 	if data.MenuInput.Get("escape").JustPressed() ||

@@ -21,8 +21,7 @@ func PuzzleInit() {
 			for _, tile := range row {
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)
-				obj.Pos.X += world.TileSize * 0.5
-				obj.Pos.Y += world.TileSize * 0.5
+				obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 				obj.Layer = 2
 				e := myecs.Manager.NewEntity().
 					AddComponent(myecs.Object, obj).
@@ -132,6 +131,7 @@ func OpenPuzzle(filename string) error {
 		return errors.Wrap(err, errMsg)
 	}
 	PuzzleInit()
+	UpdateWorldShaders()
 	fmt.Printf("INFO: loaded puzzle from %s\n", filename)
 	return nil
 }

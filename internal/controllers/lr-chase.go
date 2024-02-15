@@ -4,9 +4,14 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/imdraw"
+	"image/color"
+	"math"
 	"math/rand"
 )
 
@@ -23,16 +28,19 @@ func NewLRChase(dyn *data.Dynamic) *LRChase {
 	}
 }
 
+func (lr *LRChase) ClearPrev() {}
+
 func (lr *LRChase) GetActions() data.Actions {
 	lr.Timer.Update()
-	actions := data.Actions{}
+	actions := data.NewAction()
 	if data.CurrLevel == nil || lr.Ch == nil {
 		return actions
 	}
-	if lr.Timer.Done() || lr.Target == nil {
-		lr.Target = PickClosestPlayerXFirst(lr.Ch)
-		lr.Timer = timing.New(constants.WaitToSwitch + rand.Float64()*3.)
-	}
+	lr.Target = PickClosestPlayerXFirst(lr.Ch)
+	//if lr.Timer.Done() || lr.Target == nil {
+	//	lr.Target = PickClosestPlayerXFirst(lr.Ch)
+	//	lr.Timer = timing.New(constants.WaitToSwitch + rand.Float64()*3.)
+	//}
 	if lr.Target == nil {
 		return actions
 	}
@@ -64,44 +72,85 @@ func (lr *LRChase) GetActions() data.Actions {
 				break
 			}
 		}
-		// path to player found
-		if sx == px {
+		belowTile := data.CurrLevel.Tiles.Get(x, y-1)
+		if lr.Ch.State == data.Ladder &&
+			(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
+				(lr.Target.State != data.Ladder &&
+					(belowTile == nil || belowTile.Solid()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
+			if lr.Target.Object.Pos.Y > lr.Ch.Object.Pos.Y {
+				actions.PrevDirection = data.Up
+			} else if lr.Target.Object.Pos.Y < lr.Ch.Object.Pos.Y {
+				actions.PrevDirection = data.Down
+			}
+		}
+		if sx == px { // path to player found
 			if px > x { // player is right of enemy
-				actions.Right = true
+				actions.Direction = data.Right
 			} else if px < x { // player is left of enemy
-				actions.Left = true
-			} else { // player is in same tile as enemy
-				// found them
+				actions.Direction = data.Left
+			} else if math.Abs(lr.Target.Object.Pos.X-lr.Ch.Object.Pos.X) > 2. { // player is in same tile as enemy
 				if lr.Target.Object.Pos.X > lr.Ch.Object.Pos.X {
-					actions.Right = true
+					actions.Direction = data.Right
 				} else if lr.Target.Object.Pos.X < lr.Ch.Object.Pos.X {
-					actions.Left = true
+					actions.Direction = data.Left
 				}
 			}
-			return actions
 		}
+		return actions
 	}
 
 	//bestT := -1
 	bestD := -1
 	next := world.Coords{X: -1, Y: -1}
+	var bPath []astar.Pather
 	for i := 0; i < constants.PuzzleWidth; i++ {
 		path, d, found := astar.Path(data.CurrLevel.Tiles.Get(x, y), data.CurrLevel.Tiles.Get(i, py))
-		if len(path) > 0 && found && (bestD == -1 || int(d) < bestD) {
+		if len(path) > 1 && found && (bestD == -1 || int(d) < bestD) {
 			bestD = int(d)
 			//bestT = i
-			next = path[0].(*data.Tile).Coords
+			bPath = path
+			next = path[len(path)-2].(*data.Tile).Coords
+		}
+	}
+	if debug.Debug {
+		col := color.RGBA{
+			R: 0,
+			G: 255,
+			B: 0,
+			A: 255,
+		}
+		var p *data.Tile
+		for i, t := range bPath {
+			tile := t.(*data.Tile)
+			if i > 0 {
+				debug.AddLine(col, imdraw.RoundEndShape, p.Object.Pos, tile.Object.Pos, 2)
+				col.R += 40
+			} else {
+				debug.AddLine(col, imdraw.RoundEndShape, tile.Object.Pos, tile.Object.Pos, 3)
+			}
+			p = tile
 		}
 	}
 	if next.X > -1 && next.Y > -1 {
-		if next.X > x {
-			actions.Right = true
-		} else if next.X < x {
-			actions.Left = true
+		if next.X < x {
+			actions.Direction = data.Left
+		} else if next.X > x {
+			actions.Direction = data.Right
 		} else if next.Y > y {
-			actions.Up = true
+			actions.Direction = data.Up
 		} else if next.Y < y {
-			actions.Down = true
+			actions.Direction = data.Down
+		}
+		mPos := world.MapToWorld(next)
+		mPos = mPos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+		if lr.Ch.Object.Pos.Y < mPos.Y {
+			actions.PrevDirection = data.Up
+		} else if lr.Ch.Object.Pos.Y > mPos.Y {
+			actions.PrevDirection = data.Down
+		} else if lr.Ch.Object.Pos.X > mPos.X {
+			actions.PrevDirection = data.Left
+		} else if lr.Ch.Object.Pos.X < mPos.X {
+			actions.PrevDirection = data.Right
 		}
 	}
 	return actions
