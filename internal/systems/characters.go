@@ -41,7 +41,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	return player
 }
 
-func DemonCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
+func DemonCharacter(pos pixel.Vec) *data.Dynamic {
 	obj := object.New().WithID("demon")
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	obj.Pos = pos
@@ -73,7 +73,7 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 	bg, ok := entity.GetComponentData(myecs.Dynamic)
 	if ok {
 		enemy := bg.(*data.Dynamic)
-		if (enemy.State == data.Grounded || enemy.State == data.Ladder || enemy.State == data.Leaping) &&
+		if (enemy.State == data.Grounded || enemy.State == data.Ladder || enemy.State == data.Leaping || enemy.State == data.Flying) &&
 			(ch.State == data.Grounded || ch.State == data.Ladder || ch.State == data.Leaping || ch.State == data.Jumping) {
 			ch.Flags.Hit = true
 			ch.State = data.Hit
@@ -81,4 +81,29 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 			enemy.State = data.Attack
 		}
 	}
+}
+
+func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
+	obj := object.New().WithID("fly")
+	obj.SetRect(pixel.R(0, 0, 12, 12))
+	obj.Pos = pos
+	obj.Flip = left
+	obj.Layer = 29
+	fly := data.NewDynamic()
+	fly.Control = controllers.NewBackAndForth(fly, left)
+	fly.State = data.Flying
+	fly.Flags.Flying = true
+	fly.Object = obj
+	fly.Anim = reanimator.FlyAnimation(fly)
+	fly.Vars = data.FlyVars()
+	e := myecs.Manager.NewEntity()
+	fly.Entity = e
+	e.AddComponent(myecs.Object, fly.Object)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Animated, fly.Anim)
+	e.AddComponent(myecs.Drawable, fly.Anim)
+	e.AddComponent(myecs.Dynamic, fly)
+	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
+	e.AddComponent(myecs.Controller, fly.Control)
+	return fly
 }

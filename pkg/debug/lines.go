@@ -15,7 +15,7 @@ func InitializeLines() {
 }
 
 func DrawLines(target pixel.Target) {
-	if Debug {
+	if ShowDebug {
 		imd.Draw(target)
 	}
 }

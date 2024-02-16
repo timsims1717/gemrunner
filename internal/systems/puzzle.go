@@ -22,6 +22,7 @@ func PuzzleInit() {
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)
 				obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+				obj.Flip = tile.Metadata.Flipped
 				obj.Layer = 2
 				e := myecs.Manager.NewEntity().
 					AddComponent(myecs.Object, obj).

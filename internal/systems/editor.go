@@ -336,6 +336,17 @@ func PuzzleEditSystem() {
 					}
 					CreateHighlight(coords)
 				}
+			case data.Wrench:
+				if legal {
+					if rClick.JustReleased() || click.JustReleased() {
+						tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
+						switch tile.Block {
+						case data.BlockFly:
+							tile.Metadata.Flipped = !tile.Metadata.Flipped
+							tile.Object.Flip = tile.Metadata.Flipped
+						}
+					}
+				}
 			case data.Select:
 				if lastLegal {
 					if click.Pressed() {

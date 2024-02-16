@@ -30,22 +30,22 @@
       "w": 1
     },
     {
-      "key": "black_square",
-      "x": 16,
-      "y": 0,
+      "key": "white_checker",
+      "x": 0,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "white_outline",
       "x": 16,
-      "y": 16,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
-      "key": "white_checker",
-      "x": 0,
+      "key": "black_square",
+      "x": 32,
       "y": 32,
       "h": 16,
       "w": 16
@@ -59,116 +59,124 @@
     },
     {
       "key": "editor_tile_bg",
-      "x": 32,
+      "x": 16,
       "y": 0,
       "h": 32,
       "w": 32
     },
     {
-      "key": "black_square_big",
-      "x": 64,
+      "key": "cursor",
+      "x": 32,
       "y": 0,
       "h": 18,
       "w": 18
     },
+
+
+
+
     {
       "key": "save_btn_big",
-      "x": 82,
+      "x": 80,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
       "key": "save_btn_click_big",
-      "x": 100,
+      "x": 98,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
       "key": "cancel_btn_big",
-      "x": 118,
+      "x": 116,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
       "key": "cancel_btn_click_big",
-      "x": 136,
+      "x": 134,
       "y": 0,
       "h": 18,
       "w": 18
     },
     {
       "key": "open_btn_big",
-      "x": 82,
+      "x": 80,
       "y": 18,
       "h": 18,
       "w": 18
     },
     {
       "key": "open_btn_click_big",
-      "x": 100,
+      "x": 98,
       "y": 18,
       "h": 18,
       "w": 18
     },
     {
       "key": "world_btn_big",
-      "x": 118,
+      "x": 116,
       "y": 18,
       "h": 18,
       "w": 18
     },
     {
       "key": "world_btn_click_big",
-      "x": 136,
+      "x": 134,
       "y": 18,
       "h": 18,
       "w": 18
     },
     {
       "key": "quit_btn_big",
-      "x": 82,
+      "x": 80,
       "y": 36,
       "h": 18,
       "w": 18
     },
     {
       "key": "quit_btn_click_big",
-      "x": 100,
+      "x": 98,
       "y": 36,
       "h": 18,
       "w": 18
     },
     {
       "key": "play_btn_big",
-      "x": 118,
+      "x": 116,
       "y": 36,
       "h": 18,
       "w": 18
     },
     {
       "key": "play_btn_click_big",
-      "x": 136,
+      "x": 134,
       "y": 36,
       "h": 18,
       "w": 18
     },
     {
       "key": "check_btn_big",
-      "x": 82,
+      "x": 80,
       "y": 54,
       "h": 18,
       "w": 18
     },
     {
       "key": "check_btn_click_big",
-      "x": 100,
+      "x": 98,
       "y": 54,
       "h": 18,
       "w": 18
     },
+
+
+
+
     {
       "key": "brush_btn",
       "x": 0,
@@ -504,6 +512,16 @@
       "y": 176,
       "h": 16,
       "w": 16
+    },
+
+
+
+    {
+      "key": "tile_flip",
+      "x": 152,
+      "y": 0,
+      "w": 10,
+      "h": 12
     }
   ]
 }

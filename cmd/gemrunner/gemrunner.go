@@ -69,8 +69,8 @@ func run() {
 	data.PuzzleShader = sh
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
-	debug.Text = true
-	debug.Debug = true
+	debug.ShowText = true
+	debug.ShowDebug = true
 
 	object.ILock = true
 
@@ -102,7 +102,10 @@ func run() {
 			options.BilinearFilter = !options.BilinearFilter
 		}
 		if data.DebugInput.Get("debugText").JustPressed() {
-			debug.Text = !debug.Text
+			debug.ShowText = !debug.ShowText
+		}
+		if data.DebugInput.Get("debug").JustPressed() {
+			debug.ShowDebug = !debug.ShowDebug
 		}
 
 		state.Update(win)

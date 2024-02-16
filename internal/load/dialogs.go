@@ -181,7 +181,6 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "block_select_tile":
 					if b < data.BlockEmpty {
 						bId := data.Block(b)
-						//sprB := img.NewSprite("black_square_big", constants.UIBatch)
 						sprS := img.NewSprite(bId.String(), constants.TileBatch)
 						sprs := []*img.Sprite{sprS}
 						if b == data.BlockFall {

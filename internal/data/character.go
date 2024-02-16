@@ -126,6 +126,7 @@ const (
 	Falling
 	Jumping
 	Leaping
+	Flying
 	Attack
 	Hit
 	Dead
@@ -143,6 +144,8 @@ func (s CharacterState) String() string {
 		return "Jumping"
 	case Leaping:
 		return "Leaping"
+	case Flying:
+		return "Flying"
 	case Attack:
 		return "Attack"
 	case Hit:
@@ -179,6 +182,7 @@ type Flags struct {
 	Hit        bool
 	Dead       bool
 	Attack     bool
+	Flying     bool
 	Frame      bool
 	JumpBuff   int
 	PickUpBuff int
@@ -234,5 +238,11 @@ func DemonVars() Vars {
 		LgJumpTimer:  constants.DemonLongJumpTimer,
 		LgJumpCntr:   constants.DemonLongJumpCounter,
 		IdleFreq:     constants.IdleFrequency,
+	}
+}
+
+func FlyVars() Vars {
+	return Vars{
+		WalkSpeed: constants.FlySpeed,
 	}
 }

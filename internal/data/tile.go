@@ -22,6 +22,7 @@ const (
 	BlockLockBlue
 	BlockPlayer1
 	BlockDemon
+	BlockFly
 	BlockBox
 	BlockKeyPink
 	BlockKeyBlue
@@ -53,6 +54,8 @@ func (b Block) String() string {
 		return constants.CharPlayer1
 	case BlockDemon:
 		return constants.CharDemon
+	case BlockFly:
+		return constants.CharFly
 	case BlockBox:
 		return constants.ItemBox
 	case BlockKeyPink:
@@ -81,6 +84,7 @@ var toID = map[string]Block{
 	constants.TileLockBlue:     BlockLockBlue,
 	constants.CharPlayer1:      BlockPlayer1,
 	constants.CharDemon:        BlockDemon,
+	constants.CharFly:          BlockFly,
 	constants.ItemBox:          BlockBox,
 	constants.ItemKeyPink:      BlockKeyPink,
 	constants.ItemKeyBlue:      BlockKeyBlue,
@@ -116,19 +120,21 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 }
 
 type Tile struct {
-	Block  Block          `json:"tile"`
-	Ladder bool           `json:"ladder"`
-	Coords world.Coords   `json:"-"`
-	Object *object.Object `json:"-"`
-	Update bool           `json:"-"`
-	Entity *ecs.Entity    `json:"-"`
+	Block    Block          `json:"tile"`
+	Ladder   bool           `json:"ladder"`
+	Metadata TileMetadata   `json:"metadata"`
+	Coords   world.Coords   `json:"-"`
+	Object   *object.Object `json:"-"`
+	Update   bool           `json:"-"`
+	Entity   *ecs.Entity    `json:"-"`
 }
 
 func (t *Tile) Copy() *Tile {
 	return &Tile{
-		Block:  t.Block,
-		Ladder: t.Ladder,
-		Coords: t.Coords,
+		Block:    t.Block,
+		Ladder:   t.Ladder,
+		Coords:   t.Coords,
+		Metadata: t.Metadata,
 	}
 }
 
@@ -193,4 +199,8 @@ func (t *Tile) PathNeighborCost(to astar.Pather) float64 {
 
 func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 	return 1.
+}
+
+type TileMetadata struct {
+	Flipped bool `json:"flipped"`
 }

@@ -110,12 +110,22 @@ func CharacterStateSystem() {
 							ch.State = data.Falling
 						}
 					}
+				case data.Flying:
+					if !ch.Flags.Flying {
+						if ch.Flags.Floor {
+							ch.State = data.Grounded
+						} else if tile != nil && tile.Ladder {
+							ch.State = data.Ladder
+						} else {
+							ch.State = data.Falling
+						}
+					}
 				case data.Hit:
-					if ch.Flags.Hit == false {
+					if !ch.Flags.Hit {
 						ch.State = data.Dead
 					}
 				case data.Attack:
-					if ch.Flags.Attack == false {
+					if !ch.Flags.Attack {
 						if ch.Flags.Floor {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.Ladder {

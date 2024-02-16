@@ -25,7 +25,8 @@ const (
 // Characters
 const (
 	CharPlayer1 = "player_1"
-	CharDemon   = "devil"
+	CharDemon   = "demon"
+	CharFly     = "fly"
 )
 
 // Items

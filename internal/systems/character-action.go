@@ -93,6 +93,9 @@ func CharacterActionSystem() {
 						jumping(ch, tile)
 					case data.Leaping:
 						leaping(ch, tile)
+					case data.Flying:
+						pickup(ch)
+						flying(ch, tile)
 					}
 					ch.Flags.Frame = true
 				}
@@ -292,6 +295,22 @@ func pickup(ch *data.Dynamic) {
 		if ch.Flags.HoldUp || ch.Flags.HoldSide {
 			//ch.Flags.Drop = true
 			ch.Flags.Action = true
+		}
+	}
+}
+
+func flying(ch *data.Dynamic, tile *data.Tile) {
+	if !ch.Flags.PickUp {
+		if ch.Actions.Direction == data.Left { // fly left
+			ch.Object.Pos.X -= ch.Vars.WalkSpeed
+			ch.Object.Flip = true
+		} else if ch.Actions.Direction == data.Right { // fly right
+			ch.Object.Pos.X += ch.Vars.WalkSpeed
+			ch.Object.Flip = false
+		} else if ch.Actions.Direction == data.Up { // fly up
+			ch.Object.Pos.Y += ch.Vars.WalkSpeed
+		} else if ch.Actions.Direction == data.Down { // fly down
+			ch.Object.Pos.Y -= ch.Vars.WalkSpeed
 		}
 	}
 }

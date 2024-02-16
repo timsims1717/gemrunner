@@ -112,7 +112,7 @@ func (lr *LRChase) GetActions() data.Actions {
 			next = path[len(path)-2].(*data.Tile).Coords
 		}
 	}
-	if debug.Debug {
+	if debug.ShowDebug {
 		col := color.RGBA{
 			R: 0,
 			G: 255,

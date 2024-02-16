@@ -134,7 +134,7 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 20) // ui
 	//img.Clear()
 	//data.IMDraw.Draw(data.PuzzleView.Canvas)
-	if debug.Debug {
+	if debug.ShowDebug {
 		debug.DrawLines(data.PuzzleView.Canvas)
 	}
 	data.PuzzleView.Draw(win)

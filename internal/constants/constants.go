@@ -77,6 +77,9 @@ const (
 	DemonLongJumpHSpeed  = 3.4
 	DemonLongJumpTimer   = 7.8
 	DemonLongJumpCounter = 8
+
+	// Fly Constants
+	FlySpeed = 3.
 )
 
 var (

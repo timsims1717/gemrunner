@@ -18,17 +18,19 @@ func InitializeText() {
 }
 
 func DrawText(win *pixelgl.Window) {
-	var sb strings.Builder
-	for i, line := range lines {
-		if i != 0 {
-			sb.WriteString("\n")
+	if ShowText {
+		var sb strings.Builder
+		for i, line := range lines {
+			if i != 0 {
+				sb.WriteString("\n")
+			}
+			sb.WriteString(line)
 		}
-		sb.WriteString(line)
+		debugText.SetText(sb.String())
+		debugText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*-0.5+2., win.Bounds().H()*0.5-2))
+		debugText.Obj.Update()
+		debugText.Draw(win)
 	}
-	debugText.SetText(sb.String())
-	debugText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*-0.5+2., win.Bounds().H()*0.5-2))
-	debugText.Obj.Update()
-	debugText.Draw(win)
 }
 
 func AddText(s string) {

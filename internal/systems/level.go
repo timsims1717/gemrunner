@@ -39,9 +39,13 @@ func LevelInit() {
 				data.CurrLevel.Stats[0] = data.NewStats()
 			case data.BlockDemon:
 				tile.Block = data.BlockEmpty
-				demon := DemonCharacter(obj.Pos, 1)
+				demon := DemonCharacter(obj.Pos)
 				//data.CurrLevel.Players[1] = demon
 				data.CurrLevel.Chars = append(data.CurrLevel.Chars, demon)
+			case data.BlockFly:
+				tile.Block = data.BlockEmpty
+				fly := FlyCharacter(obj.Pos, tile.Metadata.Flipped)
+				data.CurrLevel.Chars = append(data.CurrLevel.Chars, fly)
 			case data.BlockGem:
 				tile.Block = data.BlockEmpty
 				CreateGem(obj.Pos)
