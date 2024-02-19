@@ -87,7 +87,7 @@ func OnOpenPuzzleDialog() {
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				scroll.Elements = []interface{}{}
-				data.UpdateScroll(scroll)
+				data.UpdateScrollBounds(scroll)
 				return
 			}
 			total := len(data.PuzzleInfos)
@@ -145,7 +145,7 @@ func OnOpenPuzzleDialog() {
 					scroll.Elements = []interface{}{}
 				}
 			}
-			data.UpdateScroll(scroll)
+			data.UpdateScrollBounds(scroll)
 		}
 	}
 }

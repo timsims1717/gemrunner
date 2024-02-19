@@ -38,6 +38,9 @@ const (
 	ThinBorderBlue      = "blue_dot"
 	TextCaret           = "text_caret"
 
+	// UI Constants
+	ScrollSpeed = 150.
+
 	// In Game Constants
 	FrameRateMax  = 35
 	FrameRateMin  = 5

@@ -129,7 +129,9 @@ func customizeDialogs(win *pixelgl.Window) {
 					case "editor_panel_top", "editor_panel_left":
 						btn.OnClick = EditorMode(data.ModeFromSprString(btn.Sprite.Key), btn, dialog)
 					default:
-						btn.OnClick = Test(fmt.Sprintf("pressed button %s", btn.Key))
+						if btn.OnClick == nil && btn.OnHeld == nil {
+							btn.OnClick = Test(fmt.Sprintf("pressed button %s", btn.Key))
+						}
 					}
 				}
 			} else if spr, okS := e.(*data.SprElement); okS {

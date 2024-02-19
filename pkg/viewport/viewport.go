@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	MainCamera *ViewPort
+	MainCamera   *ViewPort
+	ILockDefault bool
 )
 
 type ViewPort struct {
@@ -61,6 +62,7 @@ func New(winCan *pixelgl.Canvas) *ViewPort {
 		ZoomSpeed: 1.,
 		ZoomStep:  1.2,
 		PortSize:  pixel.V(1., 1.),
+		iLock:     ILockDefault,
 	}
 	viewPort.SetZoom(1.)
 	if winCan == nil {

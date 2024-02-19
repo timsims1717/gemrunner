@@ -111,7 +111,7 @@ func NewDialog(dc *DialogConstructor) {
 	Dialogs[dc.Key] = dlg
 }
 
-func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) interface{} {
+func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Button {
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
@@ -137,6 +137,9 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			}
 			if hvc.Hover && click.Pressed() && dlg.Click {
 				e.AddComponent(myecs.Drawable, cSpr)
+				if b.OnHeld != nil {
+					b.OnHeld(hvc)
+				}
 			} else {
 				if hvc.Hover && click.JustReleased() && dlg.Click {
 					dlg.Click = false
@@ -166,7 +169,7 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	return b
 }
 
-func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) interface{} {
+func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Input {
 	ivp := viewport.New(nil)
 	ivp.ParentView = vp
 	ivp.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
@@ -308,13 +311,13 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 	return i
 }
 
-func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) interface{} {
-
+func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Scroll {
 	svp := viewport.New(nil)
 	svp.ParentView = vp
-	svp.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	svp.SetRect(pixel.R(0, 0, (element.Width-1)*world.TileSize, element.Height*world.TileSize))
 	svp.CamPos = pixel.V(0, 0)
 	svp.PortPos = element.Position
+	svp.PortPos.X -= world.HalfSize
 
 	bvp := viewport.New(nil)
 	bvp.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
@@ -335,38 +338,174 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, bObj)
 	s := &Scroll{
 		Key:          element.Key,
-		UpSprite:     nil,
-		UpSprClick:   nil,
-		UpObject:     nil,
-		UpEntity:     nil,
-		DwnSprite:    nil,
-		DwnSprClick:  nil,
-		DwnObject:    nil,
-		DwnEntity:    nil,
-		BarSprite:    nil,
-		BarObject:    nil,
-		BarEntity:    nil,
 		BorderVP:     bvp,
 		BorderObject: bObj,
 		BorderEntity: be,
 		Entity:       e,
 		ViewPort:     svp,
-		Elements:     nil,
 	}
 	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, svp, func(hvc *HoverClick) {
-
-		if s.ViewPort.CamPos.Y-s.ViewPort.Rect.H()*0.5 < s.YBot {
-			s.ViewPort.CamPos.Y = s.YBot + s.ViewPort.Rect.H()*0.5
-		}
-		if s.ViewPort.CamPos.Y+s.ViewPort.Rect.H()*0.5 > s.YTop {
-			s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5
+		if hvc.ViewHover {
+			if hvc.Input.ScrollV > 0. {
+				s.ViewPort.CamPos.Y += constants.ScrollSpeed * timing.DT
+			} else if hvc.Input.ScrollV < 0. {
+				s.ViewPort.CamPos.Y -= constants.ScrollSpeed * timing.DT
+			}
+			RestrictScroll(s)
+			AlignBarToView(s)
 		}
 	}))
-	UpdateScroll(s)
+	btnX := svp.Rect.W() * 0.5
+	for i := 0; i < 3; i++ {
+		var pos pixel.Vec
+		var key, sprKey, cSprKey string
+		switch i {
+		case 0:
+			pos = element.Position.Add(pixel.V(btnX, svp.Rect.H()*0.5))
+			key = fmt.Sprintf("%s_scroll_up", element.Key)
+			sprKey = "scroll_up"
+			cSprKey = "scroll_up_click"
+		case 1:
+			pos = element.Position.Add(pixel.V(btnX, svp.Rect.H()*-0.5))
+			key = fmt.Sprintf("%s_scroll_down", element.Key)
+			sprKey = "scroll_down"
+			cSprKey = "scroll_down_click"
+		case 2:
+			pos = element.Position.Add(pixel.V(btnX, 0.))
+			key = fmt.Sprintf("%s_scroll_bar", element.Key)
+			sprKey = "scroll_bar"
+			cSprKey = "scroll_bar_click"
+		}
+		btn := ElementConstructor{
+			Key:         key,
+			SprKey:      sprKey,
+			ClickSprKey: cSprKey,
+			Position:    pos,
+			Element:     ButtonElement,
+		}
+		b := CreateButtonElement(btn, dlg, dlg.ViewPort)
+		dlg.Elements = append(dlg.Elements, b)
+		switch i {
+		case 0:
+			s.ButtonHeight = b.Object.Rect.H()
+			b.Object.Pos.Y -= b.Object.Rect.H() * 0.5
+			b.OnHeld = func(_ *HoverClick) {
+				s.ViewPort.CamPos.Y += constants.ScrollSpeed * timing.DT
+				RestrictScroll(s)
+				AlignBarToView(s)
+			}
+		case 1:
+			b.Object.Pos.Y += b.Object.Rect.H() * 0.5
+			b.OnHeld = func(_ *HoverClick) {
+				s.ViewPort.CamPos.Y -= constants.ScrollSpeed * timing.DT
+				RestrictScroll(s)
+				AlignBarToView(s)
+			}
+		case 2:
+			s.Bar = b
+			offset := 0.
+			barClick := false
+			b.Entity.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, dlg.ViewPort, func(hvc *HoverClick) {
+				if dlg.Open && dlg.Active && !dlg.Lock {
+					click := hvc.Input.Get("click")
+					if hvc.Hover && click.JustPressed() {
+						b.Entity.AddComponent(myecs.Drawable, b.ClickSpr)
+						offset = hvc.Pos.Y - b.Object.Pos.Y
+						barClick = true
+					}
+					if click.Pressed() && barClick {
+						b.Object.Pos.Y = hvc.Pos.Y - offset
+						RestrictScroll(s)
+						AlignViewToBar(s)
+					} else {
+						barClick = false
+						b.Entity.AddComponent(myecs.Drawable, b.Sprite)
+					}
+				}
+			}))
+		}
+	}
+	for _, ele := range element.SubElements {
+		if ele.Key == "" {
+			fmt.Println("WARNING: element constructor has no key")
+		}
+		switch ele.Element {
+		case ButtonElement:
+			b := CreateButtonElement(ele, dlg, s.ViewPort)
+			dlg.Elements = append(dlg.Elements, b)
+		case InputElement:
+			i := CreateInputElement(ele, dlg, s.ViewPort)
+			dlg.Elements = append(dlg.Elements, i)
+		case ScrollElement:
+			s2 := CreateScrollElement(ele, dlg, s.ViewPort)
+			dlg.Elements = append(dlg.Elements, s2)
+		case SpriteElement:
+			s2 := CreateSpriteElement(ele)
+			dlg.Elements = append(dlg.Elements, s2)
+		case TextElement:
+			t := CreateTextElement(ele, s.ViewPort)
+			dlg.Elements = append(dlg.Elements, t)
+		}
+	}
+	UpdateScrollBounds(s)
 	return s
 }
 
-func UpdateScroll(scroll *Scroll) {
+func AlignViewToBar(s *Scroll) {
+	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
+	viewHeight := s.ViewPort.Rect.H()
+	if math.Abs(s.YTop-s.YBot) < viewHeight {
+		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
+		return
+	}
+	scrollHeight := s.YTop - s.YBot - s.ViewPort.Rect.H()
+	barTop := s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
+	barPos := s.Bar.Object.Pos.Y
+	barDist := barTop - barPos
+	barRatio := barDist / barHeight
+	scrollDist := barRatio * scrollHeight
+	s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
+}
+
+func AlignBarToView(s *Scroll) {
+	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
+	viewHeight := s.ViewPort.Rect.H()
+	if math.Abs(s.YTop-s.YBot) < viewHeight {
+		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
+		return
+	}
+	scrollHeight := s.YTop - s.YBot - s.ViewPort.Rect.H()
+	scrollTop := s.YTop - s.ViewPort.Rect.H()*0.5
+	viewPos := s.ViewPort.CamPos.Y
+	scrollDist := scrollTop - viewPos
+	scrollRatio := scrollDist / scrollHeight
+	barDist := scrollRatio * barHeight
+	barTop := s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
+	s.Bar.Object.Pos.Y = barTop - barDist
+
+	//barPos := s.Bar.Object.Pos.Y
+	//barDist := barTop - barPos
+	//barRatio := barDist / barHeight
+	//scrollDist := barRatio * scrollHeight
+	//s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
+}
+
+func RestrictScroll(s *Scroll) {
+	if s.Bar.Object.Pos.Y > s.ViewPort.PortPos.Y+s.ViewPort.Rect.H()*0.5-s.ButtonHeight-s.Bar.Object.Rect.H()*0.5 {
+		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
+	}
+	if s.Bar.Object.Pos.Y < s.ViewPort.PortPos.Y-s.ViewPort.Rect.H()*0.5+s.ButtonHeight+s.Bar.Object.Rect.H()*0.5 {
+		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y - s.ViewPort.Rect.H()*0.5 + s.ButtonHeight + s.Bar.Object.Rect.H()*0.5
+	}
+	if s.ViewPort.CamPos.Y-s.ViewPort.Rect.H()*0.5 < s.YBot {
+		s.ViewPort.CamPos.Y = s.YBot + s.ViewPort.Rect.H()*0.5
+	}
+	if s.ViewPort.CamPos.Y+s.ViewPort.Rect.H()*0.5 > s.YTop {
+		s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5
+	}
+}
+
+func UpdateScrollBounds(scroll *Scroll) {
 	yTop := 0.
 	yBot := 0.
 	for i, ele := range scroll.Elements {
@@ -392,9 +531,10 @@ func UpdateScroll(scroll *Scroll) {
 	scroll.YTop = yTop
 	scroll.YBot = yBot
 	scroll.ViewPort.CamPos.Y = scroll.YTop - scroll.ViewPort.Rect.H()*0.5
+	scroll.Bar.Object.Pos.Y = scroll.ViewPort.PortPos.Y + scroll.ViewPort.Rect.H()*0.5 - scroll.ButtonHeight - scroll.Bar.Object.Rect.H()*0.5
 }
 
-func CreateSpriteElement(element ElementConstructor) interface{} {
+func CreateSpriteElement(element ElementConstructor) *SprElement {
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
@@ -412,7 +552,7 @@ func CreateSpriteElement(element ElementConstructor) interface{} {
 	return s
 }
 
-func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) interface{} {
+func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Text {
 	tf := typeface.New("main", typeface.NewAlign(typeface.Left, typeface.Top), 1, 0.0625, 0, 0)
 	tf.SetPos(element.Position)
 	tf.SetColor(pixel.ToRGBA(constants.ColorWhite))

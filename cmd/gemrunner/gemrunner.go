@@ -35,6 +35,7 @@ func run() {
 		panic(err)
 	}
 
+	viewport.ILockDefault = true
 	viewport.MainCamera = viewport.New(win.Canvas())
 	viewport.MainCamera.SetRect(pixel.R(0, 0, 1600, 900))
 	viewport.MainCamera.CamPos = pixel.V(1600*0.5, 900*0.5)

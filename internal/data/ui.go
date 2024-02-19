@@ -43,6 +43,7 @@ type Button struct {
 	Object   *object.Object
 	Entity   *ecs.Entity
 	OnClick  func()
+	OnHeld   func(*HoverClick)
 }
 
 type Container struct {
@@ -73,17 +74,8 @@ type Input struct {
 
 type Scroll struct {
 	Key          string
-	UpSprite     *img.Sprite
-	UpSprClick   *img.Sprite
-	UpObject     *object.Object
-	UpEntity     *ecs.Entity
-	DwnSprite    *img.Sprite
-	DwnSprClick  *img.Sprite
-	DwnObject    *object.Object
-	DwnEntity    *ecs.Entity
-	BarSprite    []*img.Sprite
-	BarObject    *object.Object
-	BarEntity    *ecs.Entity
+	Bar          *Button
+	ButtonHeight float64
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
 	BorderEntity *ecs.Entity
