@@ -183,8 +183,13 @@ func customizeDialogs(win *pixelgl.Window) {
 						bId := data.Block(b)
 						sprS := img.NewSprite(bId.String(), constants.TileBatch)
 						sprs := []*img.Sprite{sprS}
-						if b == data.BlockFall {
+						switch b {
+						case data.BlockFall:
 							sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
+						case data.BlockPhase:
+							sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
+						case data.BlockCracked:
+							sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
 						}
 						obj := spr.Object
 						spr.Entity.AddComponent(myecs.Drawable, sprs)
@@ -500,8 +505,8 @@ func editorPanels() {
 	data.NewDialog(editorPanelLeftConstructor)
 	blockSelectConstructor := &data.DialogConstructor{
 		Key:      "block_select",
-		Width:    6,
-		Height:   3,
+		Width:    constants.BlockSelectWidth,
+		Height:   constants.BlockSelectHeight,
 		Pos:      pixel.V(0, 0),
 		NoBorder: true,
 	}

@@ -19,14 +19,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	})
 	var run, climb, slide *reanimator.Anim
 	var leapOnI, leapOffI, leapToI []int
-	if sprPre == "player" {
-		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
-		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
-		leapOnI = []int{2, 2}
-		leapOffI = []int{0, 1, 2}
-		leapToI = []int{0, 1, 2, 2}
-	} else {
+	if sprPre == "demon" {
 		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 3, 4, 1, 2, 3}, reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 4, 3, 1}, reanimator.Loop)
@@ -49,6 +42,13 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		leapOnI = []int{0, 1, 2}
 		leapOffI = []int{3, 2, 1, 0}
 		leapToI = []int{3, 2, 1, 1, 2, 3}
+	} else {
+		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
+		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
+		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
+		leapOnI = []int{2, 2}
+		leapOffI = []int{0, 1, 2}
+		leapToI = []int{0, 1, 2, 2}
 	}
 	climb.SetTriggerAll(func() {
 		climb.Freeze = !ch.Flags.Climbed
@@ -97,7 +97,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	attack.SetEndTrigger(func() {
 		ch.Flags.Attack = false
 	})
-	return reanimator.New(reanimator.NewSwitch().
+	sw := reanimator.NewSwitch().
 		AddAnimation(idle).
 		AddAnimation(breath).
 		AddAnimation(run).
@@ -204,5 +204,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				}
 			}
 			return "fall"
-		}), "breath")
+		})
+	tree := reanimator.New(sw, "breath")
+	return tree
 }

@@ -204,7 +204,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 						tile.Block = data.BlockEmpty
 					}
 					tile.Ladder = true
-				case data.BlockPlayer1:
+				case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
 					tile.Ladder = false
 					// ensure no other player of that type are in puzzle
 					for _, row := range data.CurrPuzzle.Tiles.T {

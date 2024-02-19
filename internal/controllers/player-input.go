@@ -254,15 +254,15 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	return actions
 }
 
-func NewPlayerInput(in *pxginput.Input, l, r, u, d, j, p, a string) *PlayerInput {
+func NewPlayerInput(in *pxginput.Input) *PlayerInput {
 	return &PlayerInput{
 		Input:     in,
-		LeftKey:   l,
-		RightKey:  r,
-		UpKey:     u,
-		DownKey:   d,
-		JumpKey:   j,
-		PickUpKey: p,
-		ActionKey: a,
+		LeftKey:   "left",
+		RightKey:  "right",
+		UpKey:     "up",
+		DownKey:   "down",
+		JumpKey:   "jump",
+		PickUpKey: "pickUp",
+		ActionKey: "action",
 	}
 }

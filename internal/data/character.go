@@ -28,6 +28,7 @@ type Dynamic struct {
 	LastTile *Tile
 	MoveType MoveType
 	Player   Player
+	Color    string
 }
 
 func NewDynamic() *Dynamic {

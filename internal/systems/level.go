@@ -31,12 +31,20 @@ func LevelInit() {
 			tile.Entity = e
 			// replace reanimator and items
 			switch tile.Block {
-			case data.BlockPlayer1:
+			case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
+				i := 0
+				if tile.Block == data.BlockPlayer2 {
+					i = 1
+				} else if tile.Block == data.BlockPlayer3 {
+					i = 2
+				} else if tile.Block == data.BlockPlayer4 {
+					i = 3
+				}
 				tile.Block = data.BlockEmpty
-				p1 := PlayerCharacter(obj.Pos, 0)
-				data.CurrLevel.Players[0] = p1
-				data.CurrLevel.Chars = append(data.CurrLevel.Chars, p1)
-				data.CurrLevel.Stats[0] = data.NewStats()
+				player := PlayerCharacter(obj.Pos, i)
+				data.CurrLevel.Players[i] = player
+				data.CurrLevel.Chars = append(data.CurrLevel.Chars, player)
+				data.CurrLevel.Stats[i] = data.NewStats()
 			case data.BlockDemon:
 				tile.Block = data.BlockEmpty
 				demon := DemonCharacter(obj.Pos)
@@ -46,17 +54,47 @@ func LevelInit() {
 				tile.Block = data.BlockEmpty
 				fly := FlyCharacter(obj.Pos, tile.Metadata.Flipped)
 				data.CurrLevel.Chars = append(data.CurrLevel.Chars, fly)
-			case data.BlockGem:
+			case data.BlockGemYellow,
+				data.BlockGemOrange,
+				data.BlockGemGray,
+				data.BlockGemCyan,
+				data.BlockGemBlue,
+				data.BlockGemGreen,
+				data.BlockGemPurple,
+				data.BlockGemBrown:
+				key := tile.Block.String()
 				tile.Block = data.BlockEmpty
-				CreateGem(obj.Pos)
-			case data.BlockDoorPink, data.BlockDoorBlue, data.BlockLockPink, data.BlockLockBlue:
+				CreateGem(obj.Pos, key)
+			case data.BlockDoorYellow,
+				data.BlockDoorOrange,
+				data.BlockDoorGray,
+				data.BlockDoorCyan,
+				data.BlockDoorBlue,
+				data.BlockDoorGreen,
+				data.BlockDoorPurple,
+				data.BlockDoorBrown,
+				data.BlockLockYellow,
+				data.BlockLockOrange,
+				data.BlockLockGray,
+				data.BlockLockCyan,
+				data.BlockLockBlue,
+				data.BlockLockGreen,
+				data.BlockLockPurple,
+				data.BlockLockBrown:
 				doorKey := tile.Block.String()
 				tile.Block = data.BlockEmpty
 				CreateDoor(obj.Pos, doorKey)
 			case data.BlockBox:
 				tile.Block = data.BlockEmpty
 				CreateBox(obj.Pos)
-			case data.BlockKeyPink, data.BlockKeyBlue:
+			case data.BlockKeyYellow,
+				data.BlockKeyOrange,
+				data.BlockKeyGray,
+				data.BlockKeyCyan,
+				data.BlockKeyBlue,
+				data.BlockKeyGreen,
+				data.BlockKeyPurple,
+				data.BlockKeyBrown:
 				keyKey := tile.Block.String()
 				tile.Block = data.BlockEmpty
 				CreateKey(obj.Pos, keyKey)

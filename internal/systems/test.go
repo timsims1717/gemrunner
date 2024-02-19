@@ -6,7 +6,16 @@ import (
 )
 
 func TestSystem() {
-	if data.CurrLevel.Players[0].State == data.Dead {
+	allDead := true
+	for _, p := range data.CurrLevel.Players {
+		if p == nil {
+			continue
+		}
+		if p.State != data.Dead {
+			allDead = false
+		}
+	}
+	if allDead {
 		data.CurrLevel.Failed = true
 	}
 	if data.MenuInput.Get("escape").JustPressed() ||

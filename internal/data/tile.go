@@ -15,18 +15,56 @@ type Block int
 const (
 	BlockTurf = iota
 	BlockFall
+	BlockCracked
+	BlockPhase
 	BlockLadder
-	BlockDoorPink
-	BlockLockPink
+	BlockLadderCracked
+	BlockLadderExit
+	BlockBox
+
+	BlockPlayer1
+	BlockKeyBlue
+	BlockPlayer2
+	BlockKeyGreen
+	BlockPlayer3
+	BlockKeyPurple
+	BlockPlayer4
+	BlockKeyBrown
+
 	BlockDoorBlue
 	BlockLockBlue
-	BlockPlayer1
+	BlockDoorGreen
+	BlockLockGreen
+	BlockDoorPurple
+	BlockLockPurple
+	BlockDoorBrown
+	BlockLockBrown
+
+	BlockDoorYellow
+	BlockLockYellow
+	BlockDoorOrange
+	BlockLockOrange
+	BlockDoorGray
+	BlockLockGray
+	BlockDoorCyan
+	BlockLockCyan
+
+	BlockGemYellow
+	BlockKeyYellow
+	BlockGemOrange
+	BlockKeyOrange
+	BlockGemGray
+	BlockKeyGray
+	BlockGemCyan
+	BlockKeyCyan
+
+	BlockGemBlue
+	BlockGemGreen
+	BlockGemPurple
+	BlockGemBrown
+
 	BlockDemon
 	BlockFly
-	BlockBox
-	BlockKeyPink
-	BlockKeyBlue
-	BlockGem
 	BlockChain
 	BlockReeds
 	BlockFlowers
@@ -35,35 +73,95 @@ const (
 
 func (b Block) String() string {
 	switch b {
-	case BlockTurf, BlockFall:
+	case BlockTurf, BlockFall, BlockCracked, BlockPhase:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldRock]
 	case BlockLadder:
 		return constants.TileLadderMiddle
-	case BlockDoorPink:
-		return constants.TileDoorPink
-	case BlockLockPink:
-		return constants.TileLockPink
-	case BlockDoorBlue:
-		return constants.TileDoorBlue
-	case BlockLockBlue:
-		return constants.TileLockBlue
+	case BlockLadderCracked:
+		return constants.TileLadderCrackM
+	case BlockLadderExit:
+		return constants.TileExitLadderM
+	case BlockBox:
+		return constants.ItemBox
 	case BlockPlayer1:
 		return constants.CharPlayer1
+	case BlockPlayer2:
+		return constants.CharPlayer2
+	case BlockPlayer3:
+		return constants.CharPlayer3
+	case BlockPlayer4:
+		return constants.CharPlayer4
+	case BlockKeyBlue:
+		return constants.ItemKeyBlue
+	case BlockKeyGreen:
+		return constants.ItemKeyGreen
+	case BlockKeyPurple:
+		return constants.ItemKeyPurple
+	case BlockKeyBrown:
+		return constants.ItemKeyBrown
+	case BlockKeyYellow:
+		return constants.ItemKeyYellow
+	case BlockKeyOrange:
+		return constants.ItemKeyOrange
+	case BlockKeyGray:
+		return constants.ItemKeyGray
+	case BlockKeyCyan:
+		return constants.ItemKeyCyan
+	case BlockDoorBlue:
+		return constants.TileDoorBlue
+	case BlockDoorGreen:
+		return constants.TileDoorGreen
+	case BlockDoorPurple:
+		return constants.TileDoorPurple
+	case BlockDoorBrown:
+		return constants.TileDoorBrown
+	case BlockDoorYellow:
+		return constants.TileDoorYellow
+	case BlockDoorOrange:
+		return constants.TileDoorOrange
+	case BlockDoorGray:
+		return constants.TileDoorGray
+	case BlockDoorCyan:
+		return constants.TileDoorCyan
+	case BlockLockBlue:
+		return constants.TileLockBlue
+	case BlockLockGreen:
+		return constants.TileLockGreen
+	case BlockLockPurple:
+		return constants.TileLockPurple
+	case BlockLockBrown:
+		return constants.TileLockBrown
+	case BlockLockYellow:
+		return constants.TileLockYellow
+	case BlockLockOrange:
+		return constants.TileLockOrange
+	case BlockLockGray:
+		return constants.TileLockGray
+	case BlockLockCyan:
+		return constants.TileLockCyan
+	case BlockGemBlue:
+		return constants.ItemGemBlue
+	case BlockGemGreen:
+		return constants.ItemGemGreen
+	case BlockGemPurple:
+		return constants.ItemGemPurple
+	case BlockGemBrown:
+		return constants.ItemGemBrown
+	case BlockGemYellow:
+		return constants.ItemGemYellow
+	case BlockGemOrange:
+		return constants.ItemGemOrange
+	case BlockGemGray:
+		return constants.ItemGemGray
+	case BlockGemCyan:
+		return constants.ItemGemCyan
 	case BlockDemon:
 		return constants.CharDemon
 	case BlockFly:
 		return constants.CharFly
-	case BlockBox:
-		return constants.ItemBox
-	case BlockKeyPink:
-		return constants.ItemKeyPink
-	case BlockKeyBlue:
-		return constants.ItemKeyBlue
-	case BlockGem:
-		return constants.ItemGem
 	case BlockChain:
 		return constants.DoodadChain
 	case BlockReeds:
@@ -71,24 +169,56 @@ func (b Block) String() string {
 	case BlockFlowers:
 		return constants.DoodadFlowers
 	}
-	return "empty"
+	return constants.TileEmpty
 }
 
 var toID = map[string]Block{
 	constants.TileTurf:         BlockTurf,
 	constants.TileFall:         BlockFall,
+	constants.TileCracked:      BlockCracked,
+	constants.TilePhase:        BlockPhase,
 	constants.TileLadderMiddle: BlockLadder,
-	constants.TileDoorPink:     BlockDoorPink,
-	constants.TileLockPink:     BlockLockPink,
-	constants.TileDoorBlue:     BlockDoorBlue,
-	constants.TileLockBlue:     BlockLockBlue,
+	constants.TileLadderCrackM: BlockLadderCracked,
+	constants.TileExitLadderM:  BlockLadderExit,
+	constants.ItemBox:          BlockBox,
 	constants.CharPlayer1:      BlockPlayer1,
+	constants.CharPlayer2:      BlockPlayer2,
+	constants.CharPlayer3:      BlockPlayer3,
+	constants.CharPlayer4:      BlockPlayer4,
+	constants.ItemKeyYellow:    BlockKeyYellow,
+	constants.ItemKeyOrange:    BlockKeyOrange,
+	constants.ItemKeyGray:      BlockKeyGray,
+	constants.ItemKeyCyan:      BlockKeyCyan,
+	constants.ItemKeyBlue:      BlockKeyBlue,
+	constants.ItemKeyGreen:     BlockKeyGreen,
+	constants.ItemKeyPurple:    BlockKeyPurple,
+	constants.ItemKeyBrown:     BlockKeyBrown,
+	constants.TileDoorYellow:   BlockDoorYellow,
+	constants.TileDoorOrange:   BlockDoorOrange,
+	constants.TileDoorGray:     BlockDoorGray,
+	constants.TileDoorCyan:     BlockDoorCyan,
+	constants.TileDoorBlue:     BlockDoorBlue,
+	constants.TileDoorGreen:    BlockDoorGreen,
+	constants.TileDoorPurple:   BlockDoorPurple,
+	constants.TileDoorBrown:    BlockDoorBrown,
+	constants.TileLockYellow:   BlockLockYellow,
+	constants.TileLockOrange:   BlockLockOrange,
+	constants.TileLockGray:     BlockLockGray,
+	constants.TileLockCyan:     BlockLockCyan,
+	constants.TileLockBlue:     BlockLockBlue,
+	constants.TileLockGreen:    BlockLockGreen,
+	constants.TileLockPurple:   BlockLockPurple,
+	constants.TileLockBrown:    BlockLockBrown,
+	constants.ItemGemYellow:    BlockGemYellow,
+	constants.ItemGemOrange:    BlockGemOrange,
+	constants.ItemGemGray:      BlockGemGray,
+	constants.ItemGemCyan:      BlockGemCyan,
+	constants.ItemGemBlue:      BlockGemBlue,
+	constants.ItemGemGreen:     BlockGemGreen,
+	constants.ItemGemPurple:    BlockGemPurple,
+	constants.ItemGemBrown:     BlockGemBrown,
 	constants.CharDemon:        BlockDemon,
 	constants.CharFly:          BlockFly,
-	constants.ItemBox:          BlockBox,
-	constants.ItemKeyPink:      BlockKeyPink,
-	constants.ItemKeyBlue:      BlockKeyBlue,
-	constants.ItemGem:          BlockGem,
 	constants.DoodadChain:      BlockChain,
 	constants.DoodadReeds:      BlockReeds,
 	constants.DoodadFlowers:    BlockFlowers,
@@ -102,6 +232,10 @@ func (b Block) MarshalJSON() ([]byte, error) {
 		buffer.WriteString(constants.TileTurf)
 	case BlockFall:
 		buffer.WriteString(constants.TileFall)
+	case BlockPhase:
+		buffer.WriteString(constants.TilePhase)
+	case BlockCracked:
+		buffer.WriteString(constants.TileCracked)
 	default:
 		buffer.WriteString(b.String())
 	}

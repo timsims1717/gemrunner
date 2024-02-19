@@ -29,36 +29,26 @@ func NewPickUp(p int, neverFlip bool) *PickUp {
 }
 
 type Key struct {
-	Object  *object.Object
-	Entity  *ecs.Entity
-	Sprite  *img.Sprite
-	PickUp  *PickUp
-	Action  *Interact
-	KeyType KeyType
+	Object *object.Object
+	Entity *ecs.Entity
+	Sprite *img.Sprite
+	PickUp *PickUp
+	Action *Interact
+	Color  string
 }
 
 type Door struct {
 	Object   *object.Object
 	Entity   *ecs.Entity
+	Color    string
 	DoorType DoorType
 	Unlock   bool
 }
 
-type KeyType int
-
-const (
-	PinkKey = iota
-	BlueKey
-	KeyParity
-)
-
 type DoorType int
 
 const (
-	PinkOpen = iota
-	BlueOpen
-	PinkLock
-	BlueLock
-	PinkUnlock
-	BlueUnlock
+	Opened = iota
+	Locked
+	Unlocked
 )

@@ -23,15 +23,28 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	switch pIndex {
 	case 0:
-		player.Control = controllers.NewPlayerInput(data.P1Input, "p1_left", "p1_right", "p1_up", "p1_down", "p1_jump", "p1_pickUp", "p1_action")
+		player.Control = controllers.NewPlayerInput(data.P1Input)
 		e.AddComponent(myecs.Controller, player.Control)
+		player.Anim = reanimator.HumanoidAnimation(player, "player1")
+		player.Color = constants.StrColorBlue
 	case 1:
-		player.Control = controllers.NewPlayerInput(data.P2Input, "p2_left", "p2_right", "p2_up", "p2_down", "p2_jump", "p2_pickUp", "p2_action")
+		player.Control = controllers.NewPlayerInput(data.P2Input)
 		e.AddComponent(myecs.Controller, player.Control)
+		player.Anim = reanimator.HumanoidAnimation(player, "player2")
+		player.Color = constants.StrColorGreen
+	case 2:
+		player.Control = controllers.NewPlayerInput(data.P3Input)
+		e.AddComponent(myecs.Controller, player.Control)
+		player.Anim = reanimator.HumanoidAnimation(player, "player3")
+		player.Color = constants.StrColorPurple
+	case 3:
+		player.Control = controllers.NewPlayerInput(data.P4Input)
+		e.AddComponent(myecs.Controller, player.Control)
+		player.Anim = reanimator.HumanoidAnimation(player, "player4")
+		player.Color = constants.StrColorBrown
 	}
 	player.Object = obj
 	player.Entity = e
-	player.Anim = reanimator.HumanoidAnimation(player, "player")
 	player.Player = data.Player(pIndex)
 	player.Vars = data.PlayerVars()
 	e.AddComponent(myecs.Animated, player.Anim)

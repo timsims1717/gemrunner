@@ -36,7 +36,7 @@ func (lr *LRChase) GetActions() data.Actions {
 	if data.CurrLevel == nil || lr.Ch == nil {
 		return actions
 	}
-	lr.Target = PickClosestPlayerXFirst(lr.Ch)
+	lr.Target = PickClosestPlayerYFirst(lr.Ch)
 	//if lr.Timer.Done() || lr.Target == nil {
 	//	lr.Target = PickClosestPlayerXFirst(lr.Ch)
 	//	lr.Timer = timing.New(constants.WaitToSwitch + rand.Float64()*3.)

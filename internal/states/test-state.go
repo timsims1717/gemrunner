@@ -57,21 +57,20 @@ func (s *testState) Load() {
 func (s *testState) Update(win *pixelgl.Window) {
 	data.P1Input.Update(win, viewport.MainCamera.Mat)
 	data.P2Input.Update(win, viewport.MainCamera.Mat)
+	data.P3Input.Update(win, viewport.MainCamera.Mat)
+	data.P4Input.Update(win, viewport.MainCamera.Mat)
 	debug.AddText("Test State")
-	p1 := data.CurrLevel.Players[0]
-	p1Pos := p1.Object.Pos
-	debug.AddIntCoords("Player Pos", int(p1Pos.X), int(p1Pos.Y))
-	cx, cy := world.WorldToMap(p1Pos.X, p1Pos.Y)
-	debug.AddIntCoords("Player Coords", cx, cy)
-	tile := data.CurrLevel.Tiles.Get(cx, cy)
-	debug.AddIntCoords("Tile Pos", int(tile.Object.Pos.X), int(tile.Object.Pos.Y))
-	debug.AddText(fmt.Sprintf("Player 1 Score: %d", data.CurrLevel.Stats[0].Score))
-	held := "None"
-	if data.CurrLevel.Players[0].Held != nil {
-		held = data.CurrLevel.Players[0].HeldObj.ID
+	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
+	for i, player := range data.CurrLevel.Players {
+		if player != nil {
+			pos := player.Object.Pos
+			debug.AddIntCoords(fmt.Sprintf("Player %d Pos", i+1), int(pos.X), int(pos.Y))
+			cx, cy := world.WorldToMap(pos.X, pos.Y)
+			debug.AddIntCoords(fmt.Sprintf("Player %d Coords", i+1), cx, cy)
+			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevel.Stats[i].Score))
+			debug.AddText(fmt.Sprintf("Player %d State: %s", i+1, player.State.String()))
+		}
 	}
-	debug.AddText(fmt.Sprintf("Player 1 Held Item: %s", held))
-	debug.AddText(fmt.Sprintf("Player 1 State: %s", data.CurrLevel.Players[0].State.String()))
 
 	if reanimator.FRate != constants.FrameRate {
 		reanimator.SetFrameRate(constants.FrameRate)
@@ -87,9 +86,6 @@ func (s *testState) Update(win *pixelgl.Window) {
 	if !data.DialogStackOpen {
 		// custom systems
 		systems.InGameSystem()
-		//systems.CollisionSystem()
-		//systems.DynamicSystem()
-		//systems.CollisionSystem()
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
 		systems.CollisionSystem()

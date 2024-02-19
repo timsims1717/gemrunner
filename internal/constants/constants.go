@@ -21,7 +21,8 @@ const (
 	PuzzleHeight = 16
 
 	// Editor Constants
-	BlockSelectWidth = 6.
+	BlockSelectWidth  = 8.
+	BlockSelectHeight = 7.
 
 	// Batches
 	TileBatch = "tiles"
@@ -38,7 +39,7 @@ const (
 	TextCaret           = "text_caret"
 
 	// In Game Constants
-	FrameRateMax  = 25
+	FrameRateMax  = 35
 	FrameRateMin  = 5
 	FrameRateInt  = 2
 	NormalGravity = 5.
@@ -95,10 +96,5 @@ var (
 	FrameRate = 15
 
 	// In Game Vars
-	DrawingLayers  = []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
-	PickUpPriority = map[string]int{
-		ItemBox:     10,
-		ItemKeyPink: 5,
-		ItemKeyBlue: 5,
-	}
+	DrawingLayers = []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
 )

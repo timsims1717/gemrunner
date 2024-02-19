@@ -2,27 +2,6 @@
   "img": "tileset_full.png",
   "sprites": [
     {
-      "key": "ladder_bottom",
-      "x": 0,
-      "y": 48,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "ladder_middle",
-      "x": 0,
-      "y": 64,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "ladder_top",
-      "x": 0,
-      "y": 80,
-      "h": 16,
-      "w": 16
-    },
-    {
       "key": "rock_top",
       "x": 16,
       "y": 32,
@@ -31,7 +10,7 @@
     },
     {
       "key": "rock",
-      "x": 16,
+       "x": 16,
       "y": 16,
       "h": 16,
       "w": 16
@@ -377,121 +356,1161 @@
 
 
 
+     {
+      "key": "fall",
+      "x": 0,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
     {
-      "key": "box",
+      "key": "phase",
+      "x": 16,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracked",
+      "x": 32,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_bottom",
+      "x": 0,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_middle",
+      "x": 0,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_top",
+      "x": 0,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_cracked_bottom",
       "x": 16,
       "y": 80,
       "h": 16,
       "w": 16
     },
     {
-      "key": "fall",
-      "x": 80,
-      "y": 48,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_pink",
+      "key": "ladder_cracked_middle",
       "x": 16,
-      "y": 48,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_pink",
+      "key": "box",
+      "x": 16,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "exit_ladder_bottom",
       "x": 32,
-      "y": 48,
+      "y": 80,
       "h": 16,
       "w": 16
     },
     {
-      "key": "unlock_pink",
-      "x": 48,
-      "y": 48,
+      "key": "exit_ladder_middle",
+      "x": 32,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
-      "key": "key_pink",
+      "key": "exit_ladder_top",
+      "x": 32,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+
+    {
+      "key": "door_yellow_open",
+      "anim": true,
       "x": 64,
-      "y": 48,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 80,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 96,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 112,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow",
+      "x": 64,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_yellow",
+      "x": 80,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_yellow",
+      "x": 96,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 64,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 80,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 96,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 112,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 64,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 80,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 96,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow",
+      "x": 112,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 128,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 144,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 160,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 176,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange",
+      "x": 128,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_orange",
+      "x": 144,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_orange",
+      "x": 160,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 128,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 144,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 160,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 176,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 128,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 144,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 160,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange",
+      "x": 176,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 192,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 208,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 224,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 240,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray",
+      "x": 192,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_gray",
+      "x": 208,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_gray",
+      "x": 224,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 192,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 208,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 224,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 240,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 192,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 208,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 224,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray",
+      "x": 240,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 256,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 272,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 288,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 304,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan",
+      "x": 256,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_cyan",
+      "x": 272,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_cyan",
+      "x": 288,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 256,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 272,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 288,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 304,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 256,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 272,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 288,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan",
+      "x": 304,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 0,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 16,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 32,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 48,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_blue",
-      "x": 16,
-      "y": 64,
+      "x": 0,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_blue",
+      "x": 16,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_blue",
       "x": 32,
-      "y": 64,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 0,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 16,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 32,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 48,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 0,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 16,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 32,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_blue",
       "x": 48,
-      "y": 64,
+      "y": 128,
       "h": 16,
       "w": 16
     },
+
+
+
     {
-      "key": "key_blue",
+      "key": "door_green_open",
+      "anim": true,
       "x": 64,
-      "y": 64,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_1",
+      "key": "door_green_open",
+      "anim": true,
+      "x": 80,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 96,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 112,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green",
+      "x": 64,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_green",
+      "x": 80,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_green",
+      "x": 96,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 64,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 80,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 96,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 112,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 64,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 80,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 96,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green",
+      "x": 112,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 128,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 144,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 160,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 176,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple",
+      "x": 128,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_purple",
+      "x": 144,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_purple",
+      "x": 160,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 128,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 144,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 160,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 176,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 128,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 144,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 160,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple",
+      "x": 176,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 192,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 208,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 224,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 240,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown",
+      "x": 192,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_brown",
+      "x": 208,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_brown",
+      "x": 224,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 192,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 208,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 224,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 240,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 192,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 208,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 224,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown",
+      "x": 240,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "player1",
       "x": 0,
-      "y": 224,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2",
+      "x": 64,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3",
+      "x": 128,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4",
+      "x": 192,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon",
-      "x": 128,
-      "y": 224,
+      "x": 256,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly",
-      "x": 176,
-      "y": 240,
+      "x": 368,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "gem",
-      "x": 192,
-      "y": 240,
+      "key": "gem_blue",
+      "x": 256,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_green",
+      "x": 256,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_purple",
+      "x": 256,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown",
+      "x": 256,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_yellow",
+      "x": 320,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange",
+      "x": 320,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_gray",
+      "x": 320,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_cyan",
+      "x": 320,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "chain",
-      "x": 80,
+      "x": 320,
       "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "reeds",
-      "x": 96,
+      "x": 336,
       "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "flowers",
-      "x": 112,
+      "x": 352,
       "y": 64,
       "h": 16,
       "w": 16
@@ -500,103 +1519,231 @@
 
 
     {
-      "key": "player_idle",
+      "key": "player1_idle",
       "anim": true,
       "x": 0,
-      "y": 240,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_idle",
+      "key": "player1_idle",
       "anim": true,
       "x": 16,
-      "y": 240,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_idle",
+      "key": "player1_idle",
       "anim": true,
       "x": 32,
-      "y": 240,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_jump_hold_side",
+      "key": "player1_jump_hold_side",
       "anim": true,
       "x": 48,
-      "y": 240,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_run",
+      "key": "player1_run",
       "anim": true,
       "x": 0,
-      "y": 224,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_run",
+      "key": "player1_run",
       "anim": true,
       "x": 16,
-      "y": 224,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_run",
+      "key": "player1_run",
       "anim": true,
       "x": 32,
-      "y": 224,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_fall_hold_side",
+      "key": "player1_fall_hold_side",
       "anim": true,
       "x": 48,
-      "y": 224,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_jump",
+      "key": "player1_jump",
       "anim": true,
       "x": 0,
-      "y": 208,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_fall",
+      "key": "player1_fall",
       "anim": true,
       "x": 16,
-      "y": 208,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_jump_hold",
+      "key": "player1_jump_hold",
       "anim": true,
       "x": 32,
-      "y": 208,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_fall_hold",
+      "key": "player1_fall_hold",
       "anim": true,
       "x": 48 ,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 0,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 16,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 32,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 48,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_leap",
+      "anim": true,
+      "x": 0,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_leap",
+      "anim": true,
+      "x": 16,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_leap",
+      "anim": true,
+      "x": 32,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_slide",
+      "anim": true,
+      "x": 48,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_pick_up",
+      "anim": true,
+      "x": 0,
       "y": 208,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player_climb",
+      "key": "player1_pick_up",
+      "anim": true,
+      "x": 0,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run",
+      "anim": true,
+      "x": 16,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run",
+      "anim": true,
+      "x": 32,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run",
+      "anim": true,
+      "x": 48,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run_side",
+      "anim": true,
+      "x": 16,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run_side",
+      "anim": true,
+      "x": 32,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hold_run_side",
+      "anim": true,
+      "x": 48,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hit",
       "anim": true,
       "x": 0,
       "y": 192,
@@ -604,7 +1751,7 @@
       "w": 16
     },
     {
-      "key": "player_climb",
+      "key": "player1_hit",
       "anim": true,
       "x": 16,
       "y": 192,
@@ -612,7 +1759,7 @@
       "w": 16
     },
     {
-      "key": "player_climb",
+      "key": "player1_hit",
       "anim": true,
       "x": 32,
       "y": 192,
@@ -620,7 +1767,7 @@
       "w": 16
     },
     {
-      "key": "player_climb",
+      "key": "player1_hit",
       "anim": true,
       "x": 48,
       "y": 192,
@@ -628,7 +1775,7 @@
       "w": 16
     },
     {
-      "key": "player_leap",
+      "key": "player1_attack",
       "anim": true,
       "x": 0,
       "y": 176,
@@ -636,7 +1783,7 @@
       "w": 16
     },
     {
-      "key": "player_leap",
+      "key": "player1_attack",
       "anim": true,
       "x": 16,
       "y": 176,
@@ -644,7 +1791,7 @@
       "w": 16
     },
     {
-      "key": "player_leap",
+      "key": "player1_attack",
       "anim": true,
       "x": 32,
       "y": 176,
@@ -652,138 +1799,10 @@
       "w": 16
     },
     {
-      "key": "player_slide",
+      "key": "player1_attack",
       "anim": true,
       "x": 48,
       "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_pick_up",
-      "anim": true,
-      "x": 0,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_pick_up",
-      "anim": true,
-      "x": 0,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run",
-      "anim": true,
-      "x": 16,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run",
-      "anim": true,
-      "x": 32,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run",
-      "anim": true,
-      "x": 48,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run_side",
-      "anim": true,
-      "x": 16,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run_side",
-      "anim": true,
-      "x": 32,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hold_run_side",
-      "anim": true,
-      "x": 48,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hit",
-      "anim": true,
-      "x": 0,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hit",
-      "anim": true,
-      "x": 16,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hit",
-      "anim": true,
-      "x": 32,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_hit",
-      "anim": true,
-      "x": 48,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_attack",
-      "anim": true,
-      "x": 0,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_attack",
-      "anim": true,
-      "x": 16,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_attack",
-      "anim": true,
-      "x": 32,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player_attack",
-      "anim": true,
-      "x": 48,
-      "y": 112,
       "h": 16,
       "w": 16
     },
@@ -791,7 +1810,135 @@
 
 
     {
-      "key": "demon_idle",
+      "key": "player2_idle",
+      "anim": true,
+      "x": 64,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_idle",
+      "anim": true,
+      "x": 80,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_idle",
+      "anim": true,
+      "x": 96,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_jump_hold_side",
+      "anim": true,
+      "x": 112,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 64,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 80,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 96,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_fall_hold_side",
+      "anim": true,
+      "x": 112,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_jump",
+      "anim": true,
+      "x": 64,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_fall",
+      "anim": true,
+      "x": 80,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_jump_hold",
+      "anim": true,
+      "x": 96,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_fall_hold",
+      "anim": true,
+      "x": 48 ,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 64,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 80,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 96,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 112,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_leap",
       "anim": true,
       "x": 64,
       "y": 240,
@@ -799,7 +1946,7 @@
       "w": 16
     },
     {
-      "key": "demon_idle",
+      "key": "player2_leap",
       "anim": true,
       "x": 80,
       "y": 240,
@@ -807,7 +1954,7 @@
       "w": 16
     },
     {
-      "key": "demon_idle",
+      "key": "player2_leap",
       "anim": true,
       "x": 96,
       "y": 240,
@@ -815,7 +1962,7 @@
       "w": 16
     },
     {
-      "key": "demon_jump_hold_side",
+      "key": "player2_slide",
       "anim": true,
       "x": 112,
       "y": 240,
@@ -823,7 +1970,15 @@
       "w": 16
     },
     {
-      "key": "demon_run",
+      "key": "player2_pick_up",
+      "anim": true,
+      "x": 64,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_pick_up",
       "anim": true,
       "x": 64,
       "y": 224,
@@ -831,7 +1986,7 @@
       "w": 16
     },
     {
-      "key": "demon_run",
+      "key": "player2_hold_run",
       "anim": true,
       "x": 80,
       "y": 224,
@@ -839,7 +1994,7 @@
       "w": 16
     },
     {
-      "key": "demon_run",
+      "key": "player2_hold_run",
       "anim": true,
       "x": 96,
       "y": 224,
@@ -847,7 +2002,7 @@
       "w": 16
     },
     {
-      "key": "demon_run",
+      "key": "player2_hold_run",
       "anim": true,
       "x": 112,
       "y": 224,
@@ -855,7 +2010,266 @@
       "w": 16
     },
     {
-      "key": "demon_run",
+      "key": "player2_hold_run_side",
+      "anim": true,
+      "x": 80,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hold_run_side",
+      "anim": true,
+      "x": 96,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hold_run_side",
+      "anim": true,
+      "x": 112,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 64,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 80,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 96,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 112,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 64,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 80,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 96,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 112,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "player3_idle",
+      "anim": true,
+      "x": 128,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_idle",
+      "anim": true,
+      "x": 144,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_idle",
+      "anim": true,
+      "x": 160,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_jump_hold_side",
+      "anim": true,
+      "x": 176,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 128,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 144,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 160,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_fall_hold_side",
+      "anim": true,
+      "x": 176,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_jump",
+      "anim": true,
+      "x": 128,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_fall",
+      "anim": true,
+      "x": 144,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_jump_hold",
+      "anim": true,
+      "x": 160,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_fall_hold",
+      "anim": true,
+      "x": 48 ,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 128,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 144,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 160,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 176,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_leap",
+      "anim": true,
+      "x": 128,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_leap",
+      "anim": true,
+      "x": 144,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_leap",
+      "anim": true,
+      "x": 160,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_slide",
+      "anim": true,
+      "x": 176,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_pick_up",
+      "anim": true,
+      "x": 128,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_pick_up",
       "anim": true,
       "x": 128,
       "y": 224,
@@ -863,79 +2277,55 @@
       "w": 16
     },
     {
-      "key": "demon_fall_hold_side",
+      "key": "player3_hold_run",
       "anim": true,
-      "x": 112,
+      "x": 144,
       "y": 224,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_jump",
+      "key": "player3_hold_run",
       "anim": true,
-      "x": 64,
+      "x": 160,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hold_run",
+      "anim": true,
+      "x": 176,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hold_run_side",
+      "anim": true,
+      "x": 144,
       "y": 208,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_fall",
+      "key": "player3_hold_run_side",
       "anim": true,
-      "x": 80,
+      "x": 160,
       "y": 208,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_jump_hold",
+      "key": "player3_hold_run_side",
       "anim": true,
-      "x": 96,
+      "x": 176,
       "y": 208,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_fall_hold",
-      "anim": true,
-      "x": 112 ,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 64,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 80,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 96,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 112,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
+      "key": "player3_hit",
       "anim": true,
       "x": 128,
       "y": 192,
@@ -943,7 +2333,7 @@
       "w": 16
     },
     {
-      "key": "demon_climb",
+      "key": "player3_hit",
       "anim": true,
       "x": 144,
       "y": 192,
@@ -951,178 +2341,704 @@
       "w": 16
     },
     {
-      "key": "demon_leap",
+      "key": "player3_hit",
       "anim": true,
-      "x": 64,
-      "y": 176,
+      "x": 160,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_leap",
+      "key": "player3_hit",
       "anim": true,
-      "x": 80,
-      "y": 176,
+      "x": 176,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_leap",
-      "anim": true,
-      "x": 96,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_leap",
-      "anim": true,
-      "x": 112,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_slide",
-      "anim": true,
-      "x": 112,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_pick_up",
-      "anim": true,
-      "x": 64,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_pick_up",
-      "anim": true,
-      "x": 64,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run",
-      "anim": true,
-      "x": 80,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run",
-      "anim": true,
-      "x": 96,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run",
-      "anim": true,
-      "x": 112,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run_side",
-      "anim": true,
-      "x": 80,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run_side",
-      "anim": true,
-      "x": 96,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hold_run_side",
-      "anim": true,
-      "x": 112,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hit",
-      "anim": true,
-      "x": 64,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hit",
-      "anim": true,
-      "x": 80,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hit",
-      "anim": true,
-      "x": 96,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hit",
-      "anim": true,
-      "x": 112,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_hit",
+      "key": "player3_attack",
       "anim": true,
       "x": 128,
-      "y": 128,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_attack",
+      "anim": true,
+      "x": 144,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_attack",
+      "anim": true,
+      "x": 160,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_attack",
+      "anim": true,
+      "x": 176,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "player4_idle",
+      "anim": true,
+      "x": 192,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_idle",
+      "anim": true,
+      "x": 208,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_idle",
+      "anim": true,
+      "x": 224,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_jump_hold_side",
+      "anim": true,
+      "x": 240,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 192,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 208,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 224,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_fall_hold_side",
+      "anim": true,
+      "x": 240,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_jump",
+      "anim": true,
+      "x": 192,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_fall",
+      "anim": true,
+      "x": 208,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_jump_hold",
+      "anim": true,
+      "x": 224,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_fall_hold",
+      "anim": true,
+      "x": 240,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 192,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 208,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 224,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 240,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_leap",
+      "anim": true,
+      "x": 192,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_leap",
+      "anim": true,
+      "x": 208,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_leap",
+      "anim": true,
+      "x": 224,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_slide",
+      "anim": true,
+      "x": 240,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_pick_up",
+      "anim": true,
+      "x": 192,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_pick_up",
+      "anim": true,
+      "x": 192,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run",
+      "anim": true,
+      "x": 208,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run",
+      "anim": true,
+      "x": 224,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run",
+      "anim": true,
+      "x": 240,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run_side",
+      "anim": true,
+      "x": 208,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run_side",
+      "anim": true,
+      "x": 224,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hold_run_side",
+      "anim": true,
+      "x": 240,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 192,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 208,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 224,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 240,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 192,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 208,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 224,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 240,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 256,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 272,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_idle",
+      "anim": true,
+      "x": 288,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump_hold_side",
+      "anim": true,
+      "x": 304,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 256,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 272,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 288,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 304,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 320,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall_hold_side",
+      "anim": true,
+      "x": 320,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump",
+      "anim": true,
+      "x": 304,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall",
+      "anim": true,
+      "x": 320,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_jump_hold",
+      "anim": true,
+      "x": 304,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_fall_hold",
+      "anim": true,
+      "x": 320,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 256,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 272,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 288,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 304,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 320,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb",
+      "anim": true,
+      "x": 336,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 256,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 272,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 288,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_leap",
+      "anim": true,
+      "x": 304,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_pick_up",
+      "anim": true,
+      "x": 272,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_pick_up",
+      "anim": true,
+      "x": 256,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 256,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 272,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 288,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 304,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run",
+      "anim": true,
+      "x": 320,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 256,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 272,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 288,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 304,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hold_run_side",
+      "anim": true,
+      "x": 320,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 256,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 272,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 288,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 304,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 320,
+      "y": 240,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 64,
-      "y": 112,
+      "x": 256,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 80,
-      "y": 112,
+      "x": 272,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 96,
-      "y": 112,
+      "x": 288,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 112,
-      "y": 112,
+      "x": 304,
+      "y": 160,
       "h": 16,
       "w": 16
     },
@@ -1132,84 +3048,307 @@
 
     {
       "key": "fly_idle",
-      "x": 144,
-      "y": 240,
+      "x": 336,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_flying",
       "anim": true,
-      "x": 160,
-      "y": 240,
+      "x": 352,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_flying",
       "anim": true,
-      "x": 176,
-      "y": 240,
+      "x": 368,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 144,
-      "y": 224,
+      "x": 336,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 160,
-      "y": 224,
+      "x": 352,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 176,
-      "y": 224,
+      "x": 368,
+      "y": 288,
       "h": 16,
       "w": 16
     },
 
 
 
-
     {
-      "key": "gem_shimmer",
+      "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 192,
-      "y": 240,
+      "x": 256,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "gem_shimmer",
+      "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 208,
-      "y": 240,
+      "x": 272,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "gem_shimmer",
+      "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 224,
-      "y": 240,
+      "x": 288,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "gem_shimmer",
+      "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 240,
-      "y": 240,
+      "x": 304,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_green_shimmer",
+      "anim": true,
+      "x": 256,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_green_shimmer",
+      "anim": true,
+      "x": 272,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_green_shimmer",
+      "anim": true,
+      "x": 288,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_green_shimmer",
+      "anim": true,
+      "x": 304,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_purple_shimmer",
+      "anim": true,
+      "x": 256,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_purple_shimmer",
+      "anim": true,
+      "x": 272,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_purple_shimmer",
+      "anim": true,
+      "x": 288,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_purple_shimmer",
+      "anim": true,
+      "x": 304,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 256,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 272,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 288,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 304,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_yellow_shimmer",
+      "anim": true,
+      "x": 320,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_yellow_shimmer",
+      "anim": true,
+      "x": 336,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_yellow_shimmer",
+      "anim": true,
+      "x": 352,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_yellow_shimmer",
+      "anim": true,
+      "x": 368,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange_shimmer",
+      "anim": true,
+      "x": 320,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange_shimmer",
+      "anim": true,
+      "x": 336,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange_shimmer",
+      "anim": true,
+      "x": 352,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange_shimmer",
+      "anim": true,
+      "x": 368,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_gray_shimmer",
+      "anim": true,
+      "x": 320,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_gray_shimmer",
+      "anim": true,
+      "x": 336,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_gray_shimmer",
+      "anim": true,
+      "x": 352,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_gray_shimmer",
+      "anim": true,
+      "x": 368,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_cyan_shimmer",
+      "anim": true,
+      "x": 320,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_cyan_shimmer",
+      "anim": true,
+      "x": 336,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_cyan_shimmer",
+      "anim": true,
+      "x": 352,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_cyan_shimmer",
+      "anim": true,
+      "x": 368,
+      "y": 128,
       "h": 16,
       "w": 16
     }
