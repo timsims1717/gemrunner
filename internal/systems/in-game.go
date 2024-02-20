@@ -3,9 +3,11 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/myecs"
 )
 
 func InGameSystem() {
+	data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
 	if data.P1Input.Get("speedUp").JustPressed() {
 		constants.FrameRate += constants.FrameRateInt
 		if constants.FrameRate > constants.FrameRateMax {

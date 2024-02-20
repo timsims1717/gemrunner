@@ -59,8 +59,8 @@ func (lr *LRChase) GetActions() data.Actions {
 				fmt.Println("WARNING: LRChase searched off the map")
 				break
 			}
-			if nextTile.Ladder ||
-				belowTile == nil || belowTile.Solid() || belowTile.Ladder {
+			if nextTile.IsLadder() ||
+				belowTile == nil || belowTile.SolidV() || belowTile.IsLadder() {
 				if sx < px {
 					sx++
 				} else if sx > px {
@@ -73,10 +73,10 @@ func (lr *LRChase) GetActions() data.Actions {
 			}
 		}
 		belowTile := data.CurrLevel.Tiles.Get(x, y-1)
-		if lr.Ch.State == data.Ladder &&
+		if lr.Ch.State == data.OnLadder &&
 			(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
-				(lr.Target.State != data.Ladder &&
-					(belowTile == nil || belowTile.Solid()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
+				(lr.Target.State != data.OnLadder &&
+					(belowTile == nil || belowTile.SolidV() || belowTile.IsLadder()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
 			if lr.Target.Object.Pos.Y > lr.Ch.Object.Pos.Y {
 				actions.PrevDirection = data.Up
 			} else if lr.Target.Object.Pos.Y < lr.Ch.Object.Pos.Y {
@@ -132,17 +132,17 @@ func (lr *LRChase) GetActions() data.Actions {
 		}
 	}
 	if next.X > -1 && next.Y > -1 {
+		mPos := world.MapToWorld(next)
+		mPos = mPos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 		if next.X < x {
 			actions.Direction = data.Left
 		} else if next.X > x {
 			actions.Direction = data.Right
-		} else if next.Y > y {
+		} else if next.Y > y && lr.Ch.Object.Pos.Y < mPos.Y {
 			actions.Direction = data.Up
-		} else if next.Y < y {
+		} else if next.Y < y && lr.Ch.Object.Pos.Y > mPos.Y {
 			actions.Direction = data.Down
 		}
-		mPos := world.MapToWorld(next)
-		mPos = mPos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 		if lr.Ch.Object.Pos.Y < mPos.Y {
 			actions.PrevDirection = data.Up
 		} else if lr.Ch.Object.Pos.Y > mPos.Y {

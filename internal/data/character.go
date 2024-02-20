@@ -123,7 +123,7 @@ type CharacterState int
 
 const (
 	Grounded = iota
-	Ladder
+	OnLadder
 	Falling
 	Jumping
 	Leaping
@@ -137,7 +137,7 @@ func (s CharacterState) String() string {
 	switch s {
 	case Grounded:
 		return "Grounded"
-	case Ladder:
+	case OnLadder:
 		return "Ladder"
 	case Falling:
 		return "Falling"

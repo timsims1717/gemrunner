@@ -4,14 +4,16 @@ import "image/color"
 
 // Editor Tiles
 const (
-	TileLadderBottom = "ladder_bottom"
-	TileLadderMiddle = "ladder_middle"
-	TileLadderTop    = "ladder_top"
-	TileLadderCrackB = "ladder_cracked_bottom"
-	TileLadderCrackM = "ladder_cracked_middle"
-	TileExitLadderB  = "exit_ladder_bottom"
-	TileExitLadderM  = "exit_ladder_middle"
-	TileExitLadderT  = "exit_ladder_top"
+	TileLadderBottom    = "ladder_bottom"
+	TileLadderMiddle    = "ladder_middle"
+	TileLadderTop       = "ladder_top"
+	TileLadderCrackB    = "ladder_cracked_bottom"
+	TileLadderCrackM    = "ladder_cracked_middle"
+	TileExitLadderB     = "exit_ladder_bottom"
+	TileExitLadderM     = "exit_ladder_middle"
+	TileExitLadderT     = "exit_ladder_top"
+	TileLadderCrackingM = "ladder_cracking_middle"
+	TileLadderCrackingB = "ladder_cracking_bottom"
 
 	TileTop       = "_top"
 	TileBottom    = "_bottom"
@@ -48,11 +50,12 @@ const (
 	TileDoorBrown  = "door_brown"
 	TileLockBrown  = "lock_brown"
 
-	TileFall    = "fall"
-	TilePhase   = "phase"
-	TileCracked = "cracked"
-	TileTurf    = "turf"
-	TileEmpty   = "empty"
+	TileFall     = "fall"
+	TilePhase    = "phase"
+	TileCracked  = "cracked"
+	TileCracking = "cracking"
+	TileTurf     = "turf"
+	TileEmpty    = "empty"
 )
 
 // Characters

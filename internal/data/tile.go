@@ -247,20 +247,43 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 	var j string
 	err := json.Unmarshal(bts, &j)
 	if err != nil {
-		return err
+		var ji int
+		err = json.Unmarshal(bts, &ji)
+		if err != nil {
+			var jb bool
+			err = json.Unmarshal(bts, &jb)
+			if err != nil {
+				return err
+			}
+			*b = toID[constants.TileLadderMiddle]
+		}
+		*b = Block(ji)
 	}
 	*b = toID[j]
 	return nil
 }
 
+//func (b *Block) UnmarshalJSON(bts []byte) error {
+//	var j string
+//	err := json.Unmarshal(bts, &j)
+//	if err != nil {
+//		return err
+//	}
+//	*b = toID[j]
+//	return nil
+//}
+
 type Tile struct {
 	Block    Block          `json:"tile"`
-	Ladder   bool           `json:"ladder"`
+	Ladder   Block          `json:"ladder"`
 	Metadata TileMetadata   `json:"metadata"`
+	Flags    TileFlags      `json:"-"`
 	Coords   world.Coords   `json:"-"`
 	Object   *object.Object `json:"-"`
 	Update   bool           `json:"-"`
 	Entity   *ecs.Entity    `json:"-"`
+	Counter  int            `json:"-"`
+	Live     bool           `json:"-"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -275,15 +298,45 @@ func (t *Tile) Copy() *Tile {
 func (t *Tile) CopyInto(c *Tile) {
 	c.Block = t.Block
 	c.Ladder = t.Ladder
+	c.Metadata = t.Metadata
 }
 
 func (t *Tile) Empty() {
 	t.Block = BlockEmpty
-	t.Ladder = false
+	t.Ladder = BlockEmpty
+	t.Metadata = DefaultMetadata()
 }
 
-func (t *Tile) Solid() bool {
-	return !t.Ladder && (t.Block == BlockTurf || t.Block == BlockFall)
+func (t *Tile) SolidV() bool {
+	return !t.Flags.Collapse &&
+		!t.IsLadder() &&
+		(t.Block == BlockTurf ||
+			t.Block == BlockCracked)
+}
+
+func (t *Tile) SolidH() bool {
+	return !t.Flags.Collapse &&
+		!t.IsLadder() &&
+		(t.Block == BlockTurf ||
+			t.Block == BlockFall ||
+			t.Block == BlockCracked)
+}
+
+func (t *Tile) IsBlock() bool {
+	return t == nil || (!t.Flags.Collapse &&
+		(t.Block == BlockTurf ||
+			t.Block == BlockFall ||
+			t.Block == BlockCracked))
+}
+
+func (t *Tile) IsLadder() bool {
+	if t.Live {
+		return !t.Flags.LCollapse && (t.Ladder == BlockLadder ||
+			(t.Ladder == BlockLadderCracked) ||
+			(t.Ladder == BlockLadderExit && CurrLevel.DoorsOpen))
+	} else {
+		return t.Ladder == BlockLadder || t.Ladder == BlockLadderExit || t.Ladder == BlockLadderCracked
+	}
 }
 
 // a* implementation
@@ -295,10 +348,10 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	var neighbors []astar.Pather
 	// Down
 	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
-	if d != nil && !d.Solid() {
+	if d != nil && !d.SolidV() {
 		neighbors = append(neighbors, d)
 	}
-	notFalling := d == nil || d.Solid() || d.Ladder || t.Ladder
+	notFalling := d == nil || d.SolidV() || d.IsLadder() || t.IsLadder()
 	// Left
 	l := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y)
 	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
@@ -306,7 +359,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(l.Ladder || lb == nil || lb.Solid()) {
 	//	neighbors = append(neighbors, l)
 	//}
-	if notFalling && l != nil && !l.Solid() {
+	if notFalling && l != nil && !l.SolidH() {
 		neighbors = append(neighbors, l)
 	}
 	// Right
@@ -316,12 +369,12 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(r.Ladder || rb == nil || rb.Solid()) {
 	//	neighbors = append(neighbors, r)
 	//}
-	if notFalling && r != nil && !r.Solid() {
+	if notFalling && r != nil && !r.SolidH() {
 		neighbors = append(neighbors, r)
 	}
 	// Up
 	u := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y+1)
-	if notFalling && u != nil && !u.Solid() && t.Ladder {
+	if notFalling && u != nil && !u.SolidV() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}
 	return neighbors
@@ -335,6 +388,26 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 	return 1.
 }
 
+type TileFlags struct {
+	Cracked   bool `json:"-"`
+	Collapse  bool `json:"-"`
+	LCracked  bool `json:"-"`
+	LCollapse bool `json:"-"`
+}
+
 type TileMetadata struct {
-	Flipped bool `json:"flipped"`
+	Flipped    bool `json:"flipped"`
+	EnemyCrack bool `json:"enemyCrack"`
+	Regenerate bool `json:"regenerate"`
+	Phase      int  `json:"phase"`
+	ShowCrack  bool `json:"showCrack"`
+}
+
+func DefaultMetadata() TileMetadata {
+	return TileMetadata{
+		Flipped:    false,
+		EnemyCrack: false,
+		Regenerate: true,
+		Phase:      0,
+	}
 }

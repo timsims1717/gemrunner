@@ -83,7 +83,7 @@ func CharacterActionSystem() {
 					case data.Grounded:
 						pickup(ch)
 						grounded(ch, tile, below)
-					case data.Ladder:
+					case data.OnLadder:
 						onLadder(ch, tile, below)
 					case data.Falling:
 						pickup(ch)
@@ -113,10 +113,10 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 		return
 	}
 	if !ch.Flags.PickUp {
-		if ch.Actions.Left() { // run left
+		if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
 			ch.Object.Pos.X -= ch.Vars.WalkSpeed
 			ch.Object.Flip = true
-		} else if ch.Actions.Right() { // run right
+		} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
 			ch.Object.Pos.X += ch.Vars.WalkSpeed
 			ch.Object.Flip = false
 		}
@@ -135,10 +135,10 @@ func jump(ch *data.Dynamic, tile *data.Tile) {
 	//  or they are going left/right and there is a wall up left or up right
 	// Otherwise, it's a long jump
 	if (!ch.Actions.Left() && !ch.Actions.Right()) ||
-		(ch.Actions.Left() && (left == nil || left.Solid())) ||
-		(ch.Actions.Right() && (right == nil || right.Solid())) ||
-		(ch.Actions.Left() && (upLeft == nil || upLeft.Solid())) ||
-		(ch.Actions.Right() && (upRight == nil || upRight.Solid())) {
+		(ch.Actions.Left() && (left == nil || left.SolidH())) ||
+		(ch.Actions.Right() && (right == nil || right.SolidH())) ||
+		(ch.Actions.Left() && (upLeft == nil || upLeft.SolidH())) ||
+		(ch.Actions.Right() && (upRight == nil || upRight.SolidH())) {
 		ch.Flags.HighJump = true
 	} else {
 		ch.Flags.LongJump = true
@@ -159,7 +159,7 @@ func jump(ch *data.Dynamic, tile *data.Tile) {
 
 func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
 	if ch.Actions.Up() && !ch.Flags.Ceiling {
-		if tile.Ladder || (below != nil && below.Ladder) { // still on the ladder
+		if tile.IsLadder() || (below != nil && below.IsLadder()) { // still on the ladder
 			ch.Object.Pos.Y += ch.Vars.ClimbSpeed
 			ch.Object.Pos.X = tile.Object.Pos.X
 			ch.Object.Flip = false
@@ -167,8 +167,8 @@ func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
 			ch.Flags.Climbed = true
 		}
 	} else if ch.Actions.Down() {
-		if (tile != nil && tile.Ladder) ||
-			(below != nil && below.Ladder) { // still on the ladder
+		if (tile != nil && tile.IsLadder()) ||
+			(below != nil && below.IsLadder()) { // still on the ladder
 			ch.Object.Pos.Y -= ch.Vars.SlideSpeed
 			ch.Object.Pos.X = tile.Object.Pos.X
 			ch.Object.Flip = false
@@ -285,7 +285,7 @@ func pickup(ch *data.Dynamic) {
 		ch.Flags.PickUpBuff = 0
 		if ch.Flags.HoldUp || ch.Flags.HoldSide {
 			ch.Flags.Drop = true
-		} else if ch.State != data.Ladder &&
+		} else if ch.State != data.OnLadder &&
 			ch.State != data.Leaping &&
 			ch.Player > -1 && ch.Player < constants.MaxPlayers {
 			AttemptPickUp(ch, int(ch.Player), ch.Object.Flip)

@@ -63,7 +63,7 @@ func CreateDoor(pos pixel.Vec, key string) {
 	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 6, 6))
-	obj.Layer = 10
+	obj.Layer = 9
 	door := &data.Door{
 		Object: obj,
 	}
@@ -118,8 +118,7 @@ func CreateDoor(pos pixel.Vec, key string) {
 	e.AddComponent(myecs.Update, data.NewFrameFunc(func() bool {
 		switch door.DoorType {
 		case data.Opened:
-			noGems := len(myecs.Manager.Query(myecs.IsGem)) < 1
-			if noGems {
+			if data.CurrLevel.DoorsOpen {
 				tree := reanimator.NewSimple(anim)
 				e.AddComponent(myecs.Drawable, tree)
 				e.AddComponent(myecs.Animated, tree)
@@ -131,8 +130,7 @@ func CreateDoor(pos pixel.Vec, key string) {
 				door.DoorType = data.Unlocked
 			}
 		case data.Unlocked:
-			noGems := len(myecs.Manager.Query(myecs.IsGem)) < 1
-			if noGems {
+			if data.CurrLevel.DoorsOpen {
 				tree := reanimator.NewSimple(anim)
 				e.AddComponent(myecs.Drawable, tree)
 				e.AddComponent(myecs.Animated, tree)

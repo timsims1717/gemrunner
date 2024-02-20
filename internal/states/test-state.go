@@ -36,6 +36,8 @@ func (s *testState) Unload() {
 	}
 	systems.LevelDispose()
 	systems.ClearTemp()
+	data.EditorDraw = true
+	data.CurrPuzzle.Update = true
 }
 
 func (s *testState) Load() {
@@ -50,6 +52,7 @@ func (s *testState) Load() {
 	}
 	systems.LevelInit()
 	systems.UpdateViews()
+	data.EditorDraw = false
 	reanimator.SetFrameRate(15)
 	reanimator.Reset()
 }
@@ -91,6 +94,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.CollisionSystem()
 		systems.CharacterStateSystem()
 		systems.CollectSystem()
+		systems.TileSystem()
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
 	} else {

@@ -168,7 +168,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 						}
 					}
 				}
-			case data.Ladder:
+			case data.OnLadder:
 				if ch.Actions.Up() || ch.Flags.GoingUp {
 					return "climb"
 				} else {

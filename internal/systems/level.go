@@ -25,6 +25,7 @@ func LevelInit() {
 			obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 			obj.Layer = 10
 			tile.Object = obj
+			tile.Live = true
 			e := myecs.Manager.NewEntity().
 				AddComponent(myecs.Object, obj).
 				AddComponent(myecs.Tile, tile)

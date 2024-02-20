@@ -25,9 +25,6 @@ func DynamicSystem() {
 					if !d.Flags.Floor {
 						falling(d, currTile)
 					}
-					//obj.Pos.X = d.Object.Pos.X
-					//obj.Pos.Y = d.Object.Pos.Y
-					//obj.Flip = d.Object.Flip
 				}
 			}
 		}
@@ -50,8 +47,8 @@ func AttemptPickUp(ch *data.Dynamic, p int, facingLeft bool) {
 	leftTile := data.CurrLevel.Tiles.Get(cx-1, cy)
 	rightTile := data.CurrLevel.Tiles.Get(cx+1, cy)
 	upTile := data.CurrLevel.Tiles.Get(cx, cy+1)
-	holdUp := !(upTile == nil || upTile.Solid())
-	holdSide := (facingLeft && !(leftTile == nil || leftTile.Solid())) || (!facingLeft && !(rightTile == nil || rightTile.Solid()))
+	holdUp := !(upTile == nil || upTile.SolidV())
+	holdSide := (facingLeft && !(leftTile == nil || leftTile.SolidH())) || (!facingLeft && !(rightTile == nil || rightTile.SolidH()))
 	if !holdUp && !holdSide {
 		return
 	}
@@ -262,37 +259,40 @@ func updateHeldItem(ch *data.Dynamic, facingLeft bool) {
 		rightTile := data.CurrLevel.Tiles.Get(x+1, y)
 		upTile := data.CurrLevel.Tiles.Get(x, y+1)
 		downTile := data.CurrLevel.Tiles.Get(x, y-1)
-		if tile == nil || tile.Solid() {
-			ch.Flags.Drop = true
-			ch.HeldObj.Offset.X = oldXOffset
-			ch.HeldObj.Offset.Y = oldYOffset
-			ch.HeldObj.Pos.X = oldXPos
-			ch.HeldObj.Pos.Y = oldYPos
-			dPos := ch.HeldObj.Pos.Add(ch.HeldObj.Offset)
+		if tile == nil || tile.SolidV() || tile.SolidH() {
+			dPos := pixel.V(oldXPos, oldYPos).Add(pixel.V(oldXOffset, oldYOffset))
 			dx, dy := world.WorldToMap(dPos.X, dPos.Y)
 			dTile := data.CurrLevel.Tiles.Get(dx, dy)
-			if dTile == nil || dTile.Solid() {
-				ch.HeldObj.Pos = ch.Object.Pos
-				ch.HeldObj.Offset = pixel.ZV
+			if !(tile != nil && tile.Block == data.BlockFall &&
+				dTile != nil && dTile.Coords.X == tile.Coords.X) {
+				ch.Flags.Drop = true
+				ch.HeldObj.Offset.X = oldXOffset
+				ch.HeldObj.Offset.Y = oldYOffset
+				ch.HeldObj.Pos.X = oldXPos
+				ch.HeldObj.Pos.Y = oldYPos
+				if dTile == nil || dTile.SolidV() {
+					ch.HeldObj.Pos = ch.Object.Pos
+					ch.HeldObj.Offset = pixel.ZV
+				}
+				return
 			}
-		} else {
-			if (leftTile == nil || leftTile.Solid()) &&
-				heldPos.X-ch.HeldObj.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
-				//ch.HeldObj.Offset.X += tile.Object.Pos.X - world.HalfSize + ch.HeldObj.HalfWidth - heldPos.X
-				ch.HeldObj.Offset.X += ch.HeldObj.HalfWidth - world.HalfSize + tile.Object.Pos.X - heldPos.X
-			}
-			if (rightTile == nil || rightTile.Solid()) &&
-				(heldPos.X+ch.HeldObj.HalfWidth >= tile.Object.Pos.X+world.HalfSize) {
-				ch.HeldObj.Offset.X -= ch.HeldObj.HalfWidth - world.HalfSize - tile.Object.Pos.X + heldPos.X
-			}
-			if (upTile == nil || upTile.Solid()) &&
-				heldPos.Y+ch.HeldObj.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
-				ch.HeldObj.Offset.Y -= ch.HeldObj.HalfHeight - world.HalfSize - tile.Object.Pos.Y + heldPos.Y
-			}
-			if (downTile == nil || downTile.Solid()) &&
-				(heldPos.Y-ch.HeldObj.HalfHeight <= tile.Object.Pos.X-world.HalfSize) {
-				ch.HeldObj.Offset.Y += ch.HeldObj.HalfHeight - world.HalfSize + tile.Object.Pos.Y - heldPos.Y
-			}
+		}
+		if (leftTile == nil || leftTile.SolidH()) &&
+			heldPos.X-ch.HeldObj.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
+			//ch.HeldObj.Offset.X += tile.Object.Pos.X - world.HalfSize + ch.HeldObj.HalfWidth - heldPos.X
+			ch.HeldObj.Offset.X += ch.HeldObj.HalfWidth - world.HalfSize + tile.Object.Pos.X - heldPos.X
+		}
+		if (rightTile == nil || rightTile.SolidH()) &&
+			(heldPos.X+ch.HeldObj.HalfWidth >= tile.Object.Pos.X+world.HalfSize) {
+			ch.HeldObj.Offset.X -= ch.HeldObj.HalfWidth - world.HalfSize - tile.Object.Pos.X + heldPos.X
+		}
+		if (upTile == nil || upTile.SolidV()) &&
+			heldPos.Y+ch.HeldObj.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
+			ch.HeldObj.Offset.Y -= ch.HeldObj.HalfHeight - world.HalfSize - tile.Object.Pos.Y + heldPos.Y
+		}
+		if (downTile == nil || downTile.SolidV()) &&
+			(heldPos.Y-ch.HeldObj.HalfHeight <= tile.Object.Pos.X-world.HalfSize) {
+			ch.HeldObj.Offset.Y += ch.HeldObj.HalfHeight - world.HalfSize + tile.Object.Pos.Y - heldPos.Y
 		}
 	}
 }

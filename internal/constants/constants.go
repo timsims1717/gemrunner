@@ -42,37 +42,39 @@ const (
 	ScrollSpeed = 150.
 
 	// In Game Constants
-	FrameRateMax  = 35
-	FrameRateMin  = 5
-	FrameRateInt  = 2
-	NormalGravity = 5.
-	MaxPlayers    = 4
-	WaitToSwitch  = 3.
-	ButtonBuffer  = 2
+	FrameRateMax    = 30
+	FrameRateMin    = 5
+	FrameRateInt    = 2
+	NormalGravity   = 6.75
+	MaxPlayers      = 4
+	WaitToSwitch    = 3.
+	ButtonBuffer    = 2
+	CrackedCollapse = 8
+	CollapseCounter = 56
 
 	// Player Constants
-	PlayerWalkSpeed       = 4.
+	PlayerWalkSpeed       = 6.
 	PlayerLeapSpeed       = 3.8
-	PlayerClimbSpeed      = 2.5
-	PlayerSlideSpeed      = 4.5
+	PlayerClimbSpeed      = 3.75
+	PlayerSlideSpeed      = 6.5
 	PlayerLeapDelay       = 1.5
 	PlayerHighJumpSpeed   = 3.0
 	PlayerHighJumpHSpeed  = 4.5
 	PlayerHighJumpTimer   = 4.8
 	PlayerHighJumpCounter = 6
 	PlayerLongJumpVSpeed  = 1.8
-	PlayerLongJumpHSpeed  = 4.5
-	PlayerLongJumpTimer   = 6.2
-	PlayerLongJumpCounter = 6
+	PlayerLongJumpHSpeed  = 6.2
+	PlayerLongJumpTimer   = 4.2
+	PlayerLongJumpCounter = 4
 	IdleFrequency         = 10
 
 	// Demon Constants
-	DemonWalkSpeed       = 2.7
+	DemonWalkSpeed       = 4.
 	DemonLeapSpeed       = 2.2
-	DemonClimbSpeed      = 1.6
-	DemonSlideSpeed      = 2.2
+	DemonClimbSpeed      = 2.5
+	DemonSlideSpeed      = 3.5
 	DemonLeapDelay       = 1.5
-	DemonGravity         = 3.
+	DemonGravity         = 4.
 	DemonHighJumpSpeed   = 1.8
 	DemonHighJumpHSpeed  = 3.5
 	DemonHighJumpTimer   = 7.2
@@ -99,5 +101,5 @@ var (
 	FrameRate = 15
 
 	// In Game Vars
-	DrawingLayers = []int{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
+	DrawingLayers = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
 )

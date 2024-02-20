@@ -17,18 +17,20 @@ var (
 	CurrPuzzle *Puzzle
 	CurrSelect *Selection
 	ClipSelect *Selection
+	EditorDraw bool
 
 	PuzzleShader string
 )
 
 type Level struct {
-	Tiles    *Tiles
-	Chars    []*Dynamic
-	Players  [constants.MaxPlayers]*Dynamic
-	Stats    [constants.MaxPlayers]*PlayerStats
-	Start    bool
-	Failed   bool
-	Complete bool
+	Tiles     *Tiles
+	Chars     []*Dynamic
+	Players   [constants.MaxPlayers]*Dynamic
+	Stats     [constants.MaxPlayers]*PlayerStats
+	Start     bool
+	Failed    bool
+	Complete  bool
+	DoorsOpen bool
 
 	Puzzle   *Puzzle
 	Metadata *PuzzleMetadata
@@ -59,8 +61,15 @@ func (t *Tiles) Get(x, y int) *Tile {
 }
 
 func NewTiles() *Tiles {
+	t := [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{}
+	for _, row := range t {
+		for _, tile := range row {
+			tile = &Tile{}
+			tile.Empty()
+		}
+	}
 	return &Tiles{
-		T: [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{},
+		T: t,
 	}
 }
 

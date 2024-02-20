@@ -34,6 +34,7 @@ func (s *editorState) Load() {
 	systems.PuzzleInit()
 	systems.EditorInit()
 	systems.UpdateViews()
+	data.EditorDraw = true
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {

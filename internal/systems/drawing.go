@@ -22,6 +22,12 @@ func AnimationSystem() {
 				for _, anim := range anims {
 					anim.Update()
 				}
+			} else if things, okT := theAnim.([]interface{}); okT {
+				for _, thing := range things {
+					if anim, okA := thing.(*reanimator.Tree); okA {
+						anim.Update()
+					}
+				}
 			} else if anim, okA := theAnim.(*reanimator.Tree); okA {
 				anim.Update()
 			}
@@ -59,6 +65,14 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 							continue
 						}
 						DrawBatchThing(d, obj, batch)
+						count++
+					}
+				} else if things, okT := draw.([]interface{}); okT {
+					for _, t := range things {
+						if t == nil {
+							continue
+						}
+						DrawBatchThing(t, obj, batch)
 						count++
 					}
 				} else {
@@ -108,6 +122,14 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 						continue
 					}
 					DrawThing(d, obj, target)
+					count++
+				}
+			} else if things, okT := draw.([]interface{}); okT {
+				for _, t := range things {
+					if t == nil {
+						continue
+					}
+					DrawThing(t, obj, target)
 					count++
 				}
 			} else {
