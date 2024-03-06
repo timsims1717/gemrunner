@@ -19,7 +19,7 @@ func CharacterActionSystem() {
 		ct, okT := result.Components[myecs.Controller].(data.Controller)
 		if okO && okC && okT && !obj.Hidden {
 			ch.Flags.Action = false
-			ch.Flags.Drop = false
+			//ch.Flags.Drop = false
 			actions := ct.GetActions()
 			if !data.CurrLevel.Start {
 				if result.Entity.HasComponent(myecs.Player) {
@@ -27,6 +27,7 @@ func CharacterActionSystem() {
 						actions.Jump ||
 						actions.PickUp ||
 						actions.Action ||
+						actions.Lift ||
 						!ch.Flags.Floor {
 						data.CurrLevel.Start = true
 					}
@@ -45,9 +46,13 @@ func CharacterActionSystem() {
 					if ch.Flags.ActionBuff > 0 {
 						ch.Actions.Action = true
 					}
+					if ch.Flags.LiftBuff > 0 {
+						ch.Actions.Lift = true
+					}
 					ch.Flags.JumpBuff--
 					ch.Flags.PickUpBuff--
 					ch.Flags.ActionBuff--
+					ch.Flags.LiftBuff--
 				}
 				if actions.Direction != data.None {
 					ch.Actions.Direction = actions.Direction
@@ -58,6 +63,7 @@ func CharacterActionSystem() {
 				ch.Actions.Jump = ch.Actions.Jump || actions.Jump
 				ch.Actions.PickUp = ch.Actions.PickUp || actions.PickUp
 				ch.Actions.Action = ch.Actions.Action || actions.Action
+				ch.Actions.Lift = ch.Actions.Lift || actions.Lift
 				if actions.Jump {
 					ch.Flags.JumpBuff = constants.ButtonBuffer
 				}
@@ -67,35 +73,41 @@ func CharacterActionSystem() {
 				if actions.Action {
 					ch.Flags.ActionBuff = constants.ButtonBuffer
 				}
+				if actions.Lift {
+					ch.Flags.LiftBuff = constants.ButtonBuffer
+				}
 				debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
 				debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
 				debug.AddTruthText("Jump:      ", ch.Actions.Jump)
 				debug.AddTruthText("PickUp:    ", ch.Actions.PickUp)
 				debug.AddTruthText("Action:    ", ch.Actions.Action)
+				debug.AddTruthText("Lift:      ", ch.Actions.Lift)
 
 				if reanimator.FrameSwitch {
-					currPos := ch.Object.Pos
+					currPos := ch.Object.Pos.Add(ch.Object.Offset)
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
 					tile := data.CurrLevel.Tiles.Get(x, y)
 					below := data.CurrLevel.Tiles.Get(x, y-1)
 					ch.ACounter++
 					switch ch.State {
 					case data.Grounded:
-						pickup(ch)
+						//pickup(ch)
 						grounded(ch, tile, below)
 					case data.OnLadder:
 						onLadder(ch, tile, below)
 					case data.Falling:
-						pickup(ch)
+						//pickup(ch)
 						falling(ch, tile)
 					case data.Jumping:
-						pickup(ch)
+						//pickup(ch)
 						jumping(ch, tile)
 					case data.Leaping:
 						leaping(ch, tile)
 					case data.Flying:
-						pickup(ch)
+						//pickup(ch)
 						flying(ch, tile)
+					case data.Carried:
+						carried(ch, tile)
 					}
 					ch.Flags.Frame = true
 				}
@@ -112,15 +124,15 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 		jump(ch, tile)
 		return
 	}
-	if !ch.Flags.PickUp {
-		if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
-			ch.Object.Pos.X -= ch.Vars.WalkSpeed
-			ch.Object.Flip = true
-		} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
-			ch.Object.Pos.X += ch.Vars.WalkSpeed
-			ch.Object.Flip = false
-		}
+	//if !ch.Flags.PickUp {
+	if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
+		ch.Object.Pos.X -= ch.Vars.WalkSpeed
+		ch.Object.Flip = true
+	} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
+		ch.Object.Pos.X += ch.Vars.WalkSpeed
+		ch.Object.Flip = false
 	}
+	//}
 }
 
 func jump(ch *data.Dynamic, tile *data.Tile) {
@@ -185,8 +197,10 @@ func falling(ch *data.Dynamic, tile *data.Tile) {
 	ch.Object.Pos.X = tile.Object.Pos.X
 	ch.Object.Pos.Y -= ch.Vars.Gravity
 	if ch.Actions.Left() {
+		ch.Object.Pos.X -= ch.Vars.WalkSpeed
 		ch.Object.Flip = true
 	} else if ch.Actions.Right() {
+		ch.Object.Pos.X += ch.Vars.WalkSpeed
 		ch.Object.Flip = false
 	}
 }
@@ -265,52 +279,78 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 	}
 }
 
-func pickup(ch *data.Dynamic) {
-	if ch.Actions.Up() &&
-		!ch.Flags.HoldSwitch &&
-		(ch.Flags.HoldUp || ch.Flags.HoldSide) {
-		if ch.Flags.HoldUp {
-			ch.Flags.HoldUp = false
-			ch.Flags.HoldSide = true
-		} else if ch.Flags.HoldSide {
-			ch.Flags.HoldUp = true
-			ch.Flags.HoldSide = false
-		}
-		ch.Flags.HoldSwitch = true
-	}
-	if !ch.Actions.Up() && ch.Flags.HoldSwitch {
-		ch.Flags.HoldSwitch = false
-	}
-	if ch.Actions.PickUp {
-		ch.Flags.PickUpBuff = 0
-		if ch.Flags.HoldUp || ch.Flags.HoldSide {
-			ch.Flags.Drop = true
-		} else if ch.State != data.OnLadder &&
-			ch.State != data.Leaping &&
-			ch.Player > -1 && ch.Player < constants.MaxPlayers {
-			AttemptPickUp(ch, int(ch.Player), ch.Object.Flip)
-		}
-	} else if ch.Actions.Action {
-		ch.Flags.ActionBuff = 0
-		if ch.Flags.HoldUp || ch.Flags.HoldSide {
-			//ch.Flags.Drop = true
-			ch.Flags.Action = true
-		}
-	}
-}
+//func thrown(ch *data.Dynamic, tile *data.Tile) {
+//
+//}
+
+//func pickup(ch *data.Dynamic) {
+//	if ch.Actions.PickUp {
+//		ch.Flags.PickUpBuff = 0
+//		ch.Flags.PickUpDrop = true
+//	} else if ch.Actions.Action {
+//		ch.Flags.ActionBuff = 0
+//		ch.Flags.Action = true
+//	}
+//	/*if ch.Actions.Up() &&
+//		!ch.Flags.HoldSwitch &&
+//		(ch.Flags.HoldUp || ch.Flags.HoldSide) {
+//		if ch.Flags.HoldUp {
+//			ch.Flags.HoldUp = false
+//			ch.Flags.HoldSide = true
+//		} else if ch.Flags.HoldSide {
+//			ch.Flags.HoldUp = true
+//			ch.Flags.HoldSide = false
+//		}
+//		ch.Flags.HoldSwitch = true
+//	}
+//	if !ch.Actions.Up() && ch.Flags.HoldSwitch {
+//		ch.Flags.HoldSwitch = false
+//	}
+//	if ch.Actions.PickUp {
+//		ch.Flags.PickUpBuff = 0
+//		if ch.Flags.HoldUp || ch.Flags.HoldSide {
+//			ch.Flags.Drop = true
+//		} else if ch.State != data.OnLadder &&
+//			ch.State != data.Leaping &&
+//			ch.Player > -1 && ch.Player < constants.MaxPlayers {
+//			AttemptPickUp(ch, int(ch.Player), ch.Object.Flip)
+//		}
+//	} else if ch.Actions.Action {
+//		ch.Flags.ActionBuff = 0
+//		if ch.Flags.HoldUp || ch.Flags.HoldSide {
+//			//ch.Flags.Drop = true
+//			ch.Flags.Action = true
+//		}
+//	}*/
+//}
 
 func flying(ch *data.Dynamic, tile *data.Tile) {
-	if !ch.Flags.PickUp {
-		if ch.Actions.Direction == data.Left { // fly left
-			ch.Object.Pos.X -= ch.Vars.WalkSpeed
-			ch.Object.Flip = true
-		} else if ch.Actions.Direction == data.Right { // fly right
-			ch.Object.Pos.X += ch.Vars.WalkSpeed
-			ch.Object.Flip = false
-		} else if ch.Actions.Direction == data.Up { // fly up
-			ch.Object.Pos.Y += ch.Vars.WalkSpeed
-		} else if ch.Actions.Direction == data.Down { // fly down
-			ch.Object.Pos.Y -= ch.Vars.WalkSpeed
-		}
+	//if !ch.Flags.PickUp {
+	if ch.Actions.Direction == data.Left { // fly left
+		ch.Object.Pos.X -= ch.Vars.WalkSpeed
+		ch.Object.Flip = true
+	} else if ch.Actions.Direction == data.Right { // fly right
+		ch.Object.Pos.X += ch.Vars.WalkSpeed
+		ch.Object.Flip = false
+	} else if ch.Actions.Direction == data.Up { // fly up
+		ch.Object.Pos.Y += ch.Vars.WalkSpeed
+	} else if ch.Actions.Direction == data.Down { // fly down
+		ch.Object.Pos.Y -= ch.Vars.WalkSpeed
+	}
+	//}
+}
+
+func carried(ch *data.Dynamic, tile *data.Tile) {
+	if ch.Actions.Left() {
+		ch.Object.Flip = true
+	} else if ch.Actions.Right() {
+		ch.Object.Flip = false
+	}
+	ch.LastTile = tile
+	if tile != nil &&
+		ch.Actions.Jump &&
+		!ch.Flags.Ceiling { // jump time
+		jump(ch, tile)
+		return
 	}
 }

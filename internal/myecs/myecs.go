@@ -55,7 +55,7 @@ var (
 	IsCharacter = ecs.BuildTag(Object, Dynamic, Controller)
 	IsTouch     = ecs.BuildTag(Object, OnTouch)
 	IsGem       = ecs.BuildTag(Object, Gem)
-	IsStandOn   = ecs.BuildTag(Object, StandOn)
+	IsStandOn   = ecs.BuildTag(Object, Dynamic, StandOn)
 	IsPickUp    = ecs.BuildTag(Object, PickUp)
 	HasAction   = ecs.BuildTag(Object, PickUp, Action)
 	IsDoor      = ecs.BuildTag(Object, Door)

@@ -15,7 +15,8 @@ func CollisionSystem() {
 		if okO && okC && !obj.Hidden {
 			setCollisionFlags(ch)
 			chPos := ch.Object.Pos
-			x, y := world.WorldToMap(chPos.X, chPos.Y)
+			pPos := ch.Object.LastPos
+			x, y := world.WorldToMap(pPos.X, pPos.Y)
 			tile := data.CurrLevel.Tiles.Get(x, y)
 			left := data.CurrLevel.Tiles.Get(x-1, y)
 			right := data.CurrLevel.Tiles.Get(x+1, y)
@@ -101,7 +102,9 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, chPos pixel.Vec) {
 }
 
 func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, chPos pixel.Vec) {
-	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOnSystem(down)
+	standOn, standOnFalling := standOnSystem(ch.Object.ID, down)
+	ch.Flags.OnFall = standOnFalling
+	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if ((down == nil ||
 		down.SolidV() ||
@@ -113,18 +116,27 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, chPos pixel.Vec) {
 	}
 }
 
-func standOnSystem(downTile *data.Tile) bool {
+func standOnSystem(id string, downTile *data.Tile) (bool, bool) {
 	if downTile == nil {
-		return false
+		return false, false
 	}
 	for _, result := range myecs.Manager.Query(myecs.IsStandOn) {
-		if obj, okO := result.Components[myecs.Object].(*object.Object); okO {
-			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+		obj, okO := result.Components[myecs.Object].(*object.Object)
+		d, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+		if okO && okC &&
+			!obj.Hidden && obj.ID != id &&
+			!result.Entity.HasComponent(myecs.Parent) {
+			pos := obj.Pos
+			// adjustment, maybe add to constants
+			if !d.Flags.Floor {
+				pos.Y -= world.HalfSize * 0.5
+			}
+			x, y := world.WorldToMap(pos.X, pos.Y)
 			standCoords := world.Coords{X: x, Y: y}
 			if downTile.Coords == standCoords {
-				return true
+				return true, !d.Flags.Floor
 			}
 		}
 	}
-	return false
+	return false, false
 }

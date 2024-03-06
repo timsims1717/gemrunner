@@ -14,7 +14,7 @@ func CharacterStateSystem() {
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		if okO && okC {
 			if reanimator.FrameSwitch {
-				currPos := ch.Object.Pos
+				currPos := ch.Object.Pos.Add(ch.Object.Offset)
 				x, y := world.WorldToMap(currPos.X, currPos.Y)
 				tile := data.CurrLevel.Tiles.Get(x, y)
 				below := data.CurrLevel.Tiles.Get(x, y-1)
@@ -38,6 +38,7 @@ func CharacterStateSystem() {
 						ch.State = data.Falling
 					}
 				case data.OnLadder:
+					DropLift(ch, false)
 					if ch.Flags.Floor { // just got to the bottom or top
 						ch.State = data.Grounded
 						if ch.Actions.Direction == data.Left { // to the left
@@ -89,6 +90,9 @@ func CharacterStateSystem() {
 						ch.State = data.Grounded
 					} else if tile != nil && tile.IsLadder() {
 						ch.State = data.OnLadder
+						ch.Object.Pos.X = tile.Object.Pos.X
+					} else {
+						ch.Object.Pos.X = tile.Object.Pos.X
 					}
 				case data.Jumping:
 					if !(ch.Flags.HighJump || ch.Flags.LongJump) {
@@ -120,6 +124,18 @@ func CharacterStateSystem() {
 							ch.State = data.Falling
 						}
 					}
+				case data.Carried:
+					if ch.Flags.HighJump || ch.Flags.LongJump {
+						ch.State = data.Jumping
+					} else if tile != nil && tile.IsLadder() { // a ladder is here
+						if ch.Actions.Direction == data.Up { // climbed the ladder
+							ch.State = data.OnLadder
+						} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
+							ch.State = data.OnLadder
+						}
+					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
+						ch.State = data.OnLadder
+					}
 				case data.Hit:
 					if !ch.Flags.Hit {
 						ch.State = data.Dead
@@ -137,29 +153,50 @@ func CharacterStateSystem() {
 				case data.Dead:
 				}
 				if oldState != ch.State { // a state change happened
+					if oldState == data.Carried {
+						if pu, ok := ch.Entity.GetComponentData(myecs.PickUp); ok {
+							pickUp := pu.(*data.PickUp)
+							newState := ch.State
+							DropLift(data.CurrLevel.Players[pickUp.Held], false)
+							ch.State = newState
+						}
+					}
 					ch.ACounter = 0
 					ch.ATimer = nil
 					ch.Control.ClearPrev()
 					ch.Actions.PrevDirection = data.None
 					ch.Object.Pos.Y = tile.Object.Pos.Y
-					if oldState != data.Grounded || ch.State != data.Leaping {
+					if !((oldState == data.Falling &&
+						ch.State == data.Grounded) ||
+						(oldState == data.Grounded &&
+							ch.State == data.Leaping)) {
 						ch.Object.Pos.X = tile.Object.Pos.X
 					}
 					ch.Flags.Climbed = false
 					ch.Flags.GoingUp = false
 				}
 				updateHeldItem(ch, ch.Object.Flip)
-				if ch.State == data.Dead ||
-					ch.State == data.Hit ||
-					ch.State == data.Attack ||
-					ch.State == data.OnLadder ||
-					ch.State == data.Leaping ||
-					ch.Flags.Drop ||
-					ch.Flags.Action {
-					if ch.Flags.Action {
+				if ch.State != data.Dead &&
+					ch.State != data.Hit &&
+					ch.State != data.Attack {
+					if ch.State != data.Leaping &&
+						ch.Actions.Action {
 						DoAction(ch)
+						ch.Flags.ActionBuff = 0
+					} else if ch.Actions.PickUp && !ch.Flags.Using {
+						PickUpOrDropItem(ch, int(ch.Player))
+						ch.Flags.PickUpBuff = 0
+					} else if ch.State != data.Leaping &&
+						ch.State != data.OnLadder &&
+						ch.Actions.Lift && !ch.Flags.Using {
+						LiftOrDropItem(ch, int(ch.Player), ch.Actions.Left() || ch.Actions.Right())
+						ch.Flags.LiftBuff = 0
 					}
-					DropItem(ch)
+				} else {
+					if ch.State == data.Dead {
+						DropItem(ch)
+					}
+					DropLift(ch, false)
 				}
 			}
 		}

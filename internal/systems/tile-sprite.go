@@ -130,16 +130,16 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 		tile.Ladder == data.BlockLadderCracked &&
 		tile.Flags.LCracked {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
-			if tile.Counter > 1 {
-				sKey = constants.TileLadderCrackM
+			if tile.Counter > 6 {
+				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, 3)
 			} else {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, tile.Counter)
+				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, tile.Counter/2)
 			}
 		} else if tile.IsLadder() {
-			if tile.Counter > 1 {
-				sKey = constants.TileLadderCrackB
+			if tile.Counter > 6 {
+				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, 3)
 			} else {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, tile.Counter)
+				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, tile.Counter/2)
 			}
 		}
 	} else if belowTile != nil && belowTile.IsLadder() {

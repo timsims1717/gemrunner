@@ -16,15 +16,20 @@ func NewInteract(fn func(*Level, int, *Dynamic, *ecs.Entity)) *Interact {
 }
 
 type PickUp struct {
-	Cycle     [constants.MaxPlayers]int
-	Priority  int
-	NeverFlip bool
+	Cycle       [constants.MaxPlayers]int
+	Priority    int
+	NeverFlip   bool
+	Inventory   int
+	Held        int
+	NoInventory bool
 }
 
 func NewPickUp(p int, neverFlip bool) *PickUp {
 	return &PickUp{
 		Priority:  p,
 		NeverFlip: neverFlip,
+		Inventory: -1,
+		Held:      -1,
 	}
 }
 

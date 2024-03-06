@@ -207,6 +207,7 @@ func KeyAction(color string) *data.Interact {
 				myecs.Manager.DisposeEntity(entity)
 			}
 		}
+		ch.Flags.Using = false
 	})
 }
 

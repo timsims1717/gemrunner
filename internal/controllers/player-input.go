@@ -13,6 +13,7 @@ type PlayerInput struct {
 	DownKey   string
 	JumpKey   string
 	PickUpKey string
+	LiftKey   string
 	ActionKey string
 
 	LastActions data.Actions
@@ -33,6 +34,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	down := pi.Input.Get(pi.DownKey)
 	jump := pi.Input.Get(pi.JumpKey)
 	pickUp := pi.Input.Get(pi.PickUpKey)
+	lift := pi.Input.Get(pi.LiftKey)
 	action := pi.Input.Get(pi.ActionKey)
 	if !left.Pressed() && !right.Pressed() && !up.Pressed() && !down.Pressed() {
 		actions.Direction = data.None
@@ -250,6 +252,10 @@ func (pi *PlayerInput) GetActions() data.Actions {
 		actions.Action = true
 		action.Consume()
 	}
+	if lift.JustPressed() {
+		actions.Lift = true
+		lift.Consume()
+	}
 	pi.LastActions = actions
 	return actions
 }
@@ -263,6 +269,7 @@ func NewPlayerInput(in *pxginput.Input) *PlayerInput {
 		DownKey:   "down",
 		JumpKey:   "jump",
 		PickUpKey: "pickUp",
+		LiftKey:   "lift",
 		ActionKey: "action",
 	}
 }

@@ -6,6 +6,7 @@ import (
 )
 
 func (obj *Object) Update() {
+	obj.LastPos = obj.PostPos
 	obj.PostPos = obj.Pos.Add(obj.Offset)
 	if obj.ILock {
 		obj.PostPos.X = math.Round(obj.PostPos.X)

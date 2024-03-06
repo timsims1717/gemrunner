@@ -492,6 +492,34 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "ladder_cracking_bottom2",
+      "x": 16,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_cracking_middle2",
+      "x": 16,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_cracking_bottom3",
+      "x": 352,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ladder_cracking_middle3",
+      "x": 352,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
 
 
 
@@ -1952,7 +1980,7 @@
     {
       "key": "player2_fall_hold",
       "anim": true,
-      "x": 48 ,
+      "x": 112,
       "y": 272,
       "h": 16,
       "w": 16
@@ -2243,7 +2271,7 @@
     {
       "key": "player3_fall_hold",
       "anim": true,
-      "x": 48 ,
+      "x": 176,
       "y": 272,
       "h": 16,
       "w": 16

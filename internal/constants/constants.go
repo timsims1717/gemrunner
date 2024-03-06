@@ -45,20 +45,21 @@ const (
 	FrameRateMax    = 30
 	FrameRateMin    = 5
 	FrameRateInt    = 2
-	NormalGravity   = 6.75
+	NormalGravity   = 4
 	MaxPlayers      = 4
-	WaitToSwitch    = 3.
+	WaitToSwitch    = 3
 	ButtonBuffer    = 2
 	CrackedCollapse = 8
 	CollapseCounter = 56
 
 	// Player Constants
-	PlayerWalkSpeed       = 6.
+	PlayerWalkSpeed       = 6
 	PlayerLeapSpeed       = 3.8
 	PlayerClimbSpeed      = 3.75
 	PlayerSlideSpeed      = 6.5
 	PlayerLeapDelay       = 1.5
-	PlayerHighJumpSpeed   = 3.0
+	PlayerGravity         = 6.75
+	PlayerHighJumpSpeed   = 3
 	PlayerHighJumpHSpeed  = 4.5
 	PlayerHighJumpTimer   = 4.8
 	PlayerHighJumpCounter = 6
@@ -69,12 +70,12 @@ const (
 	IdleFrequency         = 10
 
 	// Demon Constants
-	DemonWalkSpeed       = 4.
+	DemonWalkSpeed       = 4
 	DemonLeapSpeed       = 2.2
 	DemonClimbSpeed      = 2.5
 	DemonSlideSpeed      = 3.5
 	DemonLeapDelay       = 1.5
-	DemonGravity         = 4.
+	DemonGravity         = NormalGravity
 	DemonHighJumpSpeed   = 1.8
 	DemonHighJumpHSpeed  = 3.5
 	DemonHighJumpTimer   = 7.2

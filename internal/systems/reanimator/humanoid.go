@@ -81,12 +81,12 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	})
 	holdIdle := reanimator.NewBatchAnimationFrame("hold_idle", batch, fmt.Sprintf("%s_pick_up", sprPre), 1, reanimator.Hold)
 	holdRun := reanimator.NewBatchAnimationCustom("hold_run", batch, fmt.Sprintf("%s_hold_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
-	holdIdleSide := reanimator.NewBatchSprite("hold_idle_side", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Hold)
-	holdRunSide := reanimator.NewBatchAnimationCustom("hold_run_side", batch, fmt.Sprintf("%s_hold_run_side", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
+	//holdIdleSide := reanimator.NewBatchSprite("hold_idle_side", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Hold)
+	//holdRunSide := reanimator.NewBatchAnimationCustom("hold_run_side", batch, fmt.Sprintf("%s_hold_run_side", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
 	fallHold := reanimator.NewBatchSprite("fall_hold", batch, fmt.Sprintf("%s_fall_hold", sprPre), reanimator.Hold)
 	jumpHold := reanimator.NewBatchSprite("jump_hold", batch, fmt.Sprintf("%s_jump_hold", sprPre), reanimator.Hold)
-	fallHoldSide := reanimator.NewBatchSprite("fall_hold_side", batch, fmt.Sprintf("%s_fall_hold_side", sprPre), reanimator.Hold)
-	jumpHoldSide := reanimator.NewBatchSprite("jump_hold_side", batch, fmt.Sprintf("%s_jump_hold_side", sprPre), reanimator.Hold)
+	//fallHoldSide := reanimator.NewBatchSprite("fall_hold_side", batch, fmt.Sprintf("%s_fall_hold_side", sprPre), reanimator.Hold)
+	//jumpHoldSide := reanimator.NewBatchSprite("jump_hold_side", batch, fmt.Sprintf("%s_jump_hold_side", sprPre), reanimator.Hold)
 	fullHit := []int{0, 1, 2, 3, 3, 3, 3, 3, 3, 3}
 	fullAttack := []int{0, 1, 2, 3, 2, 3, 2, 3, 2, 3}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
@@ -112,12 +112,12 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(pickUp).
 		AddAnimation(holdIdle).
 		AddAnimation(holdRun).
-		AddAnimation(holdIdleSide).
-		AddAnimation(holdRunSide).
+		//AddAnimation(holdIdleSide).
+		//AddAnimation(holdRunSide).
 		AddAnimation(fallHold).
 		AddAnimation(jumpHold).
-		AddAnimation(fallHoldSide).
-		AddAnimation(jumpHoldSide).
+		//AddAnimation(fallHoldSide).
+		//AddAnimation(jumpHoldSide).
 		AddAnimation(hit).
 		AddAnimation(attack).
 		AddNull("none").
@@ -129,6 +129,8 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				return "hit"
 			case data.Attack:
 				return "attack"
+			case data.Carried:
+				return "idle"
 			case data.Grounded:
 				if ch.Flags.PickUp {
 					return "pick_up"
@@ -136,27 +138,21 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				if ch.Actions.Left() || ch.Actions.Right() {
 					if (ch.Actions.Left() && ch.Flags.LeftWall) ||
 						(ch.Actions.Right() && ch.Flags.RightWall) {
-						if ch.Flags.HoldUp {
+						if ch.Held != nil {
 							return "hold_idle"
-						} else if ch.Flags.HoldSide {
-							return "hold_idle_side"
 						} else {
 							return "wall"
 						}
 					} else {
-						if ch.Flags.HoldUp {
+						if ch.Held != nil {
 							return "hold_run"
-						} else if ch.Flags.HoldSide {
-							return "hold_run_side"
 						} else {
 							return "run"
 						}
 					}
 				} else {
-					if ch.Flags.HoldUp {
+					if ch.Held != nil {
 						return "hold_idle"
-					} else if ch.Flags.HoldSide {
-						return "hold_idle_side"
 					} else {
 						if ch.Flags.Breath {
 							return "breath"
@@ -177,20 +173,16 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			case data.Jumping:
 				if ch.Flags.PickUp {
 					return "pick_up"
-				} else if ch.Flags.HoldUp {
+				} else if ch.Held != nil {
 					return "jump_hold"
-				} else if ch.Flags.HoldSide {
-					return "jump_hold_side"
 				} else {
 					return "jump"
 				}
 			case data.Falling:
 				if ch.Flags.PickUp {
 					return "pick_up"
-				} else if ch.Flags.HoldUp {
+				} else if ch.Held != nil {
 					return "fall_hold"
-				} else if ch.Flags.HoldSide {
-					return "fall_hold_side"
 				} else {
 					return "fall"
 				}

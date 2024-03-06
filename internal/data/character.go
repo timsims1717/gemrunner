@@ -11,12 +11,13 @@ import (
 type Player int
 
 type Dynamic struct {
-	Object  *object.Object
-	Anim    *reanimator.Tree
-	Entity  *ecs.Entity
-	Held    *ecs.Entity
-	HeldObj *object.Object
-	Control Controller
+	Object    *object.Object
+	Anim      *reanimator.Tree
+	Entity    *ecs.Entity
+	Held      *ecs.Entity
+	HeldObj   *object.Object
+	Inventory *ecs.Entity
+	Control   Controller
 
 	Actions  Actions
 	State    CharacterState
@@ -75,6 +76,7 @@ type Actions struct {
 	PrevDirection Direction
 	Jump          bool
 	PickUp        bool
+	Lift          bool
 	Action        bool
 }
 
@@ -128,6 +130,7 @@ const (
 	Jumping
 	Leaping
 	Flying
+	Carried
 	Attack
 	Hit
 	Dead
@@ -147,6 +150,8 @@ func (s CharacterState) String() string {
 		return "Leaping"
 	case Flying:
 		return "Flying"
+	case Carried:
+		return "Carried"
 	case Attack:
 		return "Attack"
 	case Hit:
@@ -158,26 +163,26 @@ func (s CharacterState) String() string {
 }
 
 type Flags struct {
-	LeftWall   bool
-	RightWall  bool
-	Ceiling    bool
-	Floor      bool
-	GoingUp    bool
-	Climbed    bool
-	LeapOn     bool
-	LeapOff    bool
-	LeapTo     bool
-	Breath     bool
-	HighJump   bool
-	LongJump   bool
-	JumpR      bool
-	JumpL      bool
-	Action     bool
-	PickUp     bool
-	Drop       bool
-	HoldSwitch bool
-	HoldUp     bool
-	HoldSide   bool
+	LeftWall  bool
+	RightWall bool
+	Ceiling   bool
+	Floor     bool
+	OnFall    bool
+	GoingUp   bool
+	Climbed   bool
+	LeapOn    bool
+	LeapOff   bool
+	LeapTo    bool
+	Breath    bool
+	HighJump  bool
+	LongJump  bool
+	JumpR     bool
+	JumpL     bool
+	Action    bool
+	Using     bool
+	PickUp    bool
+	//Drop      bool
+	//HoldSwitch bool
 	HeldFlip   bool
 	HeldNFlip  bool
 	Hit        bool
@@ -188,6 +193,7 @@ type Flags struct {
 	JumpBuff   int
 	PickUpBuff int
 	ActionBuff int
+	LiftBuff   int
 }
 
 type Controller interface {
@@ -209,7 +215,7 @@ func PlayerVars() Vars {
 		ClimbSpeed:   constants.PlayerClimbSpeed,
 		SlideSpeed:   constants.PlayerSlideSpeed,
 		LeapDelay:    constants.PlayerLeapDelay,
-		Gravity:      constants.NormalGravity,
+		Gravity:      constants.PlayerGravity,
 		HiJumpVSpeed: constants.PlayerHighJumpSpeed,
 		HiJumpHSpeed: constants.PlayerHighJumpHSpeed,
 		HiJumpTimer:  constants.PlayerHighJumpTimer,

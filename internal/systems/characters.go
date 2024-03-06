@@ -21,28 +21,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	switch pIndex {
-	case 0:
-		player.Control = controllers.NewPlayerInput(data.P1Input)
-		e.AddComponent(myecs.Controller, player.Control)
-		player.Anim = reanimator.HumanoidAnimation(player, "player1")
-		player.Color = constants.StrColorBlue
-	case 1:
-		player.Control = controllers.NewPlayerInput(data.P2Input)
-		e.AddComponent(myecs.Controller, player.Control)
-		player.Anim = reanimator.HumanoidAnimation(player, "player2")
-		player.Color = constants.StrColorGreen
-	case 2:
-		player.Control = controllers.NewPlayerInput(data.P3Input)
-		e.AddComponent(myecs.Controller, player.Control)
-		player.Anim = reanimator.HumanoidAnimation(player, "player3")
-		player.Color = constants.StrColorPurple
-	case 3:
-		player.Control = controllers.NewPlayerInput(data.P4Input)
-		e.AddComponent(myecs.Controller, player.Control)
-		player.Anim = reanimator.HumanoidAnimation(player, "player4")
-		player.Color = constants.StrColorBrown
-	}
+	SetAsPlayer(player, e, pIndex)
 	player.Object = obj
 	player.Entity = e
 	player.Player = data.Player(pIndex)
@@ -51,7 +30,35 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	e.AddComponent(myecs.Drawable, player.Anim)
 	e.AddComponent(myecs.Dynamic, player)
 	e.AddComponent(myecs.Player, player.Player)
+	pickUp := data.NewPickUp(11, true)
+	pickUp.NoInventory = true
+	e.AddComponent(myecs.PickUp, pickUp)
 	return player
+}
+
+func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
+	switch p {
+	case 0:
+		ch.Control = controllers.NewPlayerInput(data.P1Input)
+		e.AddComponent(myecs.Controller, ch.Control)
+		ch.Anim = reanimator.HumanoidAnimation(ch, "player1")
+		ch.Color = constants.StrColorBlue
+	case 1:
+		ch.Control = controllers.NewPlayerInput(data.P2Input)
+		e.AddComponent(myecs.Controller, ch.Control)
+		ch.Anim = reanimator.HumanoidAnimation(ch, "player2")
+		ch.Color = constants.StrColorGreen
+	case 2:
+		ch.Control = controllers.NewPlayerInput(data.P3Input)
+		e.AddComponent(myecs.Controller, ch.Control)
+		ch.Anim = reanimator.HumanoidAnimation(ch, "player3")
+		ch.Color = constants.StrColorPurple
+	case 3:
+		ch.Control = controllers.NewPlayerInput(data.P4Input)
+		e.AddComponent(myecs.Controller, ch.Control)
+		ch.Anim = reanimator.HumanoidAnimation(ch, "player4")
+		ch.Color = constants.StrColorBrown
+	}
 }
 
 func DemonCharacter(pos pixel.Vec) *data.Dynamic {
@@ -86,8 +93,8 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 	bg, ok := entity.GetComponentData(myecs.Dynamic)
 	if ok {
 		enemy := bg.(*data.Dynamic)
-		if (enemy.State == data.Grounded || enemy.State == data.OnLadder || enemy.State == data.Leaping || enemy.State == data.Flying) &&
-			(ch.State == data.Grounded || ch.State == data.OnLadder || ch.State == data.Leaping || ch.State == data.Jumping) {
+		if (enemy.State == data.Grounded || enemy.State == data.OnLadder || enemy.State == data.Leaping || enemy.State == data.Flying || enemy.State == data.Carried) &&
+			(ch.State == data.Grounded || ch.State == data.OnLadder || ch.State == data.Leaping || ch.State == data.Jumping || ch.State == data.Flying || ch.State == data.Carried) {
 			ch.Flags.Hit = true
 			ch.State = data.Hit
 			enemy.Flags.Attack = true
