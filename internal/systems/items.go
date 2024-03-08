@@ -163,20 +163,71 @@ func EnterPlayerDoor(color string) *data.Interact {
 
 func CreateBox(pos pixel.Vec) {
 	key := constants.ItemBox
-	obj := object.New().WithID(key)
-	obj.Pos = pos
+	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
+	s := obj.Pos.Y
+	smash := &s
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
 	e.AddComponent(myecs.StandOn, struct{}{})
+	e.AddComponent(myecs.Smash, smash)
+	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
 	e.AddComponent(myecs.PickUp, data.NewPickUp(10, true))
 	box := data.NewDynamic()
 	box.Object = obj
 	box.Entity = e
+	box.Flags.NoLadders = true
 	e.AddComponent(myecs.Dynamic, box)
+}
+
+func BoxBonk(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	s, ok := entity.GetComponentData(myecs.Smash)
+	d, okD := entity.GetComponentData(myecs.Dynamic)
+	if ok && okD {
+		f := s.(*float64)
+		box := d.(*data.Dynamic)
+		if *f-box.Object.Pos.Y >= constants.SmashDistance &&
+			ch.Object.Pos.Y < box.Object.Pos.Y &&
+			(ch.State != data.Falling || ch.Vars.Gravity < box.Vars.Gravity) {
+			ch.Flags.Hit = true
+			ch.State = data.Hit
+			for i := 0; i < 5; i++ {
+				pObj := object.New()
+				pObj.Pos = box.Object.Pos
+				pObj.Layer = 12
+				switch i {
+				case 0:
+					pObj.Pos = pObj.Pos.Add(pixel.V(-5, 5))
+				case 1:
+					pObj.Pos = pObj.Pos.Add(pixel.V(-7, -3))
+				case 2:
+					pObj.Pos = pObj.Pos.Add(pixel.V(6, 6))
+				case 3:
+					pObj.Pos = pObj.Pos.Add(pixel.V(5, 0))
+				case 4:
+					pObj.Pos = pObj.Pos.Add(pixel.V(4, -5))
+				}
+				end := 7
+				count := 0
+				e := myecs.Manager.NewEntity()
+				e.AddComponent(myecs.Object, pObj)
+				e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("%s%d", constants.ItemBoxPiece, i), constants.TileBatch))
+				e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				e.AddComponent(myecs.Update, data.NewFn(func() {
+					if reanimator.FrameSwitch {
+						count++
+						if count >= end {
+							myecs.Manager.DisposeEntity(e)
+						}
+					}
+				}))
+			}
+			myecs.Manager.DisposeEntity(entity)
+		}
+	}
 }
 
 func CreateKey(pos pixel.Vec, key string) {

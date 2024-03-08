@@ -13,6 +13,7 @@ import (
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
+	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 )
 
@@ -93,7 +94,8 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.DynamicSystem()
 		systems.CollisionSystem()
 		systems.CharacterStateSystem()
-		systems.CollectSystem()
+		systems.TouchSystem()
+		systems.SmashSystem()
 		systems.TileSystem()
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
@@ -123,21 +125,20 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
 	img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 10) // bg tiles, ladders
-	//img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 11) // gems
-	//img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 18) // other reanimator
-	//img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 19) // fg tiles, liquid, crushers
-	//img.Clear()
-	//systems.DrawLayerSystem(data.PuzzleView.Canvas, 20) // ui
-	//img.Clear()
-	//data.IMDraw.Draw(data.PuzzleView.Canvas)
-	if debug.ShowDebug {
-		debug.DrawLines(data.PuzzleView.Canvas)
-	}
 	data.PuzzleView.Draw(win)
+	// draw collapse/regen
+	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
+	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenLayer)
+	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
+	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
+	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
+	data.PuzzleView.Draw(win)
+	// draw debug
+	if debug.ShowDebug {
+		data.PuzzleView.Canvas.Clear(pixel.RGBA{})
+		debug.DrawLines(data.PuzzleView.Canvas)
+		data.PuzzleView.Draw(win)
+	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
 	systems.TemporarySystem()

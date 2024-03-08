@@ -13,6 +13,7 @@ type Element int
 
 const (
 	ButtonElement = iota
+	CheckboxElement
 	ContainerElement
 	InputElement
 	ScrollElement
@@ -44,6 +45,16 @@ type Button struct {
 	Entity   *ecs.Entity
 	OnClick  func()
 	OnHeld   func(*HoverClick)
+}
+
+type Checkbox struct {
+	Key      string
+	Sprite   *img.Sprite
+	CheckSpr *img.Sprite
+	HelpText string
+	Object   *object.Object
+	Entity   *ecs.Entity
+	Checked  bool
 }
 
 type Container struct {

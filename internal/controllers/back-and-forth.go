@@ -2,17 +2,20 @@ package controllers
 
 import (
 	"gemrunner/internal/data"
+	"github.com/bytearena/ecs"
 )
 
 type BackAndForth struct {
-	Ch   *data.Dynamic
-	Left bool
+	Ch     *data.Dynamic
+	Left   bool
+	Entity *ecs.Entity
 }
 
-func NewBackAndForth(dyn *data.Dynamic, left bool) *BackAndForth {
+func NewBackAndForth(dyn *data.Dynamic, e *ecs.Entity, left bool) *BackAndForth {
 	return &BackAndForth{
-		Ch:   dyn,
-		Left: left,
+		Ch:     dyn,
+		Left:   left,
+		Entity: e,
 	}
 }
 
@@ -32,4 +35,8 @@ func (bf *BackAndForth) GetActions() data.Actions {
 		actions.Direction = data.Right
 	}
 	return actions
+}
+
+func (bf *BackAndForth) GetEntity() *ecs.Entity {
+	return bf.Entity
 }

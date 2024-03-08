@@ -42,19 +42,13 @@ func LevelInit() {
 					i = 3
 				}
 				tile.Block = data.BlockEmpty
-				player := PlayerCharacter(obj.Pos, i)
-				data.CurrLevel.Players[i] = player
-				data.CurrLevel.Chars = append(data.CurrLevel.Chars, player)
-				data.CurrLevel.Stats[i] = data.NewStats()
+				PlayerCharacter(obj.Pos, i)
 			case data.BlockDemon:
 				tile.Block = data.BlockEmpty
-				demon := DemonCharacter(obj.Pos)
-				//data.CurrLevel.Players[1] = demon
-				data.CurrLevel.Chars = append(data.CurrLevel.Chars, demon)
+				DemonCharacter(obj.Pos)
 			case data.BlockFly:
 				tile.Block = data.BlockEmpty
-				fly := FlyCharacter(obj.Pos, tile.Metadata.Flipped)
-				data.CurrLevel.Chars = append(data.CurrLevel.Chars, fly)
+				FlyCharacter(obj.Pos, tile.Metadata.Flipped)
 			case data.BlockGemYellow,
 				data.BlockGemOrange,
 				data.BlockGemGray,
@@ -113,8 +107,13 @@ func LevelDispose() {
 				myecs.Manager.DisposeEntity(tile.Entity)
 			}
 		}
-		for _, character := range data.CurrLevel.Chars {
-			myecs.Manager.DisposeEntity(character.Entity)
+		for _, player := range data.CurrLevel.Players {
+			if player != nil {
+				myecs.Manager.DisposeEntity(player.Entity)
+			}
+		}
+		for _, enemy := range data.CurrLevel.Enemies {
+			myecs.Manager.DisposeEntity(enemy.Entity)
 		}
 		data.CurrLevel = nil
 	}

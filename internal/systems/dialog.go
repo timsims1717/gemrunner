@@ -65,6 +65,8 @@ func UpdateSubElementLayers(elements []interface{}, layer int) int {
 			spr.Object.Layer = layer
 		} else if btn, okB := e.(*data.Button); okB {
 			btn.Object.Layer = layer
+		} else if xbx, okX := e.(*data.Checkbox); okX {
+			xbx.Object.Layer = layer
 		} else if in, okI := e.(*data.Input); okI {
 			in.Layer = layer + 1
 			in.BorderVP.Update()

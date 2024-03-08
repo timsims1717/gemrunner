@@ -8,6 +8,7 @@ import (
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
+	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/imdraw"
 	"image/color"
@@ -19,13 +20,19 @@ type LRChase struct {
 	Ch     *data.Dynamic
 	Target *data.Dynamic
 	Timer  *timing.Timer
+	Entity *ecs.Entity
 }
 
-func NewLRChase(dyn *data.Dynamic) *LRChase {
+func NewLRChase(dyn *data.Dynamic, e *ecs.Entity) *LRChase {
 	return &LRChase{
-		Ch:    dyn,
-		Timer: timing.New(constants.WaitToSwitch + rand.Float64()*3.),
+		Ch:     dyn,
+		Timer:  timing.New(constants.WaitToSwitch + rand.Float64()*3.),
+		Entity: e,
 	}
+}
+
+func (lr *LRChase) GetEntity() *ecs.Entity {
+	return lr.Entity
 }
 
 func (lr *LRChase) ClearPrev() {}
@@ -60,7 +67,7 @@ func (lr *LRChase) GetActions() data.Actions {
 				break
 			}
 			if nextTile.IsLadder() ||
-				belowTile == nil || belowTile.SolidV() || belowTile.IsLadder() {
+				belowTile == nil || belowTile.IsSolid() || belowTile.IsLadder() {
 				if sx < px {
 					sx++
 				} else if sx > px {
@@ -76,7 +83,7 @@ func (lr *LRChase) GetActions() data.Actions {
 		if lr.Ch.State == data.OnLadder &&
 			(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
 				(lr.Target.State != data.OnLadder &&
-					(belowTile == nil || belowTile.SolidV() || belowTile.IsLadder()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
+					(belowTile == nil || belowTile.IsSolid() || belowTile.IsLadder()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
 			if lr.Target.Object.Pos.Y > lr.Ch.Object.Pos.Y {
 				actions.PrevDirection = data.Up
 			} else if lr.Target.Object.Pos.Y < lr.Ch.Object.Pos.Y {
@@ -167,12 +174,12 @@ func (lr *LRChase) GetActions() data.Actions {
 //	// scan to the left
 //	for sx > 0 {
 //		nextTile := data.CurrLevel.Tiles.Get(sx-1, sy)
-//		if nextTile == nil || nextTile.Solid() {
+//		if nextTile == nil || nextTile.IsSolid() {
 //			break
 //		}
 //		belowTile := data.CurrLevel.Tiles.Get(sx-1, sy-1)
 //		if nextTile.Ladder ||
-//			belowTile == nil || belowTile.Solid() || belowTile.Ladder {
+//			belowTile == nil || belowTile.IsSolid() || belowTile.Ladder {
 //			sx--
 //		} else {
 //			sx--
@@ -184,12 +191,12 @@ func (lr *LRChase) GetActions() data.Actions {
 //	// scan to the right
 //	for sx < constants.PuzzleWidth-1 {
 //		nextTile := data.CurrLevel.Tiles.Get(sx+1, sy)
-//		if nextTile == nil || nextTile.Solid() {
+//		if nextTile == nil || nextTile.IsSolid() {
 //			break
 //		}
 //		belowTile := data.CurrLevel.Tiles.Get(sx+1, sy-1)
 //		if nextTile.Ladder ||
-//			belowTile == nil || belowTile.Solid() || belowTile.Ladder {
+//			belowTile == nil || belowTile.IsSolid() || belowTile.Ladder {
 //			sx++
 //		} else {
 //			sx++

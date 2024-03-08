@@ -12,44 +12,38 @@ func CollisionSystem() {
 	for _, result := range myecs.Manager.Query(myecs.IsDynamic) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
-		if okO && okC && !obj.Hidden {
+		if okO && okC && !obj.Hidden &&
+			ch.State != data.Hit && ch.State != data.Dead {
 			setCollisionFlags(ch)
 			chPos := ch.Object.Pos
 			pPos := ch.Object.LastPos
-			x, y := world.WorldToMap(pPos.X, pPos.Y)
-			tile := data.CurrLevel.Tiles.Get(x, y)
-			left := data.CurrLevel.Tiles.Get(x-1, y)
-			right := data.CurrLevel.Tiles.Get(x+1, y)
-			up := data.CurrLevel.Tiles.Get(x, y+1)
-			down := data.CurrLevel.Tiles.Get(x, y-1)
-			if tile == nil {
-				outsideOfMap(ch, x, y)
+			px, py := world.WorldToMap(pPos.X, pPos.Y)
+			pTile := data.CurrLevel.Tiles.Get(px, py)
+			pLeft := data.CurrLevel.Tiles.Get(px-1, py)
+			pRight := data.CurrLevel.Tiles.Get(px+1, py)
+			pUp := data.CurrLevel.Tiles.Get(px, py+1)
+			pDown := data.CurrLevel.Tiles.Get(px, py-1)
+			if pTile == nil {
+				outsideOfMap(ch, px, py)
 			} else {
 				// check each direction for collision
-				wallCollisions(ch, tile, left, right, chPos)
-				ceilingCollisions(ch, tile, up, chPos)
-				floorCollisions(ch, tile, down, chPos)
-				// check if the character can use a ladder
-				//ch.Flags.LadderHere = tile.Ladder
-				//ch.Flags.LadderDown = down != nil && down.Ladder
-				//// check if the character is on a ladder
-				////ch.Flags.OnLadder = (ch.Flags.OnLadder && !ch.Flags.Floor) || (ch.Flags.LadderHere && !ch.Flags.Floor)
-				//ch.Flags.OnLadder = ch.Flags.OnLadder && !ch.Flags.Floor && (ch.Flags.LadderHere || ch.Flags.LadderDown)
-				// check to see if the character can run along the floor
-				// They can run if they are touching solid ground (Floor)
-				//   or are at the top of a ladder or the ladder is on top of Turf
-				//   or are holding a ladder and there is floor directly below
-				//ch.Flags.CanRun = ((down == nil || down.Solid() || standOnBelow) && touchingFloor) ||
-				//	(ch.Flags.LadderDown && touchingFloor && (!ch.Flags.LadderHere || down.Block == data.BlockTurf)) ||
-				//	((down == nil || down.Solid() || down.Block == data.BlockTurf) && ch.Flags.OnLadder)
+				wallCollisions(ch, pTile, pLeft, pRight, chPos)
+				ceilingCollisions(ch, pTile, pUp, chPos)
+				floorCollisions(ch, pTile, pDown, chPos)
+				chPos = ch.Object.Pos
+				x, y := world.WorldToMap(chPos.X, chPos.Y)
+				if x != px || y != py {
+					setCollisionFlags(ch)
+					tile := data.CurrLevel.Tiles.Get(x, y)
+					left := data.CurrLevel.Tiles.Get(x-1, y)
+					right := data.CurrLevel.Tiles.Get(x+1, y)
+					up := data.CurrLevel.Tiles.Get(x, y+1)
+					down := data.CurrLevel.Tiles.Get(x, y-1)
+					wallCollisions(ch, tile, left, right, chPos)
+					ceilingCollisions(ch, tile, up, chPos)
+					floorCollisions(ch, tile, down, chPos)
+				}
 			}
-			//debug.AddTruthText("LeftWall:  ", ch.Flags.LeftWall)
-			//debug.AddTruthText("RightWall: ", ch.Flags.RightWall)
-			//debug.AddTruthText("Ceiling:   ", ch.Flags.Ceiling)
-			//debug.AddTruthText("Floor:     ", ch.Flags.Floor)
-			//debug.AddTruthText("On Ladder: ", ch.Flags.OnLadder)
-			//debug.AddTruthText("Ladder Here: ", ch.Flags.LadderHere)
-			//debug.AddTruthText("Ladder Down: ", ch.Flags.LadderDown)
 		}
 	}
 }
@@ -59,6 +53,8 @@ func setCollisionFlags(ch *data.Dynamic) {
 	ch.Flags.RightWall = false
 	ch.Flags.Ceiling = false
 	ch.Flags.Floor = false
+	ch.Flags.OnFall = false
+	ch.Flags.OnTurf = false
 }
 
 func outsideOfMap(ch *data.Dynamic, x, y int) {
@@ -74,7 +70,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, chPos pixel.
 	// for left and right, we stop the character if the next tile is solid and either
 	//   if they run into the tile
 	//   or if they are on a ladder (so they stay in the center of the ladder)
-	if left == nil || left.SolidH() {
+	if left == nil || left.IsSolid() {
 		if ch.State == data.OnLadder || ch.State == data.Falling {
 			ch.Flags.LeftWall = true
 		} else if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
@@ -82,7 +78,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, chPos pixel.
 			ch.Object.Pos.X = tile.Object.Pos.X - world.HalfSize + ch.Object.HalfWidth
 		}
 	}
-	if right == nil || right.SolidH() {
+	if right == nil || right.IsSolid() {
 		if ch.State == data.OnLadder || ch.State == data.Falling {
 			ch.Flags.RightWall = true
 		} else if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
@@ -94,7 +90,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, chPos pixel.
 
 func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, chPos pixel.Vec) {
 	// for up, we just make sure they don't enter a solid tile from below
-	if (up == nil || up.SolidV()) &&
+	if (up == nil || up.IsSolid()) &&
 		chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
 		ch.Flags.Ceiling = true
 		ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
@@ -106,13 +102,20 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, chPos pixel.Vec) {
 	ch.Flags.OnFall = standOnFalling
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
-	if ((down == nil ||
-		down.SolidV() ||
-		(down.IsLadder() && !tile.IsLadder() && ch.State != data.OnLadder && !ch.Actions.Down()) ||
-		standOnBelow) && touchingFloor) ||
-		(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor) {
-		ch.Flags.Floor = true
-		ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+	if ch.Flags.NoLadders {
+		if down.IsNilOrSolid() && touchingFloor {
+			ch.Flags.OnTurf = true
+		}
+	} else {
+		if ((down == nil ||
+			down.IsSolid() ||
+			((down.IsLadder() || down.IsNilOrSolid()) && (ch.State != data.OnLadder && ch.State != data.Leaping)) ||
+			standOnBelow) &&
+			touchingFloor) ||
+			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor) {
+			ch.Flags.Floor = true
+			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+		}
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"gemrunner/pkg/util"
 	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
+	"image/color"
 	"os"
 	"path/filepath"
 )
@@ -56,6 +57,7 @@ func Draw(target pixel.Target) {
 
 type Sprite struct {
 	Key    string
+	Mask   string
 	Batch  string
 	Offset pixel.Vec
 	Color  pixel.RGBA
@@ -69,13 +71,19 @@ func NewSprite(key, batch string) *Sprite {
 	}
 }
 
-func NewOffsetSprite(key, batch string, offset pixel.Vec) *Sprite {
-	return &Sprite{
-		Key:    key,
-		Batch:  batch,
-		Offset: offset,
-		Color:  util.White,
-	}
+func (s *Sprite) WithOffset(offset pixel.Vec) *Sprite {
+	s.Offset = offset
+	return s
+}
+
+func (s *Sprite) WithColor(color color.Color) *Sprite {
+	s.Color = pixel.ToRGBA(color)
+	return s
+}
+
+func (s *Sprite) WithMask(m string) *Sprite {
+	s.Mask = m
+	return s
 }
 
 type SpriteSheet struct {

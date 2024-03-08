@@ -17,7 +17,7 @@ func CharacterActionSystem() {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		ct, okT := result.Components[myecs.Controller].(data.Controller)
-		if okO && okC && okT && !obj.Hidden {
+		if okO && okC && okT && !obj.Hidden && ct != nil {
 			ch.Flags.Action = false
 			//ch.Flags.Drop = false
 			actions := ct.GetActions()
@@ -147,10 +147,10 @@ func jump(ch *data.Dynamic, tile *data.Tile) {
 	//  or they are going left/right and there is a wall up left or up right
 	// Otherwise, it's a long jump
 	if (!ch.Actions.Left() && !ch.Actions.Right()) ||
-		(ch.Actions.Left() && (left == nil || left.SolidH())) ||
-		(ch.Actions.Right() && (right == nil || right.SolidH())) ||
-		(ch.Actions.Left() && (upLeft == nil || upLeft.SolidH())) ||
-		(ch.Actions.Right() && (upRight == nil || upRight.SolidH())) {
+		(ch.Actions.Left() && (left == nil || left.IsSolid())) ||
+		(ch.Actions.Right() && (right == nil || right.IsSolid())) ||
+		(ch.Actions.Left() && (upLeft == nil || upLeft.IsSolid())) ||
+		(ch.Actions.Right() && (upRight == nil || upRight.IsSolid())) {
 		ch.Flags.HighJump = true
 	} else {
 		ch.Flags.LongJump = true

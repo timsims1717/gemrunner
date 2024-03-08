@@ -20,7 +20,7 @@ package _archive
 //				nonFloorCollision(ch, currTile, leftTile, rightTile, upTile, currPos)
 //				standOnBelow := !ch.Actions.Down() && standOnSystem(downTile)
 //				touchingFloor := currPos.Y-obj.HalfHeight <= currTile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
-//				if (downTile == nil || downTile.Solid() ||
+//				if (downTile == nil || downTile.IsSolid() ||
 //					(downTile.Ladder && !ch.Flags.OnLadder) ||
 //					standOnBelow && !ch.Flags.OnLadder) && touchingFloor {
 //					ch.Flags.Floor = true
@@ -36,9 +36,9 @@ package _archive
 //				// They can run if they are touching solid ground (Floor)
 //				//   or are at the top of a ladder or the ladder is on top of Turf
 //				//   or are holding a ladder and there is floor directly below
-//				ch.Flags.CanRun = ((downTile == nil || downTile.Solid() || standOnBelow) && touchingFloor) ||
+//				ch.Flags.CanRun = ((downTile == nil || downTile.IsSolid() || standOnBelow) && touchingFloor) ||
 //					(ch.Flags.LadderDown && touchingFloor && (!ch.Flags.LadderHere || downTile.Block == data.BlockTurf)) ||
-//					((downTile == nil || downTile.Solid() || downTile.Block == data.BlockTurf) && ch.Flags.OnLadder)
+//					((downTile == nil || downTile.IsSolid() || downTile.Block == data.BlockTurf) && ch.Flags.OnLadder)
 //			}
 //			//debug.AddTruthText("LeftWall:  ", ch.Flags.LeftWall)
 //			//debug.AddTruthText("RightWall: ", ch.Flags.RightWall)
@@ -63,7 +63,7 @@ package _archive
 //	// for left and right, we stop the character if the next tile is solid and either
 //	//   if they run into the tile
 //	//   or if they are on a ladder (so they stay in the center of the ladder)
-//	if leftTile == nil || leftTile.Solid() {
+//	if leftTile == nil || leftTile.IsSolid() {
 //		if ch.Flags.OnLadder {
 //			ch.Flags.LeftWall = true
 //		} else if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
@@ -71,7 +71,7 @@ package _archive
 //			ch.Object.Pos.X = tile.Object.Pos.X - world.HalfSize + ch.Object.HalfWidth
 //		}
 //	}
-//	if rightTile == nil || rightTile.Solid() {
+//	if rightTile == nil || rightTile.IsSolid() {
 //		if ch.Flags.OnLadder {
 //			ch.Flags.RightWall = true
 //		} else if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
@@ -80,7 +80,7 @@ package _archive
 //		}
 //	}
 //	// for up, we just make sure they don't enter a solid tile from below
-//	if (upTile == nil || upTile.Solid()) && chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
+//	if (upTile == nil || upTile.IsSolid()) && chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
 //		ch.Flags.Ceiling = true
 //		ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
 //	}

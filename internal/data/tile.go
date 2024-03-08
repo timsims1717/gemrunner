@@ -3,6 +3,7 @@ package data
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
@@ -17,10 +18,10 @@ const (
 	BlockFall
 	BlockCracked
 	BlockPhase
+	BlockSpike
 	BlockLadder
 	BlockLadderCracked
 	BlockLadderExit
-	BlockBox
 
 	BlockPlayer1
 	BlockKeyBlue
@@ -62,6 +63,7 @@ const (
 	BlockGemGreen
 	BlockGemPurple
 	BlockGemBrown
+	BlockBox
 
 	BlockDemon
 	BlockFly
@@ -69,6 +71,10 @@ const (
 	BlockReeds
 	BlockFlowers
 	BlockEmpty
+
+	BlockLadderTurf
+	BlockLadderCrackedTurf
+	BlockLadderExitTurf
 )
 
 func (b Block) String() string {
@@ -78,6 +84,11 @@ func (b Block) String() string {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldRock]
+	case BlockSpike:
+		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
+		}
+		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldRock], constants.TileSpike)
 	case BlockLadder:
 		return constants.TileLadderMiddle
 	case BlockLadderCracked:
@@ -177,6 +188,7 @@ var toID = map[string]Block{
 	constants.TileFall:         BlockFall,
 	constants.TileCracked:      BlockCracked,
 	constants.TilePhase:        BlockPhase,
+	constants.TileSpike:        BlockSpike,
 	constants.TileLadderMiddle: BlockLadder,
 	constants.TileLadderCrackM: BlockLadderCracked,
 	constants.TileExitLadderM:  BlockLadderExit,
@@ -236,6 +248,8 @@ func (b Block) MarshalJSON() ([]byte, error) {
 		buffer.WriteString(constants.TilePhase)
 	case BlockCracked:
 		buffer.WriteString(constants.TileCracked)
+	case BlockSpike:
+		buffer.WriteString(constants.TileSpike)
 	default:
 		buffer.WriteString(b.String())
 	}
@@ -282,6 +296,7 @@ type Tile struct {
 	Object   *object.Object `json:"-"`
 	Update   bool           `json:"-"`
 	Entity   *ecs.Entity    `json:"-"`
+	Mask     *ecs.Entity    `json:"-"`
 	Counter  int            `json:"-"`
 	Live     bool           `json:"-"`
 }
@@ -298,35 +313,40 @@ func (t *Tile) Copy() *Tile {
 func (t *Tile) CopyInto(c *Tile) {
 	c.Block = t.Block
 	c.Ladder = t.Ladder
+	c.Object.Flip = t.Metadata.Flipped
 	c.Metadata = t.Metadata
 }
 
-func (t *Tile) Empty() {
+func (t *Tile) ToEmpty() {
 	t.Block = BlockEmpty
 	t.Ladder = BlockEmpty
 	t.Metadata = DefaultMetadata()
 }
 
-func (t *Tile) SolidV() bool {
+func (t *Tile) IsSolid() bool {
 	return !t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
-			t.Block == BlockCracked)
+			t.Block == BlockCracked ||
+			t.Block == BlockSpike)
 }
 
-func (t *Tile) SolidH() bool {
-	return !t.Flags.Collapse &&
+func (t *Tile) IsNilOrSolid() bool {
+	return t == nil || (!t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
-			t.Block == BlockFall ||
-			t.Block == BlockCracked)
+			t.Block == BlockCracked ||
+			t.Block == BlockSpike))
 }
 
 func (t *Tile) IsBlock() bool {
-	return t == nil || (!t.Flags.Collapse &&
-		(t.Block == BlockTurf ||
+	return t == nil ||
+		((t.Block == BlockTurf ||
 			t.Block == BlockFall ||
-			t.Block == BlockCracked))
+			t.Block == BlockCracked ||
+			t.Block == BlockSpike) &&
+			(t.Flags.Regen ||
+				!(t.Flags.Collapse && t.Counter > constants.CollapseCounter)))
 }
 
 func (t *Tile) IsLadder() bool {
@@ -348,33 +368,33 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	var neighbors []astar.Pather
 	// Down
 	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
-	if d != nil && !d.SolidV() {
+	if d != nil && !d.IsSolid() {
 		neighbors = append(neighbors, d)
 	}
-	notFalling := d == nil || d.SolidV() || d.IsLadder() || t.IsLadder()
+	notFalling := d == nil || d.IsSolid() || d.IsLadder() || t.IsLadder()
 	// Left
 	l := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y)
 	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
-	//if notFalling && l != nil && !l.Solid() &&
-	//	(l.Ladder || lb == nil || lb.Solid()) {
+	//if notFalling && l != nil && !l.IsSolid() &&
+	//	(l.Ladder || lb == nil || lb.IsSolid()) {
 	//	neighbors = append(neighbors, l)
 	//}
-	if notFalling && l != nil && !l.SolidH() {
+	if notFalling && l != nil && !l.IsSolid() {
 		neighbors = append(neighbors, l)
 	}
 	// Right
 	r := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y)
 	//rb := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y-1)
-	//if notFalling && r != nil && !r.Solid() &&
-	//	(r.Ladder || rb == nil || rb.Solid()) {
+	//if notFalling && r != nil && !r.IsSolid() &&
+	//	(r.Ladder || rb == nil || rb.IsSolid()) {
 	//	neighbors = append(neighbors, r)
 	//}
-	if notFalling && r != nil && !r.SolidH() {
+	if notFalling && r != nil && !r.IsSolid() {
 		neighbors = append(neighbors, r)
 	}
 	// Up
 	u := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y+1)
-	if notFalling && u != nil && !u.SolidV() && t.IsLadder() {
+	if notFalling && u != nil && !u.IsSolid() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}
 	return neighbors
@@ -391,6 +411,7 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 type TileFlags struct {
 	Cracked   bool `json:"-"`
 	Collapse  bool `json:"-"`
+	Regen     bool `json:"-"`
 	LCracked  bool `json:"-"`
 	LCollapse bool `json:"-"`
 }

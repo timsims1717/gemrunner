@@ -66,3 +66,10 @@ func (obj *Object) SetRect(r pixel.Rect) {
 	obj.HalfWidth = obj.Rect.W() * 0.5
 	obj.HalfHeight = obj.Rect.H() * 0.5
 }
+
+func (obj *Object) SetPos(pos pixel.Vec) *Object {
+	obj.Pos = pos
+	obj.LastPos = pos
+	obj.PostPos = pos
+	return obj
+}

@@ -49,8 +49,11 @@ const (
 	MaxPlayers      = 4
 	WaitToSwitch    = 3
 	ButtonBuffer    = 2
-	CrackedCollapse = 8
-	CollapseCounter = 56
+	CrackedCounter  = 8
+	RegenCounter    = 56
+	RegenACounter   = 3
+	CollapseCounter = 3
+	SmashDistance   = TileSize * 3
 
 	// Player Constants
 	PlayerWalkSpeed       = 6
@@ -102,5 +105,7 @@ var (
 	FrameRate = 15
 
 	// In Game Vars
-	DrawingLayers = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
+	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
+	CollapseRegenLayer = []int{31}
+	CollapseRegenMask  = []int{32}
 )

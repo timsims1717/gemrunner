@@ -11,9 +11,11 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
+	"strings"
 )
 
 func Dialogs(win *pixelgl.Window) {
+	// open puzzle
 	openPuzzleConstructor := &data.DialogConstructor{
 		Key:    "open_puzzle",
 		Width:  11,
@@ -22,7 +24,7 @@ func Dialogs(win *pixelgl.Window) {
 			{
 				Key:      "open_title",
 				Text:     "Open Puzzle Group",
-				Position: pixel.V(-80, 72),
+				Position: pixel.V(-84, 72),
 				Element:  data.TextElement,
 			},
 			{
@@ -52,7 +54,7 @@ func Dialogs(win *pixelgl.Window) {
 		},
 	}
 	data.NewDialog(openPuzzleConstructor)
-	// change_name
+	// change puzzle name
 	changeNameConstructor := &data.DialogConstructor{
 		Key:    "change_name",
 		Width:  12,
@@ -92,6 +94,79 @@ func Dialogs(win *pixelgl.Window) {
 		},
 	}
 	data.NewDialog(changeNameConstructor)
+	// cracked tile options
+	crackedTileOptionsConstructor := &data.DialogConstructor{
+		Key:    "cracked_tile_options",
+		Width:  8,
+		Height: 6,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "cracked_tile_title",
+				Text:     "Cracked Tile",
+				Position: pixel.V(-60, 40),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cancel_cracked_tile",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(52, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "check_cracked_tile",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(32, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "cracked_tile_regenerate",
+				Text:     "Regenerates",
+				Position: pixel.V(-56, 22),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cracked_tile_regenerate_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Whether the tile reforms after collapsing.",
+				Position:    pixel.V(52, 22),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "cracked_tile_show",
+				Text:     "Visible Cracks",
+				Position: pixel.V(-56, 4),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cracked_tile_show_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Show the cracks before a player steps on them.",
+				Position:    pixel.V(52, 4),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "cracked_tile_enemy",
+				Text:     "Enemy Can Crack",
+				Position: pixel.V(-56, -14),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cracked_tile_enemy_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Walking enemies can collapse this tile.",
+				Position:    pixel.V(52, -14),
+				Element:     data.CheckboxElement,
+			},
+		},
+	}
+	data.NewDialog(crackedTileOptionsConstructor)
 	editorPanels()
 	editorOptPanels()
 	customizeDialogs(win)
@@ -104,8 +179,6 @@ func customizeDialogs(win *pixelgl.Window) {
 		for _, e := range dialog.Elements {
 			if btn, okB := e.(*data.Button); okB {
 				switch btn.Key {
-				case "cancel_open_puzzle", "cancel_puzzle_name":
-					btn.OnClick = CloseDialog(key)
 				case "open_puzzle":
 					btn.OnClick = OpenPuzzle
 				case "new_btn":
@@ -124,12 +197,16 @@ func customizeDialogs(win *pixelgl.Window) {
 					btn.OnClick = TestPuzzle()
 				case "check_puzzle_name":
 					btn.OnClick = ChangeName
+				case "check_cracked_tile":
+					btn.OnClick = ChangeCrackTileOptions
 				default:
 					switch key {
 					case "editor_panel_top", "editor_panel_left":
 						btn.OnClick = EditorMode(data.ModeFromSprString(btn.Sprite.Key), btn, dialog)
 					default:
-						if btn.OnClick == nil && btn.OnHeld == nil {
+						if strings.Contains(btn.Key, "cancel") {
+							btn.OnClick = CloseDialog(key)
+						} else if btn.OnClick == nil && btn.OnHeld == nil {
 							btn.OnClick = Test(fmt.Sprintf("pressed button %s", btn.Key))
 						}
 					}
@@ -214,6 +291,7 @@ func customizeDialogs(win *pixelgl.Window) {
 										case data.Brush, data.Line, data.Square, data.Fill:
 										default:
 											data.Editor.Mode = data.Brush
+											data.CurrPuzzle.Update = true
 										}
 										click.Consume()
 									}
@@ -230,6 +308,8 @@ func customizeDialogs(win *pixelgl.Window) {
 			dialog.OnOpen = OnOpenPuzzleDialog
 		case "change_name":
 			dialog.OnOpen = OnChangeNameDialog
+		case "cracked_tile_options":
+			dialog.OnOpen = OnCrackTileOptions
 		}
 	}
 }

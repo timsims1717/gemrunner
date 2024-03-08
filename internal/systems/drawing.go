@@ -89,7 +89,7 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 func DrawBatchThing(draw interface{}, obj *object.Object, batch *img.Batcher) {
 	if sprH, ok1 := draw.(*img.Sprite); ok1 {
 		if sprH.Batch != "" && sprH.Batch == batch.Key && sprH.Key != "" {
-			batch.DrawSpriteColor(sprH.Key, obj.Mat.Moved(sprH.Offset), sprH.Color.Mul(obj.Mask))
+			batch.DrawSpriteColor(sprH.Key, obj.Mat.Moved(sprH.Offset), sprH.Color)
 		}
 	} else if anim, ok2 := draw.(*reanimator.Tree); ok2 {
 		res := anim.CurrentSprite()

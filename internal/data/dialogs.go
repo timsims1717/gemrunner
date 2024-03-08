@@ -93,6 +93,9 @@ func NewDialog(dc *DialogConstructor) {
 		case ButtonElement:
 			b := CreateButtonElement(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, b)
+		case CheckboxElement:
+			x := CreateCheckboxElement(element, dlg, dlg.ViewPort)
+			dlg.Elements = append(dlg.Elements, x)
 		case InputElement:
 			i := CreateInputElement(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, i)
@@ -167,6 +170,44 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		}
 	}))
 	return b
+}
+
+func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Checkbox {
+	obj := object.New()
+	obj.Pos = element.Position
+	obj.Layer = 99
+	obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
+	spr := img.NewSprite(element.SprKey, constants.UIBatch)
+	cSpr := img.NewSprite(element.ClickSprKey, constants.UIBatch)
+	e := myecs.Manager.NewEntity()
+	e.AddComponent(myecs.Object, obj).
+		AddComponent(myecs.Drawable, spr)
+	x := &Checkbox{
+		Key:      element.Key,
+		Sprite:   spr,
+		CheckSpr: cSpr,
+		HelpText: element.HelpText,
+		Object:   obj,
+		Entity:   e,
+	}
+	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, vp, func(hvc *HoverClick) {
+		if dlg.Open && dlg.Active && !dlg.Lock && !dlg.Click {
+			click := hvc.Input.Get("click")
+			if hvc.Hover && click.JustPressed() {
+				SetChecked(x, !x.Checked)
+			}
+		}
+	}))
+	return x
+}
+
+func SetChecked(x *Checkbox, c bool) {
+	x.Checked = c
+	if x.Checked {
+		x.Entity.AddComponent(myecs.Drawable, x.CheckSpr)
+	} else {
+		x.Entity.AddComponent(myecs.Drawable, x.Sprite)
+	}
 }
 
 func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Input {

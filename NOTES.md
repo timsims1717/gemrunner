@@ -5,7 +5,9 @@
 * Up: move up ladders, change held item to up
 * Down: move down ladders, drop off boxes and ropes, drop (not use) carried items
 * Jump: jump from the ground (or boxes)
-* Pick up/Use: Pick up an item, use that item
+* Pick up/Drop: Pick up an item, drop that item
+* Action: Use item (the one in your inventory)
+* Lift/Throw: Lift up an item, throw that item
 
 # Jumping
 
@@ -24,9 +26,9 @@
   * Can be walked on from above
   * Can be jumped on
   * Can be dropped down from (press down)
-  * When used, just sets it down
+  * No use action
 * Key
-  * When used at a locked door, unlock that door
+  * When used at a locked door of the matching color, unlock that door
 * Regular Bombs
   * When used, three second timer, then explode in same area as LR
 * Plus Bombs
@@ -38,6 +40,13 @@
 * Light
   * Gives off extra light in dark levels 
   * When used, just sets it down
+* Anti Gravity Machine
+  * When placed, dynamic objects go up instead of down 
+  * No use action
+* Drill
+  * When used, drill straight down through the floor
+* Bubble/Jetpack
+  * When used, changes the player's method of travelling to flying
 * Other players
   * That player can get away by jumping, can grab stuff
 

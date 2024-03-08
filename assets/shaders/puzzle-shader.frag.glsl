@@ -32,9 +32,9 @@ void main() {
 
     // primary
     if (col.r == 1. && col.b == 1. && col.g == 0.) {
-        col = vec4(uRedPrimary, uGreenPrimary, uBluePrimary, 1.);
+        col = vec4(uRedPrimary, uGreenPrimary, uBluePrimary, col.a);
     } else if (col.r == 0. && col.b == 1. && col.g == 1.) {
-        col = vec4(uRedSecondary, uGreenSecondary, uBlueSecondary, 1.);
+        col = vec4(uRedSecondary, uGreenSecondary, uBlueSecondary, col.a);
     }
     fragColor = col;
 }

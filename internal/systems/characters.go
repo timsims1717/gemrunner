@@ -13,9 +13,8 @@ import (
 )
 
 func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
-	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex))
+	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
-	obj.Pos = pos
 	obj.Layer = 27 - pIndex*2
 	player := data.NewDynamic()
 	e := myecs.Manager.NewEntity()
@@ -24,7 +23,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	SetAsPlayer(player, e, pIndex)
 	player.Object = obj
 	player.Entity = e
-	player.Player = data.Player(pIndex)
+	player.Player = pIndex
 	player.Vars = data.PlayerVars()
 	e.AddComponent(myecs.Animated, player.Anim)
 	e.AddComponent(myecs.Drawable, player.Anim)
@@ -39,40 +38,42 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 	switch p {
 	case 0:
-		ch.Control = controllers.NewPlayerInput(data.P1Input)
+		ch.Control = controllers.NewPlayerInput(data.P1Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anim = reanimator.HumanoidAnimation(ch, "player1")
 		ch.Color = constants.StrColorBlue
 	case 1:
-		ch.Control = controllers.NewPlayerInput(data.P2Input)
+		ch.Control = controllers.NewPlayerInput(data.P2Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anim = reanimator.HumanoidAnimation(ch, "player2")
 		ch.Color = constants.StrColorGreen
 	case 2:
-		ch.Control = controllers.NewPlayerInput(data.P3Input)
+		ch.Control = controllers.NewPlayerInput(data.P3Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anim = reanimator.HumanoidAnimation(ch, "player3")
 		ch.Color = constants.StrColorPurple
 	case 3:
-		ch.Control = controllers.NewPlayerInput(data.P4Input)
+		ch.Control = controllers.NewPlayerInput(data.P4Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anim = reanimator.HumanoidAnimation(ch, "player4")
 		ch.Color = constants.StrColorBrown
 	}
+	data.CurrLevel.Players[p] = ch
+	data.CurrLevel.Stats[p] = data.NewStats()
+	data.CurrLevel.PControls[p] = ch.Control
 }
 
 func DemonCharacter(pos pixel.Vec) *data.Dynamic {
-	obj := object.New().WithID("demon")
+	obj := object.New().WithID("demon").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
-	obj.Pos = pos
 	obj.Layer = 29
 	demon := data.NewDynamic()
-	demon.Control = controllers.NewLRChase(demon)
 	demon.Object = obj
 	demon.Anim = reanimator.HumanoidAnimation(demon, "demon")
 	demon.Vars = data.DemonVars()
 	e := myecs.Manager.NewEntity()
 	demon.Entity = e
+	demon.Control = controllers.NewLRChase(demon, e)
 	e.AddComponent(myecs.Object, demon.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Animated, demon.Anim)
@@ -80,6 +81,7 @@ func DemonCharacter(pos pixel.Vec) *data.Dynamic {
 	e.AddComponent(myecs.Dynamic, demon)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, demon.Control)
+	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, demon)
 	return demon
 }
 
@@ -104,13 +106,11 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 }
 
 func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
-	obj := object.New().WithID("fly")
+	obj := object.New().WithID("fly").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 12))
-	obj.Pos = pos
 	obj.Flip = left
 	obj.Layer = 29
 	fly := data.NewDynamic()
-	fly.Control = controllers.NewBackAndForth(fly, left)
 	fly.State = data.Flying
 	fly.Flags.Flying = true
 	fly.Object = obj
@@ -118,6 +118,7 @@ func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
 	fly.Vars = data.FlyVars()
 	e := myecs.Manager.NewEntity()
 	fly.Entity = e
+	fly.Control = controllers.NewBackAndForth(fly, e, left)
 	e.AddComponent(myecs.Object, fly.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Animated, fly.Anim)
@@ -125,5 +126,35 @@ func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
 	e.AddComponent(myecs.Dynamic, fly)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, fly.Control)
+	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, fly)
 	return fly
+}
+
+func SetEmptyControl(ch *data.Dynamic) {
+	ch.Entity.AddComponent(myecs.Controller, controllers.NewEmpty(ch, ch.Entity))
+}
+
+func SetPlayerControl(ch *data.Dynamic, p int) {
+	if data.CurrLevel.PControls[p] == nil {
+		var pc *controllers.PlayerInput
+		switch p {
+		case 0:
+			pc = controllers.NewPlayerInput(data.P1Input, ch.Entity)
+		case 1:
+			pc = controllers.NewPlayerInput(data.P2Input, ch.Entity)
+		case 2:
+			pc = controllers.NewPlayerInput(data.P3Input, ch.Entity)
+		case 3:
+			pc = controllers.NewPlayerInput(data.P4Input, ch.Entity)
+		}
+		ch.Entity.AddComponent(myecs.Controller, pc)
+		data.CurrLevel.PControls[p] = pc
+	} else {
+		SetEmptyControl(data.CurrLevel.Players[p])
+		ch.Entity.AddComponent(myecs.Controller, data.CurrLevel.PControls[p])
+	}
+}
+
+func ResetControl(ch *data.Dynamic) {
+	ch.Entity.AddComponent(myecs.Controller, ch.Control)
 }

@@ -184,10 +184,10 @@ package _archive
 //		//  or they are going left/right and there is a wall up left or up right
 //		// Otherwise, it's a long jump
 //		if (!ch.Actions.Left && !ch.Actions.Right) ||
-//			(ch.Actions.Left && (left == nil || left.Solid())) ||
-//			(ch.Actions.Right && (right == nil || right.Solid())) ||
-//			(ch.Actions.Left && (upLeft == nil || upLeft.Solid())) ||
-//			(ch.Actions.Right && (upRight == nil || upRight.Solid())) {
+//			(ch.Actions.Left && (left == nil || left.IsSolid())) ||
+//			(ch.Actions.Right && (right == nil || right.IsSolid())) ||
+//			(ch.Actions.Left && (upLeft == nil || upLeft.IsSolid())) ||
+//			(ch.Actions.Right && (upRight == nil || upRight.IsSolid())) {
 //			ch.Flags.HighJump = true
 //			ch.FauxObj.Pos.X = tile.Object.Pos.X
 //			ch.FauxObj.Pos.Y = tile.Object.Pos.Y + float64(reanimator.FRate)*ch.Vars.HiJumpVSpeed*timing.DT

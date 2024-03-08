@@ -40,7 +40,7 @@ func NewPuzzle() {
 		} else {
 			for _, row := range data.CurrPuzzle.Tiles.T {
 				for _, tile := range row {
-					tile.Empty()
+					tile.ToEmpty()
 				}
 			}
 		}
@@ -150,6 +150,70 @@ func OnOpenPuzzleDialog() {
 	}
 }
 
+func OnCrackTileOptions() {
+	if data.CurrPuzzle != nil {
+		if len(data.CurrPuzzle.WrenchTiles) < 1 {
+			fmt.Println("WARNING: no tile selected by wrench")
+			data.CloseDialog("cracked_tile_options")
+			return
+		}
+		firstTile := data.CurrPuzzle.WrenchTiles[0]
+		crackDialog := data.Dialogs["cracked_tile_options"]
+		for _, ele := range crackDialog.Elements {
+			if x, ok := ele.(*data.Checkbox); ok {
+				switch x.Key {
+				case "cracked_tile_regenerate_check":
+					data.SetChecked(x, firstTile.Metadata.Regenerate)
+				case "cracked_tile_show_check":
+					data.SetChecked(x, firstTile.Metadata.ShowCrack)
+				case "cracked_tile_enemy_check":
+					data.SetChecked(x, firstTile.Metadata.EnemyCrack)
+				}
+			} else if t, okT := ele.(*data.Text); okT {
+				if t.Key == "cracked_tile_title" {
+					if firstTile.Block == data.BlockCracked {
+						t.Text.SetText("Cracked Turf")
+					} else {
+						t.Text.SetText("Cracked Ladder")
+					}
+				}
+			}
+		}
+	}
+}
+
+func ChangeCrackTileOptions() {
+	if data.CurrPuzzle != nil {
+		if len(data.CurrPuzzle.WrenchTiles) < 1 {
+			fmt.Println("WARNING: no tile selected by wrench")
+			data.CloseDialog("cracked_tile_options")
+			return
+		}
+		crackDialog := data.Dialogs["cracked_tile_options"]
+		var regen, show, enemy bool
+		for _, ele := range crackDialog.Elements {
+			if x, ok := ele.(*data.Checkbox); ok {
+				switch x.Key {
+				case "cracked_tile_regenerate_check":
+					regen = x.Checked
+				case "cracked_tile_show_check":
+					show = x.Checked
+				case "cracked_tile_enemy_check":
+					enemy = x.Checked
+				}
+			}
+		}
+		for _, tile := range data.CurrPuzzle.WrenchTiles {
+			tile.Metadata.Regenerate = regen
+			tile.Metadata.ShowCrack = show
+			tile.Metadata.EnemyCrack = enemy
+		}
+		data.CloseDialog("cracked_tile_options")
+		data.CurrPuzzle.Update = true
+		systems.PushUndoArray(true)
+	}
+}
+
 func OnChangeNameDialog() {
 	if data.CurrPuzzle != nil {
 		changeName := data.Dialogs["change_name"]
@@ -209,5 +273,6 @@ func EditorMode(mode data.EditorMode, btn *data.Button, dialog *data.Dialog) fun
 			}
 		}
 		btn.Entity.AddComponent(myecs.Drawable, btn.ClickSpr)
+		data.CurrPuzzle.Update = true
 	}
 }

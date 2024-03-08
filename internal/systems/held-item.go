@@ -27,7 +27,7 @@ func AttemptLift(ch *data.Dynamic, p int, facingLeft bool) {
 	cx, cy := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 	chCoords := world.Coords{X: cx, Y: cy}
 	upTile := data.CurrLevel.Tiles.Get(cx, cy+1)
-	if upTile == nil || upTile.SolidV() {
+	if upTile == nil || upTile.IsSolid() {
 		return
 	}
 	// PickUp location priority:
@@ -163,6 +163,7 @@ func AttemptLift(ch *data.Dynamic, p int, facingLeft bool) {
 			}
 			ch.Held = heldEntity.entity
 			ch.Flags.PickUp = true
+			ch.Object.Pos.X = ch.Object.LastPos.X
 			ch.HeldObj = heldEntity.obj
 			ch.HeldObj.IntA = ch.HeldObj.Layer
 			ch.HeldObj.Layer = ch.Object.Layer - 1
@@ -188,11 +189,13 @@ func DropLift(ch *data.Dynamic, throw bool) {
 		if throw {
 			left := data.CurrLevel.Tiles.Get(x-1, y)
 			right := data.CurrLevel.Tiles.Get(x+1, y)
-			if ch.Actions.Left() && left != nil && !left.SolidH() {
+			if ch.Actions.Left() && left != nil && !left.IsSolid() {
 				ch.HeldObj.Pos.X -= world.HalfSize + 1.
-			} else if ch.Actions.Right() && right != nil && !right.SolidH() {
+			} else if ch.Actions.Right() && right != nil && !right.IsSolid() {
 				ch.HeldObj.Pos.X += world.HalfSize + 1.
 			}
+			ch.Flags.Throw = true
+			ch.Object.Pos.X = ch.Object.LastPos.X
 		}
 		// update the pickup data
 		if p, okP := ch.Held.GetComponentData(myecs.PickUp); okP {
@@ -242,7 +245,7 @@ func updateHeldItem(ch *data.Dynamic, facingLeft bool) {
 			rightTile := data.CurrLevel.Tiles.Get(x+1, y)
 			upTile := data.CurrLevel.Tiles.Get(x, y+1)
 			downTile := data.CurrLevel.Tiles.Get(x, y-1)
-			if tile == nil || tile.SolidV() || tile.SolidH() {
+			if tile == nil || tile.IsSolid() || tile.IsSolid() {
 				dPos := pixel.V(oldXPos, oldYPos).Add(pixel.V(oldXOffset, oldYOffset))
 				dx, dy := world.WorldToMap(dPos.X, dPos.Y)
 				dTile := data.CurrLevel.Tiles.Get(dx, dy)
@@ -253,7 +256,7 @@ func updateHeldItem(ch *data.Dynamic, facingLeft bool) {
 					ch.HeldObj.Offset.Y = oldYOffset
 					ch.HeldObj.Pos.X = oldXPos
 					ch.HeldObj.Pos.Y = oldYPos
-					if dTile == nil || dTile.SolidV() {
+					if dTile == nil || dTile.IsSolid() {
 						ch.HeldObj.Pos = ch.Object.Pos
 						ch.HeldObj.Offset = pixel.ZV
 					}
@@ -261,20 +264,20 @@ func updateHeldItem(ch *data.Dynamic, facingLeft bool) {
 					return
 				}
 			}
-			if (leftTile == nil || leftTile.SolidH()) &&
+			if (leftTile == nil || leftTile.IsSolid()) &&
 				heldPos.X-ch.HeldObj.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
 				//ch.HeldObj.Offset.X += tile.Object.Pos.X - world.HalfSize + ch.HeldObj.HalfWidth - heldPos.X
 				ch.HeldObj.Offset.X += ch.HeldObj.HalfWidth - world.HalfSize + tile.Object.Pos.X - heldPos.X
 			}
-			if (rightTile == nil || rightTile.SolidH()) &&
+			if (rightTile == nil || rightTile.IsSolid()) &&
 				(heldPos.X+ch.HeldObj.HalfWidth >= tile.Object.Pos.X+world.HalfSize) {
 				ch.HeldObj.Offset.X -= ch.HeldObj.HalfWidth - world.HalfSize - tile.Object.Pos.X + heldPos.X
 			}
-			if (upTile == nil || upTile.SolidV()) &&
+			if (upTile == nil || upTile.IsSolid()) &&
 				heldPos.Y+ch.HeldObj.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
 				ch.HeldObj.Offset.Y -= ch.HeldObj.HalfHeight - world.HalfSize - tile.Object.Pos.Y + heldPos.Y
 			}
-			if (downTile == nil || downTile.SolidV()) &&
+			if (downTile == nil || downTile.IsSolid()) &&
 				(heldPos.Y-ch.HeldObj.HalfHeight <= tile.Object.Pos.X-world.HalfSize) {
 				ch.HeldObj.Offset.Y += ch.HeldObj.HalfHeight - world.HalfSize + tile.Object.Pos.Y - heldPos.Y
 			}

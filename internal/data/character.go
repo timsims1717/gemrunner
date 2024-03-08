@@ -8,8 +8,6 @@ import (
 	"github.com/bytearena/ecs"
 )
 
-type Player int
-
 type Dynamic struct {
 	Object    *object.Object
 	Anim      *reanimator.Tree
@@ -28,13 +26,15 @@ type Dynamic struct {
 	//BTimer  *timing.Timer
 	LastTile *Tile
 	MoveType MoveType
-	Player   Player
+	Player   int
+	Enemy    int
 	Color    string
 }
 
 func NewDynamic() *Dynamic {
 	return &Dynamic{
-		Player:  Player(-1),
+		Player:  -1,
+		Enemy:   -1,
 		Actions: NewAction(),
 		Flags: Flags{
 			Floor: true,
@@ -168,6 +168,8 @@ type Flags struct {
 	Ceiling   bool
 	Floor     bool
 	OnFall    bool
+	OnTurf    bool
+	NoLadders bool
 	GoingUp   bool
 	Climbed   bool
 	LeapOn    bool
@@ -181,12 +183,13 @@ type Flags struct {
 	Action    bool
 	Using     bool
 	PickUp    bool
+	Throw     bool
 	//Drop      bool
 	//HoldSwitch bool
 	HeldFlip   bool
 	HeldNFlip  bool
 	Hit        bool
-	Dead       bool
+	Crush      bool
 	Attack     bool
 	Flying     bool
 	Frame      bool
@@ -199,6 +202,7 @@ type Flags struct {
 type Controller interface {
 	GetActions() Actions
 	ClearPrev()
+	GetEntity() *ecs.Entity
 }
 
 type MoveType int

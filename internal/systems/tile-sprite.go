@@ -7,6 +7,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
+	"github.com/gopxl/pixel"
 )
 
 func TileSpriteSystemPre() {
@@ -42,26 +43,19 @@ func TileSpriteSystem() {
 }
 
 func GetTileSprites(tile *data.Tile) []*img.Sprite {
-	var spr []*img.Sprite
+	var sprs []*img.Sprite
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
 	case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase:
-		if data.EditorDraw || !tile.Flags.Collapse {
-			spr = append(spr, img.NewSprite(GetBlockSprite(tile), constants.TileBatch))
-			if tile.Block == data.BlockFall && data.EditorDraw {
-				spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
-			} else if tile.Block == data.BlockCracked {
-				if data.EditorDraw || (tile.Flags.Cracked && tile.Counter > 2) {
-					spr = append(spr, img.NewSprite(constants.TileCracked, constants.TileBatch))
-				} else if tile.Flags.Cracked {
-					spr = append(spr, img.NewSprite(fmt.Sprintf("%s%d", constants.TileCracking, tile.Counter), constants.TileBatch))
-				}
-			} else if tile.Block == data.BlockPhase && data.EditorDraw {
-				spr = append(spr, img.NewSprite(constants.TilePhase, constants.TileBatch))
-			}
+		if data.EditorDraw {
+			sprs = GetBlockSpritesEditor(tile)
+		} else {
+			sprs = GetBlockSprites(tile)
 		}
+	case data.BlockSpike:
+		sprs = append(sprs, img.NewSprite(GetSpikeSprite(tile), constants.TileBatch))
 	default:
-		spr = append(spr, img.NewSprite(tile.Block.String(), constants.TileBatch))
+		sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
 	}
 	var lStr string
 	if tile.Live {
@@ -70,9 +64,88 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 		lStr = GetLadderSpriteEditor(tile)
 	}
 	if lStr != "" {
-		spr = append(spr, img.NewSprite(lStr, constants.TileBatch))
+		sprs = append(sprs, img.NewSprite(lStr, constants.TileBatch))
 	}
-	return spr
+	if data.EditorDraw {
+		sprs = append(sprs, GetWrenchSprites(tile)...)
+	}
+	return sprs
+}
+
+func GetBlockSpritesEditor(tile *data.Tile) []*img.Sprite {
+	var sprs []*img.Sprite
+	sprs = append(sprs, img.NewSprite(GetBlockSprite(tile), constants.TileBatch))
+	if tile.Block == data.BlockFall {
+		sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
+	} else if tile.Block == data.BlockCracked {
+		sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
+	} else if tile.Block == data.BlockPhase {
+		sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
+	}
+	return sprs
+}
+
+func GetBlockSprites(tile *data.Tile) []*img.Sprite {
+	var sprs []*img.Sprite
+	spr := img.NewSprite(GetBlockSprite(tile), constants.TileBatch)
+	if tile.Flags.Collapse && tile.Counter > constants.CollapseCounter {
+		return sprs
+	}
+	sprs = append(sprs, spr)
+	if tile.Block == data.BlockCracked && !tile.Flags.Collapse {
+		if tile.Flags.Cracked && tile.Counter > 2 {
+			sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
+		} else if tile.Flags.Cracked {
+			sprs = append(sprs, img.NewSprite(fmt.Sprintf("%s%d", constants.TileCracking, tile.Counter), constants.TileBatch))
+		} else if tile.Metadata.ShowCrack {
+			sprs = append(sprs, img.NewSprite(constants.TileCrackedShow, constants.TileBatch))
+		}
+	}
+	return sprs
+}
+
+func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
+	var sprs []*img.Sprite
+	if data.Editor.Mode == data.Wrench {
+		for i := 0; i < 4; i++ {
+			offset := pixel.V(-4, 4)
+			switch i {
+			case 0:
+				if tile.Metadata.Regenerate &&
+					(tile.Block == data.BlockCracked ||
+						tile.Block == data.BlockLadderCrackedTurf ||
+						tile.Ladder == data.BlockLadderCracked ||
+						tile.Block == data.BlockFly ||
+						tile.Block == data.BlockDemon) {
+					sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))
+				}
+			case 1:
+				offset.X = 4
+				if tile.Metadata.ShowCrack &&
+					(tile.Block == data.BlockCracked ||
+						tile.Block == data.BlockLadderCrackedTurf ||
+						tile.Ladder == data.BlockLadderCracked) {
+					sprs = append(sprs, img.NewSprite("tile_ui_show", constants.UIBatch).WithOffset(offset))
+				} else if tile.Metadata.Flipped &&
+					tile.Block == data.BlockFly {
+					sprs = append(sprs, img.NewSprite("tile_ui_flip", constants.UIBatch).WithOffset(offset))
+				}
+			case 2:
+				offset.X = -4
+				offset.Y = -4
+				if tile.Metadata.EnemyCrack &&
+					(tile.Block == data.BlockCracked ||
+						tile.Block == data.BlockLadderCrackedTurf ||
+						tile.Ladder == data.BlockLadderCracked) {
+					sprs = append(sprs, img.NewSprite("tile_ui_enemy", constants.UIBatch).WithOffset(offset))
+				}
+			case 3:
+				offset.X = 4
+				offset.Y = -4
+			}
+		}
+	}
+	return sprs
 }
 
 func GetBlockSprite(tile *data.Tile) string {
@@ -110,17 +183,49 @@ func GetBlockSprite(tile *data.Tile) string {
 	return sKey
 }
 
+func GetSpikeSprite(tile *data.Tile) string {
+	// check position to get correct sprite
+	bottom := true
+	var b *data.Tile
+	if tile.Live {
+		b = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+	} else {
+		b = data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+	}
+	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) {
+		bottom = false
+	}
+	var sKey string
+	if bottom {
+		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottom)
+	} else {
+		sKey = tile.Block.String()
+	}
+	return sKey
+}
+
 func GetLadderSpriteLive(tile *data.Tile) string {
 	belowTile := data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if !tile.Flags.LCollapse &&
 		(tile.Ladder == data.BlockLadder ||
 			(tile.Ladder == data.BlockLadderCracked && !tile.Flags.LCracked) ||
 			(tile.Ladder == data.BlockLadderExit && data.CurrLevel.DoorsOpen)) {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
-			sKey = constants.TileLadderMiddle
+			if tile.IsBlock() &&
+				!aboveTile.IsBlock() {
+				sKey = constants.TileLadderLedgeMiddle
+			} else {
+				sKey = constants.TileLadderMiddle
+			}
 		} else if tile.IsLadder() {
-			sKey = constants.TileLadderBottom
+			if tile.IsBlock() &&
+				!aboveTile.IsBlock() {
+				sKey = constants.TileLadderLedgeBottom
+			} else {
+				sKey = constants.TileLadderBottom
+			}
 		} else if belowTile != nil && belowTile.IsLadder() {
 			sKey = constants.TileLadderTop
 		} else {
@@ -130,16 +235,34 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 		tile.Ladder == data.BlockLadderCracked &&
 		tile.Flags.LCracked {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
-			if tile.Counter > 6 {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, 3)
+			if tile.IsBlock() &&
+				!aboveTile.IsBlock() {
+				if tile.Counter > 6 {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderLedgeCrackingM, 3)
+				} else {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderLedgeCrackingM, tile.Counter/2)
+				}
 			} else {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, tile.Counter/2)
+				if tile.Counter > 6 {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, 3)
+				} else {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingM, tile.Counter/2)
+				}
 			}
 		} else if tile.IsLadder() {
-			if tile.Counter > 6 {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, 3)
+			if tile.IsBlock() &&
+				!aboveTile.IsBlock() {
+				if tile.Counter > 6 {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderLedgeCrackingB, 3)
+				} else {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderLedgeCrackingB, tile.Counter/2)
+				}
 			} else {
-				sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, tile.Counter/2)
+				if tile.Counter > 6 {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, 3)
+				} else {
+					sKey = fmt.Sprintf("%s%d", constants.TileLadderCrackingB, tile.Counter/2)
+				}
 			}
 		}
 	} else if belowTile != nil && belowTile.IsLadder() {
@@ -150,24 +273,49 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 
 func GetLadderSpriteEditor(tile *data.Tile) string {
 	belowTile := data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
-		switch tile.Ladder {
-		case data.BlockLadder:
-			sKey = constants.TileLadderMiddle
-		case data.BlockLadderExit:
-			sKey = constants.TileExitLadderM
-		case data.BlockLadderCracked:
-			sKey = constants.TileLadderCrackM
+		if tile.IsBlock() &&
+			!aboveTile.IsBlock() {
+			switch tile.Ladder {
+			case data.BlockLadder:
+				sKey = constants.TileLadderLedgeMiddle
+			case data.BlockLadderExit:
+				sKey = constants.TileExitLadderM
+			case data.BlockLadderCracked:
+				sKey = constants.TileLadderLedgeCrackM
+			}
+		} else {
+			switch tile.Ladder {
+			case data.BlockLadder:
+				sKey = constants.TileLadderMiddle
+			case data.BlockLadderExit:
+				sKey = constants.TileExitLadderM
+			case data.BlockLadderCracked:
+				sKey = constants.TileLadderCrackM
+			}
 		}
 	} else if tile.IsLadder() {
-		switch tile.Ladder {
-		case data.BlockLadder:
-			sKey = constants.TileLadderBottom
-		case data.BlockLadderExit:
-			sKey = constants.TileExitLadderB
-		case data.BlockLadderCracked:
-			sKey = constants.TileLadderCrackB
+		if tile.IsBlock() &&
+			!aboveTile.IsBlock() {
+			switch tile.Ladder {
+			case data.BlockLadder:
+				sKey = constants.TileLadderLedgeBottom
+			case data.BlockLadderExit:
+				sKey = constants.TileExitLadderB
+			case data.BlockLadderCracked:
+				sKey = constants.TileLadderLedgeCrackB
+			}
+		} else {
+			switch tile.Ladder {
+			case data.BlockLadder:
+				sKey = constants.TileLadderBottom
+			case data.BlockLadderExit:
+				sKey = constants.TileExitLadderB
+			case data.BlockLadderCracked:
+				sKey = constants.TileLadderCrackB
+			}
 		}
 	} else if belowTile != nil && belowTile.IsLadder() {
 		switch belowTile.Ladder {
@@ -183,26 +331,29 @@ func GetLadderSpriteEditor(tile *data.Tile) string {
 }
 
 func GetTileSpritesSelection(tile *data.Tile) []*img.Sprite {
-	var spr []*img.Sprite
-	switch tile.Block {
-	case data.BlockEmpty:
-	case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase:
-		spr = append(spr, img.NewSprite(GetSpriteSelection(tile), constants.TileBatch))
-		if tile.Block == data.BlockFall && data.EditorDraw {
-			spr = append(spr, img.NewSprite(constants.TileFall, constants.TileBatch))
-		} else if tile.Block == data.BlockCracked && data.EditorDraw {
-			spr = append(spr, img.NewSprite(constants.TileCracked, constants.TileBatch))
-		} else if tile.Block == data.BlockPhase && data.EditorDraw {
-			spr = append(spr, img.NewSprite(constants.TilePhase, constants.TileBatch))
+	var sprs []*img.Sprite
+	if data.EditorDraw {
+		switch tile.Block {
+		case data.BlockEmpty:
+		case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase:
+			sprs = append(sprs, img.NewSprite(GetSpriteSelection(tile), constants.TileBatch))
+			if tile.Block == data.BlockFall {
+				sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
+			} else if tile.Block == data.BlockCracked {
+				sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
+			} else if tile.Block == data.BlockPhase {
+				sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
+			}
+		default:
+			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
 		}
-	default:
-		spr = append(spr, img.NewSprite(tile.Block.String(), constants.TileBatch))
+		lStr := GetLadderSpriteSelection(tile)
+		if lStr != "" {
+			sprs = append(sprs, img.NewSprite(lStr, constants.TileBatch))
+		}
+		sprs = append(sprs, GetWrenchSprites(tile)...)
 	}
-	lStr := GetLadderSpriteSelection(tile)
-	if lStr != "" {
-		spr = append(spr, img.NewSprite(lStr, constants.TileBatch))
-	}
-	return spr
+	return sprs
 }
 
 func GetSpriteSelection(tile *data.Tile) string {

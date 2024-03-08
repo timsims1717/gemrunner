@@ -15,6 +15,13 @@ const (
 	TileLadderCrackingM = "ladder_cracking_middle"
 	TileLadderCrackingB = "ladder_cracking_bottom"
 
+	TileLadderLedgeBottom    = "ladder_ledge_bottom"
+	TileLadderLedgeMiddle    = "ladder_ledge_middle"
+	TileLadderLedgeCrackB    = "ladder_ledge_cracked_bottom"
+	TileLadderLedgeCrackM    = "ladder_ledge_cracked_middle"
+	TileLadderLedgeCrackingM = "ladder_ledge_cracking_middle"
+	TileLadderLedgeCrackingB = "ladder_ledge_cracking_bottom"
+
 	TileTop       = "_top"
 	TileBottom    = "_bottom"
 	TileBottomTop = "_bottom_top"
@@ -50,12 +57,14 @@ const (
 	TileDoorBrown  = "door_brown"
 	TileLockBrown  = "lock_brown"
 
-	TileFall     = "fall"
-	TilePhase    = "phase"
-	TileCracked  = "cracked"
-	TileCracking = "cracking"
-	TileTurf     = "turf"
-	TileEmpty    = "empty"
+	TileFall        = "fall"
+	TilePhase       = "phase"
+	TileSpike       = "spike"
+	TileCracked     = "cracked"
+	TileCrackedShow = "cracked_show"
+	TileCracking    = "cracking"
+	TileTurf        = "turf"
+	TileEmpty       = "empty"
 )
 
 // Characters
@@ -79,6 +88,7 @@ const (
 	ItemKeyPurple = "key_purple"
 	ItemKeyBrown  = "key_brown"
 	ItemBox       = "box"
+	ItemBoxPiece  = "box_piece"
 	ItemGemYellow = "gem_yellow"
 	ItemGemOrange = "gem_orange"
 	ItemGemGray   = "gem_gray"

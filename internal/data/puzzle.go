@@ -24,9 +24,10 @@ var (
 
 type Level struct {
 	Tiles     *Tiles
-	Chars     []*Dynamic
+	Enemies   []*Dynamic
 	Players   [constants.MaxPlayers]*Dynamic
 	Stats     [constants.MaxPlayers]*PlayerStats
+	PControls [constants.MaxPlayers]Controller
 	Start     bool
 	Failed    bool
 	Complete  bool
@@ -38,6 +39,8 @@ type Level struct {
 
 type Puzzle struct {
 	Tiles *Tiles `json:"tiles"`
+
+	WrenchTiles []*Tile `json:"-"`
 
 	UndoStack  []*Tiles `json:"-"`
 	LastChange *Tiles   `json:"-"`
@@ -65,7 +68,7 @@ func NewTiles() *Tiles {
 	for _, row := range t {
 		for _, tile := range row {
 			tile = &Tile{}
-			tile.Empty()
+			tile.ToEmpty()
 		}
 	}
 	return &Tiles{

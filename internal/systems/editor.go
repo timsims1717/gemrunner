@@ -125,6 +125,7 @@ func UpdateEditorModeHotKey() {
 		data.Editor.LastMode = oldMode
 		data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
 		data.Editor.SelectVis = false
+		data.CurrPuzzle.Update = true
 	}
 	if data.Editor.LastMode >= data.EndModeList {
 		data.Editor.LastMode = data.Brush
@@ -339,12 +340,61 @@ func PuzzleEditSystem() {
 			case data.Wrench:
 				if legal {
 					if rClick.JustReleased() || click.JustReleased() {
+						if data.CurrSelect != nil {
+							inTest := coords
+							inTest.X -= data.CurrSelect.Offset.X
+							inTest.Y -= data.CurrSelect.Offset.Y
+							if !CoordsLegalSelection(inTest) {
+								PlaceSelection()
+							} else {
+								tile := data.CurrSelect.Tiles[inTest.Y][inTest.X]
+								data.CurrPuzzle.WrenchTiles = []*data.Tile{}
+								for _, row := range data.CurrSelect.Tiles {
+									for _, t := range row {
+										if t.Block == tile.Block && t.Ladder == tile.Ladder {
+											switch t.Block {
+											case data.BlockFly:
+												t.Metadata.Flipped = !t.Metadata.Flipped
+											case data.BlockCracked:
+												data.CurrPuzzle.WrenchTiles = append(data.CurrPuzzle.WrenchTiles, t)
+											}
+											switch t.Ladder {
+											case data.BlockLadderCracked:
+												data.CurrPuzzle.WrenchTiles = append(data.CurrPuzzle.WrenchTiles, t)
+											}
+										}
+									}
+								}
+								switch tile.Block {
+								case data.BlockFly:
+									PushUndoArray(true)
+								case data.BlockCracked:
+									data.OpenDialogInStack("cracked_tile_options")
+								}
+								switch tile.Ladder {
+								case data.BlockLadderCracked:
+									data.OpenDialogInStack("cracked_tile_options")
+								}
+								data.CurrPuzzle.Update = true
+								break
+							}
+						}
 						tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 						switch tile.Block {
 						case data.BlockFly:
 							tile.Metadata.Flipped = !tile.Metadata.Flipped
 							tile.Object.Flip = tile.Metadata.Flipped
+							PushUndoArray(true)
+						case data.BlockCracked:
+							data.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+							data.OpenDialogInStack("cracked_tile_options")
 						}
+						switch tile.Ladder {
+						case data.BlockLadderCracked:
+							data.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+							data.OpenDialogInStack("cracked_tile_options")
+						}
+						data.CurrPuzzle.Update = true
 					}
 				}
 			case data.Select:
@@ -482,7 +532,7 @@ func PuzzleEditSystem() {
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Brush
 		}
 	}
-	if data.Editor.Mode == data.Move {
+	if data.Editor.Mode == data.Move || data.Editor.Mode == data.Wrench {
 		if data.CurrSelect != nil {
 			end := world.Coords{
 				X: data.CurrSelect.Offset.X + data.CurrSelect.Width - 1,
@@ -498,6 +548,7 @@ func PuzzleEditSystem() {
 					obj.Layer = 3
 					obj.Pos = world.MapToWorld(c)
 					obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+					obj.Flip = tile.Metadata.Flipped
 					spr := GetTileSpritesSelection(tile)
 					if len(spr) > 0 {
 						myecs.Manager.NewEntity().
@@ -511,7 +562,7 @@ func PuzzleEditSystem() {
 					}
 				}
 			}
-		} else {
+		} else if data.Editor.Mode == data.Move {
 			data.Editor.Mode = data.Select
 		}
 	} else {
@@ -641,7 +692,7 @@ func CreateSelection(a, b world.Coords) {
 			tile := old.Copy()
 			tile.Coords = world.Coords{X: dx, Y: dy}
 			data.CurrSelect.Tiles[dy] = append(data.CurrSelect.Tiles[dy], tile)
-			old.Empty()
+			old.ToEmpty()
 		}
 	}
 	data.CurrPuzzle.Update = true

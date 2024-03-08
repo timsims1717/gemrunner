@@ -35,6 +35,7 @@ var (
 	Gem        = Manager.NewComponent()
 	Door       = Manager.NewComponent()
 	StandOn    = Manager.NewComponent()
+	Smash      = Manager.NewComponent()
 	PickUp     = Manager.NewComponent()
 	Action     = Manager.NewComponent()
 
@@ -56,6 +57,7 @@ var (
 	IsTouch     = ecs.BuildTag(Object, OnTouch)
 	IsGem       = ecs.BuildTag(Object, Gem)
 	IsStandOn   = ecs.BuildTag(Object, Dynamic, StandOn)
+	IsSmash     = ecs.BuildTag(Object, Dynamic, Smash)
 	IsPickUp    = ecs.BuildTag(Object, PickUp)
 	HasAction   = ecs.BuildTag(Object, PickUp, Action)
 	IsDoor      = ecs.BuildTag(Object, Door)

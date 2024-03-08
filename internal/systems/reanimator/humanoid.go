@@ -78,20 +78,28 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	pickUp := reanimator.NewBatchSprite("pick_up", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Tran)
 	pickUp.SetTrigger(0, func() {
 		ch.Flags.PickUp = false
+		ch.Flags.Throw = false
 	})
 	holdIdle := reanimator.NewBatchAnimationFrame("hold_idle", batch, fmt.Sprintf("%s_pick_up", sprPre), 1, reanimator.Hold)
 	holdRun := reanimator.NewBatchAnimationCustom("hold_run", batch, fmt.Sprintf("%s_hold_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
-	//holdIdleSide := reanimator.NewBatchSprite("hold_idle_side", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Hold)
-	//holdRunSide := reanimator.NewBatchAnimationCustom("hold_run_side", batch, fmt.Sprintf("%s_hold_run_side", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
 	fallHold := reanimator.NewBatchSprite("fall_hold", batch, fmt.Sprintf("%s_fall_hold", sprPre), reanimator.Hold)
 	jumpHold := reanimator.NewBatchSprite("jump_hold", batch, fmt.Sprintf("%s_jump_hold", sprPre), reanimator.Hold)
-	//fallHoldSide := reanimator.NewBatchSprite("fall_hold_side", batch, fmt.Sprintf("%s_fall_hold_side", sprPre), reanimator.Hold)
-	//jumpHoldSide := reanimator.NewBatchSprite("jump_hold_side", batch, fmt.Sprintf("%s_jump_hold_side", sprPre), reanimator.Hold)
 	fullHit := []int{0, 1, 2, 3, 3, 3, 3, 3, 3, 3}
 	fullAttack := []int{0, 1, 2, 3, 2, 3, 2, 3, 2, 3}
-	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
+	var hit *reanimator.Anim
+	if sprPre == "demon" {
+		hit = reanimator.NewBatchAnimation("hit", batch, fmt.Sprintf("%s_hit", sprPre), reanimator.Tran)
+	} else {
+		hit = reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
+	}
 	hit.SetEndTrigger(func() {
 		ch.Flags.Hit = false
+		ch.Flags.Crush = false
+	})
+	crush := reanimator.NewBatchAnimation("crush", batch, fmt.Sprintf("%s_crush", sprPre), reanimator.Tran)
+	crush.SetEndTrigger(func() {
+		ch.Flags.Hit = false
+		ch.Flags.Crush = false
 	})
 	attack := reanimator.NewBatchAnimationCustom("attack", batch, fmt.Sprintf("%s_attack", sprPre), fullAttack, reanimator.Tran)
 	attack.SetEndTrigger(func() {
@@ -112,13 +120,10 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(pickUp).
 		AddAnimation(holdIdle).
 		AddAnimation(holdRun).
-		//AddAnimation(holdIdleSide).
-		//AddAnimation(holdRunSide).
 		AddAnimation(fallHold).
 		AddAnimation(jumpHold).
-		//AddAnimation(fallHoldSide).
-		//AddAnimation(jumpHoldSide).
 		AddAnimation(hit).
+		AddAnimation(crush).
 		AddAnimation(attack).
 		AddNull("none").
 		SetChooseFn(func() string {
@@ -126,13 +131,23 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			case data.Dead:
 				return "none"
 			case data.Hit:
-				return "hit"
+				if ch.Flags.Crush {
+					return "crush"
+				} else {
+					return "hit"
+				}
 			case data.Attack:
 				return "attack"
 			case data.Carried:
-				return "idle"
+				if ch.Flags.PickUp || ch.Flags.Throw {
+					return "pick_up"
+				} else if ch.Held != nil {
+					return "hold_idle"
+				} else {
+					return "idle"
+				}
 			case data.Grounded:
-				if ch.Flags.PickUp {
+				if ch.Flags.PickUp || ch.Flags.Throw {
 					return "pick_up"
 				}
 				if ch.Actions.Left() || ch.Actions.Right() {
@@ -171,7 +186,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 					return "slide"
 				}
 			case data.Jumping:
-				if ch.Flags.PickUp {
+				if ch.Flags.PickUp || ch.Flags.Throw {
 					return "pick_up"
 				} else if ch.Held != nil {
 					return "jump_hold"
@@ -179,7 +194,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 					return "jump"
 				}
 			case data.Falling:
-				if ch.Flags.PickUp {
+				if ch.Flags.PickUp || ch.Flags.Throw {
 					return "pick_up"
 				} else if ch.Held != nil {
 					return "fall_hold"
@@ -197,6 +212,6 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			}
 			return "fall"
 		})
-	tree := reanimator.New(sw, "breath")
+	tree := reanimator.New(sw, "idle")
 	return tree
 }
