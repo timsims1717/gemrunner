@@ -5,6 +5,7 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/timing"
+	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 )
 
@@ -21,6 +22,7 @@ type Dynamic struct {
 	State    CharacterState
 	Flags    Flags
 	Vars     Vars
+	Options  CharacterOptions
 	ATimer   *timing.Timer
 	ACounter int
 	//BTimer  *timing.Timer
@@ -42,6 +44,9 @@ func NewDynamic() *Dynamic {
 		Vars: Vars{
 			Gravity:  constants.NormalGravity,
 			IdleFreq: constants.IdleFrequency,
+		},
+		Options: CharacterOptions{
+			Regen: false,
 		},
 	}
 }
@@ -76,7 +81,7 @@ type Actions struct {
 	PrevDirection Direction
 	Jump          bool
 	PickUp        bool
-	Lift          bool
+	Stow          bool
 	Action        bool
 }
 
@@ -131,9 +136,11 @@ const (
 	Leaping
 	Flying
 	Carried
+	Thrown
 	Attack
 	Hit
 	Dead
+	Regen
 )
 
 func (s CharacterState) String() string {
@@ -191,12 +198,18 @@ type Flags struct {
 	Hit        bool
 	Crush      bool
 	Attack     bool
+	Regen      bool
 	Flying     bool
 	Frame      bool
 	JumpBuff   int
 	PickUpBuff int
 	ActionBuff int
-	LiftBuff   int
+	StowBuff   int
+}
+
+type CharacterOptions struct {
+	Regen      bool
+	RegenTiles []world.Coords
 }
 
 type Controller interface {

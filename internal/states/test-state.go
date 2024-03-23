@@ -84,7 +84,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.FunctionSystem()
 	systems.TestSystem()
-
+	data.DialogStackOpen = len(data.DialogStack) > 0
 	systems.DialogSystem()
 
 	if !data.DialogStackOpen {

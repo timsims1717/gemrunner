@@ -67,6 +67,7 @@ const (
 
 	BlockDemon
 	BlockFly
+	BlockDemonRegen
 	BlockChain
 	BlockReeds
 	BlockFlowers
@@ -173,6 +174,8 @@ func (b Block) String() string {
 		return constants.CharDemon
 	case BlockFly:
 		return constants.CharFly
+	case BlockDemonRegen:
+		return constants.TileDemonRegen
 	case BlockChain:
 		return constants.DoodadChain
 	case BlockReeds:
@@ -231,6 +234,7 @@ var toID = map[string]Block{
 	constants.ItemGemBrown:     BlockGemBrown,
 	constants.CharDemon:        BlockDemon,
 	constants.CharFly:          BlockFly,
+	constants.TileDemonRegen:   BlockDemonRegen,
 	constants.DoodadChain:      BlockChain,
 	constants.DoodadReeds:      BlockReeds,
 	constants.DoodadFlowers:    BlockFlowers,
@@ -323,10 +327,20 @@ func (t *Tile) ToEmpty() {
 	t.Metadata = DefaultMetadata()
 }
 
+func (t *Tile) IsEmpty() bool {
+	return !(t.IsLadder() ||
+		t.Block == BlockTurf ||
+		t.Block == BlockFall ||
+		t.Block == BlockCracked ||
+		t.Block == BlockSpike ||
+		t.Block == BlockPhase)
+}
+
 func (t *Tile) IsSolid() bool {
 	return !t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
+			t.Block == BlockFall ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike)
 }
@@ -335,6 +349,7 @@ func (t *Tile) IsNilOrSolid() bool {
 	return t == nil || (!t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
+			t.Block == BlockFall ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike))
 }
@@ -417,11 +432,13 @@ type TileFlags struct {
 }
 
 type TileMetadata struct {
-	Flipped    bool `json:"flipped"`
-	EnemyCrack bool `json:"enemyCrack"`
-	Regenerate bool `json:"regenerate"`
-	Phase      int  `json:"phase"`
-	ShowCrack  bool `json:"showCrack"`
+	Flipped    bool           `json:"flipped"`
+	EnemyCrack bool           `json:"enemyCrack"`
+	Regenerate bool           `json:"regenerate"`
+	RegenTiles []world.Coords `json:"regenTiles"`
+	Phase      int            `json:"phase"`
+	ShowCrack  bool           `json:"showCrack"`
+	Changed    bool           `json:"changed"`
 }
 
 func DefaultMetadata() TileMetadata {

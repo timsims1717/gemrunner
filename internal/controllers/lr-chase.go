@@ -5,7 +5,6 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/debug"
-	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
 	"github.com/bytearena/ecs"
@@ -13,20 +12,17 @@ import (
 	"github.com/gopxl/pixel/imdraw"
 	"image/color"
 	"math"
-	"math/rand"
 )
 
 type LRChase struct {
 	Ch     *data.Dynamic
 	Target *data.Dynamic
-	Timer  *timing.Timer
 	Entity *ecs.Entity
 }
 
 func NewLRChase(dyn *data.Dynamic, e *ecs.Entity) *LRChase {
 	return &LRChase{
 		Ch:     dyn,
-		Timer:  timing.New(constants.WaitToSwitch + rand.Float64()*3.),
 		Entity: e,
 	}
 }
@@ -38,7 +34,6 @@ func (lr *LRChase) GetEntity() *ecs.Entity {
 func (lr *LRChase) ClearPrev() {}
 
 func (lr *LRChase) GetActions() data.Actions {
-	lr.Timer.Update()
 	actions := data.NewAction()
 	if data.CurrLevel == nil || lr.Ch == nil {
 		return actions

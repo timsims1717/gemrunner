@@ -3,8 +3,10 @@ package systems
 import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
+	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
 )
 
@@ -17,6 +19,7 @@ func LevelInit() {
 	data.CurrLevel.Tiles = data.CurrPuzzle.CopyTiles()
 	data.CurrLevel.Metadata = data.CurrPuzzle.Metadata
 	data.CurrLevel.Puzzle = data.CurrPuzzle
+	random.SetLevelSeed(random.RandomSeed())
 
 	for _, row := range data.CurrLevel.Tiles.T {
 		for _, tile := range row {
@@ -45,7 +48,7 @@ func LevelInit() {
 				PlayerCharacter(obj.Pos, i)
 			case data.BlockDemon:
 				tile.Block = data.BlockEmpty
-				DemonCharacter(obj.Pos)
+				DemonCharacter(obj.Pos, tile.Metadata)
 			case data.BlockFly:
 				tile.Block = data.BlockEmpty
 				FlyCharacter(obj.Pos, tile.Metadata.Flipped)
@@ -117,4 +120,88 @@ func LevelDispose() {
 		}
 		data.CurrLevel = nil
 	}
+}
+
+func GetBestRegenTile(tiles []*data.Tile) *data.Tile {
+	if len(tiles) < 1 {
+		return nil
+	}
+	var bestTiles []*data.Tile
+	for _, t := range tiles {
+		dist := DistanceToClosestPlayer(t)
+		if dist == -1 || dist > 2 {
+			bestTiles = append(bestTiles, t)
+		}
+	}
+	if len(bestTiles) > 0 {
+		return bestTiles[random.Level.Intn(len(bestTiles))]
+	}
+	return tiles[random.Level.Intn(len(tiles))]
+}
+
+func GetRandomRegenTileFromList(coords []world.Coords) *data.Tile {
+	var tiles []*data.Tile
+	for _, c := range coords {
+		tile := data.CurrLevel.Tiles.Get(c.X, c.Y)
+		if !SomethingOnTile(tile) {
+			tiles = append(tiles, tile)
+		}
+	}
+	return GetBestRegenTile(tiles)
+}
+
+func GetRandomRegenTile() *data.Tile {
+	var tiles []*data.Tile
+	for _, result := range myecs.Manager.Query(myecs.IsTile) {
+		_, okO := result.Components[myecs.Object].(*object.Object)
+		tile, ok := result.Components[myecs.Tile].(*data.Tile)
+		if okO && ok && tile.Live {
+			if tile.IsEmpty() && !SomethingOnTile(tile) {
+				tiles = append(tiles, tile)
+			}
+		}
+	}
+	return GetBestRegenTile(tiles)
+}
+
+func DistanceToClosestPlayer(tile *data.Tile) int {
+	dist := -1
+	for _, p := range data.CurrLevel.Players {
+		if p == nil {
+			continue
+		}
+		px, py := world.WorldToMap(p.Object.Pos.X, p.Object.Pos.Y)
+		d := world.DistanceOrthogonal(world.Coords{X: px, Y: py}, tile.Coords)
+		if dist == -1 || d < dist {
+			dist = d
+		}
+	}
+	return dist
+}
+
+func SomethingOnTile(tile *data.Tile) bool {
+	for _, result := range myecs.Manager.Query(myecs.IsLvlElement) {
+		obj, ok := result.Components[myecs.Object].(*object.Object)
+		if ok {
+			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+			if x == tile.Coords.X && y == tile.Coords.Y {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ThingsOnTile(tile *data.Tile) []*ecs.Entity {
+	var things []*ecs.Entity
+	for _, result := range myecs.Manager.Query(myecs.IsLvlElement) {
+		obj, ok := result.Components[myecs.Object].(*object.Object)
+		if ok {
+			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+			if x == tile.Coords.X && y == tile.Coords.Y {
+				things = append(things, result.Entity)
+			}
+		}
+	}
+	return things
 }

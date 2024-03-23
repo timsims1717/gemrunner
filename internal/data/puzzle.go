@@ -46,8 +46,9 @@ type Puzzle struct {
 	LastChange *Tiles   `json:"-"`
 	RedoStack  []*Tiles `json:"-"`
 
-	Click  bool `json:"-"`
-	Update bool `json:"-"`
+	Click   bool `json:"-"`
+	Update  bool `json:"-"`
+	Changed bool `json:"-"`
 
 	Metadata *PuzzleMetadata `json:"metadata"`
 }
@@ -87,10 +88,13 @@ type Selection struct {
 func CreateBlankPuzzle() *Puzzle {
 	worldNum := constants.WorldRock
 	md := &PuzzleMetadata{
+		Name:           "",
+		Filename:       "",
 		WorldSprite:    constants.WorldSprites[worldNum],
 		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
+		Completed:      false,
 	}
 	puz := &Puzzle{
 		Tiles:    NewTiles(),
@@ -115,4 +119,21 @@ func (p *Puzzle) CopyTiles() *Tiles {
 		}
 	}
 	return tiles
+}
+
+func (p *Puzzle) HasPlayers() bool {
+	hasPlayers := false
+playerCheck:
+	for _, row := range CurrPuzzle.Tiles.T {
+		for _, t := range row {
+			if t.Block == BlockPlayer1 ||
+				t.Block == BlockPlayer2 ||
+				t.Block == BlockPlayer3 ||
+				t.Block == BlockPlayer4 {
+				hasPlayers = true
+				break playerCheck
+			}
+		}
+	}
+	return hasPlayers
 }

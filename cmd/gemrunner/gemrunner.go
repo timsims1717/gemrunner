@@ -75,6 +75,7 @@ func run() {
 
 	object.ILock = true
 
+	load.InitConstructors()
 	load.Dialogs(win)
 	systems.InitMainBorder()
 

@@ -18,7 +18,6 @@ func SetBlock(coords world.Coords, block data.Block) {
 					if tile.Ladder == block || tile.Block != data.BlockTurf {
 						tile.Block = data.BlockEmpty
 					}
-					tile.Ladder = block
 				case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
 					tile.Ladder = data.BlockEmpty
 					// ensure no other player of that type are in puzzle
@@ -29,16 +28,26 @@ func SetBlock(coords world.Coords, block data.Block) {
 							}
 						}
 					}
-					tile.Block = block
+				case data.BlockDemonRegen:
+					for _, row := range data.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockDemon &&
+								t.Metadata.Regenerate &&
+								!t.Metadata.Changed {
+								t.Metadata.RegenTiles = append(t.Metadata.RegenTiles, coords)
+							}
+						}
+					}
 				default:
 					if tile.IsLadder() && !(block == data.BlockTurf && tile.Block == data.BlockEmpty) {
 						tile.Ladder = data.BlockEmpty
 					}
-					tile.Block = block
 				}
+				tile.Block = block
 			}
 			data.CurrPuzzle.Update = true
 			tile.Update = true
+			data.CurrPuzzle.Changed = true
 		}
 	} else {
 		fmt.Println("error: attempted to change tile when no puzzle is loaded")
@@ -57,6 +66,7 @@ func DeleteBlock(coords world.Coords) {
 				}
 				data.CurrPuzzle.Update = true
 				tile.Update = true
+				data.CurrPuzzle.Changed = true
 			}
 		}
 	} else {

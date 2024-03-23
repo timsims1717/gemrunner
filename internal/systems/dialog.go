@@ -11,11 +11,6 @@ import (
 )
 
 func DialogSystem() {
-	if len(data.DialogStack) > 0 {
-		data.DialogStackOpen = true
-	} else {
-		data.DialogStackOpen = false
-	}
 	var updated []string
 	layer := 100
 	for _, dialog := range data.DialogsOpen {

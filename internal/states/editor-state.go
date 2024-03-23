@@ -79,8 +79,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.FunctionSystem()
 
-	systems.DialogSystem()
-
+	data.DialogStackOpen = len(data.DialogStack) > 0
 	if !data.DialogStackOpen {
 		// custom systems
 		systems.TileSpriteSystemPre()
@@ -93,6 +92,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	} else {
 
 	}
+	systems.DialogSystem()
 	// object systems
 	systems.ParentSystem()
 	systems.ObjectSystem()

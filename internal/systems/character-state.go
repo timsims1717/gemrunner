@@ -40,7 +40,7 @@ func CharacterStateSystem() {
 						ch.State = data.Falling
 					}
 				case data.OnLadder:
-					DropLift(ch, false)
+					//DropLift(ch, false)
 					if ch.Flags.Floor { // just got to the bottom or top
 						ch.State = data.Grounded
 						if ch.Actions.Direction == data.Left { // to the left
@@ -138,6 +138,16 @@ func CharacterStateSystem() {
 					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 						ch.State = data.OnLadder
 					}
+				case data.Thrown:
+					if !ch.Flags.Throw {
+						if ch.Flags.Floor {
+							ch.State = data.Grounded
+						} else if tile != nil && tile.IsLadder() {
+							ch.State = data.OnLadder
+						} else {
+							ch.State = data.Falling
+						}
+					}
 				case data.Hit:
 					if !ch.Flags.Hit && !ch.Flags.Crush {
 						ch.State = data.Dead
@@ -152,7 +162,31 @@ func CharacterStateSystem() {
 							ch.State = data.Falling
 						}
 					}
+				case data.Regen:
+					if !ch.Flags.Regen {
+						if ch.Flags.Floor {
+							ch.State = data.Grounded
+						} else if tile != nil && tile.IsLadder() {
+							ch.State = data.OnLadder
+						} else {
+							ch.State = data.Falling
+						}
+					}
 				case data.Dead:
+					if ch.Options.Regen {
+						var t *data.Tile
+						if len(ch.Options.RegenTiles) > 0 {
+							t = GetRandomRegenTileFromList(ch.Options.RegenTiles)
+						} else { // pick a random empty tile
+							t = GetRandomRegenTile()
+						}
+						if t != nil {
+							tile = t
+							ch.Object.SetPos(t.Object.Pos)
+							ch.State = data.Regen
+							ch.Flags.Regen = true
+						}
+					}
 				}
 				if oldState != ch.State { // a state change happened
 					if oldState == data.Carried {
@@ -185,19 +219,18 @@ func CharacterStateSystem() {
 						ch.Actions.Action {
 						DoAction(ch)
 						ch.Flags.ActionBuff = 0
-					} else if ch.Actions.PickUp && !ch.Flags.Using {
-						PickUpOrDropItem(ch, int(ch.Player))
-						ch.Flags.PickUpBuff = 0
+						//} else if ch.Actions.Stow && !ch.Flags.Using {
+						//	PickUpOrDropItem(ch, int(ch.Player))
+						//	ch.Flags.StowBuff = 0
 					} else if ch.State != data.Leaping &&
-						ch.State != data.OnLadder &&
-						ch.Actions.Lift && !ch.Flags.Using {
+						ch.Actions.PickUp && !ch.Flags.Using {
 						LiftOrDropItem(ch, int(ch.Player), ch.Actions.Left() || ch.Actions.Right())
-						ch.Flags.LiftBuff = 0
+						ch.Flags.PickUpBuff = 0
 					}
 				} else {
-					if ch.State == data.Dead {
-						DropItem(ch)
-					}
+					//if ch.State == data.Dead {
+					//	DropItem(ch)
+					//}
 					DropLift(ch, false)
 				}
 			}

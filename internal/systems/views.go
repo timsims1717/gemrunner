@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
@@ -8,7 +9,7 @@ import (
 )
 
 func UpdateViews() {
-	var pickedRatio float64
+	pickedRatio := 1.
 	if data.PuzzleView != nil {
 		data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
 		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
@@ -23,11 +24,14 @@ func UpdateViews() {
 		data.BorderView.PortSize = pixel.V(pickedRatio, pickedRatio)
 	}
 	for _, dialog := range data.Dialogs {
+		posRatX := viewport.MainCamera.Rect.W() / constants.WinWidth
+		posRatY := viewport.MainCamera.Rect.H() / constants.WinHeight
+		nPos := pixel.V(dialog.Pos.X*posRatX, dialog.Pos.Y*posRatY)
 		if !dialog.NoBorder {
-			dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(dialog.Pos)
+			dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
 			dialog.BorderVP.PortSize = pixel.V(pickedRatio, pickedRatio)
 		}
-		dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos.Add(dialog.Pos)
+		dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
 		dialog.ViewPort.PortSize = pixel.V(pickedRatio, pickedRatio)
 	}
 	if data.Editor != nil {

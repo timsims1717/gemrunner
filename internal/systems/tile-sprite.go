@@ -54,6 +54,10 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 		}
 	case data.BlockSpike:
 		sprs = append(sprs, img.NewSprite(GetSpikeSprite(tile), constants.TileBatch))
+	case data.BlockDemonRegen:
+		if !tile.Live {
+			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
+		}
 	default:
 		sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
 	}

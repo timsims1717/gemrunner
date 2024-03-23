@@ -32,20 +32,33 @@ func OpenDialog(key string) func() {
 	}
 }
 
+func OpenOpenPuzzleDialog() {
+	if data.Editor != nil {
+		if data.CurrPuzzle.Metadata.Filename == "" &&
+			data.CurrPuzzle.Changed {
+			data.SetCloseSpcFn("change_name", func() {
+				data.OpenDialogInStack("open_puzzle")
+			})
+			data.OpenDialogInStack("change_name")
+		} else {
+			systems.SavePuzzle()
+			data.OpenDialogInStack("open_puzzle")
+		}
+	}
+}
+
 func NewPuzzle() {
 	if data.Editor != nil {
-		// todo: if changes exist, open save/new dialog
-		if data.CurrPuzzle == nil {
-			data.CurrPuzzle = data.CreateBlankPuzzle()
+		if data.CurrPuzzle.Metadata.Filename == "" &&
+			data.CurrPuzzle.Changed {
+			data.SetCloseSpcFn("change_name", func() {
+				systems.NewPuzzle()
+			})
+			data.OpenDialogInStack("change_name")
 		} else {
-			for _, row := range data.CurrPuzzle.Tiles.T {
-				for _, tile := range row {
-					tile.ToEmpty()
-				}
-			}
+			systems.SavePuzzle()
+			systems.NewPuzzle()
 		}
-		systems.PuzzleInit()
-		systems.UpdateWorldShaders()
 	}
 }
 
@@ -63,18 +76,48 @@ func OpenPuzzle() {
 }
 
 func QuitEditor(win *pixelgl.Window) func() {
-	//if data.Editor != nil {
-	// todo: if in editor, check if any changes, if so, open save/close dialog
-	// todo: otherwise, just quit
-	//}
 	return func() {
-		win.SetClosed(true)
+		if data.CurrPuzzle.Metadata.Filename == "" &&
+			data.CurrPuzzle.Changed {
+			data.SetCloseSpcFn("change_name", func() {
+				win.SetClosed(true)
+			})
+			data.OpenDialogInStack("change_name")
+		} else {
+			systems.SavePuzzle()
+			win.SetClosed(true)
+		}
 	}
 }
 
-func TestPuzzle() func() {
-	return func() {
-		state.PushState(states.TestStateKey)
+func TestPuzzle() {
+	hasPlayers := data.CurrPuzzle.HasPlayers()
+	if hasPlayers {
+		if data.CurrPuzzle.Metadata.Filename == "" &&
+			data.CurrPuzzle.Changed {
+			data.SetCloseSpcFn("change_name", func() {
+				state.PushState(states.TestStateKey)
+			})
+			data.OpenDialogInStack("change_name")
+		} else {
+			systems.SavePuzzle()
+			state.PushState(states.TestStateKey)
+		}
+	} else {
+		data.OpenDialogInStack("no_players")
+	}
+}
+
+func SavePuzzle() {
+	if data.Editor != nil {
+		if data.CurrPuzzle.Metadata == nil {
+			data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
+		}
+		if data.CurrPuzzle.Metadata.Filename == "" {
+			data.OpenDialogInStack("change_name")
+		} else {
+			systems.SavePuzzle()
+		}
 	}
 }
 
@@ -210,6 +253,7 @@ func ChangeCrackTileOptions() {
 		}
 		data.CloseDialog("cracked_tile_options")
 		data.CurrPuzzle.Update = true
+		data.CurrPuzzle.Changed = true
 		systems.PushUndoArray(true)
 	}
 }
@@ -252,6 +296,7 @@ func ChangeName() {
 				break
 			}
 		}
+		systems.SavePuzzle()
 	}
 }
 

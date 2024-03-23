@@ -187,26 +187,35 @@ func DropLift(ch *data.Dynamic, throw bool) {
 			ch.HeldObj.Pos = t.Object.Pos
 		}
 		if throw {
-			left := data.CurrLevel.Tiles.Get(x-1, y)
-			right := data.CurrLevel.Tiles.Get(x+1, y)
-			if ch.Actions.Left() && left != nil && !left.IsSolid() {
-				ch.HeldObj.Pos.X -= world.HalfSize + 1.
-			} else if ch.Actions.Right() && right != nil && !right.IsSolid() {
-				ch.HeldObj.Pos.X += world.HalfSize + 1.
+			ch.HeldObj.Pos.X = t.Object.Pos.X
+			ch.HeldObj.Pos.Y = t.Object.Pos.Y
+			// update the state
+			if c, okC := ch.Held.GetComponentData(myecs.Dynamic); okC {
+				chHeld := c.(*data.Dynamic)
+				chHeld.Flags.Throw = true
+				chHeld.State = data.Thrown
+				chHeld.ACounter = 0
+				chHeld.ATimer = nil
+				chHeld.Flags.Climbed = false
+				chHeld.Flags.GoingUp = false
+				if ch.Actions.Left() {
+					chHeld.Flags.JumpL = true
+				} else if ch.Actions.Right() {
+					chHeld.Flags.JumpR = true
+				}
 			}
-			ch.Flags.Throw = true
-			ch.Object.Pos.X = ch.Object.LastPos.X
+		} else {
+			// update the state
+			if c, okC := ch.Held.GetComponentData(myecs.Dynamic); okC {
+				chHeld := c.(*data.Dynamic)
+				chHeld.State = data.Falling
+			}
 		}
 		// update the pickup data
 		if p, okP := ch.Held.GetComponentData(myecs.PickUp); okP {
 			pickUp := p.(*data.PickUp)
 			pickUp.Inventory = -1
 			pickUp.Held = -1
-		}
-		// update the state
-		if c, okC := ch.Held.GetComponentData(myecs.Dynamic); okC {
-			chHeld := c.(*data.Dynamic)
-			chHeld.State = data.Falling
 		}
 		// "drop it"
 		ch.HeldObj = nil
@@ -280,6 +289,18 @@ func updateHeldItem(ch *data.Dynamic, facingLeft bool) {
 			if (downTile == nil || downTile.IsSolid()) &&
 				(heldPos.Y-ch.HeldObj.HalfHeight <= tile.Object.Pos.X-world.HalfSize) {
 				ch.HeldObj.Offset.Y += ch.HeldObj.HalfHeight - world.HalfSize + tile.Object.Pos.Y - heldPos.Y
+			}
+		}
+	}
+}
+
+func DoAction(ch *data.Dynamic) {
+	if ch.Player > -1 && ch.Player < constants.MaxPlayers &&
+		ch.Held != nil && ch.Held.HasComponent(myecs.Action) {
+		if fnA, ok := ch.Held.GetComponentData(myecs.Action); ok {
+			if colFn, okC := fnA.(*data.Interact); okC {
+				ch.Flags.Using = true
+				colFn.Fn(data.CurrLevel, int(ch.Player), ch, ch.Held)
 			}
 		}
 	}

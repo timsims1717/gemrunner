@@ -376,6 +376,7 @@ func PuzzleEditSystem() {
 									data.OpenDialogInStack("cracked_tile_options")
 								}
 								data.CurrPuzzle.Update = true
+								data.CurrPuzzle.Changed = true
 								break
 							}
 						}
@@ -394,6 +395,7 @@ func PuzzleEditSystem() {
 							data.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 							data.OpenDialogInStack("cracked_tile_options")
 						}
+						data.CurrPuzzle.Changed = true
 						data.CurrPuzzle.Update = true
 					}
 				}
@@ -696,6 +698,7 @@ func CreateSelection(a, b world.Coords) {
 		}
 	}
 	data.CurrPuzzle.Update = true
+	data.CurrPuzzle.Changed = true
 }
 
 func CreateClip() bool {
@@ -750,6 +753,8 @@ func PlaceSelection() {
 	}
 	data.CurrSelect = nil
 	PushUndoArray(true)
+	data.CurrPuzzle.Update = true
+	data.CurrPuzzle.Changed = true
 }
 
 func PlaceClip() bool {

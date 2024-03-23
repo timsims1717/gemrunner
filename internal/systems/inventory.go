@@ -113,7 +113,7 @@ func DropItem(ch *data.Dynamic) bool {
 	return true
 }
 
-func DoAction(ch *data.Dynamic) {
+func DoActionInventory(ch *data.Dynamic) {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers &&
 		ch.Inventory != nil && ch.Inventory.HasComponent(myecs.Action) {
 		if fnA, ok := ch.Inventory.GetComponentData(myecs.Action); ok {

@@ -14,7 +14,7 @@ type PlayerInput struct {
 	DownKey   string
 	JumpKey   string
 	PickUpKey string
-	LiftKey   string
+	StowKey   string
 	ActionKey string
 	Entity    *ecs.Entity
 
@@ -36,7 +36,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	down := pi.Input.Get(pi.DownKey)
 	jump := pi.Input.Get(pi.JumpKey)
 	pickUp := pi.Input.Get(pi.PickUpKey)
-	lift := pi.Input.Get(pi.LiftKey)
+	lift := pi.Input.Get(pi.StowKey)
 	action := pi.Input.Get(pi.ActionKey)
 	if !left.Pressed() && !right.Pressed() && !up.Pressed() && !down.Pressed() {
 		actions.Direction = data.None
@@ -87,7 +87,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 		action.Consume()
 	}
 	if lift.JustPressed() {
-		actions.Lift = true
+		actions.Stow = true
 		lift.Consume()
 	}
 	pi.LastActions = actions
@@ -107,7 +107,7 @@ func NewPlayerInput(in *pxginput.Input, e *ecs.Entity) *PlayerInput {
 		DownKey:   "down",
 		JumpKey:   "jump",
 		PickUpKey: "pickUp",
-		LiftKey:   "lift",
+		StowKey:   "stow",
 		ActionKey: "action",
 		Entity:    e,
 	}

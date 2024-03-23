@@ -9,7 +9,7 @@ var (
 
 type PuzzleMetadata struct {
 	Name           string     `json:"title"`
-	Filename       string     `json:"-"`
+	Filename       string     `json:"filename"`
 	WorldSprite    string     `json:"sprite"`
 	WorldNumber    int        `json:"world"`
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`

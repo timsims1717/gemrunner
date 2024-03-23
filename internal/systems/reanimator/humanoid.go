@@ -4,22 +4,27 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/timing"
-	"math/rand"
 )
 
 func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	batch := img.Batchers[constants.TileBatch]
+	regen := reanimator.NewBatchAnimation("regen", batch, fmt.Sprintf("%s_regen", sprPre), reanimator.Tran)
+	regen.SetEndTrigger(func() {
+		ch.Flags.Regen = false
+	})
 	idle := reanimator.NewBatchSprite("idle", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Hold)
 	breath := reanimator.NewBatchAnimation("breath", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Tran)
 	breath.SetEndTrigger(func() {
 		ch.Flags.Breath = false
 	})
-	var run, climb, slide *reanimator.Anim
+	var wall, run, climb, slide *reanimator.Anim
 	var leapOnI, leapOffI, leapToI []int
 	if sprPre == "demon" {
+		wall = reanimator.NewBatchSprite("wall", batch, fmt.Sprintf("%s_chase", sprPre), reanimator.Hold)
 		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 3, 4, 1, 2, 3}, reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 4, 3, 1}, reanimator.Loop)
@@ -43,6 +48,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		leapOffI = []int{3, 2, 1, 0}
 		leapToI = []int{3, 2, 1, 1, 2, 3}
 	} else {
+		wall = reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 1, reanimator.Hold)
 		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
@@ -54,7 +60,6 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		climb.Freeze = !ch.Flags.Climbed
 		ch.Flags.Climbed = false
 	})
-	wall := reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 1, reanimator.Hold)
 	fall := reanimator.NewBatchSprite("fall", batch, fmt.Sprintf("%s_fall", sprPre), reanimator.Hold)
 	jump := reanimator.NewBatchSprite("jump", batch, fmt.Sprintf("%s_jump", sprPre), reanimator.Hold)
 	leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
@@ -106,6 +111,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		ch.Flags.Attack = false
 	})
 	sw := reanimator.NewSwitch().
+		AddAnimation(regen).
 		AddAnimation(idle).
 		AddAnimation(breath).
 		AddAnimation(run).
@@ -128,6 +134,8 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
+			case data.Regen:
+				return "regen"
 			case data.Dead:
 				return "none"
 			case data.Hit:
@@ -172,7 +180,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 						if ch.Flags.Breath {
 							return "breath"
 						} else {
-							if !ch.Flags.Breath && rand.Intn(constants.IdleFrequency*timing.FPS) == 0 {
+							if !ch.Flags.Breath && random.Effects.Intn(constants.IdleFrequency*timing.FPS) == 0 {
 								ch.Flags.Breath = true
 							}
 							return "idle"
@@ -212,6 +220,6 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			}
 			return "fall"
 		})
-	tree := reanimator.New(sw, "idle")
+	tree := reanimator.New(sw, "regen")
 	return tree
 }

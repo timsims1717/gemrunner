@@ -72,19 +72,32 @@ func PuzzleDispose(full bool) {
 	}
 }
 
+func NewPuzzle() {
+	if data.CurrPuzzle != nil {
+		PuzzleDispose(true)
+	}
+	data.CurrPuzzle = data.CreateBlankPuzzle()
+	PuzzleInit()
+	UpdateWorldShaders()
+}
+
 func SavePuzzle() {
 	if data.Editor != nil {
-		if data.CurrPuzzle.Metadata == nil {
-			data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
-		}
-		if data.CurrPuzzle.Metadata.Name == "" {
-			data.CurrPuzzle.Metadata.Name = "test"
-			data.CurrPuzzle.Metadata.Filename = "test.puzzle"
-		}
-		data.CurrPuzzle.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzle.Metadata.Name)
-		err := SavePuzzleToFile()
-		if err != nil {
-			fmt.Println("ERROR:", err)
+		if data.CurrPuzzle.Changed {
+			if data.CurrPuzzle.Metadata == nil {
+				data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
+			}
+			if data.CurrPuzzle.Metadata.Name == "" {
+				data.CurrPuzzle.Metadata.Name = "test"
+				data.CurrPuzzle.Metadata.Filename = "test.puzzle"
+			}
+			data.CurrPuzzle.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzle.Metadata.Name)
+			err := SavePuzzleToFile()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+			} else {
+				data.CurrPuzzle.Changed = false
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
@@ -12,7 +13,6 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
-	"math/rand"
 	"strings"
 )
 
@@ -36,7 +36,7 @@ func CreateGem(pos pixel.Vec, key string) {
 			if gemShimmer {
 				return "shimmer"
 			} else {
-				if !gemShimmer && rand.Intn(constants.IdleFrequency*timing.FPS) == 0 {
+				if !gemShimmer && random.Effects.Intn(constants.IdleFrequency*timing.FPS) == 0 {
 					gemShimmer = true
 				}
 				return "gem"
@@ -48,7 +48,8 @@ func CreateGem(pos pixel.Vec, key string) {
 		AddComponent(myecs.Drawable, anim).
 		AddComponent(myecs.Animated, anim).
 		AddComponent(myecs.Gem, struct{}{}).
-		AddComponent(myecs.OnTouch, data.NewInteract(CollectGem))
+		AddComponent(myecs.OnTouch, data.NewInteract(CollectGem)).
+		AddComponent(myecs.LvlElement, struct{}{})
 }
 
 func CollectGem(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
@@ -139,6 +140,7 @@ func CreateDoor(pos pixel.Vec, key string) {
 		}
 		return false
 	}))
+	e.AddComponent(myecs.LvlElement, struct{}{})
 }
 
 func EnterDoor() *data.Interact {
@@ -176,6 +178,7 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
 	e.AddComponent(myecs.PickUp, data.NewPickUp(10, true))
+	e.AddComponent(myecs.LvlElement, struct{}{})
 	box := data.NewDynamic()
 	box.Object = obj
 	box.Entity = e
@@ -194,38 +197,38 @@ func BoxBonk(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 			(ch.State != data.Falling || ch.Vars.Gravity < box.Vars.Gravity) {
 			ch.Flags.Hit = true
 			ch.State = data.Hit
-			for i := 0; i < 5; i++ {
-				pObj := object.New()
-				pObj.Pos = box.Object.Pos
-				pObj.Layer = 12
-				switch i {
-				case 0:
-					pObj.Pos = pObj.Pos.Add(pixel.V(-5, 5))
-				case 1:
-					pObj.Pos = pObj.Pos.Add(pixel.V(-7, -3))
-				case 2:
-					pObj.Pos = pObj.Pos.Add(pixel.V(6, 6))
-				case 3:
-					pObj.Pos = pObj.Pos.Add(pixel.V(5, 0))
-				case 4:
-					pObj.Pos = pObj.Pos.Add(pixel.V(4, -5))
-				}
-				end := 7
-				count := 0
-				e := myecs.Manager.NewEntity()
-				e.AddComponent(myecs.Object, pObj)
-				e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("%s%d", constants.ItemBoxPiece, i), constants.TileBatch))
-				e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-				e.AddComponent(myecs.Update, data.NewFn(func() {
-					if reanimator.FrameSwitch {
-						count++
-						if count >= end {
-							myecs.Manager.DisposeEntity(e)
-						}
-					}
-				}))
-			}
-			myecs.Manager.DisposeEntity(entity)
+			//for i := 0; i < 5; i++ {
+			//	pObj := object.New()
+			//	pObj.Pos = box.Object.Pos
+			//	pObj.Layer = 12
+			//	switch i {
+			//	case 0:
+			//		pObj.Pos = pObj.Pos.Add(pixel.V(-5, 5))
+			//	case 1:
+			//		pObj.Pos = pObj.Pos.Add(pixel.V(-7, -3))
+			//	case 2:
+			//		pObj.Pos = pObj.Pos.Add(pixel.V(6, 6))
+			//	case 3:
+			//		pObj.Pos = pObj.Pos.Add(pixel.V(5, 0))
+			//	case 4:
+			//		pObj.Pos = pObj.Pos.Add(pixel.V(4, -5))
+			//	}
+			//	end := 7
+			//	count := 0
+			//	e := myecs.Manager.NewEntity()
+			//	e.AddComponent(myecs.Object, pObj)
+			//	e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("%s%d", constants.ItemBoxPiece, i), constants.TileBatch))
+			//	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+			//	e.AddComponent(myecs.Update, data.NewFn(func() {
+			//		if reanimator.FrameSwitch {
+			//			count++
+			//			if count >= end {
+			//				myecs.Manager.DisposeEntity(e)
+			//			}
+			//		}
+			//	}))
+			//}
+			//myecs.Manager.DisposeEntity(entity)
 		}
 	}
 }
@@ -248,29 +251,27 @@ func CreateKey(pos pixel.Vec, key string) {
 	e.AddComponent(myecs.Drawable, theKey.Sprite)
 	e.AddComponent(myecs.PickUp, theKey.PickUp)
 	e.AddComponent(myecs.Action, theKey.Action)
+	e.AddComponent(myecs.LvlElement, struct{}{})
 }
 
 func KeyAction(color string) *data.Interact {
 	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if o, okO := entity.GetComponentData(myecs.Object); okO {
-			obj := o.(*object.Object)
-			if KeyUnlock(level, obj.Pos.Add(obj.Offset), ch.Object.Pos, color) {
-				myecs.Manager.DisposeEntity(entity)
-			}
+		if KeyUnlock(level, ch.Object.Pos, color) {
+			DropLift(ch, false)
+			myecs.Manager.DisposeEntity(entity)
 		}
 		ch.Flags.Using = false
 	})
 }
 
-func KeyUnlock(level *data.Level, pos1, pos2 pixel.Vec, color string) bool {
-	x1, y1 := world.WorldToMap(pos1.X, pos1.Y)
-	x2, y2 := world.WorldToMap(pos2.X, pos2.Y)
+func KeyUnlock(level *data.Level, chPos pixel.Vec, color string) bool {
+	chX, chY := world.WorldToMap(chPos.X, chPos.Y)
 	for _, result := range myecs.Manager.Query(myecs.IsDoor) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		d, okD := result.Components[myecs.Door].(*data.Door)
 		if okO && okD {
 			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
-			if ((x == x1 && y == y1) || (x == x2 && y == y2)) &&
+			if x == chX && y == chY &&
 				!d.Unlock &&
 				d.DoorType == data.Locked &&
 				d.Color == color {

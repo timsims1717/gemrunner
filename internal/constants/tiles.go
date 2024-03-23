@@ -57,6 +57,8 @@ const (
 	TileDoorBrown  = "door_brown"
 	TileLockBrown  = "lock_brown"
 
+	TileDemonRegen = "demon_regen_tile"
+
 	TileFall        = "fall"
 	TilePhase       = "phase"
 	TileSpike       = "spike"
@@ -188,6 +190,12 @@ var (
 		B: 202,
 		A: 255,
 	}
+	ColorTan = color.RGBA{
+		R: 255,
+		G: 204,
+		B: 149,
+		A: 255,
+	}
 
 	Player1Color = ColorBlue
 	Player2Color = ColorOrange
@@ -210,9 +218,9 @@ var (
 
 	WorldPrimary = map[int]color.RGBA{
 		WorldRock:   ColorGray,
-		WorldSlate:  ColorBlue,
+		WorldSlate:  ColorOrange,
 		WorldBrick:  ColorRed,
-		WorldGravel: ColorOrange,
+		WorldGravel: ColorBlue,
 		WorldDirt:   ColorBrown,
 		WorldStone:  ColorGreen,
 		WorldShell:  ColorYellow,
@@ -223,9 +231,9 @@ var (
 
 	WorldSecondary = map[int]color.RGBA{
 		WorldRock:   ColorGreen,
-		WorldSlate:  ColorCyan,
+		WorldSlate:  ColorTan,
 		WorldBrick:  ColorBlue,
-		WorldGravel: ColorYellow,
+		WorldGravel: ColorGray,
 		WorldDirt:   ColorGray,
 		WorldStone:  ColorOrange,
 		WorldShell:  ColorBrown,

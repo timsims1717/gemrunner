@@ -1,10 +1,12 @@
 package constants
 
 const (
-	Title   = "Gem Runner"
-	Release = 0
-	Version = 1
-	Build   = 20230125
+	Title     = "Gem Runner"
+	Release   = 0
+	Version   = 1
+	Build     = 20240322
+	WinWidth  = 1600
+	WinHeight = 900
 
 	// Directories
 	LinuxDir  = "/.local/share/GemRunnerEditor"
@@ -53,6 +55,9 @@ const (
 	RegenCounter    = 56
 	RegenACounter   = 3
 	CollapseCounter = 3
+	ThrownCounter   = 4
+	ThrownVSpeed    = 1.8
+	ThrownHSpeed    = 6.2
 	SmashDistance   = TileSize * 3
 
 	// Player Constants

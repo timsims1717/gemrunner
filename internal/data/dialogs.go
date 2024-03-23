@@ -34,6 +34,7 @@ type Dialog struct {
 	NoBorder     bool
 	OnOpen       func()
 	OnClose      func()
+	OnCloseSpc   func()
 
 	Open   bool
 	Active bool
@@ -644,6 +645,15 @@ func OpenDialogInStack(key string) {
 	}
 }
 
+func SetCloseSpcFn(key string, fn func()) {
+	dialog, ok := Dialogs[key]
+	if !ok {
+		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
+		return
+	}
+	dialog.OnCloseSpc = fn
+}
+
 func CloseDialog(key string) {
 	dialog, ok := Dialogs[key]
 	if !ok {
@@ -685,6 +695,10 @@ func CloseDialog(key string) {
 		}
 		if dialog.OnClose != nil {
 			dialog.OnClose()
+		}
+		if dialog.OnCloseSpc != nil {
+			dialog.OnCloseSpc()
+			dialog.OnCloseSpc = nil
 		}
 	}
 }

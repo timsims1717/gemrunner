@@ -32,43 +32,8 @@ func TileSystem() {
 						}
 					}
 				}
-			case data.BlockFall:
-				if tile.Flags.Collapse {
-					if reanimator.FrameSwitch {
-						tile.Counter++
-					}
-					if tile.Metadata.Regenerate {
-						if tile.Counter > constants.RegenCounter {
-							tile.Flags.Cracked = false
-							tile.Flags.Collapse = false
-							tile.Counter = 0
-						}
-					} else if tile.Counter > constants.CollapseCounter {
-						tile.Block = data.BlockEmpty
-						tile.Flags.Collapse = false
-						tile.Flags.Cracked = false
-						tile.Counter = 0
-					}
-				} else {
-					for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-						_, okCO := resultC.Components[myecs.Object].(*object.Object)
-						ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-						if okCO && okC && ch.State == data.Grounded {
-							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-							chTile := data.CurrLevel.Tiles.Get(x, y)
-							if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-								chTile.Coords.Y == tile.Coords.Y+1 &&
-								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
-									tile.Metadata.EnemyCrack) {
-								tile.Flags.Collapse = true
-								tile.Counter = 0
-								tile.Update = true
-							}
-						}
-					}
-				}
-			case data.BlockCracked:
-				if tile.Flags.Cracked {
+			case data.BlockCracked, data.BlockFall:
+				if tile.Block == data.BlockCracked && tile.Flags.Cracked {
 					if reanimator.FrameSwitch {
 						tile.Counter++
 					}
@@ -166,9 +131,27 @@ func TileSystem() {
 								chTile.Coords.Y == tile.Coords.Y+1 &&
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
 									tile.Metadata.EnemyCrack) {
-								tile.Flags.Cracked = true
 								tile.Counter = 0
 								tile.Update = true
+								tile.Flags.Regen = false
+								if tile.Block == data.BlockCracked {
+									tile.Flags.Cracked = true
+									tile.Flags.Collapse = false
+								} else if tile.Block == data.BlockFall {
+									tile.Flags.Collapse = true
+									tile.Flags.Cracked = false
+									tile.Object.Layer = 31
+									obj := object.New()
+									obj.Pos = tile.Object.Pos
+									obj.Layer = 32
+									m := myecs.Manager.NewEntity()
+									anim := reanimator.NewSimple(reanimator.NewBatchAnimation("collapse", img.Batchers[constants.TileBatch], "collapse", reanimator.Hold))
+									m.AddComponent(myecs.Object, obj)
+									m.AddComponent(myecs.Animated, anim)
+									m.AddComponent(myecs.Drawable, anim)
+									m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+									tile.Mask = m
+								}
 							}
 						}
 					}
