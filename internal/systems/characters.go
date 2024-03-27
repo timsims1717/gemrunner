@@ -74,6 +74,7 @@ func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	demon.State = data.Regen
 	demon.Flags.Regen = true
 	demon.Options.Regen = metadata.Regenerate
+	demon.Options.LinkedTiles = metadata.LinkedTiles
 	demon.Vars = data.DemonVars()
 	e := myecs.Manager.NewEntity()
 	demon.Entity = e

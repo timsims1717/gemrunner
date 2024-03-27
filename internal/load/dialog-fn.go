@@ -250,6 +250,7 @@ func ChangeCrackTileOptions() {
 			tile.Metadata.Regenerate = regen
 			tile.Metadata.ShowCrack = show
 			tile.Metadata.EnemyCrack = enemy
+			tile.Metadata.Changed = true
 		}
 		data.CloseDialog("cracked_tile_options")
 		data.CurrPuzzle.Update = true

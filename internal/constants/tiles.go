@@ -22,6 +22,10 @@ const (
 	TileLadderLedgeCrackingM = "ladder_ledge_cracking_middle"
 	TileLadderLedgeCrackingB = "ladder_ledge_cracking_bottom"
 
+	TileLadderTurf        = "ladder_turf"
+	TileLadderCrackedTurf = "ladder_cracked_turf"
+	TileLadderExitTurf    = "ladder_exit_turf"
+
 	TileTop       = "_top"
 	TileBottom    = "_bottom"
 	TileBottomTop = "_bottom_top"

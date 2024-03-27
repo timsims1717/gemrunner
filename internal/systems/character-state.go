@@ -175,8 +175,8 @@ func CharacterStateSystem() {
 				case data.Dead:
 					if ch.Options.Regen {
 						var t *data.Tile
-						if len(ch.Options.RegenTiles) > 0 {
-							t = GetRandomRegenTileFromList(ch.Options.RegenTiles)
+						if len(ch.Options.LinkedTiles) > 0 {
+							t = GetRandomRegenTileFromList(ch.Options.LinkedTiles)
 						} else { // pick a random empty tile
 							t = GetRandomRegenTile()
 						}

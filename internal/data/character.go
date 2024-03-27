@@ -208,8 +208,8 @@ type Flags struct {
 }
 
 type CharacterOptions struct {
-	Regen      bool
-	RegenTiles []world.Coords
+	Regen       bool
+	LinkedTiles []world.Coords
 }
 
 type Controller interface {

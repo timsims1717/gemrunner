@@ -156,7 +156,7 @@ func GetRandomRegenTile() *data.Tile {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok && tile.Live {
-			if tile.IsEmpty() && !SomethingOnTile(tile) {
+			if tile.IsEmpty() && !SomethingOnTile(tile) && tile.Block != data.BlockDemonRegen {
 				tiles = append(tiles, tile)
 			}
 		}

@@ -46,7 +46,8 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
-	case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase:
+	case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase,
+		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf:
 		if data.EditorDraw {
 			sprs = GetBlockSpritesEditor(tile)
 		} else {
@@ -118,7 +119,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 				if tile.Metadata.Regenerate &&
 					(tile.Block == data.BlockCracked ||
 						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Ladder == data.BlockLadderCracked ||
+						tile.Block == data.BlockLadderCracked ||
 						tile.Block == data.BlockFly ||
 						tile.Block == data.BlockDemon) {
 					sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))
@@ -128,7 +129,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 				if tile.Metadata.ShowCrack &&
 					(tile.Block == data.BlockCracked ||
 						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Ladder == data.BlockLadderCracked) {
+						tile.Block == data.BlockLadderCracked) {
 					sprs = append(sprs, img.NewSprite("tile_ui_show", constants.UIBatch).WithOffset(offset))
 				} else if tile.Metadata.Flipped &&
 					tile.Block == data.BlockFly {
@@ -140,7 +141,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 				if tile.Metadata.EnemyCrack &&
 					(tile.Block == data.BlockCracked ||
 						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Ladder == data.BlockLadderCracked) {
+						tile.Block == data.BlockLadderCracked) {
 					sprs = append(sprs, img.NewSprite("tile_ui_enemy", constants.UIBatch).WithOffset(offset))
 				}
 			case 3:
@@ -213,9 +214,12 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 	aboveTile := data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if !tile.Flags.LCollapse &&
-		(tile.Ladder == data.BlockLadder ||
-			(tile.Ladder == data.BlockLadderCracked && !tile.Flags.LCracked) ||
-			(tile.Ladder == data.BlockLadderExit && data.CurrLevel.DoorsOpen)) {
+		(tile.Block == data.BlockLadder ||
+			tile.Block == data.BlockLadderTurf ||
+			(tile.Block == data.BlockLadderCracked && !tile.Flags.LCracked) ||
+			(tile.Block == data.BlockLadderCrackedTurf && !tile.Flags.LCracked) ||
+			(tile.Block == data.BlockLadderExit && data.CurrLevel.DoorsOpen) ||
+			(tile.Block == data.BlockLadderExitTurf && data.CurrLevel.DoorsOpen)) {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 			if tile.IsBlock() &&
 				!aboveTile.IsBlock() {
@@ -236,7 +240,7 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 			sKey = ""
 		}
 	} else if !tile.Flags.LCollapse &&
-		tile.Ladder == data.BlockLadderCracked &&
+		(tile.Block == data.BlockLadderCracked || tile.Block == data.BlockLadderCrackedTurf) &&
 		tile.Flags.LCracked {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 			if tile.IsBlock() &&
@@ -282,50 +286,50 @@ func GetLadderSpriteEditor(tile *data.Tile) string {
 	if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 		if tile.IsBlock() &&
 			!aboveTile.IsBlock() {
-			switch tile.Ladder {
-			case data.BlockLadder:
+			switch tile.Block {
+			case data.BlockLadder, data.BlockLadderTurf:
 				sKey = constants.TileLadderLedgeMiddle
-			case data.BlockLadderExit:
+			case data.BlockLadderExit, data.BlockLadderExitTurf:
 				sKey = constants.TileExitLadderM
-			case data.BlockLadderCracked:
+			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				sKey = constants.TileLadderLedgeCrackM
 			}
 		} else {
-			switch tile.Ladder {
-			case data.BlockLadder:
+			switch tile.Block {
+			case data.BlockLadder, data.BlockLadderTurf:
 				sKey = constants.TileLadderMiddle
-			case data.BlockLadderExit:
+			case data.BlockLadderExit, data.BlockLadderExitTurf:
 				sKey = constants.TileExitLadderM
-			case data.BlockLadderCracked:
+			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				sKey = constants.TileLadderCrackM
 			}
 		}
 	} else if tile.IsLadder() {
 		if tile.IsBlock() &&
 			!aboveTile.IsBlock() {
-			switch tile.Ladder {
-			case data.BlockLadder:
+			switch tile.Block {
+			case data.BlockLadder, data.BlockLadderTurf:
 				sKey = constants.TileLadderLedgeBottom
-			case data.BlockLadderExit:
+			case data.BlockLadderExit, data.BlockLadderExitTurf:
 				sKey = constants.TileExitLadderB
-			case data.BlockLadderCracked:
+			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				sKey = constants.TileLadderLedgeCrackB
 			}
 		} else {
-			switch tile.Ladder {
-			case data.BlockLadder:
+			switch tile.Block {
+			case data.BlockLadder, data.BlockLadderTurf:
 				sKey = constants.TileLadderBottom
-			case data.BlockLadderExit:
+			case data.BlockLadderExit, data.BlockLadderExitTurf:
 				sKey = constants.TileExitLadderB
-			case data.BlockLadderCracked:
+			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				sKey = constants.TileLadderCrackB
 			}
 		}
 	} else if belowTile != nil && belowTile.IsLadder() {
-		switch belowTile.Ladder {
-		case data.BlockLadder, data.BlockLadderCracked:
+		switch belowTile.Block {
+		case data.BlockLadder, data.BlockLadderTurf, data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			sKey = constants.TileLadderTop
-		case data.BlockLadderExit:
+		case data.BlockLadderExit, data.BlockLadderExitTurf:
 			sKey = constants.TileExitLadderT
 		}
 	} else {
@@ -402,28 +406,28 @@ func GetLadderSpriteSelection(tile *data.Tile) string {
 	}
 	var sKey string
 	if tile.IsLadder() && bottom {
-		switch tile.Ladder {
-		case data.BlockLadder:
+		switch tile.Block {
+		case data.BlockLadder, data.BlockLadderTurf:
 			sKey = constants.TileLadderMiddle
-		case data.BlockLadderExit:
+		case data.BlockLadderExit, data.BlockLadderExitTurf:
 			sKey = constants.TileExitLadderM
-		case data.BlockLadderCracked:
+		case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			sKey = constants.TileLadderCrackM
 		}
 	} else if tile.IsLadder() {
-		switch tile.Ladder {
-		case data.BlockLadder:
+		switch tile.Block {
+		case data.BlockLadder, data.BlockLadderTurf:
 			sKey = constants.TileLadderBottom
-		case data.BlockLadderExit:
+		case data.BlockLadderExit, data.BlockLadderExitTurf:
 			sKey = constants.TileExitLadderB
-		case data.BlockLadderCracked:
+		case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			sKey = constants.TileLadderCrackB
 		}
 	} else if bottom && belowTile != nil {
-		switch belowTile.Ladder {
-		case data.BlockLadder, data.BlockLadderCracked:
+		switch belowTile.Block {
+		case data.BlockLadder, data.BlockLadderTurf, data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			sKey = constants.TileLadderTop
-		case data.BlockLadderExit:
+		case data.BlockLadderExit, data.BlockLadderExitTurf:
 			sKey = constants.TileExitLadderT
 		}
 	} else {

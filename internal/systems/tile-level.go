@@ -156,9 +156,7 @@ func TileSystem() {
 						}
 					}
 				}
-			}
-			switch tile.Ladder {
-			case data.BlockLadderCracked:
+			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				if tile.Flags.LCracked {
 					if reanimator.FrameSwitch {
 						tile.Counter++
@@ -178,7 +176,11 @@ func TileSystem() {
 							tile.Flags.LCollapse = false
 						}
 					} else {
-						tile.Ladder = data.BlockEmpty
+						if tile.Block == data.BlockLadderCrackedTurf {
+							tile.Block = data.BlockTurf
+						} else {
+							tile.Block = data.BlockEmpty
+						}
 						tile.Flags.LCollapse = false
 						tile.Flags.LCracked = false
 					}
