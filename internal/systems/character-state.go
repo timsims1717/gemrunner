@@ -28,7 +28,7 @@ func CharacterStateSystem() {
 							ch.State = data.OnLadder
 						} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 							ch.State = data.OnLadder
-						} else if below != nil && !below.IsSolid() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
+						} else if below != nil && !below.IsBlock() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
 							ch.State = data.Leaping
 							ch.Flags.LeapOn = true
 						} else if !ch.Flags.Floor {
@@ -36,7 +36,7 @@ func CharacterStateSystem() {
 						}
 					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 						ch.State = data.OnLadder
-					} else if !ch.Flags.Floor && !ch.Flags.OnTurf && below != nil && !below.IsLadder() {
+					} else if !ch.Flags.Floor && below != nil && !below.IsLadder() {
 						ch.State = data.Falling
 					}
 				case data.OnLadder:
@@ -48,12 +48,13 @@ func CharacterStateSystem() {
 						} else if ch.Actions.Direction == data.Right { // to the right
 							ch.Object.Flip = false
 						}
-					} else if !tile.IsLadder() && (below == nil || !below.IsLadder()) {
+					} else if !tile.IsLadder() &&
+						(below == nil || !below.IsLadder()) {
 						ch.State = data.Falling
 					} else if tile.IsLadder() &&
 						!(below == nil ||
 							below.IsSolid() ||
-							below.Block == data.BlockTurf) { // can only leap if the stuff below isn't solid
+							below.IsBlock()) { // can only leap if the stuff below isn't solid
 						if ch.Actions.Direction == data.Left &&
 							!ch.Flags.LeftWall { // leaping to the left
 							ch.State = data.Leaping
@@ -77,7 +78,7 @@ func CharacterStateSystem() {
 						}
 					} else if below == nil ||
 						below.IsSolid() ||
-						below.Block == data.BlockTurf ||
+						below.IsBlock() ||
 						(below.IsLadder() && !tile.IsLadder()) {
 						if ch.Actions.Direction == data.Left { // run to the left
 							ch.State = data.Grounded

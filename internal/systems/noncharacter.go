@@ -20,7 +20,7 @@ func DynamicSystem() {
 					currPos := d.Object.Pos
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
 					currTile := data.CurrLevel.Tiles.Get(x, y)
-					if !d.Flags.OnTurf {
+					if !d.Flags.Floor {
 						if d.Flags.Throw {
 							thrown(d, currTile)
 						} else {

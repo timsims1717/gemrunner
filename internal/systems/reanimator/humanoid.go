@@ -159,8 +159,8 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 					return "pick_up"
 				}
 				if ch.Actions.Left() || ch.Actions.Right() {
-					if (ch.Actions.Left() && ch.Flags.LeftWall) ||
-						(ch.Actions.Right() && ch.Flags.RightWall) {
+					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||
+						(ch.Actions.Right() && (ch.Flags.RightWall || ch.Flags.EnemyR)) {
 						if ch.Held != nil {
 							return "hold_idle"
 						} else {
@@ -188,7 +188,9 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 					}
 				}
 			case data.OnLadder:
-				if ch.Actions.Up() || ch.Flags.GoingUp {
+				if ch.Flags.PickUp || ch.Flags.Throw {
+					return "pick_up"
+				} else if ch.Actions.Up() || ch.Flags.GoingUp {
 					return "climb"
 				} else {
 					return "slide"

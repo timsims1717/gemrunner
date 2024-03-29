@@ -25,14 +25,13 @@ func CollisionSystem() {
 			pDown := data.CurrLevel.Tiles.Get(px, py-1)
 			if pTile == nil {
 				outsideOfMap(ch, px, py)
-			} else {
-				// check each direction for collision
+			} else { // check each direction for collision
 				wallCollisions(ch, pTile, pLeft, pRight, chPos)
 				ceilingCollisions(ch, pTile, pUp, chPos)
 				floorCollisions(ch, pTile, pDown, chPos)
 				chPos = ch.Object.Pos
 				x, y := world.WorldToMap(chPos.X, chPos.Y)
-				if x != px || y != py {
+				if x != px || y != py { // check again if they changed tiles
 					setCollisionFlags(ch)
 					tile := data.CurrLevel.Tiles.Get(x, y)
 					left := data.CurrLevel.Tiles.Get(x-1, y)
@@ -54,7 +53,6 @@ func setCollisionFlags(ch *data.Dynamic) {
 	ch.Flags.Ceiling = false
 	ch.Flags.Floor = false
 	ch.Flags.OnFall = false
-	ch.Flags.OnTurf = false
 }
 
 func outsideOfMap(ch *data.Dynamic, x, y int) {
@@ -103,8 +101,8 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, chPos pixel.Vec) {
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if ch.Flags.NoLadders {
-		if down.IsNilOrSolid() && touchingFloor {
-			ch.Flags.OnTurf = true
+		if (standOnBelow || down.IsNilOrSolid() || down.IsBlock()) && touchingFloor {
+			ch.Flags.Floor = true
 		}
 	} else {
 		if ((down == nil ||
@@ -127,9 +125,8 @@ func standOnSystem(id string, downTile *data.Tile) (bool, bool) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		d, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		if okO && okC &&
-			!obj.Hidden && obj.ID != id &&
-			!result.Entity.HasComponent(myecs.Parent) {
-			pos := obj.Pos
+			!obj.Hidden && obj.ID != id {
+			pos := obj.PostPos
 			// adjustment, maybe add to constants
 			if !d.Flags.Floor {
 				pos.Y -= world.HalfSize * 0.5

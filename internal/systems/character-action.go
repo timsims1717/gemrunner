@@ -356,18 +356,22 @@ func carried(ch *data.Dynamic, tile *data.Tile) {
 func thrown(ch *data.Dynamic, tile *data.Tile) {
 	if (ch.ACounter > constants.ThrownCounter) ||
 		(ch.Flags.LeftWall || ch.Flags.RightWall) ||
-		ch.Flags.OnTurf {
+		ch.Flags.Floor {
 		ch.Flags.Throw = false
 		ch.Flags.JumpL = false
 		ch.Flags.JumpR = false
 	} else {
 		if ch.Flags.JumpR {
-			ch.Object.Flip = false
+			if ch.Flags.HeldNFlip {
+				ch.Object.Flip = false
+			}
 			if !ch.Flags.RightWall {
 				ch.Object.Pos.X += constants.ThrownHSpeed
 			}
 		} else if ch.Flags.JumpL {
-			ch.Object.Flip = true
+			if ch.Flags.HeldNFlip {
+				ch.Object.Flip = true
+			}
 			if !ch.Flags.LeftWall {
 				ch.Object.Pos.X -= constants.ThrownHSpeed
 			}

@@ -174,8 +174,11 @@ type Flags struct {
 	RightWall bool
 	Ceiling   bool
 	Floor     bool
+	EnemyL    bool
+	EnemyR    bool
+	EnemyU    bool
+	EnemyD    bool
 	OnFall    bool
-	OnTurf    bool
 	NoLadders bool
 	GoingUp   bool
 	Climbed   bool
