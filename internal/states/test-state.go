@@ -92,7 +92,6 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.InGameSystem()
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
-		systems.EnemyCollisionSystem()
 		systems.CollisionSystem()
 		systems.CharacterStateSystem()
 		systems.TouchSystem()
