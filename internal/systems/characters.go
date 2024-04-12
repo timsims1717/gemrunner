@@ -87,6 +87,7 @@ func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, demon.Control)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	demon.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, demon)
 	return demon
 }
@@ -143,6 +144,7 @@ func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, fly.Control)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	fly.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, fly)
 	return fly
 }
