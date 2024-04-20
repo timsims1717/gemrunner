@@ -31,6 +31,14 @@ func PuzzleInit() {
 				tile.Entity = e
 			}
 		}
+		num := data.CurrPuzzle.Metadata.WorldNumber
+		if data.CurrPuzzle.Metadata.WorldSprite == "" {
+			data.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[num]
+		}
+		// todo: check world colors (all black, I assume)
+		if data.CurrPuzzle.Metadata.MusicTrack == "" {
+			data.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[num]
+		}
 		data.CurrPuzzle.Update = true
 	} else {
 		panic("no puzzle loaded")
@@ -44,14 +52,9 @@ func PuzzleViewInit() {
 		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
 		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
 		data.PuzzleView.PortPos = viewport.MainCamera.CamPos
+		UpdatePuzzleShaders()
+		data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
 	}
-	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.B))
-	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
-	data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
 	if data.BorderView == nil {
 		data.BorderView = viewport.New(nil)
 		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(constants.PuzzleWidth+1), world.TileSize*(constants.PuzzleHeight+1)))
@@ -72,13 +75,24 @@ func PuzzleDispose(full bool) {
 	}
 }
 
+func UpdatePuzzleShaders() {
+	// set puzzle shader uniforms
+	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
+}
+
 func NewPuzzle() {
 	if data.CurrPuzzle != nil {
 		PuzzleDispose(true)
 	}
 	data.CurrPuzzle = data.CreateBlankPuzzle()
 	PuzzleInit()
-	UpdateWorldShaders()
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
 }
 
 func SavePuzzle() {
@@ -145,7 +159,8 @@ func OpenPuzzle(filename string) error {
 		return errors.Wrap(err, errMsg)
 	}
 	PuzzleInit()
-	UpdateWorldShaders()
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
 	fmt.Printf("INFO: loaded puzzle from %s\n", filename)
 	return nil
 }

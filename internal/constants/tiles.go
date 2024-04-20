@@ -1,7 +1,5 @@
 package constants
 
-import "image/color"
-
 // Editor Tiles
 const (
 	TileLadderBottom    = "ladder_bottom"
@@ -62,6 +60,7 @@ const (
 	TileLockBrown  = "lock_brown"
 
 	TileDemonRegen = "demon_regen_tile"
+	TileFlyRegen   = "fly_regen_tile"
 
 	TileFall        = "fall"
 	TilePhase       = "phase"
@@ -110,139 +109,4 @@ const (
 	DoodadChain   = "chain"
 	DoodadReeds   = "reeds"
 	DoodadFlowers = "flowers"
-)
-
-// World Names
-const (
-	WorldRock = iota
-	WorldSlate
-	WorldBrick
-	WorldGravel
-	WorldDirt
-	WorldStone
-	WorldShell
-	WorldMetal
-	WorldIce
-	WorldTree
-	WorldCustom
-)
-
-var (
-	ColorBlack = color.RGBA{
-		R: 19,
-		G: 19,
-		B: 19,
-		A: 255,
-	}
-	ColorWhite = color.RGBA{
-		R: 245,
-		G: 245,
-		B: 245,
-		A: 255,
-	}
-	ColorRed = color.RGBA{
-		R: 255,
-		G: 77,
-		B: 77,
-		A: 255,
-	}
-	ColorBlue = color.RGBA{
-		R: 75,
-		G: 122,
-		B: 255,
-		A: 255,
-	}
-	ColorGreen = color.RGBA{
-		R: 94,
-		G: 143,
-		B: 86,
-		A: 255,
-	}
-	ColorOrange = color.RGBA{
-		R: 255,
-		G: 149,
-		B: 75,
-		A: 255,
-	}
-	ColorPurple = color.RGBA{
-		R: 163,
-		G: 73,
-		B: 177,
-		A: 255,
-	}
-	ColorYellow = color.RGBA{
-		R: 255,
-		G: 213,
-		B: 9,
-		A: 255,
-	}
-	ColorGray = color.RGBA{
-		R: 91,
-		G: 91,
-		B: 91,
-		A: 255,
-	}
-	ColorBrown = color.RGBA{
-		R: 121,
-		G: 95,
-		B: 67,
-		A: 255,
-	}
-	ColorCyan = color.RGBA{
-		R: 26,
-		G: 202,
-		B: 202,
-		A: 255,
-	}
-	ColorTan = color.RGBA{
-		R: 255,
-		G: 204,
-		B: 149,
-		A: 255,
-	}
-
-	Player1Color = ColorBlue
-	Player2Color = ColorOrange
-	Player3Color = ColorPurple
-	Player4Color = ColorYellow
-
-	WorldSprites = map[int]string{
-		WorldRock:   "rock",
-		WorldSlate:  "slate",
-		WorldBrick:  "brick",
-		WorldGravel: "gravel",
-		WorldDirt:   "dirt",
-		WorldStone:  "stone",
-		WorldShell:  "shell",
-		WorldMetal:  "metal",
-		WorldIce:    "ice",
-		WorldTree:   "tree",
-		WorldCustom: "custom",
-	}
-
-	WorldPrimary = map[int]color.RGBA{
-		WorldRock:   ColorGray,
-		WorldSlate:  ColorOrange,
-		WorldBrick:  ColorRed,
-		WorldGravel: ColorBlue,
-		WorldDirt:   ColorBrown,
-		WorldStone:  ColorGreen,
-		WorldShell:  ColorYellow,
-		WorldMetal:  ColorPurple,
-		WorldIce:    ColorCyan,
-		WorldTree:   ColorGreen,
-	}
-
-	WorldSecondary = map[int]color.RGBA{
-		WorldRock:   ColorGreen,
-		WorldSlate:  ColorTan,
-		WorldBrick:  ColorBlue,
-		WorldGravel: ColorGray,
-		WorldDirt:   ColorGray,
-		WorldStone:  ColorOrange,
-		WorldShell:  ColorBrown,
-		WorldMetal:  ColorRed,
-		WorldIce:    ColorWhite,
-		WorldTree:   ColorBrown,
-	}
 )

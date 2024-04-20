@@ -86,7 +86,7 @@ type Selection struct {
 }
 
 func CreateBlankPuzzle() *Puzzle {
-	worldNum := constants.WorldRock
+	worldNum := constants.WorldMoss
 	md := &PuzzleMetadata{
 		Name:           "",
 		Filename:       "",
@@ -94,6 +94,7 @@ func CreateBlankPuzzle() *Puzzle {
 		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
+		MusicTrack:     constants.WorldMusic[worldNum],
 		Completed:      false,
 	}
 	puz := &Puzzle{

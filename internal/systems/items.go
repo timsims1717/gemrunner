@@ -25,8 +25,8 @@ func CreateGem(pos pixel.Vec, key string) {
 	batch := img.Batchers[constants.TileBatch]
 	color := strings.Replace(key, "gem_", "", -1)
 	gemSpr := reanimator.NewBatchSprite("gem", batch, key, reanimator.Hold)
-	shimmer := reanimator.NewBatchAnimation("shimmer", batch, fmt.Sprintf("gem_%s_shimmer", color), reanimator.Tran)
-	shimmer.SetTrigger(3, func() {
+	shimmer := reanimator.NewBatchAnimationCustom("shimmer", batch, fmt.Sprintf("gem_%s_shimmer", color), []int{0, 0, 1, 1, 2, 2}, reanimator.Tran)
+	shimmer.SetEndTrigger(func() {
 		gemShimmer = false
 	})
 	anim := reanimator.New(reanimator.NewSwitch().
@@ -178,12 +178,43 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
 	e.AddComponent(myecs.PickUp, data.NewPickUp(10, true))
+	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	box := data.NewDynamic()
 	box.Object = obj
 	box.Entity = e
 	box.Flags.NoLadders = true
 	e.AddComponent(myecs.Dynamic, box)
+}
+
+func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	if (ch.Object.Flip && !ch.Flags.LeftWall) ||
+		(!ch.Object.Flip && !ch.Flags.RightWall) {
+		// throw if space to throw
+		// set action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.ThrowBox
+		// update box
+		DropItem(ch)
+		if c, okC := entity.GetComponentData(myecs.Dynamic); okC {
+			box := c.(*data.Dynamic)
+			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			chT := data.CurrLevel.Tiles.Get(chX, chY)
+			box.Object.Pos.X = chT.Object.Pos.X
+			box.Object.Pos.Y = chT.Object.Pos.Y + 1
+			box.LastTile = chT
+			box.Flags.Thrown = true
+			box.ACounter = 0
+			if ch.Object.Flip {
+				box.Flags.JumpL = true
+			} else {
+				box.Flags.JumpR = true
+			}
+		}
+	} else {
+		// just drop
+		DropItem(ch)
+	}
 }
 
 func BoxBonk(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
@@ -197,38 +228,6 @@ func BoxBonk(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 			(ch.State != data.Falling || ch.Vars.Gravity < box.Vars.Gravity) {
 			ch.Flags.Hit = true
 			ch.State = data.Hit
-			//for i := 0; i < 5; i++ {
-			//	pObj := object.New()
-			//	pObj.Pos = box.Object.Pos
-			//	pObj.Layer = 12
-			//	switch i {
-			//	case 0:
-			//		pObj.Pos = pObj.Pos.Add(pixel.V(-5, 5))
-			//	case 1:
-			//		pObj.Pos = pObj.Pos.Add(pixel.V(-7, -3))
-			//	case 2:
-			//		pObj.Pos = pObj.Pos.Add(pixel.V(6, 6))
-			//	case 3:
-			//		pObj.Pos = pObj.Pos.Add(pixel.V(5, 0))
-			//	case 4:
-			//		pObj.Pos = pObj.Pos.Add(pixel.V(4, -5))
-			//	}
-			//	end := 7
-			//	count := 0
-			//	e := myecs.Manager.NewEntity()
-			//	e.AddComponent(myecs.Object, pObj)
-			//	e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("%s%d", constants.ItemBoxPiece, i), constants.TileBatch))
-			//	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-			//	e.AddComponent(myecs.Update, data.NewFn(func() {
-			//		if reanimator.FrameSwitch {
-			//			count++
-			//			if count >= end {
-			//				myecs.Manager.DisposeEntity(e)
-			//			}
-			//		}
-			//	}))
-			//}
-			//myecs.Manager.DisposeEntity(entity)
 		}
 	}
 }
@@ -257,10 +256,10 @@ func CreateKey(pos pixel.Vec, key string) {
 func KeyAction(color string) *data.Interact {
 	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if KeyUnlock(level, ch.Object.Pos, color) {
-			DropLift(ch, false)
+			//DropLift(ch, false)
+			DropItem(ch)
 			myecs.Manager.DisposeEntity(entity)
 		}
-		ch.Flags.Using = false
 	})
 }
 

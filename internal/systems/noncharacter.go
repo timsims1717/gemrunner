@@ -1,10 +1,12 @@
 package systems
 
 import (
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 )
 
@@ -21,13 +23,13 @@ func DynamicSystem() {
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
 					currTile := data.CurrLevel.Tiles.Get(x, y)
 					if !d.Flags.Floor {
-						if d.Flags.Throw {
+						if d.Flags.Thrown {
 							thrown(d, currTile)
 						} else {
 							falling(d, currTile)
 						}
 					} else {
-						d.Flags.Throw = false
+						d.Flags.Thrown = false
 						d.Flags.JumpL = false
 						d.Flags.JumpR = false
 					}
@@ -55,6 +57,39 @@ func SmashSystem() {
 					*s = obj.Pos.Y
 				}
 			}
+		}
+	}
+}
+
+func thrown(ch *data.Dynamic, tile *data.Tile) {
+	if (ch.ACounter > constants.ThrownCounter) ||
+		(ch.Flags.LeftWall || ch.Flags.RightWall) ||
+		ch.Flags.Floor {
+		ch.Flags.Thrown = false
+		ch.Flags.JumpL = false
+		ch.Flags.JumpR = false
+	} else {
+		if ch.Flags.JumpR {
+			if ch.Flags.HeldNFlip {
+				ch.Object.Flip = false
+			}
+			if !ch.Flags.RightWall {
+				ch.Object.Pos.X += constants.ThrownHSpeed
+			}
+		} else if ch.Flags.JumpL {
+			if ch.Flags.HeldNFlip {
+				ch.Object.Flip = true
+			}
+			if !ch.Flags.LeftWall {
+				ch.Object.Pos.X -= constants.ThrownHSpeed
+			}
+		}
+		if tile.Coords != ch.LastTile.Coords {
+			if util.Abs(tile.Coords.X-ch.LastTile.Coords.X) > 1 {
+				ch.Object.Pos.Y -= constants.ThrownVSpeed
+			}
+		} else {
+			ch.Object.Pos.Y += constants.ThrownVSpeed
 		}
 	}
 }

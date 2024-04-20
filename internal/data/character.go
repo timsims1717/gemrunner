@@ -4,17 +4,16 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
-	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 )
 
 type Dynamic struct {
-	Object    *object.Object
-	Anim      *reanimator.Tree
-	Entity    *ecs.Entity
-	Held      *ecs.Entity
-	HeldObj   *object.Object
+	Object *object.Object
+	Anim   *reanimator.Tree
+	Entity *ecs.Entity
+	//Held      *ecs.Entity
+	//HeldObj   *object.Object
 	Inventory *ecs.Entity
 	Control   Controller
 
@@ -23,9 +22,7 @@ type Dynamic struct {
 	Flags    Flags
 	Vars     Vars
 	Options  CharacterOptions
-	ATimer   *timing.Timer
 	ACounter int
-	//BTimer  *timing.Timer
 	LastTile *Tile
 	MoveType MoveType
 	Player   int
@@ -81,7 +78,6 @@ type Actions struct {
 	PrevDirection Direction
 	Jump          bool
 	PickUp        bool
-	Stow          bool
 	Action        bool
 }
 
@@ -113,15 +109,12 @@ type Vars struct {
 	LeapSpeed    float64
 	ClimbSpeed   float64
 	SlideSpeed   float64
-	LeapDelay    float64
 	Gravity      float64
 	HiJumpVSpeed float64
 	HiJumpHSpeed float64
-	HiJumpTimer  float64
 	HiJumpCntr   float64
 	LgJumpVSpeed float64
 	LgJumpHSpeed float64
-	LgJumpTimer  float64
 	LgJumpCntr   float64
 	IdleFreq     int
 }
@@ -135,12 +128,19 @@ const (
 	Jumping
 	Leaping
 	Flying
-	Carried
-	Thrown
+	DoingAction
 	Attack
 	Hit
+	Dying
 	Dead
 	Regen
+)
+
+type ItemAction int
+
+const (
+	NoItemAction = iota
+	ThrowBox
 )
 
 func (s CharacterState) String() string {
@@ -157,12 +157,14 @@ func (s CharacterState) String() string {
 		return "Leaping"
 	case Flying:
 		return "Flying"
-	case Carried:
-		return "Carried"
+	case DoingAction:
+		return "DoingAction"
 	case Attack:
 		return "Attack"
 	case Hit:
 		return "Hit"
+	case Dying:
+		return "Dying"
 	case Dead:
 		return "Dead"
 	}
@@ -178,7 +180,6 @@ type Flags struct {
 	EnemyR    bool
 	EnemyU    bool
 	EnemyD    bool
-	OnFall    bool
 	NoLadders bool
 	GoingUp   bool
 	Climbed   bool
@@ -191,9 +192,7 @@ type Flags struct {
 	JumpR     bool
 	JumpL     bool
 	Action    bool
-	Using     bool
-	PickUp    bool
-	Throw     bool
+	Thrown    bool
 	//Drop      bool
 	//HoldSwitch bool
 	HeldFlip   bool
@@ -207,11 +206,13 @@ type Flags struct {
 	JumpBuff   int
 	PickUpBuff int
 	ActionBuff int
-	StowBuff   int
+	ItemAction ItemAction
 }
 
 type CharacterOptions struct {
 	Regen       bool
+	RegenFlip   bool
+	Flying      bool
 	LinkedTiles []world.Coords
 }
 
@@ -230,19 +231,16 @@ const (
 
 func PlayerVars() Vars {
 	return Vars{
-		WalkSpeed:    constants.PlayerWalkSpeed,
-		LeapSpeed:    constants.PlayerLeapSpeed,
-		ClimbSpeed:   constants.PlayerClimbSpeed,
-		SlideSpeed:   constants.PlayerSlideSpeed,
-		LeapDelay:    constants.PlayerLeapDelay,
-		Gravity:      constants.PlayerGravity,
-		HiJumpVSpeed: constants.PlayerHighJumpSpeed,
-		HiJumpHSpeed: constants.PlayerHighJumpHSpeed,
-		HiJumpTimer:  constants.PlayerHighJumpTimer,
+		WalkSpeed:    constants.PlayerWalkSpeed - constants.SpeedMod,
+		LeapSpeed:    constants.PlayerLeapSpeed - constants.SpeedMod,
+		ClimbSpeed:   constants.PlayerClimbSpeed - constants.SpeedMod,
+		SlideSpeed:   constants.PlayerSlideSpeed - constants.SpeedMod,
+		Gravity:      constants.PlayerGravity - constants.SpeedMod,
+		HiJumpVSpeed: constants.PlayerHighJumpSpeed - constants.SpeedMod,
+		HiJumpHSpeed: constants.PlayerHighJumpHSpeed - constants.SpeedMod,
 		HiJumpCntr:   constants.PlayerHighJumpCounter,
-		LgJumpVSpeed: constants.PlayerLongJumpVSpeed,
-		LgJumpHSpeed: constants.PlayerLongJumpHSpeed,
-		LgJumpTimer:  constants.PlayerLongJumpTimer,
+		LgJumpVSpeed: constants.PlayerLongJumpVSpeed - constants.SpeedMod,
+		LgJumpHSpeed: constants.PlayerLongJumpHSpeed - constants.SpeedMod,
 		LgJumpCntr:   constants.PlayerLongJumpCounter,
 		IdleFreq:     constants.IdleFrequency,
 	}
@@ -250,19 +248,16 @@ func PlayerVars() Vars {
 
 func DemonVars() Vars {
 	return Vars{
-		WalkSpeed:    constants.DemonWalkSpeed,
-		LeapSpeed:    constants.DemonLeapSpeed,
-		ClimbSpeed:   constants.DemonClimbSpeed,
-		SlideSpeed:   constants.DemonSlideSpeed,
-		LeapDelay:    constants.DemonLeapDelay,
-		Gravity:      constants.DemonGravity,
-		HiJumpVSpeed: constants.DemonHighJumpSpeed,
-		HiJumpHSpeed: constants.DemonHighJumpHSpeed,
-		HiJumpTimer:  constants.DemonHighJumpTimer,
+		WalkSpeed:    constants.DemonWalkSpeed - constants.SpeedMod,
+		LeapSpeed:    constants.DemonLeapSpeed - constants.SpeedMod,
+		ClimbSpeed:   constants.DemonClimbSpeed - constants.SpeedMod,
+		SlideSpeed:   constants.DemonSlideSpeed - constants.SpeedMod,
+		Gravity:      constants.DemonGravity - constants.SpeedMod,
+		HiJumpVSpeed: constants.DemonHighJumpSpeed - constants.SpeedMod,
+		HiJumpHSpeed: constants.DemonHighJumpHSpeed - constants.SpeedMod,
 		HiJumpCntr:   constants.DemonHighJumpCounter,
-		LgJumpVSpeed: constants.DemonLongJumpVSpeed,
-		LgJumpHSpeed: constants.DemonLongJumpHSpeed,
-		LgJumpTimer:  constants.DemonLongJumpTimer,
+		LgJumpVSpeed: constants.DemonLongJumpVSpeed - constants.SpeedMod,
+		LgJumpHSpeed: constants.DemonLongJumpHSpeed - constants.SpeedMod,
 		LgJumpCntr:   constants.DemonLongJumpCounter,
 		IdleFreq:     constants.IdleFrequency,
 	}

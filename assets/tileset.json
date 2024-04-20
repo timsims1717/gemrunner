@@ -495,7 +495,70 @@
 
 
 
-
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 320,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 336,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 352,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 368,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 384,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 400,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 416,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "cracking",
+      "anim": true,
+      "x": 432,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
     {
       "key": "collapse",
       "anim": true,
@@ -537,6 +600,30 @@
       "w": 16
     },
     {
+      "key": "collapse",
+      "anim": true,
+      "x": 400,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "collapse",
+      "anim": true,
+      "x": 416,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "collapse",
+      "anim": true,
+      "x": 432,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "regen",
       "anim": true,
       "x": 320,
@@ -572,6 +659,30 @@
       "key": "regen",
       "anim": true,
       "x": 384,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "regen",
+      "anim": true,
+      "x": 400,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "regen",
+      "anim": true,
+      "x": 416,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "regen",
+      "anim": true,
+      "x": 432,
       "y": 16,
       "h": 16,
       "w": 16
@@ -596,39 +707,15 @@
       "w": 16
     },
     {
-      "key": "cracking0",
-      "anim": true,
-      "x": 48,
-      "y": 112,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "cracking1",
-      "anim": true,
-      "x": 48,
-      "y": 96,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "cracking2",
-      "anim": true,
-      "x": 48,
-      "y": 80,
+      "key": "cracked_show",
+      "x": 32,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "cracked",
       "x": 48,
-      "y": 64,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "cracked_show",
-      "x": 32,
       "y": 64,
       "h": 16,
       "w": 16
@@ -882,116 +969,172 @@
     {
       "key": "door_yellow_open",
       "anim": true,
-      "x": 64,
-      "y": 112,
+      "x": 384,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_yellow_open",
       "anim": true,
-      "x": 80,
-      "y": 112,
+      "x": 400,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_yellow_open",
       "anim": true,
-      "x": 96,
-      "y": 112,
+      "x": 416,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_yellow_open",
       "anim": true,
-      "x": 112,
-      "y": 112,
+      "x": 432,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 384,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 400,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_yellow_open",
+      "anim": true,
+      "x": 416,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_yellow",
-      "x": 64,
-      "y": 96,
+      "x": 432,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_yellow",
-      "x": 80,
-      "y": 96,
+      "x": 384,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_yellow",
-      "x": 96,
-      "y": 96,
+      "x": 384,
+      "y": 224,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 64,
-      "y": 80,
+      "x": 384,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 80,
-      "y": 80,
+      "x": 400,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 96,
-      "y": 80,
+      "x": 416,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 112,
-      "y": 80,
+      "x": 432,
+      "y": 160 ,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 64,
-      "y": 64,
+      "x": 384,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 80,
-      "y": 64,
+      "x": 400,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow_open",
       "anim": true,
-      "x": 96,
-      "y": 64,
+      "x": 416,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 432,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 384,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 400,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_yellow_open",
+      "anim": true,
+      "x": 416,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_yellow",
-      "x": 112,
-      "y": 64,
+      "x": 432,
+      "y": 128,
       "h": 16,
       "w": 16
     },
@@ -1001,116 +1144,172 @@
     {
       "key": "door_orange_open",
       "anim": true,
-      "x": 128,
-      "y": 112,
+      "x": 448,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_orange_open",
       "anim": true,
-      "x": 144,
-      "y": 112,
+      "x": 464,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_orange_open",
       "anim": true,
-      "x": 160,
-      "y": 112,
+      "x": 480,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_orange_open",
       "anim": true,
-      "x": 176,
-      "y": 112,
+      "x": 496,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 448,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 464,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_orange_open",
+      "anim": true,
+      "x": 480,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_orange",
-      "x": 128,
-      "y": 96,
+      "x": 496,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_orange",
-      "x": 144,
-      "y": 96,
+      "x": 448,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_orange",
-      "x": 160,
-      "y": 96,
+      "x": 448,
+      "y": 224,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 128,
-      "y": 80,
+      "x": 448,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 144,
-      "y": 80,
+      "x": 464,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 160,
-      "y": 80,
+      "x": 480,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 176,
-      "y": 80,
+      "x": 496,
+      "y": 160 ,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 128,
-      "y": 64,
+      "x": 448,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 144,
-      "y": 64,
+      "x": 464,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange_open",
       "anim": true,
-      "x": 160,
-      "y": 64,
+      "x": 480,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 496,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 448,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 464,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_orange_open",
+      "anim": true,
+      "x": 480,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_orange",
-      "x": 176,
-      "y": 64,
+      "x": 496,
+      "y": 128,
       "h": 16,
       "w": 16
     },
@@ -1120,116 +1319,172 @@
     {
       "key": "door_gray_open",
       "anim": true,
-      "x": 192,
-      "y": 112,
+      "x": 512,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_gray_open",
       "anim": true,
-      "x": 208,
-      "y": 112,
+      "x": 528,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_gray_open",
       "anim": true,
-      "x": 224,
-      "y": 112,
+      "x": 544,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_gray_open",
       "anim": true,
-      "x": 240,
-      "y": 112,
+      "x": 560,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 512,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 528,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_gray_open",
+      "anim": true,
+      "x": 544,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_gray",
-      "x": 192,
-      "y": 96,
+      "x": 560,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_gray",
-      "x": 208,
-      "y": 96,
+      "x": 512,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_gray",
-      "x": 224,
-      "y": 96,
+      "x": 512,
+      "y": 224,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 192,
-      "y": 80,
+      "x": 512,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 208,
-      "y": 80,
+      "x": 528,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 224,
-      "y": 80,
+      "x": 544,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 240,
-      "y": 80,
+      "x": 560,
+      "y": 160 ,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 192,
-      "y": 64,
+      "x": 512,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 208,
-      "y": 64,
+      "x": 528,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray_open",
       "anim": true,
-      "x": 224,
-      "y": 64,
+      "x": 544,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 560,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 512,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 528,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_gray_open",
+      "anim": true,
+      "x": 544,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_gray",
-      "x": 240,
-      "y": 64,
+      "x": 560,
+      "y": 128,
       "h": 16,
       "w": 16
     },
@@ -1239,116 +1494,172 @@
     {
       "key": "door_cyan_open",
       "anim": true,
-      "x": 256,
-      "y": 112,
+      "x": 576,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_cyan_open",
       "anim": true,
-      "x": 272,
-      "y": 112,
+      "x": 592,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_cyan_open",
       "anim": true,
-      "x": 288,
-      "y": 112,
+      "x": 608,
+      "y": 192,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_cyan_open",
       "anim": true,
-      "x": 304,
-      "y": 112,
+      "x": 624,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 576,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 592,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_cyan_open",
+      "anim": true,
+      "x": 608,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_cyan",
-      "x": 256,
-      "y": 96,
+      "x": 624,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_cyan",
-      "x": 272,
-      "y": 96,
+      "x": 576,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_cyan",
-      "x": 288,
-      "y": 96,
+      "x": 576,
+      "y": 224,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 256,
-      "y": 80,
+      "x": 576,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 272,
-      "y": 80,
+      "x": 592,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 288,
-      "y": 80,
+      "x": 608,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 304,
-      "y": 80,
+      "x": 624,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 256,
-      "y": 64,
+      "x": 576,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 272,
-      "y": 64,
+      "x": 592,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan_open",
       "anim": true,
-      "x": 288,
-      "y": 64,
+      "x": 608,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 624,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 576,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 592,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_cyan_open",
+      "anim": true,
+      "x": 608,
+      "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_cyan",
-      "x": 304,
-      "y": 64,
+      "x": 624,
+      "y": 128,
       "h": 16,
       "w": 16
     },
@@ -1359,7 +1670,7 @@
       "key": "door_blue_open",
       "anim": true,
       "x": 0,
-      "y": 176,
+      "y": 192,
       "h": 16,
       "w": 16
     },
@@ -1367,7 +1678,7 @@
       "key": "door_blue_open",
       "anim": true,
       "x": 16,
-      "y": 176,
+      "y": 192,
       "h": 16,
       "w": 16
     },
@@ -1375,7 +1686,7 @@
       "key": "door_blue_open",
       "anim": true,
       "x": 32,
-      "y": 176,
+      "y": 192,
       "h": 16,
       "w": 16
     },
@@ -1383,27 +1694,83 @@
       "key": "door_blue_open",
       "anim": true,
       "x": 48,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 0,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 16,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_blue_open",
+      "anim": true,
+      "x": 32,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_blue",
+      "x": 48,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lock_blue",
+      "x": 0,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "key_blue",
+      "x": 0,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
       "x": 0,
       "y": 160,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_blue",
+      "key": "unlock_blue_open",
+      "anim": true,
       "x": 16,
       "y": 160,
       "h": 16,
       "w": 16
     },
     {
-      "key": "key_blue",
+      "key": "unlock_blue_open",
+      "anim": true,
       "x": 32,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_blue_open",
+      "anim": true,
+      "x": 48,
       "y": 160,
       "h": 16,
       "w": 16
@@ -1477,7 +1844,39 @@
     {
       "key": "door_green_open",
       "anim": true,
-      "x": 64,
+      "x": 128,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 144,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 128,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 144,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 128,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1485,7 +1884,7 @@
     {
       "key": "door_green_open",
       "anim": true,
-      "x": 80,
+      "x": 144,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1493,36 +1892,36 @@
     {
       "key": "door_green_open",
       "anim": true,
-      "x": 96,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_green_open",
-      "anim": true,
-      "x": 112,
+      "x": 128,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_green",
-      "x": 64,
-      "y": 160,
+      "x": 144,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_green",
-      "x": 80,
-      "y": 160,
+      "x": 96,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_green",
       "x": 96,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 128,
       "y": 160,
       "h": 16,
       "w": 16
@@ -1530,7 +1929,31 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 64,
+      "x": 144,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 128,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 144,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_green_open",
+      "anim": true,
+      "x": 128,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1538,7 +1961,7 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 80,
+      "x": 144,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1546,7 +1969,7 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 96,
+      "x": 128,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1554,7 +1977,7 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 112,
+      "x": 144,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1562,7 +1985,7 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 64,
+      "x": 128,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1570,7 +1993,7 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 80,
+      "x": 144,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1578,14 +2001,14 @@
     {
       "key": "unlock_green_open",
       "anim": true,
-      "x": 96,
+      "x": 128,
       "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_green",
-      "x": 112,
+      "x": 144,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1596,7 +2019,39 @@
     {
       "key": "door_purple_open",
       "anim": true,
-      "x": 128,
+      "x": 192,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 208,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 224,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 240,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_purple_open",
+      "anim": true,
+      "x": 192,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1604,7 +2059,7 @@
     {
       "key": "door_purple_open",
       "anim": true,
-      "x": 144,
+      "x": 208,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1612,36 +2067,36 @@
     {
       "key": "door_purple_open",
       "anim": true,
-      "x": 160,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_purple_open",
-      "anim": true,
-      "x": 176,
+      "x": 224,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_purple",
-      "x": 128,
-      "y": 160,
+      "x": 240,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_purple",
-      "x": 144,
-      "y": 160,
+      "x": 192,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_purple",
-      "x": 160,
+      "x": 192,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 192,
       "y": 160,
       "h": 16,
       "w": 16
@@ -1649,7 +2104,31 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 128,
+      "x": 208,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 224,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 240,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_purple_open",
+      "anim": true,
+      "x": 192,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1657,7 +2136,7 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 144,
+      "x": 208,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1665,7 +2144,7 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 160,
+      "x": 224,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1673,7 +2152,7 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 176,
+      "x": 240,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1681,7 +2160,7 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 128,
+      "x": 192,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1689,7 +2168,7 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 144,
+      "x": 208,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1697,14 +2176,14 @@
     {
       "key": "unlock_purple_open",
       "anim": true,
-      "x": 160,
+      "x": 224,
       "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_purple",
-      "x": 176,
+      "x": 240,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1715,7 +2194,39 @@
     {
       "key": "door_brown_open",
       "anim": true,
-      "x": 192,
+      "x": 288,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 304,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 320,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 336,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_brown_open",
+      "anim": true,
+      "x": 288,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1723,7 +2234,7 @@
     {
       "key": "door_brown_open",
       "anim": true,
-      "x": 208,
+      "x": 304,
       "y": 176,
       "h": 16,
       "w": 16
@@ -1731,36 +2242,36 @@
     {
       "key": "door_brown_open",
       "anim": true,
-      "x": 224,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_brown_open",
-      "anim": true,
-      "x": 240,
+      "x": 320,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "door_brown",
-      "x": 192,
-      "y": 160,
+      "x": 336,
+      "y": 176,
       "h": 16,
       "w": 16
     },
     {
       "key": "lock_brown",
-      "x": 208,
-      "y": 160,
+      "x": 288,
+      "y": 144,
       "h": 16,
       "w": 16
     },
     {
       "key": "key_brown",
-      "x": 224,
+      "x": 288,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 288,
       "y": 160,
       "h": 16,
       "w": 16
@@ -1768,7 +2279,31 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 192,
+      "x": 304,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 320,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 336,
+      "y": 160 ,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "unlock_brown_open",
+      "anim": true,
+      "x": 288,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1776,7 +2311,7 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 208,
+      "x": 304,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1784,7 +2319,7 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 224,
+      "x": 320,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1792,7 +2327,7 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 240,
+      "x": 336,
       "y": 144,
       "h": 16,
       "w": 16
@@ -1800,7 +2335,7 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 192,
+      "x": 288,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1808,7 +2343,7 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 208,
+      "x": 304,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1816,14 +2351,14 @@
     {
       "key": "unlock_brown_open",
       "anim": true,
-      "x": 224,
+      "x": 320,
       "y": 128,
       "h": 16,
       "w": 16
     },
     {
       "key": "unlock_brown",
-      "x": 240,
+      "x": 336,
       "y": 128,
       "h": 16,
       "w": 16
@@ -1834,105 +2369,112 @@
     {
       "key": "player1",
       "x": 0,
-      "y": 288,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2",
-      "x": 64,
-      "y": 288,
+      "x": 96,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3",
-      "x": 128,
-      "y": 288,
+      "x": 192,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4",
-      "x": 192,
-      "y": 288,
+      "x": 288,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon",
-      "x": 256,
-      "y": 288,
+      "x": 384,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly",
-      "x": 368,
-      "y": 304,
+      "x": 512,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_regen_tile",
-      "x": 288,
-      "y": 320,
+      "x": 448,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen_tile",
+      "x": 560,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_blue",
-      "x": 256,
-      "y": 176,
+      "x": 0,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_green",
-      "x": 256,
-      "y": 160,
+      "x": 96,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_purple",
-      "x": 256,
-      "y": 144,
+      "x": 192,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_brown",
-      "x": 256,
-      "y": 128,
+      "x": 288,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_yellow",
-      "x": 320,
-      "y": 176,
+      "x": 384,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_orange",
-      "x": 320,
-      "y": 160,
+      "x": 448,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_gray",
-      "x": 320,
-      "y": 144,
+      "x": 512,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_cyan",
-      "x": 320,
-      "y": 128,
+      "x": 576,
+      "y": 208,
       "h": 16,
       "w": 16
     },
@@ -1963,32 +2505,64 @@
     {
       "key": "player1_regen",
       "anim": true,
-      "x": 0,
-      "y": 320,
+      "x": 64,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player1_idle",
       "anim": true,
-      "x": 0,
-      "y": 304,
+      "x": 64,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player1_idle",
+      "anim": true,
+      "x": 80,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_idle",
+      "anim": true,
+      "x": 64,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_run",
+      "anim": true,
+      "x": 0,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_run",
       "anim": true,
       "x": 16,
-      "y": 304,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_idle",
+      "key": "player1_run",
       "anim": true,
       "x": 32,
-      "y": 304,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_run",
+      "anim": true,
+      "x": 48,
+      "y": 384,
       "h": 16,
       "w": 16
     },
@@ -1996,7 +2570,7 @@
       "key": "player1_run",
       "anim": true,
       "x": 0,
-      "y": 288,
+      "y": 368,
       "h": 16,
       "w": 16
     },
@@ -2004,7 +2578,7 @@
       "key": "player1_run",
       "anim": true,
       "x": 16,
-      "y": 288,
+      "y": 368,
       "h": 16,
       "w": 16
     },
@@ -2012,7 +2586,15 @@
       "key": "player1_run",
       "anim": true,
       "x": 32,
-      "y": 288,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_run",
+      "anim": true,
+      "x": 48,
+      "y": 368,
       "h": 16,
       "w": 16
     },
@@ -2020,7 +2602,7 @@
       "key": "player1_jump",
       "anim": true,
       "x": 0,
-      "y": 272,
+      "y": 352,
       "h": 16,
       "w": 16
     },
@@ -2028,23 +2610,7 @@
       "key": "player1_fall",
       "anim": true,
       "x": 16,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_jump_hold",
-      "anim": true,
-      "x": 32,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_fall_hold",
-      "anim": true,
-      "x": 48 ,
-      "y": 272,
+      "y": 352,
       "h": 16,
       "w": 16
     },
@@ -2052,7 +2618,7 @@
       "key": "player1_climb",
       "anim": true,
       "x": 0,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
@@ -2060,7 +2626,7 @@
       "key": "player1_climb",
       "anim": true,
       "x": 16,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
@@ -2068,7 +2634,7 @@
       "key": "player1_climb",
       "anim": true,
       "x": 32,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
@@ -2076,103 +2642,95 @@
       "key": "player1_climb",
       "anim": true,
       "x": 48,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_leap",
+      "key": "player1_climb",
       "anim": true,
       "x": 0,
-      "y": 240,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_leap",
+      "key": "player1_climb",
       "anim": true,
       "x": 16,
-      "y": 240,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 32,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_climb",
+      "anim": true,
+      "x": 48,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player1_leap",
       "anim": true,
-      "x": 32,
-      "y": 240,
+      "x": 64,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_leap",
+      "anim": true,
+      "x": 80,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_leap",
+      "anim": true,
+      "x": 64,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player1_slide",
       "anim": true,
-      "x": 48,
-      "y": 240,
+      "x": 80,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_pick_up",
+      "key": "player1_throw",
       "anim": true,
       "x": 0,
-      "y": 208,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_pick_up",
-      "anim": true,
-      "x": 0,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_hold_run",
+      "key": "player1_throw",
       "anim": true,
       "x": 16,
-      "y": 224,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player1_hold_run",
+      "key": "player1_throw",
       "anim": true,
       "x": 32,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_hold_run",
-      "anim": true,
-      "x": 48,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_crush",
-      "anim": true,
-      "x": 16,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_crush",
-      "anim": true,
-      "x": 32,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player1_crush",
-      "anim": true,
-      "x": 48,
-      "y": 208,
+      "y": 304,
       "h": 16,
       "w": 16
     },
@@ -2180,7 +2738,7 @@
       "key": "player1_hit",
       "anim": true,
       "x": 0,
-      "y": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
@@ -2188,7 +2746,7 @@
       "key": "player1_hit",
       "anim": true,
       "x": 16,
-      "y": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
@@ -2196,7 +2754,7 @@
       "key": "player1_hit",
       "anim": true,
       "x": 32,
-      "y": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
@@ -2204,7 +2762,79 @@
       "key": "player1_hit",
       "anim": true,
       "x": 48,
-      "y": 192,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hit",
+      "anim": true,
+      "x": 64,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hit",
+      "anim": true,
+      "x": 80,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 0,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 0,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 16,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 32,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 48,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 64,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_crush",
+      "anim": true,
+      "x": 80,
+      "y": 256,
       "h": 16,
       "w": 16
     },
@@ -2246,48 +2876,32 @@
     {
       "key": "player2_regen",
       "anim": true,
-      "x": 64,
-      "y": 320,
+      "x": 160,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_idle",
       "anim": true,
-      "x": 64,
-      "y": 304,
+      "x": 160,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_idle",
       "anim": true,
-      "x": 80,
-      "y": 304,
+      "x": 176,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_idle",
       "anim": true,
-      "x": 96,
-      "y": 304,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_run",
-      "anim": true,
-      "x": 64,
-      "y": 288,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_run",
-      "anim": true,
-      "x": 80,
-      "y": 288,
+      "x": 160,
+      "y": 368,
       "h": 16,
       "w": 16
     },
@@ -2295,55 +2909,79 @@
       "key": "player2_run",
       "anim": true,
       "x": 96,
-      "y": 288,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 112,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 128,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 144,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 96,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 112,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 128,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_run",
+      "anim": true,
+      "x": 144,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_jump",
       "anim": true,
-      "x": 64,
-      "y": 272,
+      "x": 96,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_fall",
       "anim": true,
-      "x": 80,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_jump_hold",
-      "anim": true,
-      "x": 96,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_fall_hold",
-      "anim": true,
       "x": 112,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_climb",
-      "anim": true,
-      "x": 64,
-      "y": 256,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_climb",
-      "anim": true,
-      "x": 80,
-      "y": 256,
+      "y": 352,
       "h": 16,
       "w": 16
     },
@@ -2351,7 +2989,7 @@
       "key": "player2_climb",
       "anim": true,
       "x": 96,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
@@ -2359,119 +2997,111 @@
       "key": "player2_climb",
       "anim": true,
       "x": 112,
-      "y": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_leap",
+      "key": "player2_climb",
       "anim": true,
-      "x": 64,
-      "y": 240,
+      "x": 128,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_leap",
+      "key": "player2_climb",
       "anim": true,
-      "x": 80,
-      "y": 240,
+      "x": 144,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_leap",
+      "key": "player2_climb",
       "anim": true,
       "x": 96,
-      "y": 240,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 112,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 128,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_climb",
+      "anim": true,
+      "x": 144,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_leap",
+      "anim": true,
+      "x": 160,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_leap",
+      "anim": true,
+      "x": 176,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_leap",
+      "anim": true,
+      "x": 160,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_slide",
       "anim": true,
-      "x": 112,
-      "y": 240,
+      "x": 176,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_pick_up",
-      "anim": true,
-      "x": 64,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_pick_up",
-      "anim": true,
-      "x": 64,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_hold_run",
-      "anim": true,
-      "x": 80,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_hold_run",
+      "key": "player2_throw",
       "anim": true,
       "x": 96,
-      "y": 224,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_hold_run",
+      "key": "player2_throw",
       "anim": true,
       "x": 112,
-      "y": 224,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player2_crush",
+      "key": "player2_throw",
       "anim": true,
-      "x": 80,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_crush",
-      "anim": true,
-      "x": 96,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_crush",
-      "anim": true,
-      "x": 112,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_hit",
-      "anim": true,
-      "x": 64,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_hit",
-      "anim": true,
-      "x": 80,
-      "y": 192,
+      "x": 128,
+      "y": 304,
       "h": 16,
       "w": 16
     },
@@ -2479,7 +3109,7 @@
       "key": "player2_hit",
       "anim": true,
       "x": 96,
-      "y": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
@@ -2487,14 +3117,102 @@
       "key": "player2_hit",
       "anim": true,
       "x": 112,
-      "y": 192,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 128,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 144,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 160,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hit",
+      "anim": true,
+      "x": 176,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 96,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 96,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 112,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 128,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 144,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 160,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_crush",
+      "anim": true,
+      "x": 176,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
       "key": "player2_attack",
       "anim": true,
-      "x": 64,
+      "x": 96,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2502,23 +3220,23 @@
     {
       "key": "player2_attack",
       "anim": true,
-      "x": 80,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_attack",
-      "anim": true,
-      "x": 96,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player2_attack",
-      "anim": true,
       "x": 112,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 128,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_attack",
+      "anim": true,
+      "x": 144,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2529,255 +3247,343 @@
     {
       "key": "player3_regen",
       "anim": true,
-      "x": 128,
-      "y": 320,
+      "x": 256,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_idle",
       "anim": true,
-      "x": 128,
-      "y": 304,
+      "x": 256,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_idle",
       "anim": true,
-      "x": 144,
-      "y": 304,
+      "x": 272,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_idle",
       "anim": true,
-      "x": 160,
-      "y": 304,
+      "x": 256,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_run",
       "anim": true,
-      "x": 128,
-      "y": 288,
+      "x": 192,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_run",
       "anim": true,
-      "x": 144,
-      "y": 288,
+      "x": 208,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_run",
       "anim": true,
-      "x": 160,
-      "y": 288,
+      "x": 224,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 240,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 192,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 208,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 224,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_run",
+      "anim": true,
+      "x": 240,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_jump",
       "anim": true,
-      "x": 128,
-      "y": 272,
+      "x": 192,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_fall",
       "anim": true,
-      "x": 144,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player3_jump_hold",
-      "anim": true,
-      "x": 160,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player3_fall_hold",
-      "anim": true,
-      "x": 176,
-      "y": 272,
+      "x": 208,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_climb",
       "anim": true,
-      "x": 128,
-      "y": 256,
+      "x": 192,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_climb",
       "anim": true,
-      "x": 144,
-      "y": 256,
+      "x": 208,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_climb",
       "anim": true,
-      "x": 160,
-      "y": 256,
+      "x": 224,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_climb",
       "anim": true,
-      "x": 176,
-      "y": 256,
+      "x": 240,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 192,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 208,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 224,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_climb",
+      "anim": true,
+      "x": 240,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_leap",
       "anim": true,
-      "x": 128,
-      "y": 240,
+      "x": 256,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_leap",
       "anim": true,
-      "x": 144,
-      "y": 240,
+      "x": 272,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_leap",
       "anim": true,
-      "x": 160,
-      "y": 240,
+      "x": 256,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_slide",
       "anim": true,
-      "x": 176,
-      "y": 240,
+      "x": 272,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_pick_up",
+      "key": "player3_throw",
       "anim": true,
-      "x": 128,
-      "y": 208,
+      "x": 192,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_pick_up",
+      "key": "player3_throw",
       "anim": true,
-      "x": 128,
-      "y": 224,
+      "x": 208,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hold_run",
+      "key": "player3_throw",
       "anim": true,
-      "x": 144,
-      "y": 224,
+      "x": 224,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hold_run",
+      "key": "player3_hit",
       "anim": true,
-      "x": 160,
-      "y": 224,
+      "x": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hold_run",
+      "key": "player3_hit",
       "anim": true,
-      "x": 176,
-      "y": 224,
+      "x": 208,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hit",
+      "anim": true,
+      "x": 224,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hit",
+      "anim": true,
+      "x": 240,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hit",
+      "anim": true,
+      "x": 256,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hit",
+      "anim": true,
+      "x": 272,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_crush",
       "anim": true,
-      "x": 144,
-      "y": 208,
+      "x": 192,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_crush",
       "anim": true,
-      "x": 160,
-      "y": 208,
+      "x": 192,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_crush",
       "anim": true,
-      "x": 176,
-      "y": 208,
+      "x": 208,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hit",
+      "key": "player3_crush",
       "anim": true,
-      "x": 128,
-      "y": 192,
+      "x": 224,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hit",
+      "key": "player3_crush",
       "anim": true,
-      "x": 144,
-      "y": 192,
+      "x": 240,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hit",
+      "key": "player3_crush",
       "anim": true,
-      "x": 160,
-      "y": 192,
+      "x": 256,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_hit",
+      "key": "player3_crush",
       "anim": true,
-      "x": 176,
-      "y": 192,
+      "x": 272,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
       "key": "player3_attack",
       "anim": true,
-      "x": 128,
+      "x": 192,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2785,7 +3591,7 @@
     {
       "key": "player3_attack",
       "anim": true,
-      "x": 144,
+      "x": 208,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2793,7 +3599,7 @@
     {
       "key": "player3_attack",
       "anim": true,
-      "x": 160,
+      "x": 224,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2801,7 +3607,7 @@
     {
       "key": "player3_attack",
       "anim": true,
-      "x": 176,
+      "x": 240,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2812,651 +3618,860 @@
     {
       "key": "player4_regen",
       "anim": true,
-      "x": 192,
-      "y": 320,
+      "x": 352,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_idle",
       "anim": true,
-      "x": 192,
-      "y": 304,
+      "x": 352,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_idle",
       "anim": true,
-      "x": 208,
-      "y": 304,
+      "x": 368,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_idle",
       "anim": true,
-      "x": 224,
-      "y": 304,
+      "x": 352,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_run",
       "anim": true,
-      "x": 192,
-      "y": 288,
+      "x": 288,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_run",
       "anim": true,
-      "x": 208,
-      "y": 288,
+      "x": 304,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_run",
       "anim": true,
-      "x": 224,
-      "y": 288,
+      "x": 320,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 336,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 288,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 304,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 320,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_run",
+      "anim": true,
+      "x": 336,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_jump",
       "anim": true,
-      "x": 192,
-      "y": 272,
+      "x": 288,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_fall",
       "anim": true,
-      "x": 208,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_jump_hold",
-      "anim": true,
-      "x": 224,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_fall_hold",
-      "anim": true,
-      "x": 240,
-      "y": 272,
+      "x": 304,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_climb",
       "anim": true,
-      "x": 192,
-      "y": 256,
+      "x": 288,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_climb",
       "anim": true,
-      "x": 208,
-      "y": 256,
+      "x": 304,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_climb",
       "anim": true,
-      "x": 224,
-      "y": 256,
+      "x": 320,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_climb",
       "anim": true,
-      "x": 240,
-      "y": 256,
+      "x": 336,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 288,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 304,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 320,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_climb",
+      "anim": true,
+      "x": 336,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_leap",
       "anim": true,
-      "x": 192,
-      "y": 240,
+      "x": 352,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_leap",
       "anim": true,
-      "x": 208,
-      "y": 240,
+      "x": 368,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_leap",
       "anim": true,
-      "x": 224,
-      "y": 240,
+      "x": 352,
+      "y": 320,
       "h": 16,
       "w": 16
     },
     {
       "key": "player4_slide",
       "anim": true,
-      "x": 240,
-      "y": 240,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_pick_up",
-      "anim": true,
-      "x": 192,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_pick_up",
-      "anim": true,
-      "x": 192,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hold_run",
-      "anim": true,
-      "x": 208,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hold_run",
-      "anim": true,
-      "x": 224,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hold_run",
-      "anim": true,
-      "x": 240,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_crush",
-      "anim": true,
-      "x": 208,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_crush",
-      "anim": true,
-      "x": 224,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_crush",
-      "anim": true,
-      "x": 240,
-      "y": 208,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hit",
-      "anim": true,
-      "x": 192,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hit",
-      "anim": true,
-      "x": 208,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hit",
-      "anim": true,
-      "x": 224,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_hit",
-      "anim": true,
-      "x": 240,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_attack",
-      "anim": true,
-      "x": 192,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_attack",
-      "anim": true,
-      "x": 208,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_attack",
-      "anim": true,
-      "x": 224,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "player4_attack",
-      "anim": true,
-      "x": 240,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-
-
-
-    {
-      "key": "demon_regen",
-      "anim": true,
-      "x": 256,
+      "x": 368,
       "y": 320,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_regen",
-      "anim": true,
-      "x": 272,
-      "y": 320,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_regen",
+      "key": "player4_throw",
       "anim": true,
       "x": 288,
-      "y": 320,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_regen",
+      "key": "player4_throw",
       "anim": true,
       "x": 304,
-      "y": 320,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_regen",
+      "key": "player4_throw",
       "anim": true,
       "x": 320,
-      "y": 320,
+      "y": 304,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_regen",
+      "key": "player4_hit",
+      "anim": true,
+      "x": 288,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 304,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 320,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
       "anim": true,
       "x": 336,
-      "y": 320,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 352,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hit",
+      "anim": true,
+      "x": 368,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 288,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 288,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 304,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 320,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 336,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 352,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_crush",
+      "anim": true,
+      "x": 368,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 288,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 304,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 320,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_attack",
+      "anim": true,
+      "x": 336,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+
+
+
+
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 384,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 400,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 416,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 432,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 448,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 464,
+      "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 384,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 400,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 416,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 432,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 448,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_run",
+      "anim": true,
+      "x": 464,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_chase",
       "anim": true,
-      "x": 256,
-      "y": 304,
+      "x": 384,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_idle",
       "anim": true,
-      "x": 272,
-      "y": 304,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_run",
-      "anim": true,
-      "x": 256,
-      "y": 288,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_run",
-      "anim": true,
-      "x": 272,
-      "y": 288,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_run",
-      "anim": true,
-      "x": 288,
-      "y": 288,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_run",
-      "anim": true,
-      "x": 304,
-      "y": 288,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_run",
-      "anim": true,
-      "x": 320,
-      "y": 288,
+      "x": 400,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_jump",
       "anim": true,
-      "x": 304,
-      "y": 304,
+      "x": 432,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_fall",
       "anim": true,
-      "x": 320,
-      "y": 304,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_jump_hold",
-      "anim": true,
-      "x": 304,
-      "y": 304,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_fall_hold",
-      "anim": true,
-      "x": 320,
-      "y": 304,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 256,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 272,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 288,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 304,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 320,
-      "y": 272,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_climb",
-      "anim": true,
-      "x": 336,
-      "y": 272,
+      "x": 448,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_leap",
       "anim": true,
-      "x": 256,
-      "y": 256,
+      "x": 480,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_leap",
       "anim": true,
-      "x": 272,
-      "y": 256,
+      "x": 496,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_leap",
       "anim": true,
-      "x": 288,
-      "y": 256,
+      "x": 480,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_leap",
       "anim": true,
-      "x": 304,
-      "y": 256,
+      "x": 496,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_pick_up",
+      "key": "demon_leap",
       "anim": true,
-      "x": 272,
-      "y": 304,
+      "x": 464,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_pick_up",
+      "key": "demon_leap",
       "anim": true,
-      "x": 256,
-      "y": 304,
+      "x": 480,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hold_run",
+      "key": "demon_leap",
       "anim": true,
-      "x": 256,
-      "y": 288,
+      "x": 496,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hold_run",
+      "key": "demon_climb",
       "anim": true,
-      "x": 272,
-      "y": 288,
+      "x": 384,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hold_run",
+      "key": "demon_climb",
       "anim": true,
-      "x": 288,
-      "y": 288,
+      "x": 400,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hold_run",
+      "key": "demon_climb",
       "anim": true,
-      "x": 304,
-      "y": 288,
+      "x": 416,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hold_run",
+      "key": "demon_climb",
       "anim": true,
-      "x": 320,
-      "y": 288,
+      "x": 432,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hit",
+      "key": "demon_climb",
       "anim": true,
-      "x": 256,
-      "y": 240,
+      "x": 448,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hit",
+      "key": "demon_climb",
       "anim": true,
-      "x": 272,
-      "y": 240,
+      "x": 464,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hit",
+      "key": "demon_climb",
       "anim": true,
-      "x": 288,
-      "y": 240,
+      "x": 480,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hit",
+      "key": "demon_climb",
       "anim": true,
-      "x": 304,
-      "y": 240,
+      "x": 496,
+      "y": 336,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_hit",
+      "key": "demon_throw",
       "anim": true,
-      "x": 320,
-      "y": 240,
+      "x": 384,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
-      "key": "demon_attack",
+      "key": "demon_throw",
       "anim": true,
-      "x": 256,
-      "y": 224,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "demon_attack",
-      "anim": true,
-      "x": 272,
-      "y": 224,
+      "x": 384,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 288,
-      "y": 224,
+      "x": 384,
+      "y": 288,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_attack",
       "anim": true,
-      "x": 304,
-      "y": 224,
+      "x": 400,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 416,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 432,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 448,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_attack",
+      "anim": true,
+      "x": 464,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 384,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 400,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 416,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 432,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 448,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 464,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hit",
+      "anim": true,
+      "x": 480,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_crush",
       "anim": true,
-      "x": 256,
-      "y": 208,
+      "x": 384,
+      "y": 272,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_crush",
       "anim": true,
-      "x": 272,
-      "y": 208,
+      "x": 384,
+      "y": 256,
       "h": 16,
       "w": 16
     },
     {
       "key": "demon_crush",
       "anim": true,
-      "x": 288,
-      "y": 208,
+      "x": 400,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_crush",
+      "anim": true,
+      "x": 416,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_crush",
+      "anim": true,
+      "x": 432,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_crush",
+      "anim": true,
+      "x": 448,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_crush",
+      "anim": true,
+      "x": 464,
+      "y": 256,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 384,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 400,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 416,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 432,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 448,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 464,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 480,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_regen",
+      "anim": true,
+      "x": 496,
+      "y": 240,
       "h": 16,
       "w": 16
     },
@@ -3466,72 +4481,184 @@
 
     {
       "key": "fly_idle",
-      "x": 336,
-      "y": 304,
+      "x": 512,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_flying",
       "anim": true,
-      "x": 352,
-      "y": 304,
+      "x": 512,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_flying",
       "anim": true,
-      "x": 368,
-      "y": 304,
+      "x": 528,
+      "y": 384,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 336,
-      "y": 288,
+      "x": 512,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 352,
-      "y": 288,
+      "x": 528,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_boom",
       "anim": true,
-      "x": 368,
-      "y": 288,
+      "x": 544,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_boom",
+      "anim": true,
+      "x": 560,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_boom",
+      "anim": true,
+      "x": 576,
+      "y": 368,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_boom",
+      "anim": true,
+      "x": 592,
+      "y": 368,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_crush",
       "anim": true,
-      "x": 352,
-      "y": 272,
+      "x": 512,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_crush",
       "anim": true,
-      "x": 368,
-      "y": 272,
+      "x": 528,
+      "y": 352,
       "h": 16,
       "w": 16
     },
     {
       "key": "fly_crush",
       "anim": true,
-      "x": 384,
-      "y": 272,
+      "x": 544,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_crush",
+      "anim": true,
+      "x": 560,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_crush",
+      "anim": true,
+      "x": 576,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_crush",
+      "anim": true,
+      "x": 592,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_crush",
+      "anim": true,
+      "x": 608,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 512,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 528,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 544,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 560,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 576,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 592,
+      "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "fly_regen",
+      "anim": true,
+      "x": 608,
+      "y": 336,
       "h": 16,
       "w": 16
     },
@@ -3541,120 +4668,72 @@
     {
       "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 256,
-      "y": 176,
+      "x": 16,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 272,
-      "y": 176,
+      "x": 32,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_blue_shimmer",
       "anim": true,
-      "x": 288,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_blue_shimmer",
-      "anim": true,
-      "x": 304,
-      "y": 176,
+      "x": 48,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_green_shimmer",
       "anim": true,
-      "x": 256,
-      "y": 160,
+      "x": 112,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_green_shimmer",
       "anim": true,
-      "x": 272,
-      "y": 160,
+      "x": 128,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_green_shimmer",
       "anim": true,
-      "x": 288,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_green_shimmer",
-      "anim": true,
-      "x": 304,
-      "y": 160,
+      "x": 144,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_purple_shimmer",
       "anim": true,
-      "x": 256,
-      "y": 144,
+      "x": 208,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_purple_shimmer",
       "anim": true,
-      "x": 272,
-      "y": 144,
+      "x": 224,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_purple_shimmer",
       "anim": true,
-      "x": 288,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_purple_shimmer",
-      "anim": true,
-      "x": 304,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_brown_shimmer",
-      "anim": true,
-      "x": 256,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_brown_shimmer",
-      "anim": true,
-      "x": 272,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_brown_shimmer",
-      "anim": true,
-      "x": 288,
-      "y": 128,
+      "x": 240,
+      "y": 208,
       "h": 16,
       "w": 16
     },
@@ -3662,135 +4741,119 @@
       "key": "gem_brown_shimmer",
       "anim": true,
       "x": 304,
-      "y": 128,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 320,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_brown_shimmer",
+      "anim": true,
+      "x": 336,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_yellow_shimmer",
       "anim": true,
-      "x": 320,
-      "y": 176,
+      "x": 400,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_yellow_shimmer",
       "anim": true,
-      "x": 336,
-      "y": 176,
+      "x": 416,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_yellow_shimmer",
       "anim": true,
-      "x": 352,
-      "y": 176,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_yellow_shimmer",
-      "anim": true,
-      "x": 368,
-      "y": 176,
+      "x": 432,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_orange_shimmer",
       "anim": true,
-      "x": 320,
-      "y": 160,
+      "x": 464,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_orange_shimmer",
       "anim": true,
-      "x": 336,
-      "y": 160,
+      "x": 480,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_orange_shimmer",
       "anim": true,
-      "x": 352,
-      "y": 160,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_orange_shimmer",
-      "anim": true,
-      "x": 368,
-      "y": 160,
+      "x": 496,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_gray_shimmer",
       "anim": true,
-      "x": 320,
-      "y": 144,
+      "x": 528,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_gray_shimmer",
       "anim": true,
-      "x": 336,
-      "y": 144,
+      "x": 544,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_gray_shimmer",
       "anim": true,
-      "x": 352,
-      "y": 144,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_gray_shimmer",
-      "anim": true,
-      "x": 368,
-      "y": 144,
+      "x": 560,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_cyan_shimmer",
       "anim": true,
-      "x": 320,
-      "y": 128,
+      "x": 592,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_cyan_shimmer",
       "anim": true,
-      "x": 336,
-      "y": 128,
+      "x": 608,
+      "y": 208,
       "h": 16,
       "w": 16
     },
     {
       "key": "gem_cyan_shimmer",
       "anim": true,
-      "x": 352,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "gem_cyan_shimmer",
-      "anim": true,
-      "x": 368,
-      "y": 128,
+      "x": 624,
+      "y": 208,
       "h": 16,
       "w": 16
     }

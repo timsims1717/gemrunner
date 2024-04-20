@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
@@ -39,6 +40,7 @@ func (s *testState) Unload() {
 	systems.ClearTemp()
 	data.EditorDraw = true
 	data.CurrPuzzle.Update = true
+	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
 func (s *testState) Load() {
@@ -54,8 +56,9 @@ func (s *testState) Load() {
 	systems.LevelInit()
 	systems.UpdateViews()
 	data.EditorDraw = false
-	reanimator.SetFrameRate(15)
+	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
+	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 }
 
 func (s *testState) Update(win *pixelgl.Window) {

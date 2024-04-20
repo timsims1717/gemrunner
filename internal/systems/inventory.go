@@ -41,7 +41,7 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 		if okO && okP && !obj.Hidden &&
 			obj.ID != ch.Object.ID &&
 			!pu.NoInventory &&
-			!(pu.Held == p || pu.Inventory > -1) {
+			pu.Inventory == -1 {
 			x, y := world.WorldToMap(obj.Pos.X+obj.Offset.X, obj.Pos.Y+obj.Offset.Y)
 			pickUpCoords := world.Coords{X: x, Y: y}
 			if chCoords == pickUpCoords &&
@@ -66,17 +66,16 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 	if heldEntity.entity != nil {
 		if pu, ok := heldEntity.entity.GetComponentData(myecs.PickUp); ok {
 			pickUp := pu.(*data.PickUp)
-			// check if item is held by someone else, and drop it for them
-			if pickUp.Held > -1 {
-				DropLift(data.CurrLevel.Players[pickUp.Held], false)
-			}
+			//// check if item is held by someone else, and drop it for them
+			//if pickUp.Held > -1 {
+			//	DropLift(data.CurrLevel.Players[pickUp.Held], false)
+			//}
 			if cycle {
 				pickUp.Cycle[p]++
 			} else {
 				pickUp.Cycle[p] = 0
 			}
 			pickUp.Inventory = p
-			pickUp.Held = -1
 			heldEntity.obj.Hidden = true
 			return heldEntity.entity
 		}
@@ -98,27 +97,28 @@ func DropItem(ch *data.Dynamic) bool {
 	if ch.Inventory == nil {
 		return false
 	}
+	// set the object's new position
 	if o, okO := ch.Inventory.GetComponentData(myecs.Object); okO {
 		obj := o.(*object.Object)
 		tile := data.CurrLevel.Tiles.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
 		obj.Hidden = false
 		obj.Pos = tile.Object.Pos
+		obj.PostPos = tile.Object.Pos
 	}
+	// set the object's pickup data
 	if p, okP := ch.Inventory.GetComponentData(myecs.PickUp); okP {
 		pickUp := p.(*data.PickUp)
 		pickUp.Inventory = -1
-		pickUp.Held = -1
 	}
 	ch.Inventory = nil
 	return true
 }
 
-func DoActionInventory(ch *data.Dynamic) {
+func DoAction(ch *data.Dynamic) {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers &&
 		ch.Inventory != nil && ch.Inventory.HasComponent(myecs.Action) {
 		if fnA, ok := ch.Inventory.GetComponentData(myecs.Action); ok {
 			if colFn, okC := fnA.(*data.Interact); okC {
-				ch.Flags.Using = true
 				colFn.Fn(data.CurrLevel, int(ch.Player), ch, ch.Inventory)
 			}
 		}

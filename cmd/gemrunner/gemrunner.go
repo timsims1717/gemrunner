@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/options"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/shaders"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
@@ -75,6 +76,8 @@ func run() {
 
 	object.ILock = true
 
+	load.Music()
+
 	load.InitConstructors()
 	load.Dialogs(win)
 	systems.InitMainBorder()
@@ -120,7 +123,7 @@ func run() {
 		debug.DrawFPS(win)
 		win.SetSmooth(options.BilinearFilter)
 
-		//sfx.MusicPlayer.Update()
+		sfx.MusicPlayer.Update()
 		win.Update()
 	}
 }

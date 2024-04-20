@@ -14,5 +14,6 @@ type PuzzleMetadata struct {
 	WorldNumber    int        `json:"world"`
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`
 	SecondaryColor pixel.RGBA `json:"secondaryColor"`
+	MusicTrack     string     `json:"musicTrack"`
 	Completed      bool       `json:"completed"`
 }

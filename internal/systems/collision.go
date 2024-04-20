@@ -55,7 +55,6 @@ func setCollisionFlags(ch *data.Dynamic) {
 	ch.Flags.RightWall = false
 	ch.Flags.Ceiling = false
 	ch.Flags.Floor = false
-	ch.Flags.OnFall = false
 }
 
 func outsideOfMap(ch *data.Dynamic, x, y int) {
@@ -91,6 +90,9 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 
 func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPos pixel.Vec) {
 	// for up, we just make sure they don't enter a solid tile from below
+	if ch.Flags.Thrown {
+		return
+	}
 	if (up == nil || up.IsSolid() || enemyUp) &&
 		chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
 		ch.Flags.Ceiling = true
@@ -99,8 +101,7 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPo
 }
 
 func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, chPos pixel.Vec) {
-	standOn, standOnFalling := standOnSystem(ch.Object.ID, down)
-	ch.Flags.OnFall = standOnFalling
+	standOn, _ := standOnSystem(ch.Object.ID, down)
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if ch.Flags.NoLadders {

@@ -3,6 +3,7 @@ package systems
 import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/world"
@@ -127,21 +128,12 @@ func CharacterStateSystem() {
 							ch.State = data.Falling
 						}
 					}
-				case data.Carried:
-					if ch.Flags.HighJump || ch.Flags.LongJump {
-						ch.State = data.Jumping
-					} else if tile != nil && tile.IsLadder() { // a ladder is here
-						if ch.Actions.Direction == data.Up { // climbed the ladder
-							ch.State = data.OnLadder
-						} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
-							ch.State = data.OnLadder
-						}
-					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
-						ch.State = data.OnLadder
-					}
-				case data.Thrown:
-					if !ch.Flags.Throw {
-						if ch.Flags.Floor {
+				case data.DoingAction:
+					if ch.Flags.ItemAction == data.NoItemAction {
+						if ch.Options.Flying || ch.Flags.Flying {
+							ch.Flags.Flying = true
+							ch.State = data.Flying
+						} else if ch.Flags.Floor {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -165,7 +157,10 @@ func CharacterStateSystem() {
 					}
 				case data.Regen:
 					if !ch.Flags.Regen {
-						if ch.Flags.Floor {
+						if ch.Options.Flying {
+							ch.Flags.Flying = true
+							ch.State = data.Flying
+						} else if ch.Flags.Floor {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -174,6 +169,9 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Dead:
+					ch.Flags.Flying = false
+					ch.Flags.Attack = false
+					ch.Flags.Hit = false
 					if ch.Options.Regen {
 						var t *data.Tile
 						if len(ch.Options.LinkedTiles) > 0 {
@@ -184,22 +182,31 @@ func CharacterStateSystem() {
 						if t != nil {
 							tile = t
 							ch.Object.SetPos(t.Object.Pos)
+							if ch.Options.RegenFlip {
+								ch.Object.Flip = random.Level.Intn(2) == 0
+							}
 							ch.State = data.Regen
 							ch.Flags.Regen = true
 						}
 					}
 				}
-				if oldState != ch.State { // a state change happened
-					if oldState == data.Carried {
-						if pu, ok := ch.Entity.GetComponentData(myecs.PickUp); ok {
-							pickUp := pu.(*data.PickUp)
-							newState := ch.State
-							DropLift(data.CurrLevel.Players[pickUp.Held], false)
-							ch.State = newState
-						}
+				if ch.State != data.Dead &&
+					ch.State != data.Hit &&
+					ch.State != data.Attack &&
+					ch.State != data.DoingAction {
+					if ch.State != data.Leaping &&
+						ch.Actions.Action {
+						DoAction(ch)
+						ch.Flags.ActionBuff = 0
+					} else if ch.Actions.PickUp {
+						PickUpOrDropItem(ch, ch.Player)
+						ch.Flags.PickUpBuff = 0
 					}
+				} else if ch.State == data.Dead {
+					DropItem(ch)
+				}
+				if oldState != ch.State { // a state change happened
 					ch.ACounter = 0
-					ch.ATimer = nil
 					ch.Control.ClearPrev()
 					ch.Actions.PrevDirection = data.None
 					ch.Object.Pos.Y = tile.Object.Pos.Y
@@ -211,28 +218,11 @@ func CharacterStateSystem() {
 					}
 					ch.Flags.Climbed = false
 					ch.Flags.GoingUp = false
-				}
-				updateHeldItem(ch, ch.Object.Flip)
-				if ch.State != data.Dead &&
-					ch.State != data.Hit &&
-					ch.State != data.Attack {
-					if ch.State != data.Leaping &&
-						ch.Actions.Action {
-						DoAction(ch)
-						ch.Flags.ActionBuff = 0
-						//} else if ch.Actions.Stow && !ch.Flags.Using {
-						//	PickUpOrDropItem(ch, int(ch.Player))
-						//	ch.Flags.StowBuff = 0
-					} else if ch.State != data.Leaping &&
-						ch.Actions.PickUp && !ch.Flags.Using {
-						LiftOrDropItem(ch, int(ch.Player), ch.Actions.Left() || ch.Actions.Right())
-						ch.Flags.PickUpBuff = 0
+					ch.Object.PostPos = ch.Object.Pos
+					if ch.State != data.Jumping {
+						ch.Flags.HighJump = false
+						ch.Flags.LongJump = false
 					}
-				} else {
-					//if ch.State == data.Dead {
-					//	DropItem(ch)
-					//}
-					DropLift(ch, false)
 				}
 			}
 		}

@@ -51,7 +51,7 @@ func LevelInit() {
 				DemonCharacter(obj.Pos, tile.Metadata)
 			case data.BlockFly:
 				tile.Block = data.BlockEmpty
-				FlyCharacter(obj.Pos, tile.Metadata.Flipped)
+				FlyCharacter(obj.Pos, tile.Metadata)
 			case data.BlockGemYellow,
 				data.BlockGemOrange,
 				data.BlockGemGray,
@@ -99,7 +99,6 @@ func LevelInit() {
 			}
 		}
 	}
-
 	PuzzleViewInit()
 }
 

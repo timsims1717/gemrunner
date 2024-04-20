@@ -26,6 +26,18 @@ const (
 	BlockSelectWidth  = 8.
 	BlockSelectHeight = 7.
 
+	// Music Tracks
+	TrackBeach  = "beach"
+	TrackDark   = "dark"
+	TrackDesert = "desert"
+	TrackFungus = "fungus"
+	TrackIce    = "ice"
+	TrackJungle = "jungle"
+	TrackLava   = "lava"
+	TrackMech   = "mech"
+	TrackReef   = "reef"
+	TrackUrban  = "urban"
+
 	// Batches
 	TileBatch = "tiles"
 	UIBatch   = "ui"
@@ -44,57 +56,52 @@ const (
 	ScrollSpeed = 150.
 
 	// In Game Constants
-	FrameRateMax    = 30
+	FrameRateMax    = 60
 	FrameRateMin    = 5
-	FrameRateInt    = 2
-	NormalGravity   = 4
+	FrameRateInt    = 5
+	NormalGravity   = 2
 	MaxPlayers      = 4
 	WaitToSwitch    = 3
-	ButtonBuffer    = 2
-	CrackedCounter  = 8
-	RegenCounter    = 56
-	RegenACounter   = 3
-	CollapseCounter = 3
-	ThrownCounter   = 4
-	ThrownVSpeed    = 1.8
-	ThrownHSpeed    = 6.2
+	ButtonBuffer    = 3
+	CrackedCounter  = 16
+	RegenCounter    = 112
+	RegenACounter   = 7
+	CollapseCounter = 7
+	ThrownCounter   = 8
+	ThrownVSpeed    = 0.9
+	ThrownHSpeed    = 3.1
 	SmashDistance   = TileSize * 3
+	SpeedMod        = 0.001
 
 	// Player Constants
-	PlayerWalkSpeed       = 6
-	PlayerLeapSpeed       = 3.8
-	PlayerClimbSpeed      = 3.75
-	PlayerSlideSpeed      = 6.5
-	PlayerLeapDelay       = 1.5
-	PlayerGravity         = 6.75
-	PlayerHighJumpSpeed   = 3
-	PlayerHighJumpHSpeed  = 4.5
-	PlayerHighJumpTimer   = 4.8
-	PlayerHighJumpCounter = 6
-	PlayerLongJumpVSpeed  = 1.8
-	PlayerLongJumpHSpeed  = 6.2
-	PlayerLongJumpTimer   = 4.2
-	PlayerLongJumpCounter = 4
+	PlayerWalkSpeed       = 4
+	PlayerLeapSpeed       = 4
+	PlayerClimbSpeed      = 2
+	PlayerSlideSpeed      = 3.5
+	PlayerGravity         = 3.25
+	PlayerHighJumpSpeed   = 1.5
+	PlayerHighJumpHSpeed  = 2.25
+	PlayerHighJumpCounter = 12
+	PlayerLongJumpVSpeed  = 1
+	PlayerLongJumpHSpeed  = 3.75
+	PlayerLongJumpCounter = 8
 	IdleFrequency         = 10
 
 	// Demon Constants
-	DemonWalkSpeed       = 4
-	DemonLeapSpeed       = 2.2
-	DemonClimbSpeed      = 2.5
-	DemonSlideSpeed      = 3.5
-	DemonLeapDelay       = 1.5
+	DemonWalkSpeed       = 2
+	DemonLeapSpeed       = 1.5
+	DemonClimbSpeed      = 1.25
+	DemonSlideSpeed      = 1.5
 	DemonGravity         = NormalGravity
-	DemonHighJumpSpeed   = 1.8
-	DemonHighJumpHSpeed  = 3.5
-	DemonHighJumpTimer   = 7.2
-	DemonHighJumpCounter = 8
-	DemonLongJumpVSpeed  = 1.6
-	DemonLongJumpHSpeed  = 3.4
-	DemonLongJumpTimer   = 7.8
-	DemonLongJumpCounter = 8
+	DemonHighJumpSpeed   = 0.9
+	DemonHighJumpHSpeed  = 1.75
+	DemonHighJumpCounter = 16
+	DemonLongJumpVSpeed  = 0.8
+	DemonLongJumpHSpeed  = 1.7
+	DemonLongJumpCounter = 16
 
 	// Fly Constants
-	FlySpeed = 3.
+	FlySpeed = 2
 )
 
 var (
@@ -107,7 +114,7 @@ var (
 	ConfigFile string
 
 	// Options
-	FrameRate = 15
+	FrameRate = 30
 
 	// In Game Vars
 	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}

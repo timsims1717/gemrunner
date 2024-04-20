@@ -20,7 +20,6 @@ type PickUp struct {
 	Priority    int
 	NeverFlip   bool
 	Inventory   int
-	Held        int
 	NoInventory bool
 }
 
@@ -29,7 +28,6 @@ func NewPickUp(p int, neverFlip bool) *PickUp {
 		Priority:  p,
 		NeverFlip: neverFlip,
 		Inventory: -1,
-		Held:      -1,
 	}
 }
 

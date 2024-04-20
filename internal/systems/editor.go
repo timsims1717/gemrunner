@@ -29,18 +29,12 @@ func EditorInit() {
 		data.OpenDialog("editor_panel_left")
 		data.OpenDialog("editor_options_right")
 	}
-	UpdateWorldShaders()
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
 	PushUndoArray(true)
 }
 
-func UpdateWorldShaders() {
-	// set puzzle shader uniforms
-	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.B))
-	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
+func UpdateEditorShaders() {
 	// set editor panel shader uniforms
 	editorPanelLeft := data.Dialogs["editor_panel_left"]
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
@@ -80,7 +74,10 @@ func ChangeWorldTo(world int) {
 	data.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[world]
 	data.CurrPuzzle.Metadata.PrimaryColor = pixel.ToRGBA(constants.WorldPrimary[world])
 	data.CurrPuzzle.Metadata.SecondaryColor = pixel.ToRGBA(constants.WorldSecondary[world])
-	UpdateWorldShaders()
+	data.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[world]
+	data.CurrPuzzle.Changed = true
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
 }
 
 func UpdateEditorModeHotKey() {
@@ -380,20 +377,6 @@ func PuzzleEditSystem() {
 						}
 						tile := data.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
 						switch tile.Block {
-						case data.BlockDemon, data.BlockDemonRegen:
-							if rClick.JustReleased() {
-								RemoveLinkedTiles(tile)
-								tile.Metadata.Changed = true
-							} else if click.JustReleased() {
-								lt := data.CurrPuzzle.Tiles.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-								if lt != nil && lt.Block != tile.Block &&
-									(lt.Block == data.BlockDemon || lt.Block == data.BlockDemonRegen) {
-									lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, coords)
-									tile.Metadata.LinkedTiles = append(tile.Metadata.LinkedTiles, data.Editor.LastCoords)
-									lt.Metadata.Changed = true
-									tile.Metadata.Changed = true
-								}
-							}
 						case data.BlockFly:
 							tile.Metadata.Flipped = !tile.Metadata.Flipped
 							tile.Object.Flip = tile.Metadata.Flipped
@@ -408,6 +391,35 @@ func PuzzleEditSystem() {
 						}
 						data.CurrPuzzle.Changed = true
 						data.CurrPuzzle.Update = true
+					}
+				}
+			case data.Wire:
+				if legal {
+					if rClick.JustReleased() || click.JustReleased() {
+						tile := data.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						switch tile.Block {
+						case data.BlockDemon, data.BlockDemonRegen,
+							data.BlockFly, data.BlockFlyRegen:
+							if rClick.JustReleased() {
+								RemoveLinkedTiles(tile)
+								tile.Metadata.Changed = true
+							} else if click.JustReleased() {
+								lt := data.CurrPuzzle.Tiles.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
+								if lt != nil && lt.Block != tile.Block &&
+									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
+										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
+										(lt.Block == data.BlockFly && tile.Block == data.BlockFlyRegen) ||
+										(tile.Block == data.BlockFly && lt.Block == data.BlockFlyRegen)) {
+									LinkTiles(tile, lt)
+									//lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, coords)
+									//tile.Metadata.LinkedTiles = append(tile.Metadata.LinkedTiles, data.Editor.LastCoords)
+									lt.Metadata.Changed = true
+									tile.Metadata.Changed = true
+								}
+							}
+						}
+						data.CurrPuzzle.Changed = true
+						data.CurrPuzzle.Update = true
 					} else if click.Pressed() {
 						if click.JustPressed() && legal {
 							data.Editor.LastCoords = coords
@@ -418,7 +430,8 @@ func PuzzleEditSystem() {
 						lt := data.CurrPuzzle.Tiles.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
 						if lt != nil {
 							switch lt.Block {
-							case data.BlockDemon, data.BlockDemonRegen:
+							case data.BlockDemon, data.BlockDemonRegen,
+								data.BlockFly, data.BlockFlyRegen:
 								data.IMDraw.Color = constants.ColorOrange
 							default:
 								break modeLabel
@@ -426,8 +439,11 @@ func PuzzleEditSystem() {
 							data.IMDraw.EndShape = imdraw.RoundEndShape
 							if legal {
 								tile := data.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
-								if (lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
-									(lt.Block == data.BlockDemonRegen && tile.Block == data.BlockDemon) {
+								if lt.Block != tile.Block &&
+									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
+										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
+										(lt.Block == data.BlockFly && tile.Block == data.BlockFlyRegen) ||
+										(tile.Block == data.BlockFly && lt.Block == data.BlockFlyRegen)) {
 									data.IMDraw.Push(lt.Object.Pos, tile.Object.Pos)
 									data.IMDraw.Line(2)
 									break modeLabel
@@ -605,22 +621,24 @@ func PuzzleEditSystem() {
 			}
 		} else if data.Editor.Mode == data.Move {
 			data.Editor.Mode = data.Select
-		} else if data.Editor.Mode == data.Wrench && legal {
-			// drawing line information
-			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
-			switch tile.Block {
-			case data.BlockDemon, data.BlockDemonRegen:
-				data.IMDraw.Color = constants.ColorOrange
-				data.IMDraw.EndShape = imdraw.RoundEndShape
-				for _, rt := range tile.Metadata.LinkedTiles {
-					data.IMDraw.Push(tile.Object.Pos, world.MapToWorld(rt).Add(pixel.V(world.HalfSize, world.HalfSize)))
-					data.IMDraw.Line(2)
-				}
-			}
 		}
 	} else {
 		// place the current selection
 		PlaceSelection()
+	}
+	if data.Editor.Mode == data.Wire && legal {
+		// drawing line information
+		tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
+		switch tile.Block {
+		case data.BlockDemon, data.BlockDemonRegen,
+			data.BlockFly, data.BlockFlyRegen:
+			data.IMDraw.Color = constants.ColorOrange
+			data.IMDraw.EndShape = imdraw.RoundEndShape
+			for _, rt := range tile.Metadata.LinkedTiles {
+				data.IMDraw.Push(tile.Object.Pos, world.MapToWorld(rt).Add(pixel.V(world.HalfSize, world.HalfSize)))
+				data.IMDraw.Line(2)
+			}
+		}
 	}
 	if data.Editor.Mode >= data.EndModeList {
 		data.Editor.Mode = data.Brush
@@ -743,9 +761,10 @@ func CreateSelection(a, b world.Coords) {
 		for dx := 0; dx < data.CurrSelect.Width; dx++ {
 			old := data.CurrPuzzle.Tiles.T[dy+o.Y][dx+o.X]
 			tile := old.Copy()
+			RemoveLinkedTiles(old)
+			old.ToEmpty()
 			tile.Coords = world.Coords{X: dx, Y: dy}
 			data.CurrSelect.Tiles[dy] = append(data.CurrSelect.Tiles[dy], tile)
-			old.ToEmpty()
 		}
 	}
 	data.CurrPuzzle.Update = true
@@ -776,17 +795,35 @@ func PlaceSelection() {
 	if data.CurrSelect == nil {
 		return
 	}
-	hasP1 := false
+	var hasP1, hasP2, hasP3, hasP4 bool
 	for _, row := range data.CurrSelect.Tiles {
 		for _, tile := range row {
 			if tile.Block == data.BlockPlayer1 {
 				hasP1 = true
+			}
+			if tile.Block == data.BlockPlayer2 {
+				hasP2 = true
+			}
+			if tile.Block == data.BlockPlayer3 {
+				hasP3 = true
+			}
+			if tile.Block == data.BlockPlayer4 {
+				hasP4 = true
 			}
 		}
 	}
 	for _, row := range data.CurrPuzzle.Tiles.T {
 		for _, tile := range row {
 			if tile.Block == data.BlockPlayer1 && hasP1 {
+				tile.Block = data.BlockEmpty
+			}
+			if tile.Block == data.BlockPlayer2 && hasP2 {
+				tile.Block = data.BlockEmpty
+			}
+			if tile.Block == data.BlockPlayer3 && hasP3 {
+				tile.Block = data.BlockEmpty
+			}
+			if tile.Block == data.BlockPlayer4 && hasP4 {
 				tile.Block = data.BlockEmpty
 			}
 		}
@@ -797,8 +834,9 @@ func PlaceSelection() {
 			c.X += data.CurrSelect.Offset.X
 			c.Y += data.CurrSelect.Offset.Y
 			if CoordsLegal(c) {
-				tile.CopyInto(data.CurrPuzzle.Tiles.T[c.Y][c.X])
+				tile.CopyInto(data.CurrPuzzle.Tiles.Get(c.X, c.Y))
 				data.CurrPuzzle.Update = true
+				UpdateLinkedTiles(data.CurrPuzzle.Tiles.Get(c.X, c.Y))
 			}
 		}
 	}

@@ -15,6 +15,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 			if !tile.Update {
 				if tile.Block != block {
 					tile.Metadata = data.DefaultMetadata()
+					RemoveLinkedTiles(tile)
 				}
 				switch block {
 				case data.BlockTurf:
@@ -64,8 +65,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 							if t.Block == data.BlockDemon &&
 								t.Metadata.Regenerate &&
 								!t.Metadata.Changed {
-								t.Metadata.LinkedTiles = append(t.Metadata.LinkedTiles, coords)
-								tile.Metadata.LinkedTiles = append(tile.Metadata.LinkedTiles, t.Coords)
+								LinkTiles(tile, t)
 							}
 						}
 					}
@@ -75,8 +75,28 @@ func SetBlock(coords world.Coords, block data.Block) {
 						for _, t := range row {
 							if t.Block == data.BlockDemonRegen &&
 								!t.Metadata.Changed {
-								t.Metadata.LinkedTiles = append(t.Metadata.LinkedTiles, coords)
-								tile.Metadata.LinkedTiles = append(tile.Metadata.LinkedTiles, t.Coords)
+								LinkTiles(tile, t)
+							}
+						}
+					}
+					tile.Block = block
+				case data.BlockFlyRegen:
+					for _, row := range data.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockFly &&
+								t.Metadata.Regenerate &&
+								!t.Metadata.Changed {
+								LinkTiles(tile, t)
+							}
+						}
+					}
+					tile.Block = block
+				case data.BlockFly:
+					for _, row := range data.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockFlyRegen &&
+								!t.Metadata.Changed {
+								LinkTiles(tile, t)
 							}
 						}
 					}
@@ -121,6 +141,15 @@ func DeleteBlock(coords world.Coords) {
 	}
 }
 
+func LinkTiles(tileA, tileB *data.Tile) {
+	if !world.CoordsIn(tileB.Coords, tileA.Metadata.LinkedTiles) {
+		tileA.Metadata.LinkedTiles = append(tileA.Metadata.LinkedTiles, tileB.Coords)
+	}
+	if !world.CoordsIn(tileA.Coords, tileB.Metadata.LinkedTiles) {
+		tileB.Metadata.LinkedTiles = append(tileB.Metadata.LinkedTiles, tileA.Coords)
+	}
+}
+
 func RemoveLinkedTiles(tile *data.Tile) {
 	for _, ltc := range tile.Metadata.LinkedTiles {
 		lt := data.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
@@ -131,10 +160,21 @@ func RemoveLinkedTiles(tile *data.Tile) {
 				} else {
 					lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles[:i], lt.Metadata.LinkedTiles[i+1:]...)
 				}
+				break
 			}
 		}
 	}
 	tile.Metadata.LinkedTiles = []world.Coords{}
+}
+
+// UpdateLinkedTiles should be called if a selection gets placed.
+func UpdateLinkedTiles(tile *data.Tile) {
+	for _, ltc := range tile.Metadata.LinkedTiles {
+		lt := data.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
+		if !world.CoordsIn(tile.Coords, lt.Metadata.LinkedTiles) {
+			lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, tile.Coords)
+		}
+	}
 }
 
 func CoordsLegal(coords world.Coords) bool {

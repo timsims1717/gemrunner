@@ -118,7 +118,7 @@ func InitConstructors() {
 	// Editor Panels
 	editorPanelTopConstructor = &data.DialogConstructor{
 		Key:    "editor_panel_top",
-		Width:  16,
+		Width:  17,
 		Height: 1,
 		Pos:    pixel.V(0, 400),
 		Elements: []data.ElementConstructor{
@@ -127,7 +127,7 @@ func InitConstructors() {
 				SprKey:      "brush_btn",
 				ClickSprKey: "brush_btn_click",
 				HelpText:    "Brush Tool (B)",
-				Position:    pixel.V(-7.5*world.TileSize, 0),
+				Position:    pixel.V(-8*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -135,7 +135,7 @@ func InitConstructors() {
 				SprKey:      "line_btn",
 				ClickSprKey: "line_btn_click",
 				HelpText:    "Line Tool (L)",
-				Position:    pixel.V(-6.5*world.TileSize, 0),
+				Position:    pixel.V(-7*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -143,7 +143,7 @@ func InitConstructors() {
 				SprKey:      "square_btn",
 				ClickSprKey: "square_btn_click",
 				HelpText:    "Square Tool (H)",
-				Position:    pixel.V(-5.5*world.TileSize, 0),
+				Position:    pixel.V(-6*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -151,7 +151,7 @@ func InitConstructors() {
 				SprKey:      "fill_btn",
 				ClickSprKey: "fill_btn_click",
 				HelpText:    "Fill Tool (G)",
-				Position:    pixel.V(-4.5*world.TileSize, 0),
+				Position:    pixel.V(-5*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -159,7 +159,7 @@ func InitConstructors() {
 				SprKey:      "erase_btn",
 				ClickSprKey: "erase_btn_click",
 				HelpText:    "Erase Tool (E)",
-				Position:    pixel.V(-3.5*world.TileSize, 0),
+				Position:    pixel.V(-4*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -167,7 +167,7 @@ func InitConstructors() {
 				SprKey:      "eyedrop_btn",
 				ClickSprKey: "eyedrop_btn_click",
 				HelpText:    "Eyedrop Tool (Y)",
-				Position:    pixel.V(-2.5*world.TileSize, 0),
+				Position:    pixel.V(-3*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -175,7 +175,15 @@ func InitConstructors() {
 				SprKey:      "wrench_btn",
 				ClickSprKey: "wrench_btn_click",
 				HelpText:    "Wrench Tool (P)",
-				Position:    pixel.V(-1.5*world.TileSize, 0),
+				Position:    pixel.V(-2*world.TileSize, 0),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "wire_btn",
+				SprKey:      "wire_btn",
+				ClickSprKey: "wire_btn_click",
+				HelpText:    "Wire Tool (I)",
+				Position:    pixel.V(-world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -183,7 +191,7 @@ func InitConstructors() {
 				SprKey:      "select_btn",
 				ClickSprKey: "select_btn_click",
 				HelpText:    "Select Tool (M)",
-				Position:    pixel.V(-0.5*world.TileSize, 0),
+				Position:    pixel.V(0, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -191,7 +199,7 @@ func InitConstructors() {
 				SprKey:      "cut_btn",
 				ClickSprKey: "cut_btn_click",
 				HelpText:    "Cut Selection (Ctrl+X)",
-				Position:    pixel.V(0.5*world.TileSize, 0),
+				Position:    pixel.V(world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -199,7 +207,7 @@ func InitConstructors() {
 				SprKey:      "copy_btn",
 				ClickSprKey: "copy_btn_click",
 				HelpText:    "Copy Selection (Ctrl+C)",
-				Position:    pixel.V(1.5*world.TileSize, 0),
+				Position:    pixel.V(2*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -207,7 +215,7 @@ func InitConstructors() {
 				SprKey:      "paste_btn",
 				ClickSprKey: "paste_btn_click",
 				HelpText:    "Paste Selection (Ctrl+V)",
-				Position:    pixel.V(2.5*world.TileSize, 0),
+				Position:    pixel.V(3*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -215,7 +223,7 @@ func InitConstructors() {
 				SprKey:      "fliph_btn",
 				ClickSprKey: "fliph_btn_click",
 				HelpText:    "Flip Selection Horizontal (U)",
-				Position:    pixel.V(3.5*world.TileSize, 0),
+				Position:    pixel.V(4*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -223,7 +231,7 @@ func InitConstructors() {
 				SprKey:      "flipv_btn",
 				ClickSprKey: "flipv_btn_click",
 				HelpText:    "flipv Selection Vertical (K)",
-				Position:    pixel.V(4.5*world.TileSize, 0),
+				Position:    pixel.V(5*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -231,7 +239,7 @@ func InitConstructors() {
 				SprKey:      "undo_btn",
 				ClickSprKey: "undo_btn_click",
 				HelpText:    "Undo (Ctrl+Z)",
-				Position:    pixel.V(5.5*world.TileSize, 0),
+				Position:    pixel.V(6*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
@@ -239,13 +247,13 @@ func InitConstructors() {
 				SprKey:      "redo_btn",
 				ClickSprKey: "redo_btn_click",
 				HelpText:    "Redo (Ctrl+Shift+Z)",
-				Position:    pixel.V(6.5*world.TileSize, 0),
+				Position:    pixel.V(7*world.TileSize, 0),
 				Element:     data.ButtonElement,
 			},
 			{
 				Key:      "block_select",
 				SprKey:   "editor_tile_bg",
-				Position: pixel.V(7.5*world.TileSize, 0),
+				Position: pixel.V(8*world.TileSize, 0),
 				Element:  data.SpriteElement,
 			},
 		},
@@ -310,6 +318,14 @@ func InitConstructors() {
 				ClickSprKey: "wrench_btn_click",
 				HelpText:    "Wrench Tool (P)",
 				Position:    pixel.V(-0.5*world.TileSize, -0.5*world.TileSize),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "wire_btn",
+				SprKey:      "wire_btn",
+				ClickSprKey: "wire_btn_click",
+				HelpText:    "Wire Tool (I)",
+				Position:    pixel.V(0.5*world.TileSize, -0.5*world.TileSize),
 				Element:     data.ButtonElement,
 			},
 			{

@@ -65,6 +65,7 @@ const (
 	FlipVertical
 	FlipHorizontal
 	Wrench
+	Wire
 	Undo
 	Redo
 	Delete
@@ -103,6 +104,8 @@ func (m EditorMode) String() string {
 		return "FlipHorizontal"
 	case Wrench:
 		return "Wrench"
+	case Wire:
+		return "Wire"
 	case Undo:
 		return "Undo"
 	case Redo:
@@ -149,6 +152,8 @@ func ModeFromSprString(s string) EditorMode {
 		return FlipHorizontal
 	case "wrench":
 		return Wrench
+	case "wire":
+		return Wire
 	case "undo":
 		return Undo
 	case "redo":

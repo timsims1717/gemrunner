@@ -55,7 +55,7 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 		}
 	case data.BlockSpike:
 		sprs = append(sprs, img.NewSprite(GetSpikeSprite(tile), constants.TileBatch))
-	case data.BlockDemonRegen:
+	case data.BlockDemonRegen, data.BlockFlyRegen:
 		if !tile.Live {
 			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
 		}
@@ -98,11 +98,7 @@ func GetBlockSprites(tile *data.Tile) []*img.Sprite {
 	}
 	sprs = append(sprs, spr)
 	if tile.Block == data.BlockCracked && !tile.Flags.Collapse {
-		if tile.Flags.Cracked && tile.Counter > 2 {
-			sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
-		} else if tile.Flags.Cracked {
-			sprs = append(sprs, img.NewSprite(fmt.Sprintf("%s%d", constants.TileCracking, tile.Counter), constants.TileBatch))
-		} else if tile.Metadata.ShowCrack {
+		if tile.Metadata.ShowCrack {
 			sprs = append(sprs, img.NewSprite(constants.TileCrackedShow, constants.TileBatch))
 		}
 	}

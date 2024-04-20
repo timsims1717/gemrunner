@@ -25,36 +25,40 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	var leapOnI, leapOffI, leapToI []int
 	if sprPre == "demon" {
 		wall = reanimator.NewBatchSprite("wall", batch, fmt.Sprintf("%s_chase", sprPre), reanimator.Hold)
-		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 3, 4, 1, 2, 3}, reanimator.Loop)
+		run = reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 4, 3, 1}, reanimator.Loop)
+		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 6, 5, 4, 2, 1}, reanimator.Loop)
 		slide.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 			if pre == "climb" {
 				switch f {
-				case 0, 1:
+				case 0, 7:
 					a.Step = 0
+				case 1:
+					a.Step = 5
 				case 2:
-					a.Step = 3
+					a.Step = 4
 				case 3, 4:
-					a.Step = 2
+					a.Step = 3
 				case 5:
+					a.Step = 2
+				case 6:
 					a.Step = 1
 				}
 			}
 			slide.Freeze = !ch.Flags.Climbed
 			ch.Flags.Climbed = false
 		})
-		leapOnI = []int{0, 1, 2}
-		leapOffI = []int{3, 2, 1, 0}
-		leapToI = []int{3, 2, 1, 1, 2, 3}
+		leapOnI = []int{0, 4, 3, 2, 5}
+		leapOffI = []int{6, 6, 4, 4, 3, 3, 3, 2, 1}
+		leapToI = []int{6, 6, 4, 3, 3, 3, 2, 2, 5}
 	} else {
-		wall = reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 1, reanimator.Hold)
-		run = reanimator.NewBatchAnimationCustom("run", batch, fmt.Sprintf("%s_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
+		wall = reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
+		run = reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
 		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
-		leapOnI = []int{2, 2}
-		leapOffI = []int{0, 1, 2}
-		leapToI = []int{0, 1, 2, 2}
+		leapOnI = []int{1, 2}
+		leapOffI = []int{2, 0, 1, 2}
+		leapToI = []int{2, 0, 1, 2, 2}
 	}
 	climb.SetTriggerAll(func() {
 		climb.Freeze = !ch.Flags.Climbed
@@ -66,37 +70,34 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	leapOn.SetEndTrigger(func() {
 		ch.Flags.LeapOn = false
 		ch.ACounter = 0
-		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
 	leapOff := reanimator.NewBatchAnimationCustom("leap_off", batch, fmt.Sprintf("%s_leap", sprPre), leapOffI, reanimator.Tran)
 	leapOff.SetEndTrigger(func() {
 		ch.Flags.LeapOff = false
 		ch.ACounter = 0
-		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
 	leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
 	leapTo.SetEndTrigger(func() {
 		ch.Flags.LeapTo = false
 		ch.ACounter = 0
-		ch.ATimer = timing.New(ch.Vars.LeapDelay / float64(reanimator.FRate))
 	})
-	pickUp := reanimator.NewBatchSprite("pick_up", batch, fmt.Sprintf("%s_pick_up", sprPre), reanimator.Tran)
-	pickUp.SetTrigger(0, func() {
-		ch.Flags.PickUp = false
-		ch.Flags.Throw = false
+	throw := reanimator.NewBatchAnimation("throw", batch, fmt.Sprintf("%s_throw", sprPre), reanimator.Tran)
+	throw.SetEndTrigger(func() {
+		ch.Flags.ItemAction = data.NoItemAction
 	})
-	holdIdle := reanimator.NewBatchAnimationFrame("hold_idle", batch, fmt.Sprintf("%s_pick_up", sprPre), 1, reanimator.Hold)
-	holdRun := reanimator.NewBatchAnimationCustom("hold_run", batch, fmt.Sprintf("%s_hold_run", sprPre), []int{0, 1, 2, 1}, reanimator.Loop)
-	fallHold := reanimator.NewBatchSprite("fall_hold", batch, fmt.Sprintf("%s_fall_hold", sprPre), reanimator.Hold)
-	jumpHold := reanimator.NewBatchSprite("jump_hold", batch, fmt.Sprintf("%s_jump_hold", sprPre), reanimator.Hold)
-	fullHit := []int{0, 1, 2, 3, 3, 3, 3, 3, 3, 3}
-	fullAttack := []int{0, 1, 2, 3, 2, 3, 2, 3, 2, 3}
-	var hit *reanimator.Anim
+	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
+	fullAttack := []int{0, 1, 2, 3, 4, 5, 4, 5, 4, 5}
+	var attack, hit *reanimator.Anim
 	if sprPre == "demon" {
+		attack = reanimator.NewBatchAnimationCustom("attack", batch, fmt.Sprintf("%s_attack", sprPre), fullAttack, reanimator.Tran)
 		hit = reanimator.NewBatchAnimation("hit", batch, fmt.Sprintf("%s_hit", sprPre), reanimator.Tran)
 	} else {
+		attack = reanimator.NewBatchAnimation("attack", batch, fmt.Sprintf("%s_attack", sprPre), reanimator.Tran)
 		hit = reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 	}
+	attack.SetEndTrigger(func() {
+		ch.Flags.Attack = false
+	})
 	hit.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
@@ -105,10 +106,6 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	crush.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
-	})
-	attack := reanimator.NewBatchAnimationCustom("attack", batch, fmt.Sprintf("%s_attack", sprPre), fullAttack, reanimator.Tran)
-	attack.SetEndTrigger(func() {
-		ch.Flags.Attack = false
 	})
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
@@ -123,11 +120,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(leapOn).
 		AddAnimation(leapOff).
 		AddAnimation(leapTo).
-		AddAnimation(pickUp).
-		AddAnimation(holdIdle).
-		AddAnimation(holdRun).
-		AddAnimation(fallHold).
-		AddAnimation(jumpHold).
+		AddAnimation(throw).
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(attack).
@@ -146,71 +139,39 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				}
 			case data.Attack:
 				return "attack"
-			case data.Carried:
-				if ch.Flags.PickUp || ch.Flags.Throw {
-					return "pick_up"
-				} else if ch.Held != nil {
-					return "hold_idle"
-				} else {
-					return "idle"
+			case data.DoingAction:
+				switch ch.Flags.ItemAction {
+				case data.ThrowBox:
+					return "throw"
 				}
 			case data.Grounded:
-				if ch.Flags.PickUp || ch.Flags.Throw {
-					return "pick_up"
-				}
 				if ch.Actions.Left() || ch.Actions.Right() {
 					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||
 						(ch.Actions.Right() && (ch.Flags.RightWall || ch.Flags.EnemyR)) {
-						if ch.Held != nil {
-							return "hold_idle"
-						} else {
-							return "wall"
-						}
+						return "wall"
 					} else {
-						if ch.Held != nil {
-							return "hold_run"
-						} else {
-							return "run"
-						}
+						return "run"
 					}
 				} else {
-					if ch.Held != nil {
-						return "hold_idle"
+					if ch.Flags.Breath {
+						return "breath"
 					} else {
-						if ch.Flags.Breath {
-							return "breath"
-						} else {
-							if !ch.Flags.Breath && random.Effects.Intn(constants.IdleFrequency*timing.FPS) == 0 {
-								ch.Flags.Breath = true
-							}
-							return "idle"
+						if !ch.Flags.Breath && random.Effects.Intn(constants.IdleFrequency*timing.FPS) == 0 {
+							ch.Flags.Breath = true
 						}
+						return "idle"
 					}
 				}
 			case data.OnLadder:
-				if ch.Flags.PickUp || ch.Flags.Throw {
-					return "pick_up"
-				} else if ch.Actions.Up() || ch.Flags.GoingUp {
+				if ch.Actions.Up() || ch.Flags.GoingUp {
 					return "climb"
 				} else {
 					return "slide"
 				}
 			case data.Jumping:
-				if ch.Flags.PickUp || ch.Flags.Throw {
-					return "pick_up"
-				} else if ch.Held != nil {
-					return "jump_hold"
-				} else {
-					return "jump"
-				}
+				return "jump"
 			case data.Falling:
-				if ch.Flags.PickUp || ch.Flags.Throw {
-					return "pick_up"
-				} else if ch.Held != nil {
-					return "fall_hold"
-				} else {
-					return "fall"
-				}
+				return "fall"
 			case data.Leaping:
 				if ch.Flags.LeapOff {
 					return "leap_off"

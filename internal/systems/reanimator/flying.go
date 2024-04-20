@@ -24,21 +24,30 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.Attack = false
 		ch.Flags.Crush = false
 	})
+	regen := reanimator.NewBatchAnimation("regen", batch, "fly_regen", reanimator.Tran)
+	regen.SetEndTrigger(func() {
+		ch.Flags.Regen = false
+	})
 	return reanimator.New(reanimator.NewSwitch().
 		AddAnimation(idle).
 		AddAnimation(flying).
 		AddAnimation(boom).
 		AddAnimation(crush).
+		AddAnimation(regen).
 		AddNull("none").
 		SetChooseFn(func() string {
-			if ch.State == data.Hit || ch.State == data.Attack {
+			switch ch.State {
+			case data.Hit, data.Attack:
 				if ch.Flags.Crush {
 					return "crush"
 				}
 				return "boom"
-			} else if ch.State == data.Dead {
+			case data.Regen:
+				return "regen"
+			case data.Dead:
 				return "none"
+			default:
+				return "flying"
 			}
-			return "flying"
 		}), "flying")
 }

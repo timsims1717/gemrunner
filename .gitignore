@@ -1,3 +1,5 @@
 ./gemrunner
 gemrunner.iml
 .idea
+assets/music/*.wav
+gemrunner.exe

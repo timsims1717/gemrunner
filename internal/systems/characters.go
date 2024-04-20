@@ -105,15 +105,14 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 		if (enemy.State == data.Grounded ||
 			enemy.State == data.OnLadder ||
 			enemy.State == data.Leaping ||
-			enemy.State == data.Flying ||
-			enemy.State == data.Carried) &&
+			enemy.State == data.Flying) &&
 			(ch.State == data.Grounded ||
 				ch.State == data.OnLadder ||
 				ch.State == data.Leaping ||
 				ch.State == data.Jumping ||
+				(ch.State == data.Falling && enemy.Flags.Flying) ||
 				ch.State == data.Flying ||
-				ch.State == data.Carried ||
-				ch.State == data.Thrown) {
+				ch.State == data.DoingAction) {
 			ch.Flags.Hit = true
 			ch.State = data.Hit
 			enemy.Flags.Attack = true
@@ -122,20 +121,26 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 	}
 }
 
-func FlyCharacter(pos pixel.Vec, left bool) *data.Dynamic {
+func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	obj := object.New().WithID("fly").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 12))
-	obj.Flip = left
+	obj.Flip = metadata.Flipped
 	obj.Layer = 29
 	fly := data.NewDynamic()
 	fly.State = data.Flying
+	fly.Options.RegenFlip = true
+	fly.Options.Flying = true
 	fly.Flags.Flying = true
+	fly.Options.Regen = metadata.Regenerate
+	fly.Options.LinkedTiles = metadata.LinkedTiles
+	fly.State = data.Regen
+	fly.Flags.Regen = true
 	fly.Object = obj
 	fly.Anim = reanimator.FlyAnimation(fly)
 	fly.Vars = data.FlyVars()
 	e := myecs.Manager.NewEntity()
 	fly.Entity = e
-	fly.Control = controllers.NewBackAndForth(fly, e, left)
+	fly.Control = controllers.NewBackAndForth(fly, e, metadata.Flipped)
 	e.AddComponent(myecs.Object, fly.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Animated, fly.Anim)

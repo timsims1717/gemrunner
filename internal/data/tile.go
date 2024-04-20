@@ -64,13 +64,14 @@ const (
 	BlockGemPurple
 	BlockGemBrown
 	BlockBox
-
-	BlockDemon
-	BlockFly
-	BlockDemonRegen
 	BlockChain
 	BlockReeds
 	BlockFlowers
+
+	BlockDemon
+	BlockDemonRegen
+	BlockFly
+	BlockFlyRegen
 	BlockEmpty
 
 	BlockLadderTurf
@@ -85,12 +86,12 @@ func (b Block) String() string {
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
-		return constants.WorldSprites[constants.WorldRock]
+		return constants.WorldSprites[constants.WorldMoss]
 	case BlockSpike:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
 		}
-		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldRock], constants.TileSpike)
+		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileSpike)
 	case BlockLadder:
 		return constants.TileLadderMiddle
 	case BlockLadderCracked:
@@ -177,6 +178,8 @@ func (b Block) String() string {
 		return constants.CharFly
 	case BlockDemonRegen:
 		return constants.TileDemonRegen
+	case BlockFlyRegen:
+		return constants.TileFlyRegen
 	case BlockChain:
 		return constants.DoodadChain
 	case BlockReeds:
@@ -239,6 +242,7 @@ var toID = map[string]Block{
 	constants.CharDemon:             BlockDemon,
 	constants.CharFly:               BlockFly,
 	constants.TileDemonRegen:        BlockDemonRegen,
+	constants.TileFlyRegen:          BlockFlyRegen,
 	constants.DoodadChain:           BlockChain,
 	constants.DoodadReeds:           BlockReeds,
 	constants.DoodadFlowers:         BlockFlowers,
@@ -325,12 +329,13 @@ func (t *Tile) Copy() *Tile {
 func (t *Tile) CopyInto(c *Tile) {
 	c.Block = t.Block
 	c.Object.Flip = t.Metadata.Flipped
-	c.Metadata = t.Metadata
+	c.Metadata = CopyMetadata(t.Metadata)
 }
 
 func (t *Tile) ToEmpty() {
 	t.Block = BlockEmpty
 	t.Metadata = DefaultMetadata()
+
 }
 
 func (t *Tile) IsEmpty() bool {
@@ -453,7 +458,7 @@ type TileMetadata struct {
 	Flipped     bool           `json:"flipped"`
 	EnemyCrack  bool           `json:"enemyCrack"`
 	Regenerate  bool           `json:"regenerate"`
-	LinkedTiles []world.Coords `json:"regenTiles"`
+	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles"`
 	Phase       int            `json:"phase"`
 	ShowCrack   bool           `json:"showCrack"`
 	Changed     bool           `json:"changed"`
@@ -463,4 +468,19 @@ func DefaultMetadata() TileMetadata {
 	return TileMetadata{
 		Regenerate: true,
 	}
+}
+
+func CopyMetadata(m TileMetadata) TileMetadata {
+	cm := TileMetadata{
+		Flipped:     m.Flipped,
+		EnemyCrack:  m.EnemyCrack,
+		Regenerate:  m.Regenerate,
+		LinkedTiles: nil,
+		Phase:       m.Phase,
+		ShowCrack:   m.ShowCrack,
+	}
+	for _, ln := range m.LinkedTiles {
+		cm.LinkedTiles = append(cm.LinkedTiles, ln)
+	}
+	return cm
 }

@@ -41,46 +41,14 @@ func TileSystem() {
 						tile.Flags.Collapse = true
 						tile.Flags.Cracked = false
 						tile.Counter = 0
-						tile.Object.Layer = 31
-						obj := object.New()
-						obj.Pos = tile.Object.Pos
-						obj.Layer = 32
-						m := myecs.Manager.NewEntity()
-						anim := reanimator.NewSimple(reanimator.NewBatchAnimation("collapse", img.Batchers[constants.TileBatch], "collapse", reanimator.Hold))
-						m.AddComponent(myecs.Object, obj)
-						m.AddComponent(myecs.Animated, anim)
-						m.AddComponent(myecs.Drawable, anim)
-						m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-						tile.Mask = m
+						AddMask(tile, "collapse")
 					}
 				} else if tile.Flags.Regen {
 					if reanimator.FrameSwitch {
 						tile.Counter++
 					}
-					if tile.Flags.Collapse {
-						tile.Flags.Collapse = false
-						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-							_, okCO := resultC.Components[myecs.Object].(*object.Object)
-							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-							if okCO && okC && ch.State != data.Dead {
-								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-								chTile := data.CurrLevel.Tiles.Get(x, y)
-								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-									(chTile.Coords.Y == tile.Coords.Y) {
-									ch.Object.Pos.X = tile.Object.Pos.X
-									ch.Object.Pos.Y = tile.Object.Pos.Y
-									ch.Flags.Crush = true
-									ch.State = data.Hit
-								}
-							}
-						}
-					}
 					if tile.Counter > constants.RegenACounter {
-						if tile.Mask != nil {
-							myecs.Manager.DisposeEntity(tile.Mask)
-							tile.Mask = nil
-							tile.Object.Layer = 10
-						}
+						RemoveMask(tile)
 						tile.Flags.Regen = false
 						tile.Flags.Collapse = false
 						tile.Flags.Cracked = false
@@ -91,27 +59,30 @@ func TileSystem() {
 						tile.Counter++
 					}
 					if tile.Counter > constants.CollapseCounter {
-						if tile.Mask != nil {
-							myecs.Manager.DisposeEntity(tile.Mask)
-							tile.Mask = nil
-							tile.Object.Layer = 10
-						}
+						RemoveMask(tile)
 						if tile.Metadata.Regenerate {
 							if tile.Counter > constants.RegenCounter {
+								tile.Flags.Collapse = false
 								tile.Flags.Cracked = false
 								tile.Flags.Regen = true
 								tile.Counter = 0
-								tile.Object.Layer = 31
-								obj := object.New()
-								obj.Pos = tile.Object.Pos
-								obj.Layer = 32
-								m := myecs.Manager.NewEntity()
-								anim := reanimator.NewSimple(reanimator.NewBatchAnimation("collapse", img.Batchers[constants.TileBatch], "regen", reanimator.Hold))
-								m.AddComponent(myecs.Object, obj)
-								m.AddComponent(myecs.Animated, anim)
-								m.AddComponent(myecs.Drawable, anim)
-								m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-								tile.Mask = m
+								AddMask(tile, "regen")
+								// Crush any characters here
+								for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+									_, okCO := resultC.Components[myecs.Object].(*object.Object)
+									ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+									if okCO && okC && ch.State != data.Dead {
+										x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+										chTile := data.CurrLevel.Tiles.Get(x, y)
+										if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+											(chTile.Coords.Y == tile.Coords.Y) {
+											ch.Object.Pos.X = tile.Object.Pos.X
+											ch.Object.Pos.Y = tile.Object.Pos.Y
+											ch.Flags.Crush = true
+											ch.State = data.Hit
+										}
+									}
+								}
 							}
 						} else {
 							tile.Block = data.BlockEmpty
@@ -137,20 +108,11 @@ func TileSystem() {
 								if tile.Block == data.BlockCracked {
 									tile.Flags.Cracked = true
 									tile.Flags.Collapse = false
+									AddMask(tile, "cracking")
 								} else if tile.Block == data.BlockFall {
 									tile.Flags.Collapse = true
 									tile.Flags.Cracked = false
-									tile.Object.Layer = 31
-									obj := object.New()
-									obj.Pos = tile.Object.Pos
-									obj.Layer = 32
-									m := myecs.Manager.NewEntity()
-									anim := reanimator.NewSimple(reanimator.NewBatchAnimation("collapse", img.Batchers[constants.TileBatch], "collapse", reanimator.Hold))
-									m.AddComponent(myecs.Object, obj)
-									m.AddComponent(myecs.Animated, anim)
-									m.AddComponent(myecs.Drawable, anim)
-									m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-									tile.Mask = m
+									AddMask(tile, "collapse")
 								}
 							}
 						}
@@ -205,5 +167,30 @@ func TileSystem() {
 				}
 			}
 		}
+	}
+}
+
+// AddMask creates a new mask animation for the tile and sets the correct layers
+// for drawing.
+func AddMask(tile *data.Tile, maskKey string) {
+	RemoveMask(tile)
+	tile.Object.Layer = 31 // Put the tile on top so it's over any characters
+	obj := object.New()
+	obj.Pos = tile.Object.Pos
+	obj.Layer = 32 // the mask is one layer higher
+	m := myecs.Manager.NewEntity()
+	anim := reanimator.NewSimple(reanimator.NewBatchAnimation(maskKey, img.Batchers[constants.TileBatch], maskKey, reanimator.Hold))
+	m.AddComponent(myecs.Object, obj)
+	m.AddComponent(myecs.Animated, anim)
+	m.AddComponent(myecs.Drawable, anim)
+	m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	tile.Mask = m
+}
+
+func RemoveMask(tile *data.Tile) {
+	if tile.Mask != nil {
+		myecs.Manager.DisposeEntity(tile.Mask)
+		tile.Mask = nil
+		tile.Object.Layer = 10
 	}
 }

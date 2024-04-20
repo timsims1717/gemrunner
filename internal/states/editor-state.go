@@ -51,6 +51,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//debug.AddText(fmt.Sprintf("SelectVis: %t", data.Editor.SelectVis))
 	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzle.Metadata.Name))
 	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzle.Metadata.Filename))
+	debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzle.Metadata.MusicTrack))
 	debug.AddTruthText("Puzzle Completed", data.CurrPuzzle.Metadata.Completed)
 
 	if data.DebugInput.Get("camUp").Pressed() {
