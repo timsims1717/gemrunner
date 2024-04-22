@@ -18,19 +18,12 @@ func CharacterActionSystem() {
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		ct, okT := result.Components[myecs.Controller].(data.Controller)
 		if okO && okC && okT && !obj.Hidden && ct != nil {
-			ch.Flags.Action = false
-			//ch.Flags.Drop = false
 			actions := ct.GetActions()
-			if !data.CurrLevel.Start {
-				if result.Entity.HasComponent(myecs.Player) {
-					if actions.Direction != data.None ||
-						actions.Jump ||
-						actions.PickUp ||
-						actions.Action ||
-						!ch.Flags.Floor {
-						data.CurrLevel.Start = true
-					}
-				}
+			if !data.CurrLevel.Start &&
+				result.Entity.HasComponent(myecs.Player) &&
+				ch.State != data.Regen &&
+				(actions.Any() || !ch.Flags.Floor) {
+				data.CurrLevel.Start = true
 			}
 			if data.CurrLevel.Start {
 				if ch.Flags.Frame {
@@ -38,16 +31,24 @@ func CharacterActionSystem() {
 					ch.Actions = data.NewAction()
 					if ch.Flags.JumpBuff > 0 {
 						ch.Actions.Jump = true
+						ch.Flags.JumpBuff--
 					}
 					if ch.Flags.PickUpBuff > 0 {
 						ch.Actions.PickUp = true
+						ch.Flags.PickUpBuff--
 					}
 					if ch.Flags.ActionBuff > 0 {
 						ch.Actions.Action = true
+						ch.Flags.ActionBuff--
 					}
-					ch.Flags.JumpBuff--
-					ch.Flags.PickUpBuff--
-					ch.Flags.ActionBuff--
+					if ch.Flags.DigRightBuff > 0 {
+						ch.Actions.DigRight = true
+						ch.Flags.DigRightBuff--
+					}
+					if ch.Flags.DigLeftBuff > 0 {
+						ch.Actions.DigLeft = true
+						ch.Flags.DigLeftBuff--
+					}
 				}
 				if actions.Direction != data.None {
 					ch.Actions.Direction = actions.Direction
@@ -57,6 +58,9 @@ func CharacterActionSystem() {
 				}
 				ch.Actions.Jump = ch.Actions.Jump || actions.Jump
 				ch.Actions.PickUp = ch.Actions.PickUp || actions.PickUp
+				ch.Actions.Action = ch.Actions.Action || actions.Action
+				ch.Actions.DigLeft = ch.Actions.DigLeft || actions.DigLeft
+				ch.Actions.DigRight = ch.Actions.DigRight || actions.DigRight
 				if actions.Jump {
 					ch.Flags.JumpBuff = constants.ButtonBuffer
 				}
@@ -66,11 +70,33 @@ func CharacterActionSystem() {
 				if actions.Action {
 					ch.Flags.ActionBuff = constants.ButtonBuffer
 				}
-				debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
-				debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
-				debug.AddTruthText("Jump:      ", ch.Actions.Jump)
-				debug.AddTruthText("PickUp:    ", ch.Actions.PickUp)
-				debug.AddTruthText("Action:    ", ch.Actions.Action)
+				if actions.DigLeft {
+					ch.Flags.DigLeftBuff = constants.ButtonBuffer
+				}
+				if actions.DigRight {
+					ch.Flags.DigRightBuff = constants.ButtonBuffer
+				}
+				if ch.Player > -1 {
+					debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
+					debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
+					j, p, a, l, r := "-", "-", "-", "-", "-"
+					if ch.Actions.Jump {
+						j = "J"
+					}
+					if ch.Actions.PickUp {
+						p = "P"
+					}
+					if ch.Actions.Action {
+						a = "A"
+					}
+					if ch.Actions.DigLeft {
+						l = "<"
+					}
+					if ch.Actions.DigRight {
+						r = ">"
+					}
+					debug.AddText(fmt.Sprintf("%s|%s|%s|%s|%s", j, p, a, l, r))
+				}
 
 				if reanimator.FrameSwitch {
 					currPos := ch.Object.Pos.Add(ch.Object.Offset)

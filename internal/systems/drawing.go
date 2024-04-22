@@ -43,6 +43,7 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 		fmt.Println("WARNING: Batch with key", batchKey, "does not exist")
 		return
 	}
+	batch.Clear()
 	count := 0
 	for _, layer := range layers {
 		for _, result := range myecs.Manager.Query(myecs.IsDrawable) {

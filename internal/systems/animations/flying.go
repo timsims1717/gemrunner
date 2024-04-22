@@ -1,4 +1,4 @@
-package reanimator
+package animations
 
 import (
 	"gemrunner/internal/constants"

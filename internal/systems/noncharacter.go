@@ -52,8 +52,7 @@ func SmashSystem() {
 			s, okS := result.Components[myecs.Smash].(*float64)
 			if okO && okC && okS {
 				if d.Flags.Floor ||
-					obj.Hidden ||
-					result.Entity.HasComponent(myecs.Parent) {
+					obj.Hidden {
 					*s = obj.Pos.Y
 				}
 			}
@@ -70,16 +69,10 @@ func thrown(ch *data.Dynamic, tile *data.Tile) {
 		ch.Flags.JumpR = false
 	} else {
 		if ch.Flags.JumpR {
-			if ch.Flags.HeldNFlip {
-				ch.Object.Flip = false
-			}
 			if !ch.Flags.RightWall {
 				ch.Object.Pos.X += constants.ThrownHSpeed
 			}
 		} else if ch.Flags.JumpL {
-			if ch.Flags.HeldNFlip {
-				ch.Object.Flip = true
-			}
 			if !ch.Flags.LeftWall {
 				ch.Object.Pos.X -= constants.ThrownHSpeed
 			}

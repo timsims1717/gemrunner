@@ -335,7 +335,7 @@ func (t *Tile) CopyInto(c *Tile) {
 func (t *Tile) ToEmpty() {
 	t.Block = BlockEmpty
 	t.Metadata = DefaultMetadata()
-
+	t.Flags = DefaultFlags()
 }
 
 func (t *Tile) IsEmpty() bool {
@@ -397,6 +397,10 @@ func (t *Tile) IsLadder() bool {
 	}
 }
 
+func (t *Tile) CanDig() bool {
+	return !t.Flags.Collapse && t.Block == BlockTurf
+}
+
 // a* implementation
 
 func (t *Tile) PathNeighbors() []astar.Pather {
@@ -452,6 +456,10 @@ type TileFlags struct {
 	Regen     bool `json:"-"`
 	LCracked  bool `json:"-"`
 	LCollapse bool `json:"-"`
+}
+
+func DefaultFlags() TileFlags {
+	return TileFlags{}
 }
 
 type TileMetadata struct {

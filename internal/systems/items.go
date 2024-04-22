@@ -177,7 +177,7 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.StandOn, struct{}{})
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
-	e.AddComponent(myecs.PickUp, data.NewPickUp(10, true))
+	e.AddComponent(myecs.PickUp, data.NewPickUp("Box", 10, true))
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	box := data.NewDynamic()
@@ -241,7 +241,7 @@ func CreateKey(pos pixel.Vec, key string) {
 	theKey := &data.Key{
 		Object: obj,
 		Sprite: img.NewSprite(key, constants.TileBatch),
-		PickUp: data.NewPickUp(5, false),
+		PickUp: data.NewPickUp(fmt.Sprintf("Key (%s)", color), 5, false),
 		Action: KeyAction(color),
 	}
 	e := myecs.Manager.NewEntity()

@@ -16,6 +16,7 @@ func NewInteract(fn func(*Level, int, *Dynamic, *ecs.Entity)) *Interact {
 }
 
 type PickUp struct {
+	Name        string
 	Cycle       [constants.MaxPlayers]int
 	Priority    int
 	NeverFlip   bool
@@ -23,8 +24,9 @@ type PickUp struct {
 	NoInventory bool
 }
 
-func NewPickUp(p int, neverFlip bool) *PickUp {
+func NewPickUp(name string, p int, neverFlip bool) *PickUp {
 	return &PickUp{
+		Name:      name,
 		Priority:  p,
 		NeverFlip: neverFlip,
 		Inventory: -1,

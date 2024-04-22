@@ -143,13 +143,13 @@ func (t *Tree) CurrentSprite() *Result {
 }
 
 func (t *Tree) Draw(target pixel.Target, mat pixel.Matrix) {
-	if t.spr != nil {
+	if t.spr != nil && !t.Done {
 		t.spr.Draw(target, mat)
 	}
 }
 
 func (t *Tree) DrawColorMask(target pixel.Target, mat pixel.Matrix, col color.RGBA) {
-	if t.spr != nil {
+	if t.spr != nil && !t.Done {
 		t.spr.DrawColorMask(target, mat, col)
 	}
 }
@@ -228,19 +228,19 @@ const (
 	Done
 )
 
-func (a *Anim) WithColor(col pixel.RGBA) *Anim {
-	a.Color = col
-	return a
+func (anim *Anim) WithColor(col pixel.RGBA) *Anim {
+	anim.Color = col
+	return anim
 }
 
-func (a *Anim) WithBatch(batch string) *Anim {
-	a.Batch = batch
-	return a
+func (anim *Anim) WithBatch(batch string) *Anim {
+	anim.Batch = batch
+	return anim
 }
 
-func (a *Anim) WithOffset(offset pixel.Vec) *Anim {
-	a.Offset = offset
-	return a
+func (anim *Anim) WithOffset(offset pixel.Vec) *Anim {
+	anim.Offset = offset
+	return anim
 }
 
 func NewAnimFromSprite(key string, spr *pixel.Sprite, f Finish) *Anim {
@@ -373,6 +373,15 @@ func (anim *Anim) SetTriggerAll(fn func()) *Anim {
 		anim.SetTrigger(i, fn)
 	}
 	//anim.SetTrigger(len(anim.S), fn)
+	return anim
+}
+
+func (anim *Anim) Reverse() *Anim {
+	var r []*pixel.Sprite
+	for i := len(anim.S) - 1; i >= 0; i-- {
+		r = append(r, anim.S[i])
+	}
+	anim.S = r
 	return anim
 }
 

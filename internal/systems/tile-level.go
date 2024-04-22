@@ -15,6 +15,55 @@ func TileSystem() {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok && data.CurrLevel.Start && tile.Live {
+			if tile.Flags.Regen { // if this tile is regenerating
+				if reanimator.FrameSwitch {
+					tile.Counter++
+				}
+				if tile.Counter > constants.RegenACounter {
+					RemoveMask(tile)
+					tile.Flags.Regen = false
+					tile.Flags.Collapse = false
+					tile.Flags.Cracked = false
+					tile.Counter = 0
+				}
+			} else if tile.Flags.Collapse { // id this tile has collapsed
+				if reanimator.FrameSwitch {
+					tile.Counter++
+				}
+				if tile.Counter > constants.CollapseCounter {
+					RemoveMask(tile)
+					if tile.Metadata.Regenerate {
+						if tile.Counter > constants.RegenCounter {
+							tile.Flags.Collapse = false
+							tile.Flags.Cracked = false
+							tile.Flags.Regen = true
+							tile.Counter = 0
+							AddMask(tile, "regen", false, false)
+							// Crush any characters here
+							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+								_, okCO := resultC.Components[myecs.Object].(*object.Object)
+								ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+								if okCO && okC && ch.State != data.Dead {
+									x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+									chTile := data.CurrLevel.Tiles.Get(x, y)
+									if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+										(chTile.Coords.Y == tile.Coords.Y) {
+										ch.Object.Pos.X = tile.Object.Pos.X
+										ch.Object.Pos.Y = tile.Object.Pos.Y
+										ch.Flags.Crush = true
+										ch.State = data.Hit
+									}
+								}
+							}
+						}
+					} else {
+						tile.Block = data.BlockEmpty
+						tile.Flags.Collapse = false
+						tile.Flags.Cracked = false
+						tile.Counter = 0
+					}
+				}
+			}
 			switch tile.Block {
 			case data.BlockSpike:
 				for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
@@ -33,86 +82,40 @@ func TileSystem() {
 					}
 				}
 			case data.BlockCracked, data.BlockFall:
-				if tile.Block == data.BlockCracked && tile.Flags.Cracked {
-					if reanimator.FrameSwitch {
-						tile.Counter++
-					}
-					if tile.Counter > constants.CrackedCounter {
-						tile.Flags.Collapse = true
-						tile.Flags.Cracked = false
-						tile.Counter = 0
-						AddMask(tile, "collapse")
-					}
-				} else if tile.Flags.Regen {
-					if reanimator.FrameSwitch {
-						tile.Counter++
-					}
-					if tile.Counter > constants.RegenACounter {
-						RemoveMask(tile)
-						tile.Flags.Regen = false
-						tile.Flags.Collapse = false
-						tile.Flags.Cracked = false
-						tile.Counter = 0
-					}
-				} else if tile.Flags.Collapse {
-					if reanimator.FrameSwitch {
-						tile.Counter++
-					}
-					if tile.Counter > constants.CollapseCounter {
-						RemoveMask(tile)
-						if tile.Metadata.Regenerate {
-							if tile.Counter > constants.RegenCounter {
-								tile.Flags.Collapse = false
-								tile.Flags.Cracked = false
-								tile.Flags.Regen = true
-								tile.Counter = 0
-								AddMask(tile, "regen")
-								// Crush any characters here
-								for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-									_, okCO := resultC.Components[myecs.Object].(*object.Object)
-									ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-									if okCO && okC && ch.State != data.Dead {
-										x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-										chTile := data.CurrLevel.Tiles.Get(x, y)
-										if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-											(chTile.Coords.Y == tile.Coords.Y) {
-											ch.Object.Pos.X = tile.Object.Pos.X
-											ch.Object.Pos.Y = tile.Object.Pos.Y
-											ch.Flags.Crush = true
-											ch.State = data.Hit
-										}
-									}
-								}
-							}
-						} else {
-							tile.Block = data.BlockEmpty
-							tile.Flags.Collapse = false
+				if !tile.Flags.Collapse && !tile.Flags.Regen {
+					if tile.Block == data.BlockCracked && tile.Flags.Cracked {
+						if reanimator.FrameSwitch {
+							tile.Counter++
+						}
+						if tile.Counter > constants.CrackedCounter {
+							tile.Flags.Collapse = true
 							tile.Flags.Cracked = false
 							tile.Counter = 0
+							AddMask(tile, "collapse", false, false)
 						}
-					}
-				} else {
-					for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-						_, okCO := resultC.Components[myecs.Object].(*object.Object)
-						ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-						if okCO && okC && ch.State == data.Grounded {
-							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-							chTile := data.CurrLevel.Tiles.Get(x, y)
-							if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-								chTile.Coords.Y == tile.Coords.Y+1 &&
-								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
-									tile.Metadata.EnemyCrack) {
-								tile.Counter = 0
-								tile.Update = true
-								tile.Flags.Regen = false
-								if tile.Block == data.BlockCracked {
-									tile.Flags.Cracked = true
-									tile.Flags.Collapse = false
-									AddMask(tile, "cracking")
-								} else if tile.Block == data.BlockFall {
-									tile.Flags.Collapse = true
-									tile.Flags.Cracked = false
-									AddMask(tile, "collapse")
+					} else {
+						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+							_, okCO := resultC.Components[myecs.Object].(*object.Object)
+							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+							if okCO && okC && ch.State == data.Grounded {
+								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+								chTile := data.CurrLevel.Tiles.Get(x, y)
+								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+									chTile.Coords.Y == tile.Coords.Y+1 &&
+									((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
+										tile.Metadata.EnemyCrack) {
+									tile.Counter = 0
+									tile.Update = true
+									tile.Flags.Regen = false
+									if tile.Block == data.BlockCracked {
+										tile.Flags.Cracked = true
+										tile.Flags.Collapse = false
+										AddMask(tile, "cracking", false, false)
+									} else if tile.Block == data.BlockFall {
+										tile.Flags.Collapse = true
+										tile.Flags.Cracked = false
+										AddMask(tile, "collapse", false, false)
+									}
 								}
 							}
 						}
@@ -172,14 +175,19 @@ func TileSystem() {
 
 // AddMask creates a new mask animation for the tile and sets the correct layers
 // for drawing.
-func AddMask(tile *data.Tile, maskKey string) {
+func AddMask(tile *data.Tile, maskKey string, flip, reverse bool) {
 	RemoveMask(tile)
 	tile.Object.Layer = 31 // Put the tile on top so it's over any characters
 	obj := object.New()
 	obj.Pos = tile.Object.Pos
+	obj.Flip = flip
 	obj.Layer = 32 // the mask is one layer higher
 	m := myecs.Manager.NewEntity()
-	anim := reanimator.NewSimple(reanimator.NewBatchAnimation(maskKey, img.Batchers[constants.TileBatch], maskKey, reanimator.Hold))
+	a := reanimator.NewBatchAnimation(maskKey, img.Batchers[constants.TileBatch], maskKey, reanimator.Hold)
+	if reverse {
+		a = a.Reverse()
+	}
+	anim := reanimator.NewSimple(a)
 	m.AddComponent(myecs.Object, obj)
 	m.AddComponent(myecs.Animated, anim)
 	m.AddComponent(myecs.Drawable, anim)

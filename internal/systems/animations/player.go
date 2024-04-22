@@ -1,4 +1,4 @@
-package reanimator
+package animations
 
 import (
 	"fmt"
@@ -10,62 +10,41 @@ import (
 	"gemrunner/pkg/timing"
 )
 
-func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
+func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	batch := img.Batchers[constants.TileBatch]
-	regen := reanimator.NewBatchAnimation("regen", batch, fmt.Sprintf("%s_regen", sprPre), reanimator.Tran)
-	regen.SetEndTrigger(func() {
-		ch.Flags.Regen = false
-	})
 	idle := reanimator.NewBatchSprite("idle", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Hold)
 	breath := reanimator.NewBatchAnimation("breath", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Tran)
 	breath.SetEndTrigger(func() {
 		ch.Flags.Breath = false
 	})
-	var wall, run, climb, slide *reanimator.Anim
-	var leapOnI, leapOffI, leapToI []int
-	if sprPre == "demon" {
-		wall = reanimator.NewBatchSprite("wall", batch, fmt.Sprintf("%s_chase", sprPre), reanimator.Hold)
-		run = reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
-		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-		slide = reanimator.NewBatchAnimationCustom("slide", batch, fmt.Sprintf("%s_climb", sprPre), []int{0, 6, 5, 4, 2, 1}, reanimator.Loop)
-		slide.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
-			if pre == "climb" {
-				switch f {
-				case 0, 7:
-					a.Step = 0
-				case 1:
-					a.Step = 5
-				case 2:
-					a.Step = 4
-				case 3, 4:
-					a.Step = 3
-				case 5:
-					a.Step = 2
-				case 6:
-					a.Step = 1
-				}
-			}
-			slide.Freeze = !ch.Flags.Climbed
-			ch.Flags.Climbed = false
-		})
-		leapOnI = []int{0, 4, 3, 2, 5}
-		leapOffI = []int{6, 6, 4, 4, 3, 3, 3, 2, 1}
-		leapToI = []int{6, 6, 4, 3, 3, 3, 2, 2, 5}
-	} else {
-		wall = reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
-		run = reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
-		climb = reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-		slide = reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
-		leapOnI = []int{1, 2}
-		leapOffI = []int{2, 0, 1, 2}
-		leapToI = []int{2, 0, 1, 2, 2}
-	}
+	regenFrames := []int{0, 1, 2, 3, 4, 5, 6, 6, 7}
+	regen := reanimator.NewBatchAnimationCustom("regen", batch, fmt.Sprintf("%s_regen", sprPre), regenFrames, reanimator.Tran)
+	regen.SetTriggerAll(func() {
+		if regen.Step > 2 && !ch.Flags.Floor {
+			ch.Flags.Regen = false
+		}
+	})
+	regen.SetEndTrigger(func() {
+		ch.Flags.Regen = false
+	})
+	wall := reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
+	run := reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
+	climb := reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 	climb.SetTriggerAll(func() {
 		climb.Freeze = !ch.Flags.Climbed
 		ch.Flags.Climbed = false
 	})
+	slide := reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
+	digFrames := []int{0, 0, 1, 2, 3, 3, 4, 4, 4, 4}
+	dig := reanimator.NewBatchAnimationCustom("dig", batch, fmt.Sprintf("%s_dig", sprPre), digFrames, reanimator.Tran)
+	dig.SetEndTrigger(func() {
+		ch.Flags.ItemAction = data.NoItemAction
+	})
 	fall := reanimator.NewBatchSprite("fall", batch, fmt.Sprintf("%s_fall", sprPre), reanimator.Hold)
 	jump := reanimator.NewBatchSprite("jump", batch, fmt.Sprintf("%s_jump", sprPre), reanimator.Hold)
+	leapOnI := []int{1, 2}
+	leapOffI := []int{2, 0, 1, 2}
+	leapToI := []int{2, 0, 1, 2, 2}
 	leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
 	leapOn.SetEndTrigger(func() {
 		ch.Flags.LeapOn = false
@@ -86,18 +65,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		ch.Flags.ItemAction = data.NoItemAction
 	})
 	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
-	fullAttack := []int{0, 1, 2, 3, 4, 5, 4, 5, 4, 5}
-	var attack, hit *reanimator.Anim
-	if sprPre == "demon" {
-		attack = reanimator.NewBatchAnimationCustom("attack", batch, fmt.Sprintf("%s_attack", sprPre), fullAttack, reanimator.Tran)
-		hit = reanimator.NewBatchAnimation("hit", batch, fmt.Sprintf("%s_hit", sprPre), reanimator.Tran)
-	} else {
-		attack = reanimator.NewBatchAnimation("attack", batch, fmt.Sprintf("%s_attack", sprPre), reanimator.Tran)
-		hit = reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
-	}
-	attack.SetEndTrigger(func() {
-		ch.Flags.Attack = false
-	})
+	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 	hit.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
@@ -107,6 +75,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
 	})
+	portalWait := reanimator.NewBatchAnimation("portal", batch, "portal_magic", reanimator.Loop)
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
 		AddAnimation(idle).
@@ -115,6 +84,7 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(wall).
 		AddAnimation(fall).
 		AddAnimation(jump).
+		AddAnimation(dig).
 		AddAnimation(climb).
 		AddAnimation(slide).
 		AddAnimation(leapOn).
@@ -123,10 +93,12 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(throw).
 		AddAnimation(hit).
 		AddAnimation(crush).
-		AddAnimation(attack).
+		AddAnimation(portalWait).
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
+			case data.Waiting:
+				return "portal"
 			case data.Regen:
 				return "regen"
 			case data.Dead:
@@ -141,8 +113,14 @@ func HumanoidAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				return "attack"
 			case data.DoingAction:
 				switch ch.Flags.ItemAction {
+				case data.MagicDig:
+					return "dig"
+				case data.MagicPlace:
+					return "dig"
 				case data.ThrowBox:
 					return "throw"
+				default:
+					return "idle"
 				}
 			case data.Grounded:
 				if ch.Actions.Left() || ch.Actions.Right() {

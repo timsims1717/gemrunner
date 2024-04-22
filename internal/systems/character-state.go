@@ -172,7 +172,8 @@ func CharacterStateSystem() {
 					ch.Flags.Flying = false
 					ch.Flags.Attack = false
 					ch.Flags.Hit = false
-					if ch.Options.Regen {
+					if ch.Enemy > -1 &&
+						ch.Options.Regen {
 						var t *data.Tile
 						if len(ch.Options.LinkedTiles) > 0 {
 							t = GetRandomRegenTileFromList(ch.Options.LinkedTiles)
@@ -188,19 +189,39 @@ func CharacterStateSystem() {
 							ch.State = data.Regen
 							ch.Flags.Regen = true
 						}
+					} else if ch.Player > -1 &&
+						ch.Options.Regen &&
+						len(ch.Options.LinkedTiles) > 0 {
+						c := ch.Options.LinkedTiles[0]
+						t := data.CurrLevel.Tiles.Get(c.X, c.Y)
+						if t != nil {
+							tile = t
+							ch.Object.SetPos(t.Object.Pos)
+							ch.State = data.Waiting
+						}
+					}
+				case data.Waiting:
+					if ch.Actions.Any() {
+						ch.State = data.Regen
+						ch.Flags.Regen = true
+						PlayerPortal(ch.Object.Layer+1, tile.Object.Pos)
 					}
 				}
+				UpdateInventory(ch)
 				if ch.State != data.Dead &&
 					ch.State != data.Hit &&
 					ch.State != data.Attack &&
 					ch.State != data.DoingAction {
-					if ch.State != data.Leaping &&
-						ch.Actions.Action {
-						DoAction(ch)
-						ch.Flags.ActionBuff = 0
-					} else if ch.Actions.PickUp {
+					if ch.Actions.PickUp {
 						PickUpOrDropItem(ch, ch.Player)
-						ch.Flags.PickUpBuff = 0
+					}
+					if ch.State != data.Leaping {
+						if ch.Actions.DigLeft && Dig(ch, true) {
+						} else if ch.Actions.DigRight && Dig(ch, false) {
+						} else if ch.Actions.DigLeft && Place(ch, true) {
+						} else if ch.Actions.DigRight && Place(ch, false) {
+						} else if ch.Actions.Action && DoAction(ch) {
+						}
 					}
 				} else if ch.State == data.Dead {
 					DropItem(ch)

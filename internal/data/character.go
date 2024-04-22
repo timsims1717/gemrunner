@@ -9,13 +9,12 @@ import (
 )
 
 type Dynamic struct {
-	Object *object.Object
-	Anim   *reanimator.Tree
-	Entity *ecs.Entity
-	//Held      *ecs.Entity
-	//HeldObj   *object.Object
-	Inventory *ecs.Entity
-	Control   Controller
+	Object       *object.Object
+	Anim         *reanimator.Tree
+	Entity       *ecs.Entity
+	Inventory    *ecs.Entity
+	StoredBlocks []*Tile
+	Control      Controller
 
 	Actions  Actions
 	State    CharacterState
@@ -79,6 +78,8 @@ type Actions struct {
 	Jump          bool
 	PickUp        bool
 	Action        bool
+	DigLeft       bool
+	DigRight      bool
 }
 
 func NewAction() Actions {
@@ -102,6 +103,10 @@ func (a Actions) Left() bool {
 
 func (a Actions) Right() bool {
 	return a.Direction == Right || (a.PrevDirection == Right && a.Direction != Left)
+}
+
+func (a Actions) Any() bool {
+	return a.Direction != None || a.Jump || a.PickUp || a.Action || a.DigLeft || a.DigRight
 }
 
 type Vars struct {
@@ -133,6 +138,7 @@ const (
 	Hit
 	Dying
 	Dead
+	Waiting
 	Regen
 )
 
@@ -140,6 +146,8 @@ type ItemAction int
 
 const (
 	NoItemAction = iota
+	MagicDig
+	MagicPlace
 	ThrowBox
 )
 
@@ -172,41 +180,38 @@ func (s CharacterState) String() string {
 }
 
 type Flags struct {
-	LeftWall  bool
-	RightWall bool
-	Ceiling   bool
-	Floor     bool
-	EnemyL    bool
-	EnemyR    bool
-	EnemyU    bool
-	EnemyD    bool
-	NoLadders bool
-	GoingUp   bool
-	Climbed   bool
-	LeapOn    bool
-	LeapOff   bool
-	LeapTo    bool
-	Breath    bool
-	HighJump  bool
-	LongJump  bool
-	JumpR     bool
-	JumpL     bool
-	Action    bool
-	Thrown    bool
-	//Drop      bool
-	//HoldSwitch bool
-	HeldFlip   bool
-	HeldNFlip  bool
-	Hit        bool
-	Crush      bool
-	Attack     bool
-	Regen      bool
-	Flying     bool
-	Frame      bool
-	JumpBuff   int
-	PickUpBuff int
-	ActionBuff int
-	ItemAction ItemAction
+	LeftWall     bool
+	RightWall    bool
+	Ceiling      bool
+	Floor        bool
+	EnemyL       bool
+	EnemyR       bool
+	EnemyU       bool
+	EnemyD       bool
+	NoLadders    bool
+	GoingUp      bool
+	Climbed      bool
+	LeapOn       bool
+	LeapOff      bool
+	LeapTo       bool
+	Breath       bool
+	HighJump     bool
+	LongJump     bool
+	JumpR        bool
+	JumpL        bool
+	Thrown       bool
+	Hit          bool
+	Crush        bool
+	Attack       bool
+	Regen        bool
+	Flying       bool
+	Frame        bool
+	JumpBuff     int
+	PickUpBuff   int
+	ActionBuff   int
+	DigLeftBuff  int
+	DigRightBuff int
+	ItemAction   ItemAction
 }
 
 type CharacterOptions struct {
@@ -214,6 +219,7 @@ type CharacterOptions struct {
 	RegenFlip   bool
 	Flying      bool
 	LinkedTiles []world.Coords
+	StoredCount int
 }
 
 type Controller interface {

@@ -76,6 +76,19 @@ func (s *testState) Update(win *pixelgl.Window) {
 			debug.AddIntCoords(fmt.Sprintf("Player %d Coords", i+1), cx, cy)
 			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevel.Stats[i].Score))
 			debug.AddText(fmt.Sprintf("Player %d State: %s", i+1, player.State.String()))
+			if player.Inventory == nil {
+				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))
+			} else {
+				item := "unknown"
+				cd, ok1 := player.Inventory.GetComponentData(myecs.PickUp)
+				if ok1 {
+					if pd, ok := cd.(*data.PickUp); ok {
+						item = pd.Name
+					}
+				}
+				debug.AddText(fmt.Sprintf("Player %d Inv: %s", i+1, item))
+			}
+			debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))
 		}
 	}
 
@@ -100,6 +113,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.TouchSystem()
 		systems.SmashSystem()
 		systems.TileSystem()
+		systems.MagicSystem()
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
 	} else {
@@ -135,6 +149,10 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
+	data.PuzzleView.Draw(win)
+	// draw effects
+	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
+	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
 	data.PuzzleView.Draw(win)
 	// draw debug
 	if debug.ShowDebug {

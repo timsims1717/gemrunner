@@ -64,7 +64,7 @@ const (
 	WaitToSwitch    = 3
 	ButtonBuffer    = 3
 	CrackedCounter  = 16
-	RegenCounter    = 112
+	RegenCounter    = 128
 	RegenACounter   = 7
 	CollapseCounter = 7
 	ThrownCounter   = 8
@@ -120,4 +120,5 @@ var (
 	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
 	CollapseRegenLayer = []int{31}
 	CollapseRegenMask  = []int{32}
+	EffectsLayer       = []int{33}
 )

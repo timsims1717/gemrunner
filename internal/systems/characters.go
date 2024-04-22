@@ -6,8 +6,11 @@ import (
 	"gemrunner/internal/controllers"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
-	"gemrunner/internal/systems/reanimator"
+	"gemrunner/internal/systems/animations"
+	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
 )
@@ -16,6 +19,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	obj.Layer = 27 - pIndex*2
+	PlayerPortal(obj.Layer+1, pos)
 	player := data.NewDynamic()
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
@@ -25,14 +29,16 @@ func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
 	player.Entity = e
 	player.Player = pIndex
 	player.Vars = data.PlayerVars()
+	player.State = data.Regen
+	player.Flags.Regen = true
+	player.Options.Regen = true
+	player.Options.StoredCount = 12
+	player.Options.LinkedTiles = []world.Coords{world.NewCoords(world.WorldToMap(pos.X, pos.Y))}
 	e.AddComponent(myecs.Animated, player.Anim)
 	e.AddComponent(myecs.Drawable, player.Anim)
 	e.AddComponent(myecs.Dynamic, player)
 	e.AddComponent(myecs.Player, player.Player)
 	e.AddComponent(myecs.LvlElement, struct{}{})
-	pickUp := data.NewPickUp(11, true)
-	pickUp.NoInventory = true
-	e.AddComponent(myecs.PickUp, pickUp)
 	return player
 }
 
@@ -41,22 +47,22 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 	case 0:
 		ch.Control = controllers.NewPlayerInput(data.P1Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anim = reanimator.HumanoidAnimation(ch, "player1")
+		ch.Anim = animations.PlayerAnimation(ch, "player1")
 		ch.Color = constants.StrColorBlue
 	case 1:
 		ch.Control = controllers.NewPlayerInput(data.P2Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anim = reanimator.HumanoidAnimation(ch, "player2")
+		ch.Anim = animations.PlayerAnimation(ch, "player2")
 		ch.Color = constants.StrColorGreen
 	case 2:
 		ch.Control = controllers.NewPlayerInput(data.P3Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anim = reanimator.HumanoidAnimation(ch, "player3")
+		ch.Anim = animations.PlayerAnimation(ch, "player3")
 		ch.Color = constants.StrColorPurple
 	case 3:
 		ch.Control = controllers.NewPlayerInput(data.P4Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anim = reanimator.HumanoidAnimation(ch, "player4")
+		ch.Anim = animations.PlayerAnimation(ch, "player4")
 		ch.Color = constants.StrColorBrown
 	}
 	data.CurrLevel.Players[p] = ch
@@ -70,7 +76,7 @@ func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	obj.Layer = 29
 	demon := data.NewDynamic()
 	demon.Object = obj
-	demon.Anim = reanimator.HumanoidAnimation(demon, "demon")
+	demon.Anim = animations.DemonAnimation(demon)
 	demon.State = data.Regen
 	demon.Flags.Regen = true
 	demon.Options.Regen = metadata.Regenerate
@@ -136,7 +142,7 @@ func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	fly.State = data.Regen
 	fly.Flags.Regen = true
 	fly.Object = obj
-	fly.Anim = reanimator.FlyAnimation(fly)
+	fly.Anim = animations.FlyAnimation(fly)
 	fly.Vars = data.FlyVars()
 	e := myecs.Manager.NewEntity()
 	fly.Entity = e
@@ -181,4 +187,34 @@ func SetPlayerControl(ch *data.Dynamic, p int) {
 
 func ResetControl(ch *data.Dynamic) {
 	ch.Entity.AddComponent(myecs.Controller, ch.Control)
+}
+
+func PlayerPortal(layer int, pos pixel.Vec) {
+	obj := object.New()
+	obj.Pos = pos
+	obj.Layer = layer
+	first := true
+	m := myecs.Manager.NewEntity()
+	a := reanimator.NewBatchAnimation("portal", img.Batchers[constants.TileBatch], "portal_magic", reanimator.Tran)
+	a.SetEndTrigger(func() {
+		first = false
+	})
+	b := reanimator.NewBatchAnimation("portalClose", img.Batchers[constants.TileBatch], "portal_magic_close", reanimator.Tran)
+	b.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(m)
+	})
+	anim := reanimator.New(reanimator.NewSwitch().
+		AddAnimation(a).
+		AddAnimation(b).
+		SetChooseFn(func() string {
+			if first {
+				return "portal"
+			} else {
+				return "portalClose"
+			}
+		}), "portal")
+	m.AddComponent(myecs.Object, obj)
+	m.AddComponent(myecs.Animated, anim)
+	m.AddComponent(myecs.Drawable, anim)
+	m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 }

@@ -89,6 +89,12 @@ var (
 		B: 9,
 		A: 255,
 	}
+	ColorGold = color.RGBA{
+		R: 197,
+		G: 198,
+		B: 93,
+		A: 255,
+	}
 	ColorGray = color.RGBA{
 		R: 91,
 		G: 91,
@@ -117,7 +123,7 @@ var (
 	Player1Color = ColorBlue
 	Player2Color = ColorOrange
 	Player3Color = ColorPurple
-	Player4Color = ColorYellow
+	Player4Color = ColorGold
 
 	WorldSprites = map[int]string{
 		WorldMoss:      TileSetRock,
@@ -151,7 +157,7 @@ var (
 		WorldSnow:      ColorBlue,
 		WorldDark:      ColorBlue,
 		WorldDungeon:   ColorWhite,
-		WorldBeach:     ColorYellow,
+		WorldBeach:     ColorGold,
 		WorldRedRock:   ColorRed,
 		WorldSlime:     ColorBrown,
 		WorldFungus:    ColorPurple,
@@ -175,7 +181,7 @@ var (
 		WorldDark:      ColorGray,
 		WorldDungeon:   ColorBlue,
 		WorldBeach:     ColorBrown,
-		WorldRedRock:   ColorYellow,
+		WorldRedRock:   ColorGold,
 		WorldSlime:     ColorTan,
 		WorldFungus:    ColorBrown,
 		WorldSandstone: ColorOrange,
@@ -184,7 +190,7 @@ var (
 		WorldBasalt:    ColorOrange,
 		WorldAbyss:     ColorBlue,
 		WorldReef:      ColorPurple,
-		WorldGravelPit: ColorYellow,
+		WorldGravelPit: ColorGold,
 		WorldSpire:     ColorGray,
 	}
 

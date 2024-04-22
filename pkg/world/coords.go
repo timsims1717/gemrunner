@@ -6,6 +6,10 @@ type Coords struct {
 	Y int
 }
 
+func NewCoords(x, y int) Coords {
+	return Coords{X: x, Y: y}
+}
+
 // Eq checks if a and b are equal.
 func (a Coords) Eq(b Coords) bool {
 	return a.X == b.X && a.Y == b.Y
