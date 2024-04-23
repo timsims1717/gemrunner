@@ -1,6 +1,9 @@
 package data
 
 import (
+	"gemrunner/pkg/object"
+	"gemrunner/pkg/timing"
+	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel/pixelgl"
 	pxginput "github.com/timsims1717/pixel-go-input"
 )
@@ -137,4 +140,7 @@ var (
 		},
 		Mode: pxginput.KeyboardMouse,
 	}
+	HideCursorTimer *timing.Timer
+	CursorObj       *object.Object
+	CursorEntity    *ecs.Entity
 )

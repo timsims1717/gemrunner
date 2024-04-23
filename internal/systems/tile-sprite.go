@@ -46,7 +46,8 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
-	case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase,
+	case data.BlockTurf, data.BlockBedrock,
+		data.BlockFall, data.BlockCracked, data.BlockPhase,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf:
 		if data.EditorDraw {
 			sprs = GetBlockSpritesEditor(tile)

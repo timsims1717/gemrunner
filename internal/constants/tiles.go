@@ -65,6 +65,7 @@ const (
 	TileFall        = "fall"
 	TilePhase       = "phase"
 	TileSpike       = "spike"
+	TileBedrock     = "bedrock"
 	TileCracked     = "cracked"
 	TileCrackedShow = "cracked_show"
 	TileCracking    = "cracking"

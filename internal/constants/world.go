@@ -53,6 +53,12 @@ var (
 		B: 245,
 		A: 255,
 	}
+	ColorLightGray = color.RGBA{
+		R: 210,
+		G: 210,
+		B: 210,
+		A: 255,
+	}
 	ColorRed = color.RGBA{
 		R: 255,
 		G: 77,
@@ -131,11 +137,11 @@ var (
 		WorldBrick:     TileSetBrick,
 		WorldBeam:      TileSetMetal,
 		WorldIce:       TileSetIce,
-		WorldSnow:      TileSetStone,
+		WorldSnow:      TileSetRock,
 		WorldDark:      TileSetGravel,
 		WorldDungeon:   TileSetBrick,
 		WorldBeach:     TileSetShell,
-		WorldRedRock:   TileSetRock,
+		WorldRedRock:   TileSetStone,
 		WorldSlime:     TileSetTree,
 		WorldFungus:    TileSetDirt,
 		WorldSandstone: TileSetSlate,
@@ -156,9 +162,9 @@ var (
 		WorldIce:       ColorCyan,
 		WorldSnow:      ColorBlue,
 		WorldDark:      ColorBlue,
-		WorldDungeon:   ColorWhite,
-		WorldBeach:     ColorGold,
-		WorldRedRock:   ColorRed,
+		WorldDungeon:   ColorGray,
+		WorldBeach:     ColorYellow,
+		WorldRedRock:   ColorTan,
 		WorldSlime:     ColorBrown,
 		WorldFungus:    ColorPurple,
 		WorldSandstone: ColorTan,
@@ -166,9 +172,9 @@ var (
 		WorldLava:      ColorOrange,
 		WorldBasalt:    ColorGray,
 		WorldAbyss:     ColorPurple,
-		WorldReef:      ColorWhite,
+		WorldReef:      ColorTan,
 		WorldGravelPit: ColorGray,
-		WorldSpire:     ColorWhite,
+		WorldSpire:     ColorGold,
 	}
 
 	WorldSecondary = map[int]color.RGBA{
@@ -176,7 +182,7 @@ var (
 		WorldJungle:    ColorBrown,
 		WorldBrick:     ColorBlue,
 		WorldBeam:      ColorRed,
-		WorldIce:       ColorWhite,
+		WorldIce:       ColorLightGray,
 		WorldSnow:      ColorCyan,
 		WorldDark:      ColorGray,
 		WorldDungeon:   ColorBlue,
@@ -190,7 +196,7 @@ var (
 		WorldBasalt:    ColorOrange,
 		WorldAbyss:     ColorBlue,
 		WorldReef:      ColorPurple,
-		WorldGravelPit: ColorGold,
+		WorldGravelPit: ColorRed,
 		WorldSpire:     ColorGray,
 	}
 

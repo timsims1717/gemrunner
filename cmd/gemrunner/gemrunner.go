@@ -36,6 +36,7 @@ func run() {
 		panic(err)
 	}
 
+	win.SetCursorVisible(false)
 	viewport.ILockDefault = true
 	viewport.MainCamera = viewport.New(win.Canvas())
 	viewport.MainCamera.SetRect(pixel.R(0, 0, 1600, 900))
@@ -71,8 +72,8 @@ func run() {
 	data.PuzzleShader = sh
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
-	debug.ShowText = true
-	debug.ShowDebug = true
+	debug.ShowText = false
+	debug.ShowDebug = false
 
 	object.ILock = true
 
@@ -81,6 +82,7 @@ func run() {
 	load.InitConstructors()
 	load.Dialogs(win)
 	systems.InitMainBorder()
+	systems.CursorInit()
 
 	win.Show()
 	timing.Reset()

@@ -51,6 +51,34 @@
       "w": 16
     },
     {
+      "key": "rock_bedrock_top",
+      "x": 16,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_bedrock",
+      "x": 16,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_bedrock_bottom_top",
+      "x": 0,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_bedrock_bottom",
+      "x": 16,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "slate_top",
       "x": 48,
       "y": 32,
@@ -95,6 +123,34 @@
     {
       "key": "slate_spike",
       "x": 32,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bedrock_top",
+      "x": 48,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bedrock",
+      "x": 48,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bedrock_bottom_top",
+      "x": 32,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_bedrock_bottom",
+      "x": 48,
       "y": 48,
       "h": 16,
       "w": 16
@@ -149,6 +205,34 @@
       "w": 16
     },
     {
+      "key": "brick_bedrock_top",
+      "x": 80,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "brick_bedrock",
+      "x": 80,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "brick_bedrock_bottom_top",
+      "x": 64,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "brick_bedrock_bottom",
+      "x": 80,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "gravel_top",
       "x": 112,
       "y": 32,
@@ -193,6 +277,33 @@
     {
       "key": "gravel_spike",
       "x": 96,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },{
+      "key": "gravel_bedrock_top",
+      "x": 112,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gravel_bedrock",
+      "x": 112,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gravel_bedrock_bottom_top",
+      "x": 96,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gravel_bedrock_bottom",
+      "x": 112,
       "y": 48,
       "h": 16,
       "w": 16
@@ -247,6 +358,34 @@
       "w": 16
     },
     {
+      "key": "dirt_bedrock_top",
+      "x": 144,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "dirt_bedrock",
+      "x": 144,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "dirt_bedrock_bottom_top",
+      "x": 128,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "dirt_bedrock_bottom",
+      "x": 144,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "stone_top",
       "x": 176,
       "y": 32,
@@ -296,6 +435,34 @@
       "w": 16
     },
     {
+      "key": "stone_bedrock_top",
+      "x": 176,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "stone_bedrock",
+      "x": 176,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "stone_bedrock_bottom_top",
+      "x": 160,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "stone_bedrock_bottom",
+      "x": 176,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "shell_top",
       "x": 208,
       "y": 32,
@@ -340,6 +507,33 @@
     {
       "key": "shell_spike",
       "x": 192,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },{
+      "key": "shell_bedrock_top",
+      "x": 208,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "shell_bedrock",
+      "x": 208,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "shell_bedrock_bottom_top",
+      "x": 192,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "shell_bedrock_bottom",
+      "x": 208,
       "y": 48,
       "h": 16,
       "w": 16
@@ -394,6 +588,34 @@
       "w": 16
     },
     {
+      "key": "metal_bedrock_top",
+      "x": 240,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "metal_bedrock",
+      "x": 240,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "metal_bedrock_bottom_top",
+      "x": 224,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "metal_bedrock_bottom",
+      "x": 240,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "ice_top",
       "x": 272,
       "y": 32,
@@ -443,29 +665,29 @@
       "w": 16
     },
     {
-      "key": "tree_alt",
-      "x": 288,
-      "y": 0,
+      "key": "ice_bedrock_top",
+      "x": 272,
+      "y": 80,
       "h": 16,
       "w": 16
     },
     {
-      "key": "tree_bottom_top",
-      "x": 288,
-      "y": 16,
+      "key": "ice_bedrock",
+      "x": 272,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
-      "key": "tree_spike_bottom",
-      "x": 288,
-      "y": 32,
+      "key": "ice_bedrock_bottom_top",
+      "x": 256,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
-      "key": "tree_spike",
-      "x": 288,
+      "key": "ice_bedrock_bottom",
+      "x": 272,
       "y": 48,
       "h": 16,
       "w": 16
@@ -485,9 +707,65 @@
       "w": 16
     },
     {
+      "key": "tree_bottom_top",
+      "x": 288,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "tree_bottom",
       "x": 304,
       "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_alt",
+      "x": 288,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_spike_bottom",
+      "x": 288,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_spike",
+      "x": 288,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_bedrock_top",
+      "x": 304,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_bedrock",
+      "x": 304,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_bedrock_bottom_top",
+      "x": 288,
+      "y": 64,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_bedrock_bottom",
+      "x": 304,
+      "y": 48,
       "h": 16,
       "w": 16
     },
@@ -953,15 +1231,15 @@
     },
     {
       "key": "ladder_bottom",
-      "x": 0,
-      "y": 80,
+      "x": 400,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "ladder_middle",
-      "x": 0,
-      "y": 96,
+      "x": 400,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -981,22 +1259,22 @@
     },
     {
       "key": "ladder_top",
-      "x": 0,
-      "y": 112,
+      "x": 400,
+      "y": 96,
       "h": 16,
       "w": 16
     },
     {
       "key": "ladder_cracked_bottom",
-      "x": 16,
-      "y": 80,
+      "x": 416,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "ladder_cracked_middle",
-      "x": 16,
-      "y": 96,
+      "x": 416,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -1016,22 +1294,22 @@
     },
     {
       "key": "exit_ladder_bottom",
-      "x": 32,
-      "y": 80,
+      "x": 432,
+      "y": 64,
       "h": 16,
       "w": 16
     },
     {
       "key": "exit_ladder_middle",
-      "x": 32,
-      "y": 96,
+      "x": 432,
+      "y": 80,
       "h": 16,
       "w": 16
     },
     {
       "key": "exit_ladder_top",
-      "x": 32,
-      "y": 112,
+      "x": 432,
+      "y": 96,
       "h": 16,
       "w": 16
     },
@@ -1153,45 +1431,10 @@
 
     {
       "key": "box",
-      "x": 16,
-      "y": 112,
+      "x": 416,
+      "y": 96,
       "h": 16,
       "w": 16
-    },
-    {
-      "key": "box_piece0",
-      "x": 368,
-      "y": 120,
-      "h": 8,
-      "w": 10
-    },
-    {
-      "key": "box_piece1",
-      "x": 368,
-      "y": 112,
-      "h": 8,
-      "w": 6
-    },
-    {
-      "key": "box_piece2",
-      "x": 378,
-      "y": 120,
-      "h": 8,
-      "w": 8
-    },
-    {
-      "key": "box_piece3",
-      "x": 384,
-      "y": 112,
-      "h": 6,
-      "w": 6
-    },
-    {
-      "key": "box_piece4",
-      "x": 374,
-      "y": 112,
-      "h": 8,
-      "w": 10
     },
 
 
@@ -1969,7 +2212,7 @@
     },
     {
       "key": "key_blue",
-      "x": 60,
+      "x": 64,
       "y": 208,
       "h": 16,
       "w": 16
@@ -2319,8 +2562,8 @@
     },
     {
       "key": "key_purple",
-      "x": 192,
-      "y": 224,
+      "x": 256,
+      "y": 208,
       "h": 16,
       "w": 16
     },
@@ -2494,8 +2737,8 @@
     },
     {
       "key": "key_brown",
-      "x": 288,
-      "y": 224,
+      "x": 352,
+      "y": 208,
       "h": 16,
       "w": 16
     },
@@ -3975,34 +4218,66 @@
       "w": 16
     },
     {
-      "key": "player3_attack",
+      "key": "player3_regen",
       "anim": true,
       "x": 192,
-      "y": 176,
+      "y": 227,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_attack",
+      "key": "player3_regen",
+      "anim": true,
+      "x": 192,
+      "y": 230,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_regen",
+      "anim": true,
+      "x": 192,
+      "y": 233,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_regen",
+      "anim": true,
+      "x": 192,
+      "y": 236,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_regen",
       "anim": true,
       "x": 208,
-      "y": 176,
+      "y": 239,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_attack",
+      "key": "player3_regen",
       "anim": true,
       "x": 224,
-      "y": 176,
+      "y": 240,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player3_attack",
+      "key": "player3_regen",
       "anim": true,
       "x": 240,
-      "y": 176,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_regen",
+      "anim": true,
+      "x": 256,
+      "y": 240,
       "h": 16,
       "w": 16
     },
@@ -4386,34 +4661,66 @@
       "w": 16
     },
     {
-      "key": "player4_attack",
+      "key": "player4_regen",
       "anim": true,
       "x": 288,
-      "y": 176,
+      "y": 227,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player4_attack",
+      "key": "player4_regen",
+      "anim": true,
+      "x": 288,
+      "y": 230,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_regen",
+      "anim": true,
+      "x": 288,
+      "y": 233,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_regen",
+      "anim": true,
+      "x": 288,
+      "y": 236,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_regen",
       "anim": true,
       "x": 304,
-      "y": 176,
+      "y": 239,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player4_attack",
+      "key": "player4_regen",
       "anim": true,
       "x": 320,
-      "y": 176,
+      "y": 240,
       "h": 16,
       "w": 16
     },
     {
-      "key": "player4_attack",
+      "key": "player4_regen",
       "anim": true,
       "x": 336,
-      "y": 176,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_regen",
+      "anim": true,
+      "x": 362,
+      "y": 240,
       "h": 16,
       "w": 16
     },

@@ -66,6 +66,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	data.P2Input.Update(win, viewport.MainCamera.Mat)
 	data.P3Input.Update(win, viewport.MainCamera.Mat)
 	data.P4Input.Update(win, viewport.MainCamera.Mat)
+	systems.CursorSystem(true)
 	debug.AddText("Test State")
 	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
 	for i, player := range data.CurrLevel.Players {
@@ -162,6 +163,7 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
+	systems.DrawLayerSystem(win, 100)
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
 	if options.Updated {

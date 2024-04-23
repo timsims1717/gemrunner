@@ -38,6 +38,7 @@ func (s *editorState) Load() {
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {
+	systems.CursorSystem(true)
 	debug.AddText("Editor State")
 	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.Editor.Mode.String()))
 	debug.AddIntCoords("World", int(data.MenuInput.World.X), int(data.MenuInput.World.Y))
@@ -134,6 +135,8 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		data.PuzzleView.Draw(win)
 		// dialog draw system
 		systems.DialogDrawSystem(win)
+		systems.DrawLayerSystem(win, -10)
+		img.Clear()
 		systems.TemporarySystem()
 		data.IMDraw.Clear()
 		if options.Updated {

@@ -15,6 +15,7 @@ type Block int
 
 const (
 	BlockTurf = iota
+	BlockBedrock
 	BlockFall
 	BlockCracked
 	BlockPhase
@@ -87,6 +88,11 @@ func (b Block) String() string {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
+	case BlockBedrock:
+		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
+		}
+		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
 	case BlockSpike:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
@@ -192,6 +198,7 @@ func (b Block) String() string {
 
 var toID = map[string]Block{
 	constants.TileTurf:              BlockTurf,
+	constants.TileBedrock:           BlockBedrock,
 	constants.TileFall:              BlockFall,
 	constants.TileCracked:           BlockCracked,
 	constants.TilePhase:             BlockPhase,
@@ -254,6 +261,8 @@ func (b Block) MarshalJSON() ([]byte, error) {
 	switch b {
 	case BlockTurf:
 		buffer.WriteString(constants.TileTurf)
+	case BlockBedrock:
+		buffer.WriteString(constants.TileBedrock)
 	case BlockFall:
 		buffer.WriteString(constants.TileFall)
 	case BlockPhase:
@@ -341,6 +350,7 @@ func (t *Tile) ToEmpty() {
 func (t *Tile) IsEmpty() bool {
 	return !(t.IsLadder() ||
 		t.Block == BlockTurf ||
+		t.Block == BlockBedrock ||
 		t.Block == BlockFall ||
 		t.Block == BlockCracked ||
 		t.Block == BlockSpike ||
@@ -351,6 +361,7 @@ func (t *Tile) IsSolid() bool {
 	return !t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike)
@@ -360,6 +371,7 @@ func (t *Tile) IsNilOrSolid() bool {
 	return t == nil || (!t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike))
@@ -368,6 +380,7 @@ func (t *Tile) IsNilOrSolid() bool {
 func (t *Tile) IsBlock() bool {
 	return t == nil ||
 		((t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
 			t.Block == BlockLadderTurf ||
 			t.Block == BlockLadderCrackedTurf ||
 			t.Block == BlockLadderExitTurf ||

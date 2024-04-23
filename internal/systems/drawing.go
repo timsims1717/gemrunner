@@ -142,7 +142,6 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 	for _, batch := range currBatches {
 		img.Batchers[batch].Draw(target)
 	}
-	//debug.AddText(fmt.Sprintf("Layer %d: %d entities", layer, count))
 }
 
 func DrawThing(draw interface{}, obj *object.Object, target pixel.Target) {

@@ -23,6 +23,8 @@ func UpdateViews() {
 		data.PuzzleView.PortSize = pixel.V(pickedRatio, pickedRatio)
 		data.BorderView.PortSize = pixel.V(pickedRatio, pickedRatio)
 	}
+	data.CursorObj.Sca = pixel.V(pickedRatio, pickedRatio)
+	data.CursorObj.Offset = pixel.V(9, -9).Scaled(pickedRatio)
 	for _, dialog := range data.Dialogs {
 		posRatX := viewport.MainCamera.Rect.W() / constants.WinWidth
 		posRatY := viewport.MainCamera.Rect.H() / constants.WinHeight
