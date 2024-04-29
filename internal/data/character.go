@@ -111,6 +111,7 @@ func (a Actions) Any() bool {
 
 type Vars struct {
 	WalkSpeed    float64
+	BarSpeed     float64
 	LeapSpeed    float64
 	ClimbSpeed   float64
 	SlideSpeed   float64
@@ -129,6 +130,7 @@ type CharacterState int
 const (
 	Grounded = iota
 	OnLadder
+	OnBar
 	Falling
 	Jumping
 	Leaping
@@ -156,7 +158,9 @@ func (s CharacterState) String() string {
 	case Grounded:
 		return "Grounded"
 	case OnLadder:
-		return "Ladder"
+		return "OnLadder"
+	case OnBar:
+		return "OnBar"
 	case Falling:
 		return "Falling"
 	case Jumping:
@@ -238,6 +242,7 @@ const (
 func PlayerVars() Vars {
 	return Vars{
 		WalkSpeed:    constants.PlayerWalkSpeed - constants.SpeedMod,
+		BarSpeed:     constants.PlayerBarSpeed - constants.SpeedMod,
 		LeapSpeed:    constants.PlayerLeapSpeed - constants.SpeedMod,
 		ClimbSpeed:   constants.PlayerClimbSpeed - constants.SpeedMod,
 		SlideSpeed:   constants.PlayerSlideSpeed - constants.SpeedMod,
@@ -255,6 +260,7 @@ func PlayerVars() Vars {
 func DemonVars() Vars {
 	return Vars{
 		WalkSpeed:    constants.DemonWalkSpeed - constants.SpeedMod,
+		BarSpeed:     constants.DemonBarSpeed - constants.SpeedMod,
 		LeapSpeed:    constants.DemonLeapSpeed - constants.SpeedMod,
 		ClimbSpeed:   constants.DemonClimbSpeed - constants.SpeedMod,
 		SlideSpeed:   constants.DemonSlideSpeed - constants.SpeedMod,

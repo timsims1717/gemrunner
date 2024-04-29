@@ -29,7 +29,7 @@ func TileSpriteSystem() {
 	for _, result := range myecs.Manager.Query(myecs.IsTile) {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
-		if okO && ok {
+		if okO && ok && !result.Entity.HasComponent(myecs.Animated) {
 			spr := GetTileSprites(tile)
 			if len(spr) == 1 {
 				result.Entity.AddComponent(myecs.Drawable, spr[0])
@@ -169,7 +169,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	} else {
 		b = data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
-	if b == nil || b.IsBlock() {
+	if b.IsBlock() {
 		bottom = false
 	}
 	var sKey string
@@ -179,6 +179,8 @@ func GetBlockSprite(tile *data.Tile) string {
 		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileTop)
 	} else if bottom {
 		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottom)
+	} else if tile.AltBlock == 1 && tile.Block == data.BlockTurf {
+		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileAlt)
 	} else {
 		sKey = tile.Block.String()
 	}

@@ -163,7 +163,7 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
-	systems.DrawLayerSystem(win, 100)
+	systems.DrawLayerSystem(win, -10)
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
 	if options.Updated {

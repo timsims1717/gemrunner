@@ -23,6 +23,7 @@ const (
 	BlockLadder
 	BlockLadderCracked
 	BlockLadderExit
+	BlockBar
 
 	BlockPlayer1
 	BlockKeyBlue
@@ -64,15 +65,31 @@ const (
 	BlockGemGreen
 	BlockGemPurple
 	BlockGemBrown
-	BlockBox
-	BlockChain
-	BlockReeds
-	BlockFlowers
-
 	BlockDemon
 	BlockDemonRegen
 	BlockFly
 	BlockFlyRegen
+
+	BlockBox
+
+	BlockReeds
+	BlockFlowers
+	BlockMoss
+	BlockGrass
+	BlockCattail
+	BlockCactus1
+	BlockCactus2
+	BlockVine
+
+	BlockNest
+	BlockSkull
+	BlockDots
+	BlockBoulder
+	BlockMush1
+	BlockMush2
+	BlockChain
+	BlockGear
+
 	BlockEmpty
 
 	BlockLadderTurf
@@ -104,6 +121,8 @@ func (b Block) String() string {
 		return constants.TileLadderCrackM
 	case BlockLadderExit:
 		return constants.TileExitLadderM
+	case BlockBar:
+		return constants.TileBar
 	case BlockBox:
 		return constants.ItemBox
 	case BlockPlayer1:
@@ -186,12 +205,38 @@ func (b Block) String() string {
 		return constants.TileDemonRegen
 	case BlockFlyRegen:
 		return constants.TileFlyRegen
-	case BlockChain:
-		return constants.DoodadChain
 	case BlockReeds:
 		return constants.DoodadReeds
 	case BlockFlowers:
 		return constants.DoodadFlowers
+	case BlockMoss:
+		return constants.DoodadMoss
+	case BlockGrass:
+		return constants.DoodadGrass
+	case BlockCattail:
+		return constants.DoodadCattail
+	case BlockCactus1:
+		return constants.DoodadCactus1
+	case BlockCactus2:
+		return constants.DoodadCactus2
+	case BlockVine:
+		return constants.DoodadVine
+	case BlockNest:
+		return constants.DoodadNest
+	case BlockSkull:
+		return constants.DoodadSkull
+	case BlockDots:
+		return constants.DoodadDots
+	case BlockBoulder:
+		return constants.DoodadBoulder
+	case BlockMush1:
+		return constants.DoodadMush1
+	case BlockMush2:
+		return constants.DoodadMush2
+	case BlockChain:
+		return constants.DoodadChain
+	case BlockGear:
+		return constants.DoodadGear
 	}
 	return constants.TileEmpty
 }
@@ -209,6 +254,7 @@ var toID = map[string]Block{
 	constants.TileLadderTurf:        BlockLadderTurf,
 	constants.TileLadderCrackedTurf: BlockLadderCrackedTurf,
 	constants.TileLadderExitTurf:    BlockLadderExitTurf,
+	constants.TileBar:               BlockBar,
 	constants.ItemBox:               BlockBox,
 	constants.CharPlayer1:           BlockPlayer1,
 	constants.CharPlayer2:           BlockPlayer2,
@@ -250,9 +296,22 @@ var toID = map[string]Block{
 	constants.CharFly:               BlockFly,
 	constants.TileDemonRegen:        BlockDemonRegen,
 	constants.TileFlyRegen:          BlockFlyRegen,
-	constants.DoodadChain:           BlockChain,
 	constants.DoodadReeds:           BlockReeds,
 	constants.DoodadFlowers:         BlockFlowers,
+	constants.DoodadMoss:            BlockMoss,
+	constants.DoodadGrass:           BlockGrass,
+	constants.DoodadCattail:         BlockCattail,
+	constants.DoodadCactus1:         BlockCactus1,
+	constants.DoodadCactus2:         BlockCactus2,
+	constants.DoodadVine:            BlockVine,
+	constants.DoodadNest:            BlockNest,
+	constants.DoodadSkull:           BlockSkull,
+	constants.DoodadDots:            BlockDots,
+	constants.DoodadBoulder:         BlockBoulder,
+	constants.DoodadMush1:           BlockMush1,
+	constants.DoodadMush2:           BlockMush2,
+	constants.DoodadChain:           BlockChain,
+	constants.DoodadGear:            BlockGear,
 	constants.TileEmpty:             BlockEmpty,
 }
 
@@ -325,6 +384,7 @@ type Tile struct {
 	Mask     *ecs.Entity    `json:"-"`
 	Counter  int            `json:"-"`
 	Live     bool           `json:"-"`
+	AltBlock int            `json:"alt"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -349,6 +409,7 @@ func (t *Tile) ToEmpty() {
 
 func (t *Tile) IsEmpty() bool {
 	return !(t.IsLadder() ||
+		t.Block == BlockBar ||
 		t.Block == BlockTurf ||
 		t.Block == BlockBedrock ||
 		t.Block == BlockFall ||

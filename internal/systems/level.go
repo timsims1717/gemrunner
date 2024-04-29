@@ -1,10 +1,13 @@
 package systems
 
 import (
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
+	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
@@ -96,6 +99,16 @@ func LevelInit() {
 				keyKey := tile.Block.String()
 				tile.Block = data.BlockEmpty
 				CreateKey(obj.Pos, keyKey)
+			case data.BlockGear:
+				var a *reanimator.Anim
+				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {
+					a = reanimator.NewBatchAnimationCustom("gear", img.Batchers[constants.TileBatch], "gear", []int{3, 0, 1, 2}, reanimator.Loop).Reverse()
+				} else {
+					a = reanimator.NewBatchAnimation("gear", img.Batchers[constants.TileBatch], "gear", reanimator.Loop)
+				}
+				anim := reanimator.NewSimple(a)
+				tile.Entity.AddComponent(myecs.Drawable, anim)
+				tile.Entity.AddComponent(myecs.Animated, anim)
 			}
 		}
 	}

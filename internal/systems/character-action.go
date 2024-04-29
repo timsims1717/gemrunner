@@ -109,6 +109,8 @@ func CharacterActionSystem() {
 						grounded(ch, tile, below)
 					case data.OnLadder:
 						onLadder(ch, tile, below)
+					case data.OnBar:
+						onBar(ch, tile, below)
 					case data.Falling:
 						falling(ch, tile)
 					case data.Jumping:
@@ -178,6 +180,7 @@ func jump(ch *data.Dynamic, tile *data.Tile) {
 }
 
 func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
+	ch.LastTile = tile
 	if ch.Actions.Up() && !ch.Flags.Ceiling {
 		if tile.IsLadder() || (below != nil && below.IsLadder()) { // still on the ladder
 			ch.Object.Pos.Y += ch.Vars.ClimbSpeed
@@ -195,6 +198,21 @@ func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
 			ch.Flags.GoingUp = false
 			ch.Flags.Climbed = true
 		}
+	}
+}
+
+func onBar(ch *data.Dynamic, tile, below *data.Tile) {
+	ch.LastTile = tile
+	if ch.Actions.Down() && (!ch.Flags.Floor || below.IsLadder()) { // drop down
+		ch.Object.Pos.Y -= ch.Vars.Gravity
+	} else if ch.Actions.Left() && !ch.Flags.LeftWall { // go left
+		ch.Object.Pos.X -= ch.Vars.BarSpeed
+		ch.Object.Flip = true
+		ch.Flags.Climbed = true
+	} else if ch.Actions.Right() && !ch.Flags.RightWall { // go right
+		ch.Object.Pos.X += ch.Vars.BarSpeed
+		ch.Object.Flip = false
+		ch.Flags.Climbed = true
 	}
 }
 

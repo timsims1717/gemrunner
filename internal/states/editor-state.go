@@ -38,7 +38,7 @@ func (s *editorState) Load() {
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {
-	systems.CursorSystem(true)
+	systems.CursorSystem(false)
 	debug.AddText("Editor State")
 	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.Editor.Mode.String()))
 	debug.AddIntCoords("World", int(data.MenuInput.World.X), int(data.MenuInput.World.Y))
@@ -48,12 +48,19 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
 	debug.AddIntCoords("Puzzle Coords", x, y)
 	debug.AddIntCoords("Last Coords", data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-	//debug.AddText(fmt.Sprintf("NoInput: %t", data.Editor.NoInput))
-	//debug.AddText(fmt.Sprintf("SelectVis: %t", data.Editor.SelectVis))
 	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzle.Metadata.Name))
 	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzle.Metadata.Filename))
 	debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzle.Metadata.MusicTrack))
 	debug.AddTruthText("Puzzle Completed", data.CurrPuzzle.Metadata.Completed)
+	t := data.CurrPuzzle.Tiles.Get(x, y)
+	if t != nil {
+		sprs := systems.GetTileSprites(t)
+		if len(sprs) == 1 {
+			debug.AddText(fmt.Sprintf("Tile Sprites: %s", sprs[0].Key))
+		} else if len(sprs) == 2 {
+			debug.AddText(fmt.Sprintf("Tile Sprites: %s, %s", sprs[0].Key, sprs[1].Key))
+		}
+	}
 
 	if data.DebugInput.Get("camUp").Pressed() {
 		data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT

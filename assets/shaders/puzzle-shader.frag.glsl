@@ -16,6 +16,10 @@ uniform float uRedSecondary;
 uniform float uGreenSecondary;
 uniform float uBlueSecondary;
 
+uniform float uRedDoodad;
+uniform float uGreenDoodad;
+uniform float uBlueDoodad;
+
 // explosion texture
 uniform sampler2D uExpTexture;
 
@@ -35,6 +39,8 @@ void main() {
         col = vec4(uRedPrimary, uGreenPrimary, uBluePrimary, col.a);
     } else if (col.r == 0. && col.b == 1. && col.g == 1.) {
         col = vec4(uRedSecondary, uGreenSecondary, uBlueSecondary, col.a);
+    } else if (col.r == 1. && col.b == 0. && col.g == 1.) {
+        col = vec4(uRedDoodad, uGreenDoodad, uBlueDoodad, col.a);
     }
     fragColor = col;
 }

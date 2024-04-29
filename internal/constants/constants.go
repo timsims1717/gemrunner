@@ -24,7 +24,7 @@ const (
 
 	// Editor Constants
 	BlockSelectWidth  = 8.
-	BlockSelectHeight = 7.
+	BlockSelectHeight = 9.
 
 	// Music Tracks
 	TrackBeach  = "beach"
@@ -53,7 +53,7 @@ const (
 	TextCaret           = "text_caret"
 
 	// UI Constants
-	ScrollSpeed = 150.
+	ScrollSpeed = 250.
 
 	// In Game Constants
 	FrameRateMax    = 60
@@ -75,6 +75,7 @@ const (
 
 	// Player Constants
 	PlayerWalkSpeed       = 4
+	PlayerBarSpeed        = 3.5
 	PlayerLeapSpeed       = 4
 	PlayerClimbSpeed      = 2
 	PlayerSlideSpeed      = 3.5
@@ -89,6 +90,7 @@ const (
 
 	// Demon Constants
 	DemonWalkSpeed       = 2
+	DemonBarSpeed        = 1.5
 	DemonLeapSpeed       = 1.5
 	DemonClimbSpeed      = 1.25
 	DemonSlideSpeed      = 1.5

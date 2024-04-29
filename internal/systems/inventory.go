@@ -142,6 +142,7 @@ func UpdateInventory(ch *data.Dynamic) {
 func Dig(ch *data.Dynamic, isLeft bool) bool {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers {
 		if ch.State == data.OnLadder ||
+			ch.State == data.OnBar ||
 			ch.State == data.Grounded ||
 			ch.State == data.Flying {
 			var sideTile, digTile *data.Tile

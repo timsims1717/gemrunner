@@ -70,6 +70,7 @@ const (
 	TileCrackedShow = "cracked_show"
 	TileCracking    = "cracking"
 	TileTurf        = "turf"
+	TileBar         = "bar"
 	TileEmpty       = "empty"
 )
 
@@ -107,7 +108,23 @@ const (
 
 // Doodads
 const (
-	DoodadChain   = "chain"
 	DoodadReeds   = "reeds"
 	DoodadFlowers = "flowers"
+	DoodadMoss    = "moss"
+	DoodadGrass   = "grass"
+	DoodadCattail = "cattail"
+	DoodadCactus1 = "cactus1"
+	DoodadCactus2 = "cactus2"
+	DoodadVine    = "vine"
+	DoodadNest    = "nest"
+	DoodadSkull   = "skull"
+	DoodadDots    = "dots"
+	DoodadBoulder = "boulder"
+	DoodadMush1   = "mushroom1"
+	DoodadMush2   = "mushroom2"
+	DoodadChain   = "chain"
+	DoodadGear    = "gear"
+
+	//DoodadSteam
+	//DoodadPhonebox
 )

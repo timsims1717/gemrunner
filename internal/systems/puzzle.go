@@ -39,6 +39,14 @@ func PuzzleInit() {
 		if data.CurrPuzzle.Metadata.MusicTrack == "" {
 			data.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[num]
 		}
+		data.SelectedWorldIndex = data.CurrPuzzle.Metadata.WorldNumber
+		if data.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom {
+			for n, w := range constants.WorldSprites {
+				if data.CurrPuzzle.Metadata.WorldSprite == w {
+					data.SelectedWorldIndex = n
+				}
+			}
+		}
 		data.CurrPuzzle.Update = true
 	} else {
 		panic("no puzzle loaded")
@@ -83,6 +91,9 @@ func UpdatePuzzleShaders() {
 	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
 	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
 	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.B))
 }
 
 func NewPuzzle() {

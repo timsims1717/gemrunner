@@ -35,6 +35,11 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		ch.Flags.Climbed = false
 	})
 	slide := reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
+	bar := reanimator.NewBatchAnimation("bar", batch, fmt.Sprintf("%s_bar", sprPre), reanimator.Loop)
+	bar.SetTriggerAll(func() {
+		bar.Freeze = !ch.Flags.Climbed
+		ch.Flags.Climbed = false
+	})
 	digFrames := []int{0, 0, 1, 2, 3, 3, 4, 4, 4, 4}
 	dig := reanimator.NewBatchAnimationCustom("dig", batch, fmt.Sprintf("%s_dig", sprPre), digFrames, reanimator.Tran)
 	dig.SetEndTrigger(func() {
@@ -87,6 +92,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(dig).
 		AddAnimation(climb).
 		AddAnimation(slide).
+		AddAnimation(bar).
 		AddAnimation(leapOn).
 		AddAnimation(leapOff).
 		AddAnimation(leapTo).
@@ -146,6 +152,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				} else {
 					return "slide"
 				}
+			case data.OnBar:
+				return "bar"
 			case data.Jumping:
 				return "jump"
 			case data.Falling:

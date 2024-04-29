@@ -2,6 +2,7 @@ package data
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
@@ -86,6 +87,7 @@ type Selection struct {
 }
 
 func CreateBlankPuzzle() *Puzzle {
+	SelectedWorldIndex = 0
 	worldNum := constants.WorldMoss
 	md := &PuzzleMetadata{
 		Name:           "",
@@ -94,6 +96,7 @@ func CreateBlankPuzzle() *Puzzle {
 		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
+		DoodadColor:    pixel.ToRGBA(constants.WorldDoodad[worldNum]),
 		MusicTrack:     constants.WorldMusic[worldNum],
 		Completed:      false,
 	}
@@ -103,9 +106,15 @@ func CreateBlankPuzzle() *Puzzle {
 	}
 	for y := 0; y < constants.PuzzleHeight; y++ {
 		for x := 0; x < constants.PuzzleWidth; x++ {
+			c := world.Coords{X: x, Y: y}
+			alt := 0
+			if random.Effects.Intn(80) == 0 {
+				alt = 1
+			}
 			puz.Tiles.T[y][x] = &Tile{
-				Block:  Block(BlockEmpty),
-				Coords: world.Coords{X: x, Y: y},
+				Block:    Block(BlockEmpty),
+				Coords:   c,
+				AltBlock: alt,
 			}
 		}
 	}

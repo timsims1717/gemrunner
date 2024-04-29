@@ -7,13 +7,22 @@ import (
 )
 
 var (
-	openPuzzleConstructor         *data.DialogConstructor
-	changeNameConstructor         *data.DialogConstructor
-	noPlayersInPuzzle             *data.DialogConstructor
-	editorPanelTopConstructor     *data.DialogConstructor
-	editorPanelLeftConstructor    *data.DialogConstructor
-	editorOptBottomConstructor    *data.DialogConstructor
-	editorOptRightConstructor     *data.DialogConstructor
+	// editor panels
+	editorPanelTopConstructor  *data.DialogConstructor
+	editorPanelLeftConstructor *data.DialogConstructor
+	editorOptBottomConstructor *data.DialogConstructor
+	editorOptRightConstructor  *data.DialogConstructor
+	// editor options dialogs
+	openPuzzleConstructor        *data.DialogConstructor
+	changeNameConstructor        *data.DialogConstructor
+	noPlayersInPuzzleConstructor *data.DialogConstructor
+	worldDialogConstructor       *data.DialogConstructor
+	worldListEntry               data.ElementConstructor
+	turfTileItem                 data.ElementConstructor
+	ladderTileItem               data.ElementConstructor
+	doodadTileItem               data.ElementConstructor
+	worldTxtItem                 data.ElementConstructor
+	// editor mode dialogs
 	crackedTileOptionsConstructor *data.DialogConstructor
 )
 
@@ -94,7 +103,7 @@ func InitConstructors() {
 			},
 		},
 	}
-	noPlayersInPuzzle = &data.DialogConstructor{
+	noPlayersInPuzzleConstructor = &data.DialogConstructor{
 		Key:    "no_players",
 		Width:  8,
 		Height: 3,
@@ -114,6 +123,612 @@ func InitConstructors() {
 				Element:     data.ButtonElement,
 			},
 		},
+	}
+	worldDialogConstructor = &data.DialogConstructor{
+		Key:    "change_world",
+		Width:  16,
+		Height: 12,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "change_world_title",
+				Text:     "Change World",
+				Position: pixel.V(-124, 88),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "current_world",
+				Text:     "World -",
+				Position: pixel.V(16, 64),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "custom_text",
+				Text:     "Custom Colors",
+				Position: pixel.V(16, 80),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "custom_world_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Customize this puzzle's colors.",
+				Position:    pixel.V(112, 80),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "primary_text",
+				Text:     "Primary Color",
+				Position: pixel.V(16, 64),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "red_color_primary",
+				SprKey:   "red_square",
+				Position: pixel.V(24, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "red_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Red",
+				Position:    pixel.V(24, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "orange_color_primary",
+				SprKey:   "orange_square",
+				Position: pixel.V(40, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "orange_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Orange",
+				Position:    pixel.V(40, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "green_color_primary",
+				SprKey:   "green_square",
+				Position: pixel.V(56, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "green_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Green",
+				Position:    pixel.V(56, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "cyan_color_primary",
+				SprKey:   "cyan_square",
+				Position: pixel.V(72, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "cyan_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Cyan",
+				Position:    pixel.V(72, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "blue_color_primary",
+				SprKey:   "blue_square",
+				Position: pixel.V(88, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "blue_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Blue",
+				Position:    pixel.V(88, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "purple_color_primary",
+				SprKey:   "purple_square",
+				Position: pixel.V(104, 48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "purple_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Purple",
+				Position:    pixel.V(104, 48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "yellow_color_primary",
+				SprKey:   "yellow_square",
+				Position: pixel.V(24, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "yellow_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Yellow",
+				Position:    pixel.V(24, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gold_color_primary",
+				SprKey:   "gold_square",
+				Position: pixel.V(40, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gold_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gold",
+				Position:    pixel.V(40, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "brown_color_primary",
+				SprKey:   "brown_square",
+				Position: pixel.V(56, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "brown_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Brown",
+				Position:    pixel.V(56, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "tan_color_primary",
+				SprKey:   "tan_square",
+				Position: pixel.V(72, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "tan_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Tan",
+				Position:    pixel.V(72, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "light_gray_color_primary",
+				SprKey:   "light_gray_square",
+				Position: pixel.V(88, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "light_gray_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Light Gray",
+				Position:    pixel.V(88, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gray_color_primary",
+				SprKey:   "gray_square",
+				Position: pixel.V(104, 32),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gray_check_primary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gray",
+				Position:    pixel.V(104, 32),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "secondary_text",
+				Text:     "Secondary Color",
+				Position: pixel.V(16, 16),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "red_color_secondary",
+				SprKey:   "red_square",
+				Position: pixel.V(24, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "red_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Red",
+				Position:    pixel.V(24, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "orange_color_secondary",
+				SprKey:   "orange_square",
+				Position: pixel.V(40, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "orange_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Orange",
+				Position:    pixel.V(40, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "green_color_secondary",
+				SprKey:   "green_square",
+				Position: pixel.V(56, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "green_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Green",
+				Position:    pixel.V(56, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "cyan_color_secondary",
+				SprKey:   "cyan_square",
+				Position: pixel.V(72, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "cyan_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Cyan",
+				Position:    pixel.V(72, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "blue_color_secondary",
+				SprKey:   "blue_square",
+				Position: pixel.V(88, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "blue_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Blue",
+				Position:    pixel.V(88, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "purple_color_secondary",
+				SprKey:   "purple_square",
+				Position: pixel.V(104, 0),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "purple_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Purple",
+				Position:    pixel.V(104, 0),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "yellow_color_secondary",
+				SprKey:   "yellow_square",
+				Position: pixel.V(24, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "yellow_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Yellow",
+				Position:    pixel.V(24, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gold_color_secondary",
+				SprKey:   "gold_square",
+				Position: pixel.V(40, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gold_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gold",
+				Position:    pixel.V(40, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "brown_color_secondary",
+				SprKey:   "brown_square",
+				Position: pixel.V(56, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "brown_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Brown",
+				Position:    pixel.V(56, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "tan_color_secondary",
+				SprKey:   "tan_square",
+				Position: pixel.V(72, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "tan_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Tan",
+				Position:    pixel.V(72, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "light_gray_color_secondary",
+				SprKey:   "light_gray_square",
+				Position: pixel.V(88, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "light_gray_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Light Gray",
+				Position:    pixel.V(88, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gray_color_secondary",
+				SprKey:   "gray_square",
+				Position: pixel.V(104, -16),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gray_check_secondary",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gray",
+				Position:    pixel.V(104, -16),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "doodad_text",
+				Text:     "Doodad Color",
+				Position: pixel.V(16, -32),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "red_color_doodad",
+				SprKey:   "red_square",
+				Position: pixel.V(24, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "red_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Red",
+				Position:    pixel.V(24, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "orange_color_doodad",
+				SprKey:   "orange_square",
+				Position: pixel.V(40, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "orange_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Orange",
+				Position:    pixel.V(40, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "green_color_doodad",
+				SprKey:   "green_square",
+				Position: pixel.V(56, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "green_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Green",
+				Position:    pixel.V(56, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "cyan_color_doodad",
+				SprKey:   "cyan_square",
+				Position: pixel.V(72, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "cyan_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Cyan",
+				Position:    pixel.V(72, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "blue_color_doodad",
+				SprKey:   "blue_square",
+				Position: pixel.V(88, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "blue_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Blue",
+				Position:    pixel.V(88, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "purple_color_doodad",
+				SprKey:   "purple_square",
+				Position: pixel.V(104, -48),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "purple_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Purple",
+				Position:    pixel.V(104, -48),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "yellow_color_doodad",
+				SprKey:   "yellow_square",
+				Position: pixel.V(24, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "yellow_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Yellow",
+				Position:    pixel.V(24, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gold_color_doodad",
+				SprKey:   "gold_square",
+				Position: pixel.V(40, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gold_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gold",
+				Position:    pixel.V(40, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "brown_color_doodad",
+				SprKey:   "brown_square",
+				Position: pixel.V(56, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "brown_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Brown",
+				Position:    pixel.V(56, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "tan_color_doodad",
+				SprKey:   "tan_square",
+				Position: pixel.V(72, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "tan_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Tan",
+				Position:    pixel.V(72, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "light_gray_color_doodad",
+				SprKey:   "light_gray_square",
+				Position: pixel.V(88, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "light_gray_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Light Gray",
+				Position:    pixel.V(88, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "gray_color_doodad",
+				SprKey:   "gray_square",
+				Position: pixel.V(104, -64),
+				Element:  data.SpriteElement,
+			},
+			{
+				Key:         "gray_check_doodad",
+				SprKey:      "checkbox_color_false",
+				ClickSprKey: "checkbox_color_true",
+				HelpText:    "Gray",
+				Position:    pixel.V(104, -64),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:         "cancel_change_world",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(116, -84),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "check_change_world",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(96, -84),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "world_list",
+				HelpText: "The list of worlds.",
+				Element:  data.ScrollElement,
+				Position: pixel.V(-56, -8),
+				Width:    8,
+				Height:   10,
+			},
+		},
+	}
+	worldListEntry = data.ElementConstructor{
+		Key:      "world_container_%d",
+		HelpText: "Change to %s world.",
+		Element:  data.ContainerElement,
+		Width:    7,
+		Height:   1,
+	}
+	turfTileItem = data.ElementConstructor{
+		Key:      "turf_tile",
+		Position: pixel.V(-48, 0),
+		Element:  data.SpriteElement,
+	}
+	ladderTileItem = data.ElementConstructor{
+		Key:      "ladder_tile",
+		Position: pixel.V(-32, 0),
+		Element:  data.SpriteElement,
+	}
+	doodadTileItem = data.ElementConstructor{
+		Key:      "doodad_tile",
+		Position: pixel.V(-16, 0),
+		Element:  data.SpriteElement,
+	}
+	worldTxtItem = data.ElementConstructor{
+		Key:      "world_text",
+		Position: pixel.V(-4, 0),
+		Element:  data.TextElement,
 	}
 	// Editor Panels
 	editorPanelTopConstructor = &data.DialogConstructor{

@@ -5,8 +5,8 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
-	"gemrunner/internal/systems"
 	"gemrunner/pkg/img"
+	"gemrunner/pkg/object"
 	"gemrunner/pkg/timing"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -16,12 +16,14 @@ import (
 func Dialogs(win *pixelgl.Window) {
 	data.NewDialog(openPuzzleConstructor)
 	data.NewDialog(changeNameConstructor)
-	data.NewDialog(noPlayersInPuzzle)
+	data.NewDialog(noPlayersInPuzzleConstructor)
+	data.NewDialog(worldDialogConstructor)
 	data.NewDialog(crackedTileOptionsConstructor)
 	editorPanels()
 	data.NewDialog(editorOptBottomConstructor)
 	data.NewDialog(editorOptRightConstructor)
 	customizeDialogs(win)
+	worldDialogShaders()
 }
 
 func customizeDialogs(win *pixelgl.Window) {
@@ -42,7 +44,7 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "save_btn":
 					btn.OnClick = SavePuzzle
 				case "world_btn":
-					btn.OnClick = systems.ChangeWorldToNext
+					btn.OnClick = OpenChangeWorldDialog
 				case "name_btn":
 					btn.OnClick = OpenDialog("change_name")
 				case "test_btn":
@@ -50,9 +52,11 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "check_puzzle_name":
 					btn.OnClick = ChangeName
 				case "check_cracked_tile":
-					btn.OnClick = ChangeCrackTileOptions
+					btn.OnClick = ConfirmCrackTileOptions
 				case "check_no_players":
 					btn.OnClick = CloseDialog(key)
+				case "check_change_world":
+					btn.OnClick = ConfirmChangeWorld
 				default:
 					switch key {
 					case "editor_panel_top", "editor_panel_left":
@@ -155,6 +159,180 @@ func customizeDialogs(win *pixelgl.Window) {
 					}
 					b++
 				}
+			} else if x, okX := e.(*data.Checkbox); okX {
+				switch x.Key {
+				case "custom_world_check":
+					x.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+						if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
+							click := hvc.Input.Get("click")
+							if hvc.Hover && click.JustPressed() {
+								data.SetChecked(x, !x.Checked)
+								data.CustomWorldSelected = x.Checked
+								for _, ele := range dialog.Elements {
+									if txt, okT := ele.(*data.Text); okT {
+										if o, okO := txt.Entity.GetComponentData(myecs.Object); okO {
+											if obj, okO1 := o.(*object.Object); okO1 {
+												switch txt.Key {
+												case "current_world":
+													obj.Hidden = x.Checked
+												case "primary_text", "secondary_text", "doodad_text":
+													obj.Hidden = !x.Checked
+												}
+											}
+										}
+									} else if x1, okX1 := ele.(*data.Checkbox); okX1 {
+										if o, okO := x1.Entity.GetComponentData(myecs.Object); okO {
+											if obj, okO1 := o.(*object.Object); okO1 {
+												if strings.Contains(x1.Key, "check_primary") ||
+													strings.Contains(x1.Key, "check_secondary") ||
+													strings.Contains(x1.Key, "check_doodad") {
+													obj.Hidden = !x.Checked
+												}
+											}
+										}
+									} else if str1, okS1 := ele.(*data.SprElement); okS1 {
+										if o, okO := str1.Entity.GetComponentData(myecs.Object); okO {
+											if obj, okO1 := o.(*object.Object); okO1 {
+												if strings.Contains(str1.Key, "color_primary") ||
+													strings.Contains(str1.Key, "color_secondary") ||
+													strings.Contains(str1.Key, "color_doodad") {
+													obj.Hidden = !x.Checked
+												}
+											}
+										}
+									}
+								}
+								if x.Checked {
+									for _, ele := range dialog.Elements {
+										if x2, ok := ele.(*data.Checkbox); ok {
+											if !data.CustomSelectedBefore {
+												updateColorCheckbox(x2)
+											} else if x2.Checked {
+												changeSelectedColor(x2.Key)
+											}
+										}
+									}
+									worldDialogCustomShaders()
+								} else {
+									worldDialogNormalShaders()
+								}
+								data.CustomSelectedBefore = true
+							}
+						}
+					}))
+				default:
+					if strings.Contains(x.Key, "check_primary") ||
+						strings.Contains(x.Key, "check_secondary") ||
+						strings.Contains(x.Key, "check_doodad") {
+						x.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+							if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
+								click := hvc.Input.Get("click")
+								if hvc.Hover && click.JustPressed() && !x.Checked {
+									data.SetChecked(x, true)
+									changeSelectedColor(x.Key)
+									if strings.Contains(x.Key, "check_primary") {
+										worldDialogCustomShadersPrimary()
+									} else if strings.Contains(x.Key, "check_secondary") {
+										worldDialogCustomShadersSecondary()
+									} else if strings.Contains(x.Key, "check_doodad") {
+										worldDialogCustomShadersDoodad()
+									}
+									for _, ele := range dialog.Elements {
+										if x1, okX1 := ele.(*data.Checkbox); okX1 {
+											if ((strings.Contains(x1.Key, "check_primary") && strings.Contains(x.Key, "check_primary")) ||
+												(strings.Contains(x1.Key, "check_secondary") && strings.Contains(x.Key, "check_secondary")) ||
+												(strings.Contains(x1.Key, "check_doodad") && strings.Contains(x.Key, "check_doodad"))) &&
+												x1.Key != x.Key {
+												data.SetChecked(x1, false)
+											}
+										}
+									}
+								}
+							}
+						}))
+					}
+				}
+			} else if scroll, okSc := e.(*data.Scroll); okSc {
+				switch scroll.Key {
+				case "world_list":
+					for i := 0; i < constants.WorldCustom; i++ {
+						index := i
+						entry := data.ElementConstructor{
+							Key:      fmt.Sprintf(worldListEntry.Key, i),
+							Width:    worldListEntry.Width,
+							Height:   worldListEntry.Height,
+							HelpText: fmt.Sprintf(worldListEntry.HelpText, constants.WorldNames[i]),
+							Position: pixel.V(0, float64(i)*-18+7),
+							Element:  worldListEntry.Element,
+						}
+						tti := data.ElementConstructor{
+							Key:      turfTileItem.Key,
+							SprKey:   constants.WorldSprites[i],
+							Position: turfTileItem.Position,
+							Element:  turfTileItem.Element,
+						}
+						entry.SubElements = append(entry.SubElements, tti)
+						lti := data.ElementConstructor{
+							Key:      ladderTileItem.Key,
+							SprKey:   constants.TileLadderMiddle,
+							Position: ladderTileItem.Position,
+							Element:  ladderTileItem.Element,
+						}
+						entry.SubElements = append(entry.SubElements, lti)
+						dti := data.ElementConstructor{
+							Key:      doodadTileItem.Key,
+							SprKey:   constants.WorldDoodads[i],
+							Position: doodadTileItem.Position,
+							Element:  doodadTileItem.Element,
+						}
+						entry.SubElements = append(entry.SubElements, dti)
+						wti := data.ElementConstructor{
+							Key:      worldTxtItem.Key,
+							Text:     constants.WorldNames[i],
+							Position: worldTxtItem.Position,
+							Element:  worldTxtItem.Element,
+						}
+						entry.SubElements = append(entry.SubElements, wti)
+						ct := data.CreateContainer(entry, dialog, scroll.ViewPort)
+						ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, scroll.ViewPort, func(hvc *data.HoverClick) {
+							if dialog.Open && dialog.Active {
+								click := hvc.Input.Get("click")
+								if hvc.Hover && click.JustPressed() {
+									data.SelectedWorldIndex = index
+									if !data.CustomWorldSelected {
+										data.SelectedPrimaryColor = pixel.ToRGBA(constants.WorldPrimary[index])
+										data.SelectedSecondaryColor = pixel.ToRGBA(constants.WorldSecondary[index])
+										data.SelectedDoodadColor = pixel.ToRGBA(constants.WorldDoodad[index])
+									}
+									for _, de := range dialog.Elements {
+										if it, okIT := de.(*data.Text); okIT {
+											if it.Key == "current_world" {
+												it.Text.SetText(fmt.Sprintf("World - %s", constants.WorldNames[index]))
+											}
+										}
+									}
+									for _, ie := range scroll.Elements {
+										if ctI, okC := ie.(*data.Container); okC {
+											for _, cie := range ctI.Elements {
+												if it, okIT := cie.(*data.Text); okIT {
+													it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+												}
+											}
+										}
+									}
+									for _, ce := range ct.Elements {
+										if it, okIT := ce.(*data.Text); okIT {
+											it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+										}
+									}
+									click.Consume()
+								}
+							}
+						}))
+						scroll.Elements = append(scroll.Elements, ct)
+					}
+					data.UpdateScrollBounds(scroll)
+				}
 			}
 		}
 		switch key {
@@ -204,6 +382,9 @@ func editorPanels() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedSecondary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
 	editorPanelTop := data.Dialogs["editor_panel_top"]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
@@ -212,6 +393,9 @@ func editorPanels() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedSecondary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
 	blockSelect := data.Dialogs["block_select"]
 	blockSelect.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
@@ -220,5 +404,8 @@ func editorPanels() {
 	blockSelect.ViewPort.Canvas.SetUniform("uRedSecondary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
 }

@@ -21,22 +21,22 @@ const (
 	WorldJungle
 	WorldBrick
 	WorldBeam
-	WorldIce
-	WorldSnow
-	WorldDark
-	WorldDungeon
-	WorldBeach
-	WorldRedRock
 	WorldSlime
 	WorldFungus
-	WorldSandstone
-	WorldDunes
-	WorldLava
-	WorldBasalt
+	WorldBeach
+	WorldRedRock
+	WorldIce
+	WorldSnow
 	WorldAbyss
 	WorldReef
+	WorldSandstone
+	WorldDunes
+	WorldDark
+	WorldDungeon
 	WorldGravelPit
 	WorldSpire
+	WorldLava
+	WorldBasalt
 	WorldCustom
 )
 
@@ -131,6 +131,30 @@ var (
 	Player3Color = ColorPurple
 	Player4Color = ColorGold
 
+	WorldNames = map[int]string{
+		WorldMoss:      "Moss",
+		WorldJungle:    "Jungle",
+		WorldBrick:     "Brick",
+		WorldBeam:      "Beams",
+		WorldSlime:     "Shrooms",
+		WorldFungus:    "Fungus",
+		WorldBeach:     "Beach",
+		WorldRedRock:   "Red Rock",
+		WorldIce:       "Ice",
+		WorldSnow:      "Snow",
+		WorldAbyss:     "Abyss",
+		WorldReef:      "Reef",
+		WorldSandstone: "Sandstone",
+		WorldDunes:     "Dunes",
+		WorldDark:      "Dark",
+		WorldDungeon:   "Dungeon",
+		WorldGravelPit: "Gravel Pit",
+		WorldSpire:     "Spire",
+		WorldLava:      "Lava",
+		WorldBasalt:    "Basalt",
+		WorldCustom:    "Custom",
+	}
+
 	WorldSprites = map[int]string{
 		WorldMoss:      TileSetRock,
 		WorldJungle:    TileSetTree,
@@ -200,6 +224,29 @@ var (
 		WorldSpire:     ColorGray,
 	}
 
+	WorldDoodad = map[int]color.RGBA{
+		WorldMoss:      ColorGreen,
+		WorldJungle:    ColorBrown,
+		WorldBrick:     ColorBlue,
+		WorldBeam:      ColorRed,
+		WorldIce:       ColorLightGray,
+		WorldSnow:      ColorLightGray,
+		WorldDark:      ColorBlue,
+		WorldDungeon:   ColorBlue,
+		WorldBeach:     ColorGreen,
+		WorldRedRock:   ColorGreen,
+		WorldSlime:     ColorTan,
+		WorldFungus:    ColorRed,
+		WorldSandstone: ColorGreen,
+		WorldDunes:     ColorGreen,
+		WorldLava:      ColorRed,
+		WorldBasalt:    ColorOrange,
+		WorldAbyss:     ColorBlue,
+		WorldReef:      ColorPurple,
+		WorldGravelPit: ColorRed,
+		WorldSpire:     ColorGray,
+	}
+
 	WorldMusic = map[int]string{
 		WorldMoss:      TrackJungle,
 		WorldJungle:    TrackJungle,
@@ -221,5 +268,28 @@ var (
 		WorldReef:      TrackReef,
 		WorldGravelPit: TrackMech,
 		WorldSpire:     TrackMech,
+	}
+
+	WorldDoodads = map[int]string{
+		WorldMoss:      DoodadReeds,
+		WorldJungle:    DoodadNest,
+		WorldBrick:     DoodadReeds,
+		WorldBeam:      DoodadChain,
+		WorldIce:       DoodadBoulder,
+		WorldSnow:      DoodadSkull,
+		WorldDark:      DoodadReeds,
+		WorldDungeon:   DoodadSkull,
+		WorldBeach:     DoodadReeds,
+		WorldRedRock:   DoodadCactus2,
+		WorldSlime:     DoodadMush1,
+		WorldFungus:    DoodadMush1,
+		WorldSandstone: DoodadNest,
+		WorldDunes:     DoodadSkull,
+		WorldLava:      DoodadBoulder,
+		WorldBasalt:    DoodadReeds,
+		WorldAbyss:     DoodadVine,
+		WorldReef:      DoodadVine,
+		WorldGravelPit: DoodadChain,
+		WorldSpire:     DoodadGear,
 	}
 )

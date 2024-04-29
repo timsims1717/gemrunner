@@ -8,10 +8,12 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/states"
 	"gemrunner/internal/systems"
+	"gemrunner/pkg/object"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
+	"strings"
 )
 
 func Test(s string) func() {
@@ -90,6 +92,98 @@ func QuitEditor(win *pixelgl.Window) func() {
 	}
 }
 
+func OpenChangeWorldDialog() {
+	if data.Editor != nil && data.CurrPuzzle != nil {
+		changeWorld := data.Dialogs["change_world"]
+		// check if this is a custom world
+		data.CustomWorldSelected = data.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom
+		data.CustomSelectedBefore = data.CustomWorldSelected
+		data.SelectedPrimaryColor = data.CurrPuzzle.Metadata.PrimaryColor
+		data.SelectedSecondaryColor = data.CurrPuzzle.Metadata.SecondaryColor
+		data.SelectedDoodadColor = data.CurrPuzzle.Metadata.DoodadColor
+		for _, ele := range changeWorld.Elements {
+			if txt, okT := ele.(*data.Text); okT {
+				if o, okO := txt.Entity.GetComponentData(myecs.Object); okO {
+					if obj, okO1 := o.(*object.Object); okO1 {
+						switch txt.Key {
+						case "current_world": // the world text
+							obj.Hidden = data.CustomWorldSelected
+							txt.Text.SetText(fmt.Sprintf("World - %s", constants.WorldNames[data.CurrPuzzle.Metadata.WorldNumber]))
+						case "primary_text", "secondary_text", "doodad_text": // the custom color labels
+							obj.Hidden = !data.CustomWorldSelected
+						}
+					}
+				}
+			} else if x, ok := ele.(*data.Checkbox); ok {
+				switch x.Key {
+				case "custom_world_check": // whether Custom World is checked
+					data.SetChecked(x, data.CustomWorldSelected)
+				default:
+					updateColorCheckbox(x)
+				}
+				if o, okO := x.Entity.GetComponentData(myecs.Object); okO {
+					if obj, okO1 := o.(*object.Object); okO1 {
+						if strings.Contains(x.Key, "check_primary") ||
+							strings.Contains(x.Key, "check_secondary") ||
+							strings.Contains(x.Key, "check_doodad") {
+							obj.Hidden = !data.CustomWorldSelected
+						}
+					}
+				}
+			} else if str1, okS1 := ele.(*data.SprElement); okS1 {
+				if o, okO := str1.Entity.GetComponentData(myecs.Object); okO {
+					if obj, okO1 := o.(*object.Object); okO1 {
+						if strings.Contains(str1.Key, "color_primary") ||
+							strings.Contains(str1.Key, "color_secondary") ||
+							strings.Contains(str1.Key, "color_doodad") {
+							obj.Hidden = !data.CustomWorldSelected
+						}
+					}
+				}
+			} else if scr, okScr := ele.(*data.Scroll); okScr { // the list of worlds
+				for ctI, ele2 := range scr.Elements {
+					if ct, okCt := ele2.(*data.Container); okCt {
+						for _, ce := range ct.Elements {
+							if it, okIT := ce.(*data.Text); okIT {
+								if data.SelectedWorldIndex == ctI {
+									it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+								} else {
+									it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if data.CustomWorldSelected {
+			worldDialogCustomShaders()
+		} else {
+			worldDialogNormalShaders()
+		}
+		data.OpenDialogInStack("change_world")
+	}
+}
+
+func ConfirmChangeWorld() {
+	if data.Editor != nil && data.CurrPuzzle != nil {
+		//changeWorld := data.Dialogs["change_world"]
+		if data.CustomWorldSelected {
+			data.CurrPuzzle.Metadata.WorldNumber = constants.WorldCustom
+		} else {
+			data.CurrPuzzle.Metadata.WorldNumber = data.SelectedWorldIndex
+		}
+		data.CurrPuzzle.Metadata.PrimaryColor = data.SelectedPrimaryColor
+		data.CurrPuzzle.Metadata.SecondaryColor = data.SelectedSecondaryColor
+		data.CurrPuzzle.Metadata.DoodadColor = data.SelectedDoodadColor
+		data.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[data.SelectedWorldIndex]
+	}
+	systems.UpdateEditorShaders()
+	systems.UpdatePuzzleShaders()
+	data.CurrPuzzle.Update = true
+	data.CloseDialog("change_world")
+}
+
 func TestPuzzle() {
 	hasPlayers := data.CurrPuzzle.HasPlayers()
 	if hasPlayers {
@@ -135,7 +229,6 @@ func OnOpenPuzzleDialog() {
 			}
 			total := len(data.PuzzleInfos)
 			xPos := scroll.ViewPort.CamPos.X - scroll.ViewPort.Rect.W()*0.5 + 4
-			//fmt.Println("Puzzle count", total)
 			for i := 0; i < total; i++ {
 				index := i
 				if len(scroll.Elements) <= i {
@@ -225,7 +318,7 @@ func OnCrackTileOptions() {
 	}
 }
 
-func ChangeCrackTileOptions() {
+func ConfirmCrackTileOptions() {
 	if data.CurrPuzzle != nil {
 		if len(data.CurrPuzzle.WrenchTiles) < 1 {
 			fmt.Println("WARNING: no tile selected by wrench")

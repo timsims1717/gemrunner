@@ -80,7 +80,7 @@ func DrawFancyBorderSection(x, y int, bord *data.Border, obj *object.Object) {
 
 func DrawThinBorder(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(world.TileSize*float64(bord.Width)+2, 1.))
-	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1, world.TileSize*float64(bord.Height)+2))
+	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., world.TileSize*float64(bord.Height)+2))
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matTB.Moved(obj.PostPos).Moved(pixel.V(0, world.TileSize*float64(bord.Height)*0.5+1)))
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR.Moved(obj.PostPos).Moved(pixel.V(world.TileSize*float64(bord.Width)*0.5+0.5, 0)))
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matTB.Moved(obj.PostPos).Moved(pixel.V(0, world.TileSize*float64(bord.Height)*-0.5)))

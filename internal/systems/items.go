@@ -188,6 +188,10 @@ func CreateBox(pos pixel.Vec) {
 }
 
 func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	switch ch.State {
+	case data.OnLadder, data.OnBar:
+		return
+	}
 	if (ch.Object.Flip && !ch.Flags.LeftWall) ||
 		(!ch.Object.Flip && !ch.Flags.RightWall) {
 		// throw if space to throw

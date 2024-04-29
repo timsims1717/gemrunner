@@ -35,6 +35,17 @@ type ElementConstructor struct {
 	SubElements []ElementConstructor
 }
 
+type UIElement interface {
+	GetKey() string
+	SetPos(pixel.Vec)
+	GetEntity() *ecs.Entity
+	GetObject() *object.Object
+	GetHelp() string
+	GetSprite() *img.Sprite
+	GetSprite2() *img.Sprite
+	GetElements() []UIElement
+}
+
 type Button struct {
 	Key      string
 	Sprite   *img.Sprite
@@ -59,10 +70,13 @@ type Checkbox struct {
 
 type Container struct {
 	Key          string
-	Viewport     *viewport.ViewPort
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
+	Object       *object.Object
 	BorderEntity *ecs.Entity
+	Entity       *ecs.Entity
+	ViewPort     *viewport.ViewPort
+	Layer        int
 	Elements     []interface{}
 }
 
@@ -89,6 +103,7 @@ type Scroll struct {
 	ButtonHeight float64
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
+	Object       *object.Object
 	BorderEntity *ecs.Entity
 	Entity       *ecs.Entity
 	ViewPort     *viewport.ViewPort

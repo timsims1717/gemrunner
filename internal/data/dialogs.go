@@ -211,6 +211,75 @@ func SetChecked(x *Checkbox, c bool) {
 	}
 }
 
+func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Container {
+	ctvp := viewport.New(nil)
+	ctvp.ParentView = vp
+	ctvp.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	ctvp.CamPos = pixel.V(0, 0)
+	ctvp.PortPos = element.Position
+
+	vpObj := object.New()
+	vpObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	vpObj.SetPos(element.Position)
+	vpObj.Layer = 99
+
+	bvp := viewport.New(nil)
+	bvp.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bvp.CamPos = pixel.V(0, 0)
+	bvp.PortPos = element.Position
+
+	bObj := object.New()
+	bObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	bObj.Layer = 99
+	be := myecs.Manager.NewEntity()
+	be.AddComponent(myecs.Object, bObj).
+		AddComponent(myecs.Border, &Border{
+			Width:  int(element.Width),
+			Height: int(element.Height),
+			Style:  ThinBorder,
+		})
+
+	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
+	ct := &Container{
+		Key:          element.Key,
+		BorderVP:     bvp,
+		BorderObject: bObj,
+		Object:       vpObj,
+		BorderEntity: be,
+		Entity:       e,
+		ViewPort:     ctvp,
+	}
+	for _, ele := range element.SubElements {
+		if ele.Key == "" {
+			fmt.Println("WARNING: element constructor has no key")
+		}
+		switch ele.Element {
+		case ButtonElement:
+			b := CreateButtonElement(ele, dlg, ct.ViewPort)
+			ct.Elements = append(ct.Elements, b)
+		case CheckboxElement:
+			x := CreateCheckboxElement(ele, dlg, ct.ViewPort)
+			ct.Elements = append(ct.Elements, x)
+		case ContainerElement:
+			ct2 := CreateContainer(ele, dlg, ct.ViewPort)
+			ct.Elements = append(ct.Elements, ct2)
+		case InputElement:
+			i := CreateInputElement(ele, dlg, ct.ViewPort)
+			ct.Elements = append(ct.Elements, i)
+		case ScrollElement:
+			s := CreateScrollElement(ele, dlg, ct.ViewPort)
+			ct.Elements = append(ct.Elements, s)
+		case SpriteElement:
+			s := CreateSpriteElement(ele)
+			ct.Elements = append(ct.Elements, s)
+		case TextElement:
+			t := CreateTextElement(ele, ct.ViewPort)
+			ct.Elements = append(ct.Elements, t)
+		}
+	}
+	return ct
+}
+
 func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Input {
 	ivp := viewport.New(nil)
 	ivp.ParentView = vp
@@ -224,7 +293,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 	bvp.PortPos = element.Position
 
 	bObj := object.New()
-	bObj.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bObj.SetRect(pixel.R(0, 0, (element.Width)*world.TileSize, (element.Height)*world.TileSize))
 	bObj.Layer = 99
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, bObj).
@@ -366,6 +435,11 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	bvp.CamPos = pixel.V(0, 0)
 	bvp.PortPos = element.Position
 
+	vpObj := object.New()
+	vpObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	vpObj.SetPos(element.Position)
+	vpObj.Layer = 99
+
 	bObj := object.New()
 	bObj.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
 	bObj.Layer = 99
@@ -377,11 +451,12 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			Style:  ThinBorder,
 		})
 
-	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, bObj)
+	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
 	s := &Scroll{
 		Key:          element.Key,
 		BorderVP:     bvp,
 		BorderObject: bObj,
+		Object:       vpObj,
 		BorderEntity: be,
 		Entity:       e,
 		ViewPort:     svp,
@@ -474,19 +549,25 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		switch ele.Element {
 		case ButtonElement:
 			b := CreateButtonElement(ele, dlg, s.ViewPort)
-			dlg.Elements = append(dlg.Elements, b)
+			s.Elements = append(s.Elements, b)
+		case CheckboxElement:
+			x := CreateCheckboxElement(ele, dlg, s.ViewPort)
+			s.Elements = append(s.Elements, x)
+		case ContainerElement:
+			ct := CreateContainer(ele, dlg, s.ViewPort)
+			s.Elements = append(s.Elements, ct)
 		case InputElement:
 			i := CreateInputElement(ele, dlg, s.ViewPort)
-			dlg.Elements = append(dlg.Elements, i)
+			s.Elements = append(s.Elements, i)
 		case ScrollElement:
 			s2 := CreateScrollElement(ele, dlg, s.ViewPort)
-			dlg.Elements = append(dlg.Elements, s2)
+			s.Elements = append(s.Elements, s2)
 		case SpriteElement:
 			s2 := CreateSpriteElement(ele)
-			dlg.Elements = append(dlg.Elements, s2)
+			s.Elements = append(s.Elements, s2)
 		case TextElement:
 			t := CreateTextElement(ele, s.ViewPort)
-			dlg.Elements = append(dlg.Elements, t)
+			s.Elements = append(s.Elements, t)
 		}
 	}
 	UpdateScrollBounds(s)
@@ -551,18 +632,31 @@ func UpdateScrollBounds(scroll *Scroll) {
 	yTop := 0.
 	yBot := 0.
 	for i, ele := range scroll.Elements {
-		var obj *object.Object
+		obj := object.New()
 		if spr, okS := ele.(*SprElement); okS {
-			obj = spr.Object
+			obj.Rect = spr.Object.Rect
+			obj.Pos = spr.Object.Pos
 		} else if btn, okB := ele.(*Button); okB {
-			obj = btn.Object
+			obj.Rect = btn.Object.Rect
+			obj.Pos = btn.Object.Pos
+		} else if x, okX := ele.(*Checkbox); okX {
+			obj.Rect = x.Object.Rect
+			obj.Pos = x.Object.Pos
+		} else if ct, okC := ele.(*Container); okC {
+			obj.Rect = ct.ViewPort.Canvas.Bounds()
+			obj.Pos = ct.ViewPort.PortPos
+		} else if in, okI := ele.(*Input); okI {
+			obj.Rect = in.Text.Obj.Rect
+			obj.Pos = in.Text.Obj.Pos
 		} else if txt, okT := ele.(*Text); okT {
-			obj = txt.Text.Obj
+			obj.Rect = txt.Text.Obj.Rect
+			obj.Pos = txt.Text.Obj.Pos
 		} else if scr, okScr := ele.(*Scroll); okScr {
-			obj = scr.BorderObject
+			obj.Rect = scr.BorderObject.Rect
+			obj.Pos = scr.ViewPort.PortPos
 		}
-		oTop := obj.Pos.Y + obj.Rect.H()*0.5
-		oBot := obj.Pos.Y - obj.Rect.H()*0.5
+		oTop := obj.Pos.Y + obj.Rect.H()*0.5 + 1
+		oBot := obj.Pos.Y - obj.Rect.H()*0.5 - 1
 		if i == 0 || yTop < oTop {
 			yTop = oTop
 		}
