@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
 	"github.com/bytearena/ecs"
@@ -20,55 +21,65 @@ const (
 	BlockCracked
 	BlockPhase
 	BlockSpike
+
 	BlockLadder
 	BlockLadderCracked
 	BlockLadderExit
 	BlockBar
 
 	BlockPlayer1
-	BlockKeyBlue
 	BlockPlayer2
-	BlockKeyGreen
 	BlockPlayer3
-	BlockKeyPurple
 	BlockPlayer4
-	BlockKeyBrown
-
-	BlockDoorBlue
-	BlockLockBlue
-	BlockDoorGreen
-	BlockLockGreen
-	BlockDoorPurple
-	BlockLockPurple
-	BlockDoorBrown
-	BlockLockBrown
-
-	BlockDoorYellow
-	BlockLockYellow
-	BlockDoorOrange
-	BlockLockOrange
-	BlockDoorGray
-	BlockLockGray
-	BlockDoorCyan
-	BlockLockCyan
-
-	BlockGemYellow
-	BlockKeyYellow
-	BlockGemOrange
-	BlockKeyOrange
-	BlockGemGray
-	BlockKeyGray
-	BlockGemCyan
-	BlockKeyCyan
+	BlockDemon
+	BlockDemonRegen
+	BlockFly
+	BlockFlyRegen
 
 	BlockGemBlue
 	BlockGemGreen
 	BlockGemPurple
 	BlockGemBrown
-	BlockDemon
-	BlockDemonRegen
-	BlockFly
-	BlockFlyRegen
+	BlockGemYellow
+	BlockGemOrange
+	BlockGemGray
+	BlockGemCyan
+
+	BlockDoorBlue
+	BlockClosedBlue
+	BlockDoorGreen
+	BlockClosedGreen
+	BlockDoorPurple
+	BlockClosedPurple
+	BlockDoorBrown
+	BlockClosedBrown
+
+	BlockLockBlue
+	BlockKeyBlue
+	BlockLockGreen
+	BlockKeyGreen
+	BlockLockPurple
+	BlockKeyPurple
+	BlockLockBrown
+	BlockKeyBrown
+
+	BlockDoorYellow
+	BlockClosedYellow
+	BlockDoorOrange
+	BlockClosedOrange
+	BlockDoorGray
+	BlockClosedGray
+	BlockDoorCyan
+	BlockClosedCyan
+
+	BlockLockYellow
+	BlockKeyYellow
+	BlockLockOrange
+	BlockKeyOrange
+	BlockLockGray
+	BlockKeyGray
+	BlockLockCyan
+	BlockKeyCyan
 
 	BlockBox
 
@@ -99,13 +110,13 @@ const (
 
 func (b Block) String() string {
 	switch b {
-	case BlockTurf, BlockFall, BlockCracked, BlockPhase,
+	case BlockTurf, BlockFall, BlockCracked,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
-	case BlockBedrock:
+	case BlockBedrock, BlockPhase:
 		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
@@ -165,6 +176,22 @@ func (b Block) String() string {
 		return constants.TileDoorGray
 	case BlockDoorCyan:
 		return constants.TileDoorCyan
+	case BlockClosedBlue:
+		return constants.TileClosedBlue
+	case BlockClosedGreen:
+		return constants.TileClosedGreen
+	case BlockClosedPurple:
+		return constants.TileClosedPurple
+	case BlockClosedBrown:
+		return constants.TileClosedBrown
+	case BlockClosedYellow:
+		return constants.TileClosedYellow
+	case BlockClosedOrange:
+		return constants.TileClosedOrange
+	case BlockClosedGray:
+		return constants.TileClosedGray
+	case BlockClosedCyan:
+		return constants.TileClosedCyan
 	case BlockLockBlue:
 		return constants.TileLockBlue
 	case BlockLockGreen:
@@ -276,6 +303,14 @@ var toID = map[string]Block{
 	constants.TileDoorGreen:         BlockDoorGreen,
 	constants.TileDoorPurple:        BlockDoorPurple,
 	constants.TileDoorBrown:         BlockDoorBrown,
+	constants.TileClosedYellow:      BlockClosedYellow,
+	constants.TileClosedOrange:      BlockClosedOrange,
+	constants.TileClosedGray:        BlockClosedGray,
+	constants.TileClosedCyan:        BlockClosedCyan,
+	constants.TileClosedBlue:        BlockClosedBlue,
+	constants.TileClosedGreen:       BlockClosedGreen,
+	constants.TileClosedPurple:      BlockClosedPurple,
+	constants.TileClosedBrown:       BlockClosedBrown,
 	constants.TileLockYellow:        BlockLockYellow,
 	constants.TileLockOrange:        BlockLockOrange,
 	constants.TileLockGray:          BlockLockGray,
@@ -374,22 +409,24 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 //}
 
 type Tile struct {
-	Block    Block          `json:"tile"`
-	Metadata TileMetadata   `json:"metadata"`
-	Flags    TileFlags      `json:"-"`
-	Coords   world.Coords   `json:"-"`
-	Object   *object.Object `json:"-"`
-	Update   bool           `json:"-"`
-	Entity   *ecs.Entity    `json:"-"`
-	Mask     *ecs.Entity    `json:"-"`
-	Counter  int            `json:"-"`
-	Live     bool           `json:"-"`
-	AltBlock int            `json:"alt"`
+	Block     Block          `json:"tile"`
+	Metadata  TileMetadata   `json:"metadata"`
+	Flags     TileFlags      `json:"-"`
+	Coords    world.Coords   `json:"-"`
+	Object    *object.Object `json:"-"`
+	Update    bool           `json:"-"`
+	Entity    *ecs.Entity    `json:"-"`
+	Mask      *ecs.Entity    `json:"-"`
+	Counter   int            `json:"-"`
+	Live      bool           `json:"-"`
+	AltBlock  int            `json:"alt"`
+	WrenchTxt *typeface.Text `json:"-"`
 }
 
 func (t *Tile) Copy() *Tile {
 	return &Tile{
 		Block:    t.Block,
+		AltBlock: t.AltBlock,
 		Coords:   t.Coords,
 		Metadata: t.Metadata,
 	}
@@ -397,6 +434,7 @@ func (t *Tile) Copy() *Tile {
 
 func (t *Tile) CopyInto(c *Tile) {
 	c.Block = t.Block
+	c.AltBlock = t.AltBlock
 	c.Object.Flip = t.Metadata.Flipped
 	c.Metadata = CopyMetadata(t.Metadata)
 }
@@ -413,9 +451,9 @@ func (t *Tile) IsEmpty() bool {
 		t.Block == BlockTurf ||
 		t.Block == BlockBedrock ||
 		t.Block == BlockFall ||
+		t.Block == BlockPhase ||
 		t.Block == BlockCracked ||
-		t.Block == BlockSpike ||
-		t.Block == BlockPhase)
+		t.Block == BlockSpike)
 }
 
 func (t *Tile) IsSolid() bool {
@@ -424,6 +462,7 @@ func (t *Tile) IsSolid() bool {
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
+			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike)
 }
@@ -434,6 +473,20 @@ func (t *Tile) IsNilOrSolid() bool {
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
+			t.Block == BlockPhase ||
+			t.Block == BlockCracked ||
+			t.Block == BlockSpike))
+}
+
+func (t *Tile) IsRunnable() bool {
+	return t == nil || (!t.Flags.Collapse &&
+		(t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
+			t.Block == BlockLadderTurf ||
+			t.Block == BlockLadderCrackedTurf ||
+			t.Block == BlockLadderExitTurf ||
+			t.Block == BlockFall ||
+			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike))
 }
@@ -446,6 +499,7 @@ func (t *Tile) IsBlock() bool {
 			t.Block == BlockLadderCrackedTurf ||
 			t.Block == BlockLadderExitTurf ||
 			t.Block == BlockFall ||
+			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike) &&
 			(t.Flags.Regen ||
@@ -525,11 +579,12 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 }
 
 type TileFlags struct {
-	Cracked   bool `json:"-"`
-	Collapse  bool `json:"-"`
-	Regen     bool `json:"-"`
-	LCracked  bool `json:"-"`
-	LCollapse bool `json:"-"`
+	Cracked     bool `json:"-"`
+	Collapse    bool `json:"-"`
+	Regen       bool `json:"-"`
+	PhaseChange bool `json:"-"`
+	LCracked    bool `json:"-"`
+	LCollapse   bool `json:"-"`
 }
 
 func DefaultFlags() TileFlags {

@@ -12,6 +12,7 @@ func UpdateViews() {
 	pickedRatio := 1.
 	if data.PuzzleView != nil {
 		data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
+		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
 		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
 		wRatio := viewport.MainCamera.Rect.W() / data.PuzzleView.Rect.W()
 		hRatio := viewport.MainCamera.Rect.H() / data.PuzzleView.Rect.H()
@@ -21,6 +22,7 @@ func UpdateViews() {
 		}
 		pickedRatio *= 0.8
 		data.PuzzleView.PortSize = pixel.V(pickedRatio, pickedRatio)
+		data.PuzzleViewNoShader.PortSize = pixel.V(pickedRatio, pickedRatio)
 		data.BorderView.PortSize = pixel.V(pickedRatio, pickedRatio)
 	}
 	data.CursorObj.Sca = pixel.V(pickedRatio, pickedRatio)
@@ -45,8 +47,8 @@ func UpdateViews() {
 		} else {
 			panel := data.Dialogs["editor_panel_left"]
 			data.Editor.BlockSelect.PortPos = panel.ViewPort.PortPos
-			data.Editor.BlockSelect.PortPos.X += (data.Editor.BlockSelect.Canvas.Bounds().W()*0.5 + world.TileSize*4) * data.Editor.BlockSelect.PortSize.X * 0.5
-			data.Editor.BlockSelect.PortPos.Y += (panel.ViewPort.Canvas.Bounds().H()*0.5 + world.TileSize) * data.Editor.BlockSelect.PortSize.Y * 0.5
+			data.Editor.BlockSelect.PortPos.X += (data.Editor.BlockSelect.Canvas.Bounds().W()*0.5 + world.HalfSize) * data.Editor.BlockSelect.PortSize.X
+			//data.Editor.BlockSelect.PortPos.Y -= (panel.ViewPort.Canvas.Bounds().H()*0.5 - constants.BlockSelectHeight*world.TileSize*0.5 - world.HalfSize) * data.Editor.BlockSelect.PortSize.Y
 		}
 	}
 }

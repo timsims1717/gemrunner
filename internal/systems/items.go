@@ -9,6 +9,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
@@ -57,6 +58,7 @@ func CollectGem(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 		return
 	}
 	level.Stats[p].Score += 1
+	sfx.SoundPlayer.PlaySound(constants.SFXGem, -2.)
 	myecs.Manager.DisposeEntity(entity)
 }
 
@@ -68,6 +70,10 @@ func CreateDoor(pos pixel.Vec, key string) {
 	door := &data.Door{
 		Object: obj,
 	}
+	e := myecs.Manager.NewEntity()
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	openKey := key
 	switch key {
 	case constants.TileDoorYellow, constants.TileDoorOrange,
 		constants.TileDoorGray, constants.TileDoorCyan,
@@ -75,12 +81,21 @@ func CreateDoor(pos pixel.Vec, key string) {
 		constants.TileDoorPurple, constants.TileDoorBrown:
 		door.DoorType = data.Opened
 		door.Color = strings.Replace(key, "door_", "", -1)
+	case constants.TileClosedYellow, constants.TileClosedOrange,
+		constants.TileClosedGray, constants.TileClosedCyan,
+		constants.TileClosedBlue, constants.TileClosedGreen,
+		constants.TileClosedPurple, constants.TileClosedBrown:
+		door.DoorType = data.Opened
+		openKey = strings.Replace(key, "_open", "", -1)
+		door.Color = strings.Replace(openKey, "door_", "", -1)
+		e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
 	case constants.TileLockYellow, constants.TileLockOrange,
 		constants.TileLockGray, constants.TileLockCyan,
 		constants.TileLockBlue, constants.TileLockGreen,
 		constants.TileLockPurple, constants.TileLockBrown:
 		door.DoorType = data.Locked
 		door.Color = strings.Replace(key, "lock_", "", -1)
+		e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
 	}
 	var interaction *data.Interact
 	switch door.Color {
@@ -92,7 +107,6 @@ func CreateDoor(pos pixel.Vec, key string) {
 	default:
 		interaction = EnterDoor()
 	}
-	e := myecs.Manager.NewEntity()
 	door.Entity = e
 	var anim *reanimator.Anim
 	if door.DoorType == data.Locked {
@@ -106,20 +120,15 @@ func CreateDoor(pos pixel.Vec, key string) {
 		anim = reanimator.NewBatchAnimation("open", img.Batchers[constants.TileBatch], fmt.Sprintf("door_%s_open", door.Color), reanimator.Hold)
 		anim.SetEndTrigger(func() {
 			e.RemoveComponent(myecs.Animated)
-			e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
+			e.AddComponent(myecs.Drawable, img.NewSprite(openKey, constants.TileBatch))
 			e.AddComponent(myecs.OnTouch, interaction)
 		})
 	}
-	e.AddComponent(myecs.Object, obj)
-	if door.DoorType == data.Locked {
-		e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
-	}
 	e.AddComponent(myecs.Door, door)
-	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Update, data.NewFrameFunc(func() bool {
 		switch door.DoorType {
 		case data.Opened:
-			if data.CurrLevel.DoorsOpen {
+			if data.CurrLevel.DoorsOpen && reanimator.FrameSwitch {
 				tree := reanimator.NewSimple(anim)
 				e.AddComponent(myecs.Drawable, tree)
 				e.AddComponent(myecs.Animated, tree)
@@ -131,7 +140,7 @@ func CreateDoor(pos pixel.Vec, key string) {
 				door.DoorType = data.Unlocked
 			}
 		case data.Unlocked:
-			if data.CurrLevel.DoorsOpen {
+			if data.CurrLevel.DoorsOpen && reanimator.FrameSwitch {
 				tree := reanimator.NewSimple(anim)
 				e.AddComponent(myecs.Drawable, tree)
 				e.AddComponent(myecs.Animated, tree)
@@ -149,6 +158,7 @@ func EnterDoor() *data.Interact {
 			return
 		}
 		level.Stats[p].Score += 12
+		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 		level.Complete = true
 	})
 }
@@ -159,6 +169,7 @@ func EnterPlayerDoor(color string) *data.Interact {
 			return
 		}
 		level.Stats[p].Score += 12
+		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 		level.Complete = true
 	})
 }
@@ -198,6 +209,7 @@ func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 		// set action
 		ch.State = data.DoingAction
 		ch.Flags.ItemAction = data.ThrowBox
+		sfx.SoundPlayer.PlaySound(constants.SFXThrow, 2.)
 		// update box
 		DropItem(ch)
 		if c, okC := entity.GetComponentData(myecs.Dynamic); okC {

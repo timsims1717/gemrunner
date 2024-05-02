@@ -54,6 +54,7 @@ type DoorType int
 
 const (
 	Opened = iota
+	Closed
 	Locked
 	Unlocked
 )

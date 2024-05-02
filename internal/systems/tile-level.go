@@ -121,6 +121,50 @@ func TileSystem() {
 						}
 					}
 				}
+			case data.BlockPhase:
+				if reanimator.FrameSwitch {
+					tile.Counter++
+				}
+				if data.CurrLevel.FrameChange {
+					phaseCycle := (data.CurrLevel.FrameCycle % 8) - tile.Metadata.Phase
+					if phaseCycle == 0 {
+						tile.Flags.PhaseChange = true
+					} else if phaseCycle == 4 || phaseCycle == -4 {
+						tile.Flags.PhaseChange = true
+					}
+				}
+				if reanimator.FrameSwitch && tile.Flags.PhaseChange {
+					if tile.Flags.Collapse {
+						tile.Counter = 0
+						tile.Flags.Collapse = false
+						AddMaskWithTrigger(tile, "phase_1", false, true, func() {
+							RemoveMask(tile)
+						})
+						// Crush any characters here
+						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+							_, okCO := resultC.Components[myecs.Object].(*object.Object)
+							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+							if okCO && okC && ch.State != data.Dead {
+								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+								chTile := data.CurrLevel.Tiles.Get(x, y)
+								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+									(chTile.Coords.Y == tile.Coords.Y) {
+									ch.Object.Pos.X = tile.Object.Pos.X
+									ch.Object.Pos.Y = tile.Object.Pos.Y
+									ch.Flags.Crush = true
+									ch.State = data.Hit
+								}
+							}
+						}
+					} else {
+						tile.Counter = 0
+						tile.Flags.Collapse = true
+						AddMaskWithTrigger(tile, "phase_1", false, false, func() {
+							RemoveMask(tile)
+						})
+					}
+					tile.Flags.PhaseChange = false
+				}
 			case data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				if tile.Flags.LCracked {
 					if reanimator.FrameSwitch {
@@ -187,6 +231,29 @@ func AddMask(tile *data.Tile, maskKey string, flip, reverse bool) {
 	if reverse {
 		a = a.Reverse()
 	}
+	anim := reanimator.NewSimple(a)
+	m.AddComponent(myecs.Object, obj)
+	m.AddComponent(myecs.Animated, anim)
+	m.AddComponent(myecs.Drawable, anim)
+	m.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	tile.Mask = m
+}
+
+// AddMaskWithTrigger creates a new mask animation for the tile and sets the correct layers
+// for drawing. It also sets a trigger to run when the mask is done animating.
+func AddMaskWithTrigger(tile *data.Tile, maskKey string, flip, reverse bool, fn func()) {
+	RemoveMask(tile)
+	tile.Object.Layer = 31 // Put the tile on top so it's over any characters
+	obj := object.New()
+	obj.Pos = tile.Object.Pos
+	obj.Flip = flip
+	obj.Layer = 32 // the mask is one layer higher
+	m := myecs.Manager.NewEntity()
+	a := reanimator.NewBatchAnimation(maskKey, img.Batchers[constants.TileBatch], maskKey, reanimator.Tran)
+	if reverse {
+		a = a.Reverse()
+	}
+	a.SetEndTrigger(fn)
 	anim := reanimator.NewSimple(a)
 	m.AddComponent(myecs.Object, obj)
 	m.AddComponent(myecs.Animated, anim)

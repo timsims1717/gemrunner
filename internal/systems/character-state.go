@@ -1,11 +1,13 @@
 package systems
 
 import (
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 )
 
@@ -31,9 +33,10 @@ func CharacterStateSystem() {
 							ch.State = data.OnLadder
 						} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 							ch.State = data.OnLadder
-						} else if below != nil && !below.IsBlock() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
+						} else if below != nil && !below.IsRunnable() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
 							ch.State = data.Leaping
 							ch.Flags.LeapOn = true
+							ch.NextTile = tile
 						} else if !ch.Flags.Floor {
 							ch.State = data.OnLadder
 						}
@@ -53,12 +56,13 @@ func CharacterStateSystem() {
 					} else if tile.IsLadder() &&
 						!(below == nil ||
 							below.IsSolid() ||
-							below.IsBlock()) { // can only leap if the stuff below isn't solid
+							below.IsRunnable()) { // can only leap if the stuff below isn't solid
 						if ch.Actions.Direction == data.Left &&
 							!ch.Flags.LeftWall { // leaping to the left
 							ch.State = data.Leaping
 							ch.Object.Flip = true
 							left := data.CurrLevel.Tiles.Get(x-1, y)
+							ch.NextTile = left
 							if left != nil && left.IsLadder() { // to another ladder
 								ch.Flags.LeapTo = true
 							} else { // off the ladders
@@ -69,6 +73,7 @@ func CharacterStateSystem() {
 							ch.State = data.Leaping
 							ch.Object.Flip = false
 							right := data.CurrLevel.Tiles.Get(x+1, y)
+							ch.NextTile = right
 							if right != nil && right.IsLadder() { // to another ladder
 								ch.Flags.LeapTo = true
 							} else { // off the ladders
@@ -87,14 +92,14 @@ func CharacterStateSystem() {
 						} else {
 							ch.State = data.OnLadder
 						}
-					} else if ch.Flags.Floor { // reached the bottom
+					} else if ch.Flags.Floor || below.IsRunnable() { // reached the bottom
 						if ch.Actions.Direction == data.Left { // run to the left
 							ch.State = data.Grounded
 							ch.Object.Flip = true
 						} else if ch.Actions.Direction == data.Right { // run to the right
 							ch.State = data.Grounded
 							ch.Object.Flip = false
-						} else if ch.Actions.Direction == data.Down {
+						} else if ch.Flags.Floor && ch.Actions.Direction == data.Down {
 							ch.State = data.Grounded
 						}
 					} else if !tile.IsLadder() {
@@ -102,12 +107,13 @@ func CharacterStateSystem() {
 					}
 				case data.OnBar:
 					if tile == nil || tile.Block != data.BlockBar {
-						if below == nil || below.IsBlock() {
+						if below == nil || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							if ch.Actions.Left() || ch.Actions.Right() { // leaping onto ladder
 								ch.State = data.Leaping
 								ch.Flags.LeapOn = true
+								ch.NextTile = tile
 							} else if !ch.Flags.Floor {
 								ch.State = data.OnLadder
 							}
@@ -136,7 +142,7 @@ func CharacterStateSystem() {
 					}
 				case data.Jumping:
 					if !(ch.Flags.HighJump || ch.Flags.LongJump) {
-						if ch.Flags.Floor {
+						if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -148,7 +154,7 @@ func CharacterStateSystem() {
 					}
 				case data.Leaping:
 					if !(ch.Flags.LeapOff || ch.Flags.LeapOn || ch.Flags.LeapTo) {
-						if ch.Flags.Floor {
+						if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -160,7 +166,7 @@ func CharacterStateSystem() {
 					}
 				case data.Flying:
 					if !ch.Flags.Flying {
-						if ch.Flags.Floor {
+						if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -175,7 +181,7 @@ func CharacterStateSystem() {
 						if ch.Options.Flying || ch.Flags.Flying {
 							ch.Flags.Flying = true
 							ch.State = data.Flying
-						} else if ch.Flags.Floor {
+						} else if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -191,7 +197,7 @@ func CharacterStateSystem() {
 					}
 				case data.Attack:
 					if !ch.Flags.Attack {
-						if ch.Flags.Floor {
+						if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -206,7 +212,7 @@ func CharacterStateSystem() {
 						if ch.Options.Flying {
 							ch.Flags.Flying = true
 							ch.State = data.Flying
-						} else if ch.Flags.Floor {
+						} else if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
 							ch.State = data.OnLadder
@@ -251,6 +257,7 @@ func CharacterStateSystem() {
 				case data.Waiting:
 					if ch.Actions.Any() {
 						ch.State = data.Regen
+						sfx.SoundPlayer.PlaySound(constants.SFXRegen, 0.)
 						ch.Flags.Regen = true
 						PlayerPortal(ch.Object.Layer+1, tile.Object.Pos)
 					}
@@ -291,19 +298,24 @@ func CharacterStateSystem() {
 						(oldState == data.Jumping) {
 						ch.Object.Pos.X = tile.Object.Pos.X
 					}
-					//if !((oldState == data.Falling &&
-					//	ch.State == data.Grounded) ||
-					//	(oldState == data.Grounded &&
-					//		ch.State == data.Leaping) ||
-					//	oldState == data.OnBar) {
-					//	ch.Object.Pos.X = tile.Object.Pos.X
-					//}
 					ch.Flags.Climbed = false
 					ch.Flags.GoingUp = false
 					ch.Object.PostPos = ch.Object.Pos
 					if ch.State != data.Jumping {
 						ch.Flags.HighJump = false
 						ch.Flags.LongJump = false
+					}
+					// sound effects
+					switch oldState {
+					case data.Falling:
+						sfx.SoundPlayer.KillSound(ch.SFX)
+						if ch.State == data.Grounded {
+							sfx.SoundPlayer.PlaySound(constants.SFXLand, 0.)
+						}
+					}
+					switch ch.State {
+					case data.Falling:
+						ch.SFX = sfx.SoundPlayer.PlaySound(constants.SFXFall, 0.)
 					}
 				}
 			}

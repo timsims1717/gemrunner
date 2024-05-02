@@ -21,6 +21,9 @@ var (
 )
 
 func (item *Text) SetText(raw string) {
+	if item.Raw == raw {
+		return
+	}
 	item.Raw = raw
 	item.rawLines = []string{}
 	item.lineWidths = []float64{}
@@ -127,7 +130,7 @@ func (item *Text) updateText() {
 		item.Text.Orig.X = -item.Width * 0.5
 	}
 	if item.Align.V == Center {
-		item.Text.Orig.Y = -item.fullHeight * 0.5
+		item.Text.Orig.Y = -item.fullHeight
 	} else if item.Align.V == Top {
 		item.Text.Orig.Y = -item.fullHeight
 	}

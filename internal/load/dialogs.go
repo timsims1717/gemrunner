@@ -85,6 +85,10 @@ func customizeDialogs(win *pixelgl.Window) {
 							switch data.Editor.CurrBlock {
 							case data.BlockFall:
 								beEx.Key = constants.TileFall
+							case data.BlockPhase:
+								beEx.Key = constants.TilePhase
+							case data.BlockCracked:
+								beEx.Key = constants.TileCracked
 							default:
 								beEx.Key = ""
 							}
@@ -359,12 +363,17 @@ func editorPanels() {
 	w := int(blockSelectConstructor.Width)
 	h := int(blockSelectConstructor.Height)
 	size := w * h
-	b := 0
-	for ; b < size; b++ {
+	for i, b := range data.BlockList {
+		if i > size {
+			break
+		}
+		if b == data.BlockEmpty {
+			continue
+		}
 		blockSelectConstructor.Elements = append(blockSelectConstructor.Elements, data.ElementConstructor{
 			Key:      "block_select_tile",
 			SprKey:   "black_square",
-			Position: data.BlockSelectPlacement(b, w, h),
+			Position: data.BlockSelectPlacement(i, w, h),
 			Element:  data.SpriteElement,
 		})
 	}

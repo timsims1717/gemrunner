@@ -7,6 +7,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 )
@@ -20,7 +21,11 @@ func PickUpOrDropItem(ch *data.Dynamic, p int) {
 		PickUpAndDropItem(ch, p)
 		ch.Flags.PickUpBuff = 0
 	} else {
-		ch.Inventory = PickUpItem(ch, p)
+		item := PickUpItem(ch, p)
+		if item != nil {
+			ch.Inventory = item
+			sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
+		}
 	}
 }
 
@@ -88,8 +93,12 @@ func PickUpAndDropItem(ch *data.Dynamic, p int) {
 	item := PickUpItem(ch, p)
 	if ch.Inventory != nil {
 		DropItem(ch)
+		sfx.SoundPlayer.PlaySound(constants.SFXDrop, 1.)
 	}
-	ch.Inventory = item
+	if item != nil {
+		ch.Inventory = item
+		sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
+	}
 }
 
 // DropItem returns whether an item was dropped

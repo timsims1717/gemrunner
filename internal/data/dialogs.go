@@ -152,12 +152,16 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 							dlg.Lock = true
 							entity := myecs.Manager.NewEntity()
 							entity.AddComponent(myecs.Update, NewTimerFunc(func() bool {
+								MenuInput.Get("click").Consume()
+								MenuInput.Get("rClick").Consume()
 								b.OnClick()
 								dlg.Lock = false
 								myecs.Manager.DisposeEntity(entity)
 								return false
 							}, b.Delay))
 						} else {
+							MenuInput.Get("click").Consume()
+							MenuInput.Get("rClick").Consume()
 							b.OnClick()
 						}
 					}

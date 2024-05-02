@@ -109,41 +109,48 @@ func GetBlockSprites(tile *data.Tile) []*img.Sprite {
 func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
 	if data.Editor.Mode == data.Wrench {
-		for i := 0; i < 4; i++ {
-			offset := pixel.V(-4, 4)
-			switch i {
-			case 0:
-				if tile.Metadata.Regenerate &&
-					(tile.Block == data.BlockCracked ||
-						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Block == data.BlockLadderCracked ||
-						tile.Block == data.BlockFly ||
-						tile.Block == data.BlockDemon) {
-					sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))
+		switch tile.Block {
+		case data.BlockPhase:
+			sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, tile.Metadata.Phase), constants.UIBatch))
+		case data.BlockFly, data.BlockDemon,
+			data.BlockCracked,
+			data.BlockLadderCracked, data.BlockLadderCrackedTurf:
+			for i := 0; i < 4; i++ {
+				offset := pixel.V(-4, 4)
+				switch i {
+				case 0:
+					if tile.Metadata.Regenerate &&
+						(tile.Block == data.BlockCracked ||
+							tile.Block == data.BlockLadderCrackedTurf ||
+							tile.Block == data.BlockLadderCracked ||
+							tile.Block == data.BlockFly ||
+							tile.Block == data.BlockDemon) {
+						sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))
+					}
+				case 1:
+					offset.X = 4
+					if tile.Metadata.ShowCrack &&
+						(tile.Block == data.BlockCracked ||
+							tile.Block == data.BlockLadderCrackedTurf ||
+							tile.Block == data.BlockLadderCracked) {
+						sprs = append(sprs, img.NewSprite("tile_ui_show", constants.UIBatch).WithOffset(offset))
+					} else if tile.Metadata.Flipped &&
+						tile.Block == data.BlockFly {
+						sprs = append(sprs, img.NewSprite("tile_ui_flip", constants.UIBatch).WithOffset(offset))
+					}
+				case 2:
+					offset.X = -4
+					offset.Y = -4
+					if tile.Metadata.EnemyCrack &&
+						(tile.Block == data.BlockCracked ||
+							tile.Block == data.BlockLadderCrackedTurf ||
+							tile.Block == data.BlockLadderCracked) {
+						sprs = append(sprs, img.NewSprite("tile_ui_enemy", constants.UIBatch).WithOffset(offset))
+					}
+				case 3:
+					offset.X = 4
+					offset.Y = -4
 				}
-			case 1:
-				offset.X = 4
-				if tile.Metadata.ShowCrack &&
-					(tile.Block == data.BlockCracked ||
-						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Block == data.BlockLadderCracked) {
-					sprs = append(sprs, img.NewSprite("tile_ui_show", constants.UIBatch).WithOffset(offset))
-				} else if tile.Metadata.Flipped &&
-					tile.Block == data.BlockFly {
-					sprs = append(sprs, img.NewSprite("tile_ui_flip", constants.UIBatch).WithOffset(offset))
-				}
-			case 2:
-				offset.X = -4
-				offset.Y = -4
-				if tile.Metadata.EnemyCrack &&
-					(tile.Block == data.BlockCracked ||
-						tile.Block == data.BlockLadderCrackedTurf ||
-						tile.Block == data.BlockLadderCracked) {
-					sprs = append(sprs, img.NewSprite("tile_ui_enemy", constants.UIBatch).WithOffset(offset))
-				}
-			case 3:
-				offset.X = 4
-				offset.Y = -4
 			}
 		}
 	}

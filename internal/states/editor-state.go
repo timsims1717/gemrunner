@@ -13,6 +13,7 @@ import (
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel/pixelgl"
+	"image/color"
 )
 
 var (
@@ -34,6 +35,7 @@ func (s *editorState) Load() {
 	systems.PuzzleInit()
 	systems.EditorInit()
 	systems.UpdateViews()
+	//systems.WrenchTextDraw(data.PuzzleViewNoShader.Canvas, true)
 	data.EditorDraw = true
 }
 
@@ -94,12 +96,12 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
 		systems.PuzzleEditSystem()
-		if data.CurrPuzzle.Update {
-			systems.TileSpriteSystem()
-			data.CurrPuzzle.Update = false
-		}
 	} else {
-
+		// todo: add draw selection here?
+	}
+	if data.CurrPuzzle.Update {
+		systems.TileSpriteSystem()
+		data.CurrPuzzle.Update = false
 	}
 	systems.DialogSystem()
 	// object systems
@@ -111,6 +113,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
+	data.PuzzleViewNoShader.Update()
 
 	if data.Editor.SelectVis && !data.Dialogs["block_select"].Open {
 		data.OpenDialog("block_select")
@@ -138,8 +141,10 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		img.Clear()
 		systems.DrawLayerSystem(data.PuzzleView.Canvas, 4) // ui
 		img.Clear()
-		data.IMDraw.Draw(data.PuzzleView.Canvas)
 		data.PuzzleView.Draw(win)
+		data.PuzzleViewNoShader.Canvas.Clear(color.RGBA{})
+		data.IMDraw.Draw(data.PuzzleViewNoShader.Canvas)
+		data.PuzzleViewNoShader.Draw(win)
 		// dialog draw system
 		systems.DialogDrawSystem(win)
 		systems.DrawLayerSystem(win, -10)

@@ -8,6 +8,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
@@ -38,6 +39,14 @@ func LevelInit() {
 			tile.Entity = e
 			// replace reanimator and items
 			switch tile.Block {
+			case data.BlockPhase:
+				switch tile.Metadata.Phase {
+				case 1, 2, 3, 4:
+					tile.Flags.Collapse = true
+					tile.Counter = 10
+				case 5, 6, 7, 0:
+
+				}
 			case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
 				i := 0
 				if tile.Block == data.BlockPlayer2 {
@@ -74,6 +83,14 @@ func LevelInit() {
 				data.BlockDoorGreen,
 				data.BlockDoorPurple,
 				data.BlockDoorBrown,
+				data.BlockClosedYellow,
+				data.BlockClosedOrange,
+				data.BlockClosedGray,
+				data.BlockClosedCyan,
+				data.BlockClosedBlue,
+				data.BlockClosedGreen,
+				data.BlockClosedPurple,
+				data.BlockClosedBrown,
 				data.BlockLockYellow,
 				data.BlockLockOrange,
 				data.BlockLockGray,
@@ -124,6 +141,7 @@ func LevelDispose() {
 		}
 		for _, player := range data.CurrLevel.Players {
 			if player != nil {
+				sfx.SoundPlayer.KillSound(player.SFX)
 				myecs.Manager.DisposeEntity(player.Entity)
 			}
 		}

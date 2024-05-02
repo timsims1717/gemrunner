@@ -6,6 +6,7 @@ import (
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
+	"github.com/google/uuid"
 )
 
 type Dynamic struct {
@@ -23,10 +24,13 @@ type Dynamic struct {
 	Options  CharacterOptions
 	ACounter int
 	LastTile *Tile
+	NextTile *Tile
 	MoveType MoveType
 	Player   int
 	Enemy    int
 	Color    string
+
+	SFX *uuid.UUID
 }
 
 func NewDynamic() *Dynamic {

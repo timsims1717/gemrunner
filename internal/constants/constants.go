@@ -24,7 +24,7 @@ const (
 
 	// Editor Constants
 	BlockSelectWidth  = 8.
-	BlockSelectHeight = 9.
+	BlockSelectHeight = 11.
 
 	// Music Tracks
 	TrackBeach  = "beach"
@@ -51,6 +51,8 @@ const (
 	ThinBorderWhite     = "white_dot"
 	ThinBorderBlue      = "blue_dot"
 	TextCaret           = "text_caret"
+	UINumber            = "tile_ui_%d"
+	UINumberX           = "tile_ui_%dx"
 
 	// UI Constants
 	ScrollSpeed = 250.
@@ -59,6 +61,7 @@ const (
 	FrameRateMax    = 60
 	FrameRateMin    = 5
 	FrameRateInt    = 5
+	FrameCycle      = 8
 	NormalGravity   = 2
 	MaxPlayers      = 4
 	WaitToSwitch    = 3

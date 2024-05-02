@@ -1029,6 +1029,54 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 448,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 464,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 480,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 496,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 512,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "phase_1",
+      "anim": true,
+      "x": 528,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
 
 
 
@@ -1201,7 +1249,7 @@
 
 
 
-     {
+    {
       "key": "fall",
       "x": 480,
       "y": 80,
@@ -2325,6 +2373,22 @@
     {
       "key": "door_green_open",
       "anim": true,
+      "x": 96,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
+      "x": 112,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "door_green_open",
+      "anim": true,
       "x": 128,
       "y": 192,
       "h": 16,
@@ -2341,23 +2405,7 @@
     {
       "key": "door_green_open",
       "anim": true,
-      "x": 128,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_green_open",
-      "anim": true,
-      "x": 144,
-      "y": 192,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "door_green_open",
-      "anim": true,
-      "x": 128,
+      "x": 96,
       "y": 176,
       "h": 16,
       "w": 16
@@ -2365,7 +2413,7 @@
     {
       "key": "door_green_open",
       "anim": true,
-      "x": 144,
+      "x": 112,
       "y": 176,
       "h": 16,
       "w": 16

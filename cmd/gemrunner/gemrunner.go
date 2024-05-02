@@ -78,6 +78,7 @@ func run() {
 	object.ILock = true
 
 	load.Music()
+	load.SoundEffects()
 
 	load.InitConstructors()
 	load.Dialogs(win)

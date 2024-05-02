@@ -7,6 +7,7 @@ import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
@@ -29,6 +30,11 @@ func PuzzleInit() {
 					AddComponent(myecs.Tile, tile)
 				tile.Object = obj
 				tile.Entity = e
+				tile.WrenchTxt = typeface.New("main", typeface.NewAlign(typeface.Center, typeface.Center), 1, 0.0625, 0, 0)
+				tile.WrenchTxt.SetPos(obj.Pos)
+				tile.WrenchTxt.SetColor(pixel.ToRGBA(constants.ColorBlue))
+				tile.WrenchTxt.SetText("0")
+				tile.WrenchTxt.Obj.Update()
 			}
 		}
 		num := data.CurrPuzzle.Metadata.WorldNumber
@@ -62,6 +68,12 @@ func PuzzleViewInit() {
 		data.PuzzleView.PortPos = viewport.MainCamera.CamPos
 		UpdatePuzzleShaders()
 		data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
+	}
+	if data.PuzzleViewNoShader == nil {
+		data.PuzzleViewNoShader = viewport.New(nil)
+		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
+		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
+		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.CamPos
 	}
 	if data.BorderView == nil {
 		data.BorderView = viewport.New(nil)

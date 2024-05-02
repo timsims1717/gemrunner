@@ -105,7 +105,7 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if ch.Flags.NoLadders {
-		if (standOnBelow || down.IsNilOrSolid() || down.IsBlock()) && touchingFloor {
+		if (standOnBelow || down.IsNilOrSolid() || down.IsRunnable()) && touchingFloor {
 			ch.Flags.Floor = true
 		}
 	} else {

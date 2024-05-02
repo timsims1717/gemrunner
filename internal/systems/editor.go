@@ -368,6 +368,16 @@ func PuzzleEditSystem() {
 												data.CurrPuzzle.WrenchTiles = append(data.CurrPuzzle.WrenchTiles, t)
 											case data.BlockLadderCracked:
 												data.CurrPuzzle.WrenchTiles = append(data.CurrPuzzle.WrenchTiles, t)
+											case data.BlockPhase:
+												if rClick.JustReleased() {
+													t.Metadata.Phase--
+													if t.Metadata.Phase < 0 {
+														t.Metadata.Phase = 7
+													}
+												} else if click.JustReleased() {
+													t.Metadata.Phase++
+													t.Metadata.Phase = t.Metadata.Phase % 8
+												}
 											}
 										}
 									}
@@ -404,6 +414,16 @@ func PuzzleEditSystem() {
 						case data.BlockLadderCracked:
 							data.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 							data.OpenDialogInStack("cracked_tile_options")
+						case data.BlockPhase:
+							if rClick.JustReleased() {
+								tile.Metadata.Phase--
+								if tile.Metadata.Phase < 0 {
+									tile.Metadata.Phase = 7
+								}
+							} else if click.JustReleased() {
+								tile.Metadata.Phase++
+								tile.Metadata.Phase = tile.Metadata.Phase % 8
+							}
 						}
 						data.CurrPuzzle.Changed = true
 						data.CurrPuzzle.Update = true

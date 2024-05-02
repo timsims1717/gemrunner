@@ -300,8 +300,20 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 	if ch.Object.Flip {
 		// going left
 		ch.Object.Pos.X -= ch.Vars.LeapSpeed
+		if ch.Object.Pos.X < ch.NextTile.Object.Pos.X { // the leap is complete
+			ch.Object.Pos.X = ch.NextTile.Object.Pos.X
+			ch.Flags.LeapOn = false
+			ch.Flags.LeapTo = false
+			ch.Flags.LeapOff = false
+		}
 	} else {
 		ch.Object.Pos.X += ch.Vars.LeapSpeed
+		if ch.Object.Pos.X > ch.NextTile.Object.Pos.X { // the leap is complete
+			ch.Object.Pos.X = ch.NextTile.Object.Pos.X
+			ch.Flags.LeapOn = false
+			ch.Flags.LeapTo = false
+			ch.Flags.LeapOff = false
+		}
 	}
 }
 

@@ -69,6 +69,10 @@ func (s *testState) Update(win *pixelgl.Window) {
 	systems.CursorSystem(true)
 	debug.AddText("Test State")
 	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
+	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
+	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
+	debug.AddText(fmt.Sprintf("Frame Cycle: %d", data.CurrLevel.FrameCycle))
+	debug.AddTruthText("Frame Change", data.CurrLevel.FrameChange)
 	for i, player := range data.CurrLevel.Players {
 		if player != nil {
 			pos := player.Object.Pos
@@ -127,6 +131,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
+	data.PuzzleViewNoShader.Update()
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
@@ -157,13 +162,14 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Draw(win)
 	// draw debug
 	if debug.ShowDebug {
-		data.PuzzleView.Canvas.Clear(pixel.RGBA{})
-		debug.DrawLines(data.PuzzleView.Canvas)
-		data.PuzzleView.Draw(win)
+		data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
+		debug.DrawLines(data.PuzzleViewNoShader.Canvas)
+		data.PuzzleViewNoShader.Draw(win)
 	}
 	// dialog draw system
 	systems.DialogDrawSystem(win)
 	systems.DrawLayerSystem(win, -10)
+	img.Clear()
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
 	if options.Updated {

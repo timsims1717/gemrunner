@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	PuzzleView *viewport.ViewPort
-	BorderView *viewport.ViewPort
-	IMDraw     *imdraw.IMDraw
+	PuzzleView         *viewport.ViewPort
+	PuzzleViewNoShader *viewport.ViewPort
+	BorderView         *viewport.ViewPort
+	IMDraw             *imdraw.IMDraw
 
 	CurrLevel  *Level
 	CurrPuzzle *Puzzle
@@ -33,6 +34,11 @@ type Level struct {
 	Failed    bool
 	Complete  bool
 	DoorsOpen bool
+
+	FrameNumber  int
+	FrameCounter int
+	FrameCycle   int
+	FrameChange  bool
 
 	Puzzle   *Puzzle
 	Metadata *PuzzleMetadata

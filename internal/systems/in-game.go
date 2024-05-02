@@ -4,9 +4,23 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/pkg/reanimator"
 )
 
 func InGameSystem() {
+	if reanimator.FrameSwitch && data.CurrLevel.Start {
+		data.CurrLevel.FrameNumber++
+		data.CurrLevel.FrameCounter++
+		if data.CurrLevel.FrameCounter == constants.FrameCycle {
+			data.CurrLevel.FrameCounter = 0
+			data.CurrLevel.FrameCycle++
+			data.CurrLevel.FrameChange = true
+		} else {
+			data.CurrLevel.FrameChange = false
+		}
+	} else {
+		data.CurrLevel.FrameChange = false
+	}
 	data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
 	if data.P1Input.Get("speedUp").JustPressed() {
 		constants.FrameRate += constants.FrameRateInt
