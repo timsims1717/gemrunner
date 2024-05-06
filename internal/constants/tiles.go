@@ -94,24 +94,31 @@ const (
 
 // Items
 const (
-	ItemKeyYellow = "key_yellow"
-	ItemKeyOrange = "key_orange"
-	ItemKeyGray   = "key_gray"
-	ItemKeyCyan   = "key_cyan"
-	ItemKeyBlue   = "key_blue"
-	ItemKeyGreen  = "key_green"
-	ItemKeyPurple = "key_purple"
-	ItemKeyBrown  = "key_brown"
-	ItemBox       = "box"
-	ItemBoxPiece  = "box_piece"
-	ItemGemYellow = "gem_yellow"
-	ItemGemOrange = "gem_orange"
-	ItemGemGray   = "gem_gray"
-	ItemGemCyan   = "gem_cyan"
-	ItemGemBlue   = "gem_blue"
-	ItemGemGreen  = "gem_green"
-	ItemGemPurple = "gem_purple"
-	ItemGemBrown  = "gem_brown"
+	ItemKeyYellow         = "key_yellow"
+	ItemKeyOrange         = "key_orange"
+	ItemKeyGray           = "key_gray"
+	ItemKeyCyan           = "key_cyan"
+	ItemKeyBlue           = "key_blue"
+	ItemKeyGreen          = "key_green"
+	ItemKeyPurple         = "key_purple"
+	ItemKeyBrown          = "key_brown"
+	ItemGemYellow         = "gem_yellow"
+	ItemGemOrange         = "gem_orange"
+	ItemGemGray           = "gem_gray"
+	ItemGemCyan           = "gem_cyan"
+	ItemGemBlue           = "gem_blue"
+	ItemGemGreen          = "gem_green"
+	ItemGemPurple         = "gem_purple"
+	ItemGemBrown          = "gem_brown"
+	ItemBox               = "box"
+	ItemBomb              = "bomb"
+	ItemBombLit           = "bomb_lit"
+	ItemBombRegen         = "bomb_regen"
+	ItemBombCross         = "bomb_cross"
+	ItemBombRegenCross    = "bomb_regen_cross"
+	ItemBombLitCross      = "bomb_lit_cross"
+	ItemBombLitRegen      = "bomb_lit_regen"
+	ItemBombLitRegenCross = "bomb_lit_regen_cross"
 )
 
 // Doodads
@@ -135,4 +142,14 @@ const (
 
 	//DoodadSteam
 	//DoodadPhonebox
+)
+
+// Explosions
+const (
+	ExpCenter = "exp_center"
+	ExpCorner = "exp_corner"
+	ExpTee    = "exp_tee"
+	ExpCross  = "exp_cross"
+	ExpLine   = "exp_line"
+	ExpEnd    = "exp_end"
 )

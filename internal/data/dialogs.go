@@ -401,6 +401,11 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 			}
 			typed := hvc.Input.Typed
 			if typed != "" {
+				if i.NumbersOnly {
+					typed = util.OnlyNumbers(typed)
+				} else {
+					typed = util.OnlyAlphaNumeric(typed)
+				}
 				i.Value = fmt.Sprintf("%s%s%s", i.Value[:i.CaretIndex], typed, i.Value[i.CaretIndex:])
 				changed = true
 				i.CaretIndex += len(typed)
@@ -424,6 +429,15 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 	}))
 
 	return i
+}
+
+func ChangeText(input *Input, rt string) {
+	input.Value = rt
+	input.Text.SetText(input.Value)
+	input.CaretIndex = input.Text.Len() - 1
+	input.CaretObj.Pos = input.Text.GetDotPos(input.CaretIndex)
+	input.CaretObj.Pos.Y = 0
+	input.CaretObj.Hidden = false
 }
 
 func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Scroll {
@@ -746,10 +760,45 @@ func OpenDialogInStack(key string) {
 func SetCloseSpcFn(key string, fn func()) {
 	dialog, ok := Dialogs[key]
 	if !ok {
-		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
+		fmt.Printf("Warning: SetCloseSpcFn: %s not registered\n", key)
 		return
 	}
 	dialog.OnCloseSpc = fn
+}
+
+func SetOnClick(dlgKey, btnKey string, fn func()) {
+	dialog, ok := Dialogs[dlgKey]
+	if !ok {
+		fmt.Printf("Warning: SetOnClick: Dialog %s not registered\n", dlgKey)
+		return
+	}
+	for _, ele := range dialog.Elements {
+		if btn, okB := ele.(*Button); okB && btn.Key == btnKey {
+			btn.OnClick = fn
+			return
+		}
+	}
+	fmt.Printf("Warning: SetOnClick: Button %s not registered in Dialog %s\n", btnKey, dlgKey)
+}
+
+func SetTempOnClick(dlgKey, btnKey string, fn func()) {
+	dialog, ok := Dialogs[dlgKey]
+	if !ok {
+		fmt.Printf("Warning: SetTempOnClick: Dialog %s not registered\n", dlgKey)
+		return
+	}
+	for _, ele := range dialog.Elements {
+		if btn, okB := ele.(*Button); okB && btn.Key == btnKey {
+			oldFn := btn.OnClick
+			btn.OnClick = func() {
+				fn()
+				btn.OnClick = oldFn
+				oldFn()
+			}
+			return
+		}
+	}
+	fmt.Printf("Warning: SetTempOnClick: Button %s not registered in Dialog %s\n", btnKey, dlgKey)
 }
 
 func CloseDialog(key string) {

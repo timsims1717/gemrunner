@@ -39,6 +39,7 @@ var (
 	PickUp     = Manager.NewComponent()
 	Action     = Manager.NewComponent()
 	LvlElement = Manager.NewComponent()
+	Bomb       = Manager.NewComponent()
 
 	IsTemp    = ecs.BuildTag(Temp)
 	HasUpdate = ecs.BuildTag(Update)
@@ -63,6 +64,7 @@ var (
 	HasAction    = ecs.BuildTag(Object, PickUp, Action)
 	IsDoor       = ecs.BuildTag(Object, Door)
 	IsLvlElement = ecs.BuildTag(Object, LvlElement)
+	IsBomb       = ecs.BuildTag(Object, Bomb)
 )
 
 func UpdateManager() {

@@ -48,7 +48,6 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 		pu, okP := result.Components[myecs.PickUp].(*data.PickUp)
 		if okO && okP && !obj.Hidden &&
 			obj.ID != ch.Object.ID &&
-			!pu.NoInventory &&
 			pu.Inventory == -1 {
 			x, y := world.WorldToMap(obj.Pos.X+obj.Offset.X, obj.Pos.Y+obj.Offset.Y)
 			pickUpCoords := world.Coords{X: x, Y: y}

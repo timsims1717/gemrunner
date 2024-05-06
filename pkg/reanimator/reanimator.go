@@ -330,7 +330,7 @@ func (anim *Anim) SetEndTrigger(fn func()) *Anim {
 	if anim.Triggers == nil {
 		anim.Triggers = map[int]func(*Anim, string, int){}
 	}
-	anim.Triggers[len(anim.S)-1] = func(*Anim, string, int) {
+	anim.Triggers[len(anim.S)] = func(*Anim, string, int) {
 		fn()
 	}
 	return anim

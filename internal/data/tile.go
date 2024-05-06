@@ -82,6 +82,8 @@ const (
 	BlockKeyCyan
 
 	BlockBox
+	BlockBomb
+	BlockBombLit
 
 	BlockReeds
 	BlockFlowers
@@ -112,18 +114,18 @@ func (b Block) String() string {
 	switch b {
 	case BlockTurf, BlockFall, BlockCracked,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
-		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
-			return CurrPuzzle.Metadata.WorldSprite
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
+			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
 	case BlockBedrock, BlockPhase:
-		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
-			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
 	case BlockSpike:
-		if CurrPuzzle != nil && CurrPuzzle.Metadata.WorldSprite != "" {
-			return fmt.Sprintf("%s_%s", CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileSpike)
 	case BlockLadder:
@@ -136,6 +138,10 @@ func (b Block) String() string {
 		return constants.TileBar
 	case BlockBox:
 		return constants.ItemBox
+	case BlockBomb:
+		return constants.ItemBomb
+	case BlockBombLit:
+		return constants.ItemBombLit
 	case BlockPlayer1:
 		return constants.CharPlayer1
 	case BlockPlayer2:
@@ -283,6 +289,8 @@ var toID = map[string]Block{
 	constants.TileLadderExitTurf:    BlockLadderExitTurf,
 	constants.TileBar:               BlockBar,
 	constants.ItemBox:               BlockBox,
+	constants.ItemBomb:              BlockBomb,
+	constants.ItemBombLit:           BlockBombLit,
 	constants.CharPlayer1:           BlockPlayer1,
 	constants.CharPlayer2:           BlockPlayer2,
 	constants.CharPlayer3:           BlockPlayer3,
@@ -595,6 +603,8 @@ type TileMetadata struct {
 	Flipped     bool           `json:"flipped"`
 	EnemyCrack  bool           `json:"enemyCrack"`
 	Regenerate  bool           `json:"regenerate"`
+	RegenDelay  int            `json:"regenDelay"`
+	BombCross   bool           `json:"bombCross"`
 	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles"`
 	Phase       int            `json:"phase"`
 	ShowCrack   bool           `json:"showCrack"`
@@ -612,6 +622,8 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		Flipped:     m.Flipped,
 		EnemyCrack:  m.EnemyCrack,
 		Regenerate:  m.Regenerate,
+		RegenDelay:  m.RegenDelay,
+		BombCross:   m.BombCross,
 		LinkedTiles: nil,
 		Phase:       m.Phase,
 		ShowCrack:   m.ShowCrack,

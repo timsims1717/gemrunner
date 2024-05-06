@@ -188,7 +188,7 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.StandOn, struct{}{})
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
-	e.AddComponent(myecs.PickUp, data.NewPickUp("Box", 10, true))
+	e.AddComponent(myecs.PickUp, data.NewPickUp("Box", 10))
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	box := data.NewDynamic()
@@ -257,7 +257,7 @@ func CreateKey(pos pixel.Vec, key string) {
 	theKey := &data.Key{
 		Object: obj,
 		Sprite: img.NewSprite(key, constants.TileBatch),
-		PickUp: data.NewPickUp(fmt.Sprintf("Key (%s)", color), 5, false),
+		PickUp: data.NewPickUp(fmt.Sprintf("Key (%s)", color), 5),
 		Action: KeyAction(color),
 	}
 	e := myecs.Manager.NewEntity()
@@ -272,7 +272,6 @@ func CreateKey(pos pixel.Vec, key string) {
 func KeyAction(color string) *data.Interact {
 	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if KeyUnlock(level, ch.Object.Pos, color) {
-			//DropLift(ch, false)
 			DropItem(ch)
 			myecs.Manager.DisposeEntity(entity)
 		}

@@ -23,6 +23,7 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.Hit = false
 		ch.Flags.Attack = false
 		ch.Flags.Crush = false
+		ch.Flags.Blow = false
 	})
 	regen := reanimator.NewBatchAnimation("regen", batch, "fly_regen", reanimator.Tran)
 	regen.SetEndTrigger(func() {
@@ -40,8 +41,11 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 			case data.Hit, data.Attack:
 				if ch.Flags.Crush {
 					return "crush"
+				} else if ch.Flags.Hit {
+					return "boom"
+				} else {
+					return "none"
 				}
-				return "boom"
 			case data.Regen:
 				return "regen"
 			case data.Dead:

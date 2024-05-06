@@ -1,6 +1,7 @@
 package load
 
 import (
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
@@ -13,23 +14,27 @@ var (
 	editorOptBottomConstructor *data.DialogConstructor
 	editorOptRightConstructor  *data.DialogConstructor
 	// editor options dialogs
-	openPuzzleConstructor        *data.DialogConstructor
-	changeNameConstructor        *data.DialogConstructor
-	noPlayersInPuzzleConstructor *data.DialogConstructor
-	worldDialogConstructor       *data.DialogConstructor
-	worldListEntry               data.ElementConstructor
-	turfTileItem                 data.ElementConstructor
-	ladderTileItem               data.ElementConstructor
-	doodadTileItem               data.ElementConstructor
-	worldTxtItem                 data.ElementConstructor
+	openPuzzleConstructor          *data.DialogConstructor
+	changeNameConstructor          *data.DialogConstructor
+	noPlayersInPuzzleConstructor   *data.DialogConstructor
+	areYouSureDeleteConstructor    *data.DialogConstructor
+	unableToSaveConstructor        *data.DialogConstructor
+	unableToSaveConfirmConstructor *data.DialogConstructor
+	worldDialogConstructor         *data.DialogConstructor
+	worldListEntry                 data.ElementConstructor
+	turfTileItem                   data.ElementConstructor
+	ladderTileItem                 data.ElementConstructor
+	doodadTileItem                 data.ElementConstructor
+	worldTxtItem                   data.ElementConstructor
 	// editor mode dialogs
 	crackedTileOptionsConstructor *data.DialogConstructor
+	bombOptionsConstructor        *data.DialogConstructor
 )
 
 func InitConstructors() {
 	// Editor Options
 	openPuzzleConstructor = &data.DialogConstructor{
-		Key:    "open_puzzle",
+		Key:    constants.DialogOpenPuzzle,
 		Width:  11,
 		Height: 10,
 		Elements: []data.ElementConstructor{
@@ -66,13 +71,13 @@ func InitConstructors() {
 		},
 	}
 	changeNameConstructor = &data.DialogConstructor{
-		Key:    "change_name",
+		Key:    constants.DialogChangeName,
 		Width:  12,
 		Height: 4,
 		Elements: []data.ElementConstructor{
 			{
 				Key:      "change_name_title",
-				Text:     "Puzzle Name",
+				Text:     "Puzzle Set Name",
 				Position: pixel.V(-92, 24),
 				Element:  data.TextElement,
 			},
@@ -104,7 +109,7 @@ func InitConstructors() {
 		},
 	}
 	noPlayersInPuzzleConstructor = &data.DialogConstructor{
-		Key:    "no_players",
+		Key:    constants.DialogNoPlayersInPuzzle,
 		Width:  8,
 		Height: 3,
 		Elements: []data.ElementConstructor{
@@ -124,8 +129,87 @@ func InitConstructors() {
 			},
 		},
 	}
+	areYouSureDeleteConstructor = &data.DialogConstructor{
+		Key:    constants.DialogAreYouSureDelete,
+		Width:  8,
+		Height: 3,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "are_you_sure_msg",
+				Text:     "Are you sure?\nThis can't be undone.",
+				Position: pixel.V(-56, 16),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "confirm_delete",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(32, -12),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "cancel_delete",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(52, -12),
+				Element:     data.ButtonElement,
+			},
+		},
+	}
+	unableToSaveConstructor = &data.DialogConstructor{
+		Key:    constants.DialogUnableToSave,
+		Width:  8,
+		Height: 3,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "unable_to_save_msg",
+				Text:     "There was an error\nwhen trying to save\nyour puzzle.",
+				Position: pixel.V(-56, 16),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "confirm_unable_to_save",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(52, -12),
+				Element:     data.ButtonElement,
+			},
+		},
+	}
+	unableToSaveConfirmConstructor = &data.DialogConstructor{
+		Key:    constants.DialogUnableToSaveConfirm,
+		Width:  8,
+		Height: 4,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "unable_to_save_msg",
+				Text:     "There was an error\nwhen trying to save\nyour puzzle.\nDo you want to do\nthat anyway?",
+				Position: pixel.V(-56, 24),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "confirm_unable_to_save",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(32, -20),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "cancel_unable_to_save",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(52, -20),
+				Element:     data.ButtonElement,
+			},
+		},
+	}
 	worldDialogConstructor = &data.DialogConstructor{
-		Key:    "change_world",
+		Key:    constants.DialogChangeWorld,
 		Width:  16,
 		Height: 12,
 		Elements: []data.ElementConstructor{
@@ -732,7 +816,7 @@ func InitConstructors() {
 	}
 	// Editor Panels
 	editorPanelTopConstructor = &data.DialogConstructor{
-		Key:    "editor_panel_top",
+		Key:    constants.DialogEditorPanelTop,
 		Width:  17,
 		Height: 1,
 		Pos:    pixel.V(0, 400),
@@ -874,7 +958,7 @@ func InitConstructors() {
 		},
 	}
 	editorPanelLeftConstructor = &data.DialogConstructor{
-		Key:    "editor_panel_left",
+		Key:    constants.DialogEditorPanelLeft,
 		Width:  2,
 		Height: 10,
 		Pos:    pixel.V(-692, 0),
@@ -1016,7 +1100,7 @@ func InitConstructors() {
 		},
 	}
 	editorOptBottomConstructor = &data.DialogConstructor{
-		Key:    "editor_options_bot",
+		Key:    constants.DialogEditorOptionsBot,
 		Width:  9,
 		Height: 1,
 		Pos:    pixel.V(0, -400),
@@ -1087,79 +1171,93 @@ func InitConstructors() {
 		},
 	}
 	editorOptRightConstructor = &data.DialogConstructor{
-		Key:    "editor_options_right",
-		Width:  1,
-		Height: 9,
-		Pos:    pixel.V(670, 0),
+		Key:    constants.DialogEditorOptionsRight,
+		Width:  2,
+		Height: 10,
+		Pos:    pixel.V(692, 0),
 		Elements: []data.ElementConstructor{
 			{
-				Key:         "quit_btn",
-				SprKey:      "quit_btn",
-				ClickSprKey: "quit_btn_click",
-				HelpText:    "Quit (Ctrl+Q)",
-				Position:    pixel.V(0, 4*world.TileSize),
-			},
-			{
-				Key:         "new_btn",
-				SprKey:      "new_btn",
-				ClickSprKey: "new_btn_click",
-				HelpText:    "New Puzzle Group (Ctrl+N)",
-				Position:    pixel.V(0, 3*world.TileSize),
+				Key:         "test_btn",
+				SprKey:      "test_btn",
+				ClickSprKey: "test_btn_click",
+				HelpText:    "Test Puzzle",
+				Position:    pixel.V(-world.HalfSize, 4.5*world.TileSize),
 			},
 			{
 				Key:         "save_btn",
 				SprKey:      "save_btn",
 				ClickSprKey: "save_btn_click",
-				HelpText:    "Save Puzzle Group (Ctrl+S)",
-				Position:    pixel.V(0, 2*world.TileSize),
+				HelpText:    "Save Puzzle Set (Ctrl+S)",
+				Position:    pixel.V(-world.HalfSize, 3.5*world.TileSize),
 			},
 			{
 				Key:         "open_btn",
 				SprKey:      "open_btn",
 				ClickSprKey: "open_btn_click",
-				HelpText:    "Open Puzzle Group (Ctrl+O)",
-				Position:    pixel.V(0, world.TileSize),
+				HelpText:    "Open Puzzle Set (Ctrl+O)",
+				Position:    pixel.V(world.HalfSize, 3.5*world.TileSize),
+			},
+			{
+				Key:         "new_btn",
+				SprKey:      "new_btn",
+				ClickSprKey: "new_btn_click",
+				HelpText:    "New Puzzle Set (Ctrl+N)",
+				Position:    pixel.V(-world.HalfSize, 2.5*world.TileSize),
+			},
+			{
+				Key:         "add_btn",
+				SprKey:      "add_btn",
+				ClickSprKey: "add_btn_click",
+				HelpText:    "New Puzzle in Set (Ctrl+A)",
+				Position:    pixel.V(-world.HalfSize, 1.5*world.TileSize),
 			},
 			{
 				Key:         "prev_btn",
 				SprKey:      "prev_btn",
 				ClickSprKey: "prev_btn_click",
-				HelpText:    "Previous Puzzle",
-				Position:    pixel.V(0, 0),
+				HelpText:    "Previous Puzzle (Left)",
+				Position:    pixel.V(-world.HalfSize, world.HalfSize),
 			},
 			{
 				Key:         "next_btn",
 				SprKey:      "next_btn",
 				ClickSprKey: "next_btn_click",
-				HelpText:    "Next Puzzle",
-				Position:    pixel.V(0, -world.TileSize),
+				HelpText:    "Next Puzzle (Right)",
+				Position:    pixel.V(world.HalfSize, world.HalfSize),
 			},
 			{
-				Key:         "name_btn",
-				SprKey:      "name_btn",
-				ClickSprKey: "name_btn_click",
-				HelpText:    "Change Name",
-				Position:    pixel.V(0, -2*world.TileSize),
+				Key:         "delete_btn",
+				SprKey:      "delete_btn",
+				ClickSprKey: "delete_btn_click",
+				HelpText:    "Delete Puzzle",
+				Position:    pixel.V(-world.HalfSize, -world.HalfSize),
 			},
 			{
 				Key:         "world_btn",
 				SprKey:      "world_btn",
 				ClickSprKey: "world_btn_click",
 				HelpText:    "Change World (Tab)",
-				Position:    pixel.V(0, -3*world.TileSize),
+				Position:    pixel.V(world.HalfSize, -1.5*world.TileSize),
 			},
 			{
-				Key:         "test_btn",
-				SprKey:      "test_btn",
-				ClickSprKey: "test_btn_click",
-				HelpText:    "Test Puzzle",
-				Position:    pixel.V(0, -4*world.TileSize),
+				Key:         "name_btn",
+				SprKey:      "name_btn",
+				ClickSprKey: "name_btn_click",
+				HelpText:    "Change Name",
+				Position:    pixel.V(world.HalfSize, -3.5*world.TileSize),
+			},
+			{
+				Key:         "quit_btn",
+				SprKey:      "quit_btn",
+				ClickSprKey: "quit_btn_click",
+				HelpText:    "Quit (Ctrl+Q)",
+				Position:    pixel.V(-world.HalfSize, -4.5*world.TileSize),
 			},
 		},
 	}
 	// Wrench
 	crackedTileOptionsConstructor = &data.DialogConstructor{
-		Key:    "cracked_tile_options",
+		Key:    constants.DialogCrackedTiles,
 		Width:  8,
 		Height: 6,
 		Elements: []data.ElementConstructor{
@@ -1226,6 +1324,92 @@ func InitConstructors() {
 				HelpText:    "Walking enemies can collapse this tile.",
 				Position:    pixel.V(52, -14),
 				Element:     data.CheckboxElement,
+			},
+		},
+	}
+	bombOptionsConstructor = &data.DialogConstructor{
+		Key:    constants.DialogBomb,
+		Width:  8,
+		Height: 6,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "bomb_options_title",
+				Text:     "Bomb",
+				Position: pixel.V(-60, 40),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cancel_bomb_options",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(52, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "confirm_bomb_options",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(32, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "bomb_cross",
+				Text:     "Cross Shape",
+				Position: pixel.V(-56, 22),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "bomb_cross_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Whether the bomb explosion is cross-shaped.",
+				Position:    pixel.V(52, 22),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "bomb_regenerate",
+				Text:     "Regenerates",
+				Position: pixel.V(-56, 4),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "bomb_regenerate_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Whether the bomb regenerates after exploding.",
+				Position:    pixel.V(52, 4),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "bomb_regenerate_delay",
+				Text:     "Regeneration\nDelay",
+				Position: pixel.V(-56, -14),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "bomb_regenerate_delay_input",
+				Text:     "0",
+				HelpText: "The delay of the bomb's regeneration.",
+				Position: pixel.V(40, -14),
+				Element:  data.InputElement,
+				Width:    1,
+				Height:   1,
+			},
+			{
+				Key:         "bomb_regenerate_delay_minus",
+				SprKey:      "minus_btn",
+				ClickSprKey: "minus_btn_click",
+				Position:    pixel.V(26, -14),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "bomb_regenerate_delay_plus",
+				SprKey:      "plus_btn",
+				ClickSprKey: "plus_btn_click",
+				Position:    pixel.V(54, -14),
+				Element:     data.ButtonElement,
 			},
 		},
 	}

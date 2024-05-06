@@ -7,7 +7,7 @@ import (
 )
 
 func worldDialogShaders() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for _, e2 := range scr.Elements {
@@ -29,7 +29,7 @@ func worldDialogShaders() {
 }
 
 func worldDialogNormalShaders() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for i, e2 := range scr.Elements {
@@ -53,7 +53,7 @@ func worldDialogNormalShaders() {
 }
 
 func worldDialogCustomShaders() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for _, e2 := range scr.Elements {
@@ -74,7 +74,7 @@ func worldDialogCustomShaders() {
 }
 
 func worldDialogCustomShadersPrimary() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for _, e2 := range scr.Elements {
@@ -89,7 +89,7 @@ func worldDialogCustomShadersPrimary() {
 }
 
 func worldDialogCustomShadersSecondary() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for _, e2 := range scr.Elements {
@@ -104,7 +104,7 @@ func worldDialogCustomShadersSecondary() {
 }
 
 func worldDialogCustomShadersDoodad() {
-	changeWorld := data.Dialogs["change_world"]
+	changeWorld := data.Dialogs[constants.DialogChangeWorld]
 	for _, e1 := range changeWorld.Elements {
 		if scr, okScr := e1.(*data.Scroll); okScr {
 			for _, e2 := range scr.Elements {

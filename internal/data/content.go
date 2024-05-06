@@ -3,7 +3,7 @@ package data
 import "github.com/gopxl/pixel"
 
 var (
-	PuzzleInfos            []PuzzleMetadata
+	PuzzleSetFileList      []PuzzleSetMetadata
 	SelectedPuzzleIndex    int
 	CustomWorldSelected    bool
 	CustomSelectedBefore   bool
@@ -23,5 +23,10 @@ type PuzzleMetadata struct {
 	DoodadColor    pixel.RGBA `json:"doodadColor"`
 	MusicTrack     string     `json:"musicTrack"`
 	Completed      bool       `json:"completed"`
-	PerlinSeed     int64      `json:"perlinSeed"`
+}
+
+type PuzzleSetMetadata struct {
+	Name     string `json:"title"`
+	Filename string `json:"filename"`
+	Author   string `json:"author"`
 }

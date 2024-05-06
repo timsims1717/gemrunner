@@ -16,10 +16,11 @@ import (
 )
 
 func PuzzleInit() {
-	PuzzleDispose(false)
-	if data.CurrPuzzle != nil {
-		for _, row := range data.CurrPuzzle.Tiles.T {
-			for _, tile := range row {
+	PuzzleDispose()
+	if data.CurrPuzzleSet.CurrPuzzle != nil {
+		for y, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
+			for x, tile := range row {
+				tile.Coords = world.NewCoords(x, y)
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)
 				obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
@@ -37,27 +38,29 @@ func PuzzleInit() {
 				tile.WrenchTxt.Obj.Update()
 			}
 		}
-		num := data.CurrPuzzle.Metadata.WorldNumber
-		if data.CurrPuzzle.Metadata.WorldSprite == "" {
-			data.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[num]
+		num := data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite == "" {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[num]
 		}
 		// todo: check world colors (all black, I assume)
-		if data.CurrPuzzle.Metadata.MusicTrack == "" {
-			data.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[num]
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack == "" {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[num]
 		}
-		data.SelectedWorldIndex = data.CurrPuzzle.Metadata.WorldNumber
-		if data.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom {
+		data.SelectedWorldIndex = data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom {
 			for n, w := range constants.WorldSprites {
-				if data.CurrPuzzle.Metadata.WorldSprite == w {
+				if data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite == w {
 					data.SelectedWorldIndex = n
 				}
 			}
 		}
-		data.CurrPuzzle.Update = true
+		data.CurrPuzzleSet.CurrPuzzle.Update = true
 	} else {
 		panic("no puzzle loaded")
 	}
 	PuzzleViewInit()
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
 }
 
 func PuzzleViewInit() {
@@ -82,78 +85,94 @@ func PuzzleViewInit() {
 	}
 }
 
-func PuzzleDispose(full bool) {
-	if data.CurrPuzzle != nil {
-		for _, row := range data.CurrPuzzle.Tiles.T {
-			for _, tile := range row {
-				myecs.Manager.DisposeEntity(tile.Entity)
-			}
-		}
-		if full {
-			data.CurrPuzzle = nil
-		}
+func PuzzleDispose() {
+	for _, result := range myecs.Manager.Query(myecs.IsTile) {
+		myecs.Manager.DisposeEntity(result.Entity)
 	}
 }
 
 func UpdatePuzzleShaders() {
 	// set puzzle shader uniforms
-	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzle.Metadata.PrimaryColor.B))
-	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzle.Metadata.SecondaryColor.B))
-	data.PuzzleView.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.R))
-	data.PuzzleView.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.G))
-	data.PuzzleView.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzle.Metadata.DoodadColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
 }
 
-func NewPuzzle() {
-	if data.CurrPuzzle != nil {
-		PuzzleDispose(true)
-	}
-	data.CurrPuzzle = data.CreateBlankPuzzle()
+func NewPuzzleSet() {
+	PuzzleDispose()
+	data.CurrPuzzleSet = data.CreatePuzzleSet()
+	data.CurrPuzzleSet.SetToFirst()
 	PuzzleInit()
-	UpdateEditorShaders()
-	UpdatePuzzleShaders()
 }
 
-func SavePuzzle() {
-	if data.Editor != nil {
-		if data.CurrPuzzle.Changed {
-			if data.CurrPuzzle.Metadata == nil {
-				data.CurrPuzzle.Metadata = &data.PuzzleMetadata{}
-			}
-			if data.CurrPuzzle.Metadata.Name == "" {
-				data.CurrPuzzle.Metadata.Name = "test"
-				data.CurrPuzzle.Metadata.Filename = "test.puzzle"
-			}
-			data.CurrPuzzle.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzle.Metadata.Name)
-			err := SavePuzzleToFile()
-			if err != nil {
-				fmt.Println("ERROR:", err)
-			} else {
-				data.CurrPuzzle.Changed = false
-			}
+func AddPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Add()
+	PuzzleInit()
+}
+
+func PrevPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Prev()
+	PuzzleInit()
+}
+
+func NextPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Next()
+	PuzzleInit()
+}
+
+func DeletePuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Delete(data.CurrPuzzleSet.PuzzleIndex)
+	PuzzleInit()
+}
+
+func SavePuzzleSet() bool {
+	if data.CurrPuzzleSet != nil {
+		if data.CurrPuzzleSet.Metadata.Name == "" {
+			data.CurrPuzzleSet.Metadata.Name = "test"
+			data.CurrPuzzleSet.Metadata.Filename = "test.puzzle"
 		}
+		data.CurrPuzzleSet.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzleSet.Metadata.Name)
+		err := SavePuzzleSetToFile()
+		if err != nil {
+			fmt.Println("ERROR:", err)
+			return false
+		}
+		data.CurrPuzzleSet.Changed = false
+		for _, pzl := range data.CurrPuzzleSet.Puzzles {
+			pzl.Changed = false
+		}
+		return true
+	} else {
+		fmt.Println("ERROR: no puzzle set to save")
+		return false
 	}
 }
 
-func SavePuzzleToFile() error {
-	errMsg := "save puzzle"
-	if data.CurrPuzzle == nil {
-		return errors.Wrap(errors.New("no puzzle to save"), errMsg)
+func SavePuzzleSetToFile() error {
+	errMsg := "save puzzle set"
+	if data.CurrPuzzleSet == nil {
+		return errors.Wrap(errors.New("no puzzle set to save"), errMsg)
 	}
 	var svgFName = "test.puzzle"
-	if data.CurrPuzzle.Metadata.Filename != "" {
-		svgFName = data.CurrPuzzle.Metadata.Filename
+	if data.CurrPuzzleSet.Metadata.Filename != "" {
+		svgFName = data.CurrPuzzleSet.Metadata.Filename
 	}
 	svgPath := fmt.Sprintf("%s/%s", constants.PuzzlesDir, svgFName)
 	saveFile, err := os.Create(svgPath)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	bts, err := json.Marshal(data.CurrPuzzle)
+	bts, err := json.Marshal(data.CurrPuzzleSet)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
@@ -161,26 +180,53 @@ func SavePuzzleToFile() error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	fmt.Printf("INFO: saved puzzle to %s\n", svgPath)
+	fmt.Printf("INFO: saved puzzle set to %s\n", svgPath)
+	return nil
+}
+
+func OpenPuzzleSet(filename string) error {
+	errMsg := "open puzzle set"
+	if filename == "" {
+		return errors.Wrap(errors.New("no filename provided"), errMsg)
+	}
+	pzlFile, err := os.ReadFile(filename)
+	if err != nil {
+		return errors.Wrap(err, errMsg)
+	}
+	PuzzleDispose()
+	data.CurrPuzzleSet = &data.PuzzleSet{}
+	err = json.Unmarshal(pzlFile, data.CurrPuzzleSet)
+	if err != nil {
+		return errors.Wrap(err, errMsg)
+	}
+	data.CurrPuzzleSet.SetToFirst()
+	PuzzleInit()
+	UpdateEditorShaders()
+	UpdatePuzzleShaders()
+	fmt.Printf("INFO: loaded puzzle set from %s\n", filename)
 	return nil
 }
 
 func OpenPuzzle(filename string) error {
 	errMsg := "open puzzle"
 	if filename == "" {
-		filename = "assets/save.savegame"
+		return errors.Wrap(errors.New("no filename provided"), errMsg)
 	}
 	pzlFile, err := os.ReadFile(filename)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	if data.CurrPuzzle == nil {
-		data.CurrPuzzle = data.CreateBlankPuzzle()
-	}
-	err = json.Unmarshal(pzlFile, data.CurrPuzzle)
+	PuzzleDispose()
+	data.CurrPuzzleSet = data.CreatePuzzleSet()
+	err = json.Unmarshal(pzlFile, data.CurrPuzzleSet.CurrPuzzle)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
+	if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name == "" {
+		return errors.Wrap(errors.New("not a puzzle"), errMsg)
+	}
+	data.CurrPuzzleSet.Metadata.Name = data.CurrPuzzleSet.CurrPuzzle.Metadata.Name
+	data.CurrPuzzleSet.Metadata.Filename = data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename
 	PuzzleInit()
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()

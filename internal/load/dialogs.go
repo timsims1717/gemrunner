@@ -17,8 +17,12 @@ func Dialogs(win *pixelgl.Window) {
 	data.NewDialog(openPuzzleConstructor)
 	data.NewDialog(changeNameConstructor)
 	data.NewDialog(noPlayersInPuzzleConstructor)
+	data.NewDialog(areYouSureDeleteConstructor)
+	data.NewDialog(unableToSaveConstructor)
+	data.NewDialog(unableToSaveConfirmConstructor)
 	data.NewDialog(worldDialogConstructor)
 	data.NewDialog(crackedTileOptionsConstructor)
+	data.NewDialog(bombOptionsConstructor)
 	editorPanels()
 	data.NewDialog(editorOptBottomConstructor)
 	data.NewDialog(editorOptRightConstructor)
@@ -42,28 +46,57 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "quit_btn":
 					btn.OnClick = QuitEditor(win)
 				case "save_btn":
-					btn.OnClick = SavePuzzle
+					btn.OnClick = SavePuzzleSet
 				case "world_btn":
 					btn.OnClick = OpenChangeWorldDialog
 				case "name_btn":
-					btn.OnClick = OpenDialog("change_name")
+					btn.OnClick = OpenDialog(constants.DialogChangeName)
 				case "test_btn":
 					btn.OnClick = TestPuzzle
 				case "check_puzzle_name":
 					btn.OnClick = ChangeName
 				case "check_cracked_tile":
 					btn.OnClick = ConfirmCrackTileOptions
+				case "confirm_bomb_options":
+					btn.OnClick = ConfirmBombOptions
+				case "bomb_regenerate_delay_minus":
+					btn.OnClick = func() {
+						IncOrDecBombInput(false)
+					}
+				case "bomb_regenerate_delay_plus":
+					btn.OnClick = func() {
+						IncOrDecBombInput(true)
+					}
 				case "check_no_players":
-					btn.OnClick = CloseDialog(key)
+					btn.OnClick = CloseDialog(dialog.Key)
 				case "check_change_world":
 					btn.OnClick = ConfirmChangeWorld
+				case "confirm_unable_to_save":
+					btn.OnClick = CloseDialog(dialog.Key)
+				case "add_btn":
+					btn.OnClick = AddPuzzle
+				case "prev_btn":
+					btn.OnClick = PrevPuzzle
+				case "next_btn":
+					btn.OnClick = NextPuzzle
+				case "delete_btn":
+					btn.OnClick = DeletePuzzle
+				case "confirm_delete":
+					btn.OnClick = ConfirmDelete
 				default:
-					switch key {
-					case "editor_panel_top", "editor_panel_left":
+					switch dialog.Key {
+					case constants.DialogEditorPanelTop, constants.DialogEditorPanelLeft:
 						btn.OnClick = EditorMode(data.ModeFromSprString(btn.Sprite.Key), btn, dialog)
+					case constants.DialogUnableToSaveConfirm:
+						if strings.Contains(btn.Key, "cancel") {
+							btn.OnClick = func() {
+								data.SetOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", CloseDialog(dialog.Key))
+								data.CloseDialog(dialog.Key)
+							}
+						}
 					default:
 						if strings.Contains(btn.Key, "cancel") {
-							btn.OnClick = CloseDialog(key)
+							btn.OnClick = CloseDialog(dialog.Key)
 						} else if btn.OnClick == nil && btn.OnHeld == nil {
 							btn.OnClick = Test(fmt.Sprintf("pressed button %s", btn.Key))
 						}
@@ -85,12 +118,16 @@ func customizeDialogs(win *pixelgl.Window) {
 							switch data.Editor.CurrBlock {
 							case data.BlockFall:
 								beEx.Key = constants.TileFall
+								beEx.Offset.Y = 0
 							case data.BlockPhase:
 								beEx.Key = constants.TilePhase
+								beEx.Offset.Y = 0
 							case data.BlockCracked:
 								beEx.Key = constants.TileCracked
+								beEx.Offset.Y = 0
 							default:
 								beEx.Key = ""
+								beEx.Offset.Y = 0
 							}
 							data.Editor.Hover = hvc.Hover
 							click := hvc.Input.Get("click")
@@ -153,7 +190,7 @@ func customizeDialogs(win *pixelgl.Window) {
 										case data.Brush, data.Line, data.Square, data.Fill:
 										default:
 											data.Editor.Mode = data.Brush
-											data.CurrPuzzle.Update = true
+											data.CurrPuzzleSet.CurrPuzzle.Update = true
 										}
 										click.Consume()
 									}
@@ -339,13 +376,15 @@ func customizeDialogs(win *pixelgl.Window) {
 				}
 			}
 		}
-		switch key {
-		case "open_puzzle":
+		switch dialog.Key {
+		case constants.DialogOpenPuzzle:
 			dialog.OnOpen = OnOpenPuzzleDialog
-		case "change_name":
+		case constants.DialogChangeName:
 			dialog.OnOpen = OnChangeNameDialog
-		case "cracked_tile_options":
-			dialog.OnOpen = OnCrackTileOptions
+		case constants.DialogCrackedTiles:
+			dialog.OnOpen = OnOpenCrackTileOptions
+		case constants.DialogBomb:
+			dialog.OnOpen = OnOpenBombOptions
 		}
 	}
 }
@@ -354,7 +393,7 @@ func editorPanels() {
 	data.NewDialog(editorPanelTopConstructor)
 	data.NewDialog(editorPanelLeftConstructor)
 	blockSelectConstructor := &data.DialogConstructor{
-		Key:      "block_select",
+		Key:      constants.DialogEditorBlockSelect,
 		Width:    constants.BlockSelectWidth,
 		Height:   constants.BlockSelectHeight,
 		Pos:      pixel.V(0, 0),
@@ -384,7 +423,7 @@ func editorPanels() {
 		Element:  data.SpriteElement,
 	})
 	data.NewDialog(blockSelectConstructor)
-	editorPanelLeft := data.Dialogs["editor_panel_left"]
+	editorPanelLeft := data.Dialogs[constants.DialogEditorPanelLeft]
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBluePrimary", float32(0))
@@ -395,7 +434,7 @@ func editorPanels() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
-	editorPanelTop := data.Dialogs["editor_panel_top"]
+	editorPanelTop := data.Dialogs[constants.DialogEditorPanelTop]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBluePrimary", float32(0))
@@ -406,7 +445,7 @@ func editorPanels() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
-	blockSelect := data.Dialogs["block_select"]
+	blockSelect := data.Dialogs[constants.DialogEditorBlockSelect]
 	blockSelect.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBluePrimary", float32(0))

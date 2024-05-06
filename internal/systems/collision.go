@@ -62,7 +62,7 @@ func outsideOfMap(ch *data.Dynamic, x, y int) {
 	ch.Flags.Ceiling = true
 	ch.Flags.Floor = true
 	v := world.MapToWorld(world.Coords{X: x, Y: y})
-	v = v.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+	v = v.Add(pixel.V(world.HalfSize, world.HalfSize))
 	ch.Object.Pos.Y = v.Y
 }
 

@@ -21,8 +21,8 @@ func TestSystem() {
 	if data.MenuInput.Get("escape").JustPressed() ||
 		data.CurrLevel.Complete || data.CurrLevel.Failed {
 		if data.CurrLevel.Complete {
-			if data.CurrPuzzle != nil {
-				data.CurrPuzzle.Metadata.Completed = true
+			if data.CurrPuzzleSet.CurrPuzzle != nil {
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed = true
 			}
 		}
 		state.PopState()

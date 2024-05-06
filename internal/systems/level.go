@@ -15,14 +15,14 @@ import (
 )
 
 func LevelInit() {
-	if data.CurrPuzzle == nil {
+	if data.CurrPuzzleSet.CurrPuzzle == nil {
 		panic("no puzzle loaded to start level")
 	}
 	LevelDispose()
 	data.CurrLevel = &data.Level{}
-	data.CurrLevel.Tiles = data.CurrPuzzle.CopyTiles()
-	data.CurrLevel.Metadata = data.CurrPuzzle.Metadata
-	data.CurrLevel.Puzzle = data.CurrPuzzle
+	data.CurrLevel.Tiles = data.CurrPuzzleSet.CurrPuzzle.CopyTiles()
+	data.CurrLevel.Metadata = data.CurrPuzzleSet.CurrPuzzle.Metadata
+	data.CurrLevel.Puzzle = data.CurrPuzzleSet.CurrPuzzle
 	random.SetLevelSeed(random.RandomSeed())
 
 	for _, row := range data.CurrLevel.Tiles.T {
@@ -116,6 +116,14 @@ func LevelInit() {
 				keyKey := tile.Block.String()
 				tile.Block = data.BlockEmpty
 				CreateKey(obj.Pos, keyKey)
+			case data.BlockBomb:
+				key := constants.ItemBomb
+				CreateBomb(obj.Pos, key, tile.Metadata, tile.Coords)
+				tile.Block = data.BlockEmpty
+			case data.BlockBombLit:
+				key := constants.ItemBombLit
+				CreateLitBomb(obj.Pos, key, tile.Metadata)
+				tile.Block = data.BlockEmpty
 			case data.BlockGear:
 				var a *reanimator.Anim
 				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {

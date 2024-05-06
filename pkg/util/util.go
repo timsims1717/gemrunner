@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/rand"
 	"reflect"
+	"strings"
 )
 
 // Abs returns the absolute value of x.
@@ -163,4 +164,30 @@ func ConstrainR(vec1, vec2 pixel.Vec, r1, r2 pixel.Rect) pixel.Vec {
 		newPos.Y = vec2.Y - r2.H()*0.5 + r1.H()*0.5
 	}
 	return newPos
+}
+
+func OnlyNumbers(s string) string {
+	var result strings.Builder
+	result.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if '0' <= b && b <= '9' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
+}
+
+func OnlyAlphaNumeric(s string) string {
+	var result strings.Builder
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if ('a' <= b && b <= 'z') ||
+			('A' <= b && b <= 'Z') ||
+			('0' <= b && b <= '9') ||
+			b == ' ' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
 }

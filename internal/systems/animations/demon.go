@@ -71,11 +71,13 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	hit.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
+		ch.Flags.Blow = false
 	})
 	crush := reanimator.NewBatchAnimation("crush", batch, "demon_crush", reanimator.Tran)
 	crush.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
+		ch.Flags.Blow = false
 	})
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
@@ -102,8 +104,10 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 			case data.Hit:
 				if ch.Flags.Crush {
 					return "crush"
-				} else {
+				} else if ch.Flags.Hit {
 					return "hit"
+				} else {
+					return "none"
 				}
 			case data.Attack:
 				return "attack"

@@ -15,11 +15,11 @@ var (
 	BorderView         *viewport.ViewPort
 	IMDraw             *imdraw.IMDraw
 
-	CurrLevel  *Level
-	CurrPuzzle *Puzzle
-	CurrSelect *Selection
-	ClipSelect *Selection
-	EditorDraw bool
+	CurrLevel     *Level
+	CurrPuzzleSet *PuzzleSet
+	CurrSelect    *Selection
+	ClipSelect    *Selection
+	EditorDraw    bool
 
 	PuzzleShader string
 )
@@ -41,7 +41,17 @@ type Level struct {
 	FrameChange  bool
 
 	Puzzle   *Puzzle
-	Metadata *PuzzleMetadata
+	Metadata PuzzleMetadata
+}
+
+type PuzzleSet struct {
+	Puzzles  []*Puzzle         `json:"puzzles"`
+	Metadata PuzzleSetMetadata `json:"puzzleSetMetadata"`
+
+	CurrPuzzle *Puzzle `json:"-"`
+
+	PuzzleIndex int  `json:"-"`
+	Changed     bool `json:"-"`
 }
 
 type Puzzle struct {
@@ -57,7 +67,7 @@ type Puzzle struct {
 	Update  bool `json:"-"`
 	Changed bool `json:"-"`
 
-	Metadata *PuzzleMetadata `json:"metadata"`
+	Metadata PuzzleMetadata `json:"metadata"`
 }
 
 type Tiles struct {
@@ -92,19 +102,105 @@ type Selection struct {
 	Height int
 }
 
+func CreatePuzzleSet() *PuzzleSet {
+	pzSet := &PuzzleSet{}
+	pzSet.SetToFirst()
+	return pzSet
+}
+
+func (set *PuzzleSet) Add() {
+	pzl := CreateBlankPuzzle()
+	set.Puzzles = append(set.Puzzles, pzl)
+	set.CurrPuzzle = pzl
+	set.PuzzleIndex = len(set.Puzzles) - 1
+}
+
+func (set *PuzzleSet) Insert(i int) {
+	if i > -1 && len(set.Puzzles) > i {
+		pzl := CreateBlankPuzzle()
+		set.Puzzles = append(append(set.Puzzles[:i], pzl), set.Puzzles[i:]...)
+		set.CurrPuzzle = pzl
+		set.PuzzleIndex = i
+	} else {
+		set.Add()
+	}
+}
+
+func (set *PuzzleSet) Delete(i int) {
+	if i > -1 && len(set.Puzzles) > i {
+		if len(set.Puzzles) == 1 {
+			pzl := CreateBlankPuzzle()
+			set.Puzzles = []*Puzzle{pzl}
+			set.CurrPuzzle = pzl
+			set.PuzzleIndex = 0
+		} else {
+			set.Puzzles = append(set.Puzzles[:i], set.Puzzles[i+1:]...)
+			if set.PuzzleIndex == i {
+				set.PuzzleIndex = i - 1
+				if set.PuzzleIndex < 0 {
+					set.PuzzleIndex = 0
+				}
+				set.CurrPuzzle = set.Puzzles[set.PuzzleIndex]
+			}
+		}
+	}
+}
+
+func (set *PuzzleSet) AddPuzzle(pzl *Puzzle) {
+	set.Puzzles = append(set.Puzzles, pzl)
+	set.CurrPuzzle = pzl
+	set.PuzzleIndex = len(set.Puzzles) - 1
+}
+
+func (set *PuzzleSet) Replace(i int, pzl *Puzzle) {
+	if i > -1 && len(set.Puzzles) > i {
+		set.Puzzles[i] = pzl
+		set.CurrPuzzle = pzl
+		set.PuzzleIndex = i
+	}
+}
+
+func (set *PuzzleSet) SetToFirst() {
+	if len(set.Puzzles) == 0 {
+		set.Puzzles = append(set.Puzzles, CreateBlankPuzzle())
+	}
+	set.CurrPuzzle = set.Puzzles[0]
+	set.PuzzleIndex = 0
+}
+
+func (set *PuzzleSet) SetTo(i int) {
+	if i > -1 && len(set.Puzzles) > i {
+		set.CurrPuzzle = set.Puzzles[i]
+		set.PuzzleIndex = i
+	}
+}
+
+func (set *PuzzleSet) Next() {
+	set.PuzzleIndex++
+	if set.PuzzleIndex == len(set.Puzzles) {
+		set.PuzzleIndex = 0
+	}
+	set.CurrPuzzle = set.Puzzles[set.PuzzleIndex]
+}
+
+func (set *PuzzleSet) Prev() {
+	set.PuzzleIndex--
+	if set.PuzzleIndex == -1 {
+		set.PuzzleIndex = len(set.Puzzles) - 1
+	}
+	set.CurrPuzzle = set.Puzzles[set.PuzzleIndex]
+}
+
 func CreateBlankPuzzle() *Puzzle {
 	SelectedWorldIndex = 0
 	worldNum := constants.WorldMoss
-	md := &PuzzleMetadata{
-		Name:           "",
-		Filename:       "",
+	md := PuzzleMetadata{
 		WorldSprite:    constants.WorldSprites[worldNum],
 		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
 		DoodadColor:    pixel.ToRGBA(constants.WorldDoodad[worldNum]),
 		MusicTrack:     constants.WorldMusic[worldNum],
-		Completed:      false,
 	}
 	puz := &Puzzle{
 		Tiles:    NewTiles(),
@@ -140,7 +236,7 @@ func (p *Puzzle) CopyTiles() *Tiles {
 func (p *Puzzle) HasPlayers() bool {
 	hasPlayers := false
 playerCheck:
-	for _, row := range CurrPuzzle.Tiles.T {
+	for _, row := range p.Tiles.T {
 		for _, t := range row {
 			if t.Block == BlockPlayer1 ||
 				t.Block == BlockPlayer2 ||

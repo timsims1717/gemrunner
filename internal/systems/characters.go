@@ -16,11 +16,12 @@ import (
 )
 
 func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
+	player := data.NewDynamic()
+	player.Layer = 27 - pIndex*2
 	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
-	obj.Layer = 27 - pIndex*2
+	obj.Layer = player.Layer
 	PlayerPortal(obj.Layer+1, pos)
-	player := data.NewDynamic()
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -71,10 +72,11 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 }
 
 func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
+	demon := data.NewDynamic()
 	obj := object.New().WithID("demon").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
-	obj.Layer = 29
-	demon := data.NewDynamic()
+	demon.Layer = 29
+	obj.Layer = demon.Layer
 	demon.Object = obj
 	demon.Anim = animations.DemonAnimation(demon)
 	demon.State = data.Regen
@@ -128,11 +130,12 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 }
 
 func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
+	fly := data.NewDynamic()
 	obj := object.New().WithID("fly").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 12))
 	obj.Flip = metadata.Flipped
-	obj.Layer = 29
-	fly := data.NewDynamic()
+	fly.Layer = 29
+	obj.Layer = fly.Layer
 	fly.State = data.Flying
 	fly.Options.RegenFlip = true
 	fly.Options.Flying = true

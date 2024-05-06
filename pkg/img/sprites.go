@@ -61,6 +61,7 @@ type Sprite struct {
 	Batch  string
 	Offset pixel.Vec
 	Color  pixel.RGBA
+	Hide   bool
 }
 
 func NewSprite(key, batch string) *Sprite {
@@ -84,6 +85,13 @@ func (s *Sprite) WithColor(color color.Color) *Sprite {
 func (s *Sprite) WithMask(m string) *Sprite {
 	s.Mask = m
 	return s
+}
+
+func (s *Sprite) ToggleHidden(hide bool) {
+	if s == nil {
+		return
+	}
+	s.Hide = hide
 }
 
 type SpriteSheet struct {

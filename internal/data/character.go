@@ -29,6 +29,7 @@ type Dynamic struct {
 	Player   int
 	Enemy    int
 	Color    string
+	Layer    int
 
 	SFX *uuid.UUID
 }
@@ -210,6 +211,7 @@ type Flags struct {
 	Thrown       bool
 	Hit          bool
 	Crush        bool
+	Blow         bool
 	Attack       bool
 	Regen        bool
 	Flying       bool

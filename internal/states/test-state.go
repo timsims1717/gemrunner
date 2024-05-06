@@ -29,28 +29,28 @@ type testState struct {
 func (s *testState) Unload() {
 	if data.Editor != nil {
 		if data.Editor.PosTop {
-			data.OpenDialog("editor_panel_top")
-			data.OpenDialog("editor_options_bot")
+			data.OpenDialog(constants.DialogEditorPanelTop)
+			data.OpenDialog(constants.DialogEditorOptionsBot)
 		} else {
-			data.OpenDialog("editor_panel_left")
-			data.OpenDialog("editor_options_right")
+			data.OpenDialog(constants.DialogEditorPanelLeft)
+			data.OpenDialog(constants.DialogEditorOptionsRight)
 		}
 	}
 	systems.LevelDispose()
 	systems.ClearTemp()
 	data.EditorDraw = true
-	data.CurrPuzzle.Update = true
+	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
 func (s *testState) Load() {
 	if data.Editor != nil {
 		if data.Editor.PosTop {
-			data.CloseDialog("editor_panel_top")
-			data.CloseDialog("editor_options_bot")
+			data.CloseDialog(constants.DialogEditorPanelTop)
+			data.CloseDialog(constants.DialogEditorOptionsBot)
 		} else {
-			data.CloseDialog("editor_panel_left")
-			data.CloseDialog("editor_options_right")
+			data.CloseDialog(constants.DialogEditorPanelLeft)
+			data.CloseDialog(constants.DialogEditorOptionsRight)
 		}
 	}
 	systems.LevelInit()
@@ -125,9 +125,9 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	}
 	// object systems
+	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
-	systems.AnimationSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()

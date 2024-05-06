@@ -4,6 +4,8 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 )
 
@@ -16,19 +18,16 @@ func NewInteract(fn func(*Level, int, *Dynamic, *ecs.Entity)) *Interact {
 }
 
 type PickUp struct {
-	Name        string
-	Cycle       [constants.MaxPlayers]int
-	Priority    int
-	NeverFlip   bool
-	Inventory   int
-	NoInventory bool
+	Name      string
+	Cycle     [constants.MaxPlayers]int
+	Priority  int
+	Inventory int
 }
 
-func NewPickUp(name string, p int, neverFlip bool) *PickUp {
+func NewPickUp(name string, p int) *PickUp {
 	return &PickUp{
 		Name:      name,
 		Priority:  p,
-		NeverFlip: neverFlip,
 		Inventory: -1,
 	}
 }
@@ -58,3 +57,19 @@ const (
 	Locked
 	Unlocked
 )
+
+type Bomb struct {
+	Object   *object.Object
+	Entity   *ecs.Entity
+	Draws    []interface{}
+	Anim     *reanimator.Tree
+	SymSpr   *img.Sprite
+	PickUp   *PickUp
+	Action   *Interact
+	Name     string
+	Metadata TileMetadata
+	Origin   world.Coords
+	LitKey   string
+	Regen    bool
+	Waiting  bool
+}

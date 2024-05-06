@@ -8,10 +8,10 @@ import (
 )
 
 func SetBlock(coords world.Coords, block data.Block) {
-	if data.CurrPuzzle != nil {
+	if data.CurrPuzzleSet.CurrPuzzle != nil {
 		if CoordsLegal(coords) {
 			// add to puzzle
-			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
+			tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
 			if !tile.Update {
 				if tile.Block != block {
 					tile.Metadata = data.DefaultMetadata()
@@ -55,7 +55,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 				case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
 					// ensure no other player of that type are in puzzle
-					for _, row := range data.CurrPuzzle.Tiles.T {
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == block {
 								t.Block = data.BlockEmpty
@@ -64,7 +64,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 					tile.Block = block
 				case data.BlockDemonRegen:
-					for _, row := range data.CurrPuzzle.Tiles.T {
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == data.BlockDemon &&
 								t.Metadata.Regenerate &&
@@ -75,7 +75,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 					tile.Block = block
 				case data.BlockDemon:
-					for _, row := range data.CurrPuzzle.Tiles.T {
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == data.BlockDemonRegen &&
 								!t.Metadata.Changed {
@@ -85,7 +85,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 					tile.Block = block
 				case data.BlockFlyRegen:
-					for _, row := range data.CurrPuzzle.Tiles.T {
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == data.BlockFly &&
 								t.Metadata.Regenerate &&
@@ -96,7 +96,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 					tile.Block = block
 				case data.BlockFly:
-					for _, row := range data.CurrPuzzle.Tiles.T {
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 						for _, t := range row {
 							if t.Block == data.BlockFlyRegen &&
 								!t.Metadata.Changed {
@@ -109,9 +109,9 @@ func SetBlock(coords world.Coords, block data.Block) {
 					tile.Block = block
 				}
 			}
-			data.CurrPuzzle.Update = true
+			data.CurrPuzzleSet.CurrPuzzle.Update = true
 			tile.Update = true
-			data.CurrPuzzle.Changed = true
+			data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		}
 	} else {
 		fmt.Println("error: attempted to change tile when no puzzle is loaded")
@@ -119,9 +119,9 @@ func SetBlock(coords world.Coords, block data.Block) {
 }
 
 func DeleteBlock(coords world.Coords) {
-	if data.CurrPuzzle != nil {
+	if data.CurrPuzzleSet.CurrPuzzle != nil {
 		if CoordsLegal(coords) {
-			tile := data.CurrPuzzle.Tiles.T[coords.Y][coords.X]
+			tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
 			if !tile.Update {
 				if tile.IsLadder() {
 					switch tile.Block {
@@ -133,9 +133,9 @@ func DeleteBlock(coords world.Coords) {
 				} else if tile.Block != data.BlockEmpty {
 					tile.Block = data.BlockEmpty
 				}
-				data.CurrPuzzle.Update = true
+				data.CurrPuzzleSet.CurrPuzzle.Update = true
 				tile.Update = true
-				data.CurrPuzzle.Changed = true
+				data.CurrPuzzleSet.CurrPuzzle.Changed = true
 				RemoveLinkedTiles(tile)
 				tile.Metadata = data.DefaultMetadata()
 			}
@@ -156,7 +156,7 @@ func LinkTiles(tileA, tileB *data.Tile) {
 
 func RemoveLinkedTiles(tile *data.Tile) {
 	for _, ltc := range tile.Metadata.LinkedTiles {
-		lt := data.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
+		lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
 		for i, t := range lt.Metadata.LinkedTiles {
 			if t == tile.Coords {
 				if len(lt.Metadata.LinkedTiles) < 2 {
@@ -174,7 +174,7 @@ func RemoveLinkedTiles(tile *data.Tile) {
 // UpdateLinkedTiles should be called if a selection gets placed.
 func UpdateLinkedTiles(tile *data.Tile) {
 	for _, ltc := range tile.Metadata.LinkedTiles {
-		lt := data.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
+		lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
 		if !world.CoordsIn(tile.Coords, lt.Metadata.LinkedTiles) {
 			lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, tile.Coords)
 		}

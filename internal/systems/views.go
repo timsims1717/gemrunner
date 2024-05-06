@@ -40,12 +40,12 @@ func UpdateViews() {
 	}
 	if data.Editor != nil {
 		if data.Editor.PosTop {
-			panel := data.Dialogs["editor_panel_top"]
+			panel := data.Dialogs[constants.DialogEditorPanelTop]
 			data.Editor.BlockSelect.PortPos = panel.ViewPort.PortPos
 			data.Editor.BlockSelect.PortPos.X += (((panel.ViewPort.Canvas.Bounds().W() + data.Editor.BlockSelect.Canvas.Bounds().W()) * 0.5) - world.TileSize) * data.Editor.BlockSelect.PortSize.X
 			data.Editor.BlockSelect.PortPos.Y -= ((data.Editor.BlockSelect.Canvas.Bounds().H() + world.TileSize) * 0.5) * data.Editor.BlockSelect.PortSize.Y
 		} else {
-			panel := data.Dialogs["editor_panel_left"]
+			panel := data.Dialogs[constants.DialogEditorPanelLeft]
 			data.Editor.BlockSelect.PortPos = panel.ViewPort.PortPos
 			data.Editor.BlockSelect.PortPos.X += (data.Editor.BlockSelect.Canvas.Bounds().W()*0.5 + world.HalfSize) * data.Editor.BlockSelect.PortSize.X
 			//data.Editor.BlockSelect.PortPos.Y -= (panel.ViewPort.Canvas.Bounds().H()*0.5 - constants.BlockSelectHeight*world.TileSize*0.5 - world.HalfSize) * data.Editor.BlockSelect.PortSize.Y

@@ -29,13 +29,14 @@ func (s *editorState) Unload() {
 }
 
 func (s *editorState) Load() {
-	if data.CurrPuzzle == nil {
-		data.CurrPuzzle = data.CreateBlankPuzzle()
+	if data.CurrPuzzleSet == nil {
+		data.CurrPuzzleSet = data.CreatePuzzleSet()
 	}
-	systems.PuzzleInit()
+	data.CurrPuzzleSet.SetToFirst()
 	systems.EditorInit()
+	systems.PuzzleInit()
 	systems.UpdateViews()
-	//systems.WrenchTextDraw(data.PuzzleViewNoShader.Canvas, true)
+	systems.PushUndoArray(true)
 	data.EditorDraw = true
 }
 
@@ -50,11 +51,11 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
 	debug.AddIntCoords("Puzzle Coords", x, y)
 	debug.AddIntCoords("Last Coords", data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzle.Metadata.Name))
-	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzle.Metadata.Filename))
-	debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzle.Metadata.MusicTrack))
-	debug.AddTruthText("Puzzle Completed", data.CurrPuzzle.Metadata.Completed)
-	t := data.CurrPuzzle.Tiles.Get(x, y)
+	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Name))
+	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename))
+	debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack))
+	debug.AddTruthText("Puzzle Completed", data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed)
+	t := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(x, y)
 	if t != nil {
 		sprs := systems.GetTileSprites(t)
 		if len(sprs) == 1 {
@@ -80,7 +81,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		data.CurrPuzzle.Metadata.Completed = true
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed = true
 	}
 
 	if data.DebugInput.Get("switchWorld").JustPressed() {
@@ -99,9 +100,9 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	} else {
 		// todo: add draw selection here?
 	}
-	if data.CurrPuzzle.Update {
+	if data.CurrPuzzleSet.CurrPuzzle.Update {
 		systems.TileSpriteSystem()
-		data.CurrPuzzle.Update = false
+		data.CurrPuzzleSet.CurrPuzzle.Update = false
 	}
 	systems.DialogSystem()
 	// object systems
@@ -115,10 +116,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	data.PuzzleView.Update()
 	data.PuzzleViewNoShader.Update()
 
-	if data.Editor.SelectVis && !data.Dialogs["block_select"].Open {
-		data.OpenDialog("block_select")
-	} else if !data.Editor.SelectVis && data.Dialogs["block_select"].Open {
-		data.CloseDialog("block_select")
+	if data.Editor.SelectVis && !data.Dialogs[constants.DialogEditorBlockSelect].Open {
+		data.OpenDialog(constants.DialogEditorBlockSelect)
+	} else if !data.Editor.SelectVis && data.Dialogs[constants.DialogEditorBlockSelect].Open {
+		data.CloseDialog(constants.DialogEditorBlockSelect)
 	}
 
 	myecs.UpdateManager()

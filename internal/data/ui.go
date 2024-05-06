@@ -95,6 +95,7 @@ type Input struct {
 	ViewPort     *viewport.ViewPort
 	Entity       *ecs.Entity
 	Layer        int
+	NumbersOnly  bool
 }
 
 type Scroll struct {

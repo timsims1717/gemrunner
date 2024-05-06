@@ -74,11 +74,19 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	hit.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
+		ch.Flags.Blow = false
 	})
 	crush := reanimator.NewBatchAnimation("crush", batch, fmt.Sprintf("%s_crush", sprPre), reanimator.Tran)
 	crush.SetEndTrigger(func() {
 		ch.Flags.Hit = false
 		ch.Flags.Crush = false
+		ch.Flags.Blow = false
+	})
+	blow := reanimator.NewBatchAnimation("blow", batch, "exp_player", reanimator.Tran)
+	blow.SetEndTrigger(func() {
+		ch.Flags.Hit = false
+		ch.Flags.Crush = false
+		ch.Flags.Blow = false
 	})
 	portalWait := reanimator.NewBatchAnimation("portal", batch, "portal_magic", reanimator.Loop)
 	sw := reanimator.NewSwitch().
@@ -99,6 +107,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(throw).
 		AddAnimation(hit).
 		AddAnimation(crush).
+		AddAnimation(blow).
 		AddAnimation(portalWait).
 		AddNull("none").
 		SetChooseFn(func() string {
@@ -112,8 +121,12 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 			case data.Hit:
 				if ch.Flags.Crush {
 					return "crush"
-				} else {
+				} else if ch.Flags.Blow {
+					return "blow"
+				} else if ch.Flags.Hit {
 					return "hit"
+				} else {
+					return "none"
 				}
 			case data.Attack:
 				return "attack"

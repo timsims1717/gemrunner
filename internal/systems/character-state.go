@@ -192,7 +192,7 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Hit:
-					if !ch.Flags.Hit && !ch.Flags.Crush {
+					if !ch.Flags.Hit {
 						ch.State = data.Dead
 					}
 				case data.Attack:
@@ -223,6 +223,7 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Dead:
+					ch.Object.Layer = ch.Layer
 					ch.Flags.Flying = false
 					ch.Flags.Attack = false
 					ch.Flags.Hit = false
@@ -305,17 +306,19 @@ func CharacterStateSystem() {
 						ch.Flags.HighJump = false
 						ch.Flags.LongJump = false
 					}
-					// sound effects
-					switch oldState {
-					case data.Falling:
-						sfx.SoundPlayer.KillSound(ch.SFX)
-						if ch.State == data.Grounded {
-							sfx.SoundPlayer.PlaySound(constants.SFXLand, 0.)
+					// player sound effects
+					if ch.Player > -1 {
+						switch oldState {
+						case data.Falling:
+							sfx.SoundPlayer.KillSound(ch.SFX)
+							if ch.State == data.Grounded {
+								sfx.SoundPlayer.PlaySound(constants.SFXLand, 0.)
+							}
 						}
-					}
-					switch ch.State {
-					case data.Falling:
-						ch.SFX = sfx.SoundPlayer.PlaySound(constants.SFXFall, 0.)
+						switch ch.State {
+						case data.Falling:
+							ch.SFX = sfx.SoundPlayer.PlaySound(constants.SFXFall, 0.)
+						}
 					}
 				}
 			}

@@ -15,7 +15,7 @@ func TileSpriteSystemPre() {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok {
-			if tile.Update && !data.CurrPuzzle.Click {
+			if tile.Update && !data.CurrPuzzleSet.CurrPuzzle.Click {
 				tile.Update = false
 			}
 			if obj.Hidden {
@@ -59,6 +59,24 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	case data.BlockDemonRegen, data.BlockFlyRegen:
 		if !tile.Live {
 			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
+		}
+	case data.BlockBomb:
+		sprs = append(sprs, img.NewSprite(constants.ItemBomb, constants.TileBatch))
+		if tile.Metadata.Regenerate && tile.Metadata.BombCross {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		} else if tile.Metadata.BombCross {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		} else if tile.Metadata.Regenerate {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		}
+	case data.BlockBombLit:
+		sprs = append(sprs, img.NewSprite(constants.ItemBombLit, constants.TileBatch))
+		if tile.Metadata.Regenerate && tile.Metadata.BombCross {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		} else if tile.Metadata.BombCross {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		} else if tile.Metadata.Regenerate {
+			sprs = append(sprs, img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		}
 	default:
 		sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
@@ -123,6 +141,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 						(tile.Block == data.BlockCracked ||
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked ||
+							tile.Block == data.BlockBomb ||
 							tile.Block == data.BlockFly ||
 							tile.Block == data.BlockDemon) {
 						sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))
@@ -165,7 +184,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	if tile.Live {
 		a = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a.IsBlock() {
 		top = false
@@ -174,7 +193,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	if tile.Live {
 		b = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b.IsBlock() {
 		bottom = false
@@ -201,7 +220,7 @@ func GetSpikeSprite(tile *data.Tile) string {
 	if tile.Live {
 		b = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) {
 		bottom = false
@@ -286,8 +305,8 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 }
 
 func GetLadderSpriteEditor(tile *data.Tile) string {
-	belowTile := data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
-	aboveTile := data.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+	belowTile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 		if tile.IsBlock() &&
