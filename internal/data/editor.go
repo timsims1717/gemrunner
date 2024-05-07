@@ -236,9 +236,9 @@ var BlockList = []Block{
 	BlockKeyCyan,
 
 	BlockBox,
-	BlockEmpty,
-	BlockEmpty,
-	BlockEmpty,
+	BlockBomb,
+	BlockBombLit,
+	BlockJetpack,
 	BlockEmpty,
 	BlockEmpty,
 	BlockEmpty,

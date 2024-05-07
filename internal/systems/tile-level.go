@@ -38,7 +38,7 @@ func TileSystem() {
 							tile.Flags.Cracked = false
 							tile.Flags.Regen = true
 							tile.Counter = 0
-							AddMask(tile, "regen", false, false)
+							AddMask(tile, "regen_mask", false, false)
 							// Crush any characters here
 							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 								_, okCO := resultC.Components[myecs.Object].(*object.Object)
@@ -91,7 +91,7 @@ func TileSystem() {
 							tile.Flags.Collapse = true
 							tile.Flags.Cracked = false
 							tile.Counter = 0
-							AddMask(tile, "collapse", false, false)
+							AddMask(tile, "collapse_mask", false, false)
 						}
 					} else {
 						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
@@ -110,11 +110,11 @@ func TileSystem() {
 									if tile.Block == data.BlockCracked {
 										tile.Flags.Cracked = true
 										tile.Flags.Collapse = false
-										AddMask(tile, "cracking", false, false)
+										AddMask(tile, "cracking_mask", false, false)
 									} else if tile.Block == data.BlockFall {
 										tile.Flags.Collapse = true
 										tile.Flags.Cracked = false
-										AddMask(tile, "collapse", false, false)
+										AddMask(tile, "collapse_mask", false, false)
 									}
 								}
 							}
@@ -137,7 +137,7 @@ func TileSystem() {
 					if tile.Flags.Collapse {
 						tile.Counter = 0
 						tile.Flags.Collapse = false
-						AddMaskWithTrigger(tile, "phase_1", false, true, func() {
+						AddMaskWithTrigger(tile, "phase_1_mask", false, true, func() {
 							RemoveMask(tile)
 						})
 						// Crush any characters here
@@ -159,7 +159,7 @@ func TileSystem() {
 					} else {
 						tile.Counter = 0
 						tile.Flags.Collapse = true
-						AddMaskWithTrigger(tile, "phase_1", false, false, func() {
+						AddMaskWithTrigger(tile, "phase_1_mask", false, false, func() {
 							RemoveMask(tile)
 						})
 					}

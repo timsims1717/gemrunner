@@ -7,7 +7,6 @@ import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
-	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
@@ -31,11 +30,6 @@ func PuzzleInit() {
 					AddComponent(myecs.Tile, tile)
 				tile.Object = obj
 				tile.Entity = e
-				tile.WrenchTxt = typeface.New("main", typeface.NewAlign(typeface.Center, typeface.Center), 1, 0.0625, 0, 0)
-				tile.WrenchTxt.SetPos(obj.Pos)
-				tile.WrenchTxt.SetColor(pixel.ToRGBA(constants.ColorBlue))
-				tile.WrenchTxt.SetText("0")
-				tile.WrenchTxt.Obj.Update()
 			}
 		}
 		num := data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber

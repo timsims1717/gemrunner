@@ -23,6 +23,7 @@ func Dialogs(win *pixelgl.Window) {
 	data.NewDialog(worldDialogConstructor)
 	data.NewDialog(crackedTileOptionsConstructor)
 	data.NewDialog(bombOptionsConstructor)
+	data.NewDialog(jetpackOptionsConstructor)
 	editorPanels()
 	data.NewDialog(editorOptBottomConstructor)
 	data.NewDialog(editorOptRightConstructor)
@@ -61,11 +62,29 @@ func customizeDialogs(win *pixelgl.Window) {
 					btn.OnClick = ConfirmBombOptions
 				case "bomb_regenerate_delay_minus":
 					btn.OnClick = func() {
-						IncOrDecBombInput(false)
+						IncOrDecBombRegen(false)
 					}
 				case "bomb_regenerate_delay_plus":
 					btn.OnClick = func() {
-						IncOrDecBombInput(true)
+						IncOrDecBombRegen(true)
+					}
+				case "confirm_jetpack_options":
+					btn.OnClick = ConfirmJetpackOptions
+				case "jetpack_regenerate_delay_minus":
+					btn.OnClick = func() {
+						IncOrDecJetpackRegen(false)
+					}
+				case "jetpack_regenerate_delay_plus":
+					btn.OnClick = func() {
+						IncOrDecJetpackRegen(true)
+					}
+				case "jetpack_timer_minus":
+					btn.OnClick = func() {
+						IncOrDecJetpackTimer(false)
+					}
+				case "jetpack_timer_plus":
+					btn.OnClick = func() {
+						IncOrDecJetpackTimer(true)
 					}
 				case "check_no_players":
 					btn.OnClick = CloseDialog(dialog.Key)
@@ -157,8 +176,8 @@ func customizeDialogs(win *pixelgl.Window) {
 						}
 					}))
 				case "block_select_tile":
-					if b < data.BlockEmpty {
-						bId := data.Block(b)
+					bId := data.BlockList[b]
+					if bId != data.BlockEmpty {
 						sprS := img.NewSprite(bId.String(), constants.TileBatch)
 						sprs := []*img.Sprite{sprS}
 						switch b {
@@ -385,6 +404,8 @@ func customizeDialogs(win *pixelgl.Window) {
 			dialog.OnOpen = OnOpenCrackTileOptions
 		case constants.DialogBomb:
 			dialog.OnOpen = OnOpenBombOptions
+		case constants.DialogJetpack:
+			dialog.OnOpen = OnOpenJetpackOptions
 		}
 	}
 }
@@ -402,12 +423,9 @@ func editorPanels() {
 	w := int(blockSelectConstructor.Width)
 	h := int(blockSelectConstructor.Height)
 	size := w * h
-	for i, b := range data.BlockList {
+	for i := range data.BlockList {
 		if i > size {
 			break
-		}
-		if b == data.BlockEmpty {
-			continue
 		}
 		blockSelectConstructor.Elements = append(blockSelectConstructor.Elements, data.ElementConstructor{
 			Key:      "block_select_tile",

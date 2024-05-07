@@ -70,7 +70,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 	// for left and right, we stop the character if the next tile is solid and either
 	//   if they run into the tile
 	//   or if they are on a ladder (so they stay in the center of the ladder)
-	if left == nil || left.IsSolid() || enemyLeft {
+	if left.IsSolid() || enemyLeft {
 		if ch.State == data.OnLadder || ch.State == data.Falling {
 			ch.Flags.LeftWall = true
 		} else if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
@@ -78,7 +78,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 			ch.Object.Pos.X = tile.Object.Pos.X - world.HalfSize + ch.Object.HalfWidth
 		}
 	}
-	if right == nil || right.IsSolid() || enemyRight {
+	if right.IsSolid() || enemyRight {
 		if ch.State == data.OnLadder || ch.State == data.Falling {
 			ch.Flags.RightWall = true
 		} else if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
@@ -90,10 +90,10 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 
 func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPos pixel.Vec) {
 	// for up, we just make sure they don't enter a solid tile from below
-	if ch.Flags.Thrown {
+	if ch.Flags.Thrown || ch.Flags.LongJump {
 		return
 	}
-	if (up == nil || up.IsSolid() || enemyUp) &&
+	if (up.IsSolid() || enemyUp) &&
 		chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
 		ch.Flags.Ceiling = true
 		ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
@@ -105,14 +105,13 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if ch.Flags.NoLadders {
-		if (standOnBelow || down.IsNilOrSolid() || down.IsRunnable()) && touchingFloor {
+		if (standOnBelow || down.IsSolid() || down.IsRunnable()) && touchingFloor {
 			ch.Flags.Floor = true
 		}
 	} else {
-		if ((down == nil ||
-			down.IsSolid() ||
+		if ((down.IsSolid() ||
 			enemyDown ||
-			((down.IsLadder() || down.IsNilOrSolid()) && (ch.State != data.OnLadder && ch.State != data.Leaping)) ||
+			(down.IsLadder() && (ch.State != data.OnLadder && ch.State != data.Leaping)) ||
 			standOnBelow) &&
 			touchingFloor) ||
 			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {

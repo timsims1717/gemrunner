@@ -70,6 +70,10 @@ func (t *Tree) ForceUpdate() {
 	t.update = true
 }
 
+func (t *Tree) GetCurrentAnim() *Anim {
+	return t.anim
+}
+
 func (t *Tree) Update() {
 	if !t.Done {
 		if FrameSwitch || t.update {

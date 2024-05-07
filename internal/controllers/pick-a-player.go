@@ -13,7 +13,10 @@ func PickClosestPlayerXFirst(ch *data.Dynamic) *data.Dynamic {
 	cy := -1
 	ci := -1
 	for i, p := range data.CurrLevel.Players {
-		if p == nil || p.State == data.Hit || p.State == data.Dead {
+		if p == nil ||
+			p.State == data.Hit ||
+			p.State == data.Dead ||
+			p.State == data.Waiting {
 			continue
 		}
 		px, py := world.WorldToMap(p.Object.Pos.X, p.Object.Pos.Y)
@@ -48,7 +51,10 @@ func PickClosestPlayerYFirst(ch *data.Dynamic) *data.Dynamic {
 	cy := -1
 	ci := -1
 	for i, p := range data.CurrLevel.Players {
-		if p == nil || p.State == data.Hit || p.State == data.Dead {
+		if p == nil ||
+			p.State == data.Hit ||
+			p.State == data.Dead ||
+			p.State == data.Waiting {
 			continue
 		}
 		px, py := world.WorldToMap(p.Object.Pos.X, p.Object.Pos.Y)

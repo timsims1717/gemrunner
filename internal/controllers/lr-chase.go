@@ -62,7 +62,7 @@ func (lr *LRChase) GetActions() data.Actions {
 				break
 			}
 			if nextTile.IsLadder() ||
-				belowTile == nil || belowTile.IsSolid() || belowTile.IsLadder() {
+				!belowTile.IsEmpty() {
 				if sx < px {
 					sx++
 				} else if sx > px {
@@ -78,7 +78,7 @@ func (lr *LRChase) GetActions() data.Actions {
 		if lr.Ch.State == data.OnLadder &&
 			(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
 				(lr.Target.State != data.OnLadder &&
-					(belowTile == nil || belowTile.IsSolid() || belowTile.IsLadder()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
+					(belowTile.IsSolid() || belowTile.IsLadder()))) { // Enemy is on the same level as player, but is on a ladder and needs to adjust
 			if lr.Target.Object.Pos.Y > lr.Ch.Object.Pos.Y {
 				actions.PrevDirection = data.Up
 			} else if lr.Target.Object.Pos.Y < lr.Ch.Object.Pos.Y {
@@ -101,39 +101,56 @@ func (lr *LRChase) GetActions() data.Actions {
 		return actions
 	}
 
-	//bestT := -1
-	bestD := -1
 	next := world.Coords{X: -1, Y: -1}
 	var bPath []astar.Pather
-	for i := 0; i < constants.PuzzleWidth; i++ {
-		path, d, found := astar.Path(data.CurrLevel.Tiles.Get(x, y), data.CurrLevel.Tiles.Get(i, py))
-		if len(path) > 1 && found && (bestD == -1 || int(d) < bestD) {
-			bestD = int(d)
-			//bestT = i
-			bPath = path
-			next = path[len(path)-2].(*data.Tile).Coords
-		}
-	}
-	if debug.ShowDebug {
-		col := color.RGBA{
-			R: 0,
-			G: 255,
-			B: 0,
-			A: 255,
-		}
-		var p *data.Tile
-		for i, t := range bPath {
-			tile := t.(*data.Tile)
-			if i > 0 {
-				debug.AddLine(col, imdraw.RoundEndShape, p.Object.Pos, tile.Object.Pos, 2)
-				col.R += 40
-			} else {
-				debug.AddLine(col, imdraw.RoundEndShape, tile.Object.Pos, tile.Object.Pos, 3)
+	dy := py
+	data.PlayerAbove = py > y
+outerLoop:
+	for dy != y {
+		i := 0
+		ix := 0
+		for i < constants.PuzzleWidth {
+			dx := x + ix
+			if dx > -1 && dx < constants.PuzzleWidth {
+				path, _, found := astar.Path(data.CurrLevel.Tiles.Get(x, y), data.CurrLevel.Tiles.Get(dx, dy))
+				if len(path) > 1 && found {
+					bPath = path
+					next = path[len(path)-2].(*data.Tile).Coords
+					break outerLoop
+				}
+				i++
 			}
-			p = tile
+			if ix >= 0 {
+				ix++
+			}
+			ix *= -1
+		}
+		if dy > y {
+			dy--
+		} else {
+			dy++
 		}
 	}
 	if next.X > -1 && next.Y > -1 {
+		if debug.ShowDebug {
+			col := color.RGBA{
+				R: 0,
+				G: 255,
+				B: 0,
+				A: 255,
+			}
+			var p *data.Tile
+			for i, t := range bPath {
+				tile := t.(*data.Tile)
+				if i > 0 {
+					debug.AddLine(col, imdraw.RoundEndShape, p.Object.Pos, tile.Object.Pos, 2)
+					col.R += 40
+				} else {
+					debug.AddLine(col, imdraw.RoundEndShape, tile.Object.Pos, tile.Object.Pos, 3)
+				}
+				p = tile
+			}
+		}
 		mPos := world.MapToWorld(next)
 		mPos = mPos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 		if next.X < x {

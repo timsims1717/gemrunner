@@ -23,6 +23,7 @@ type Dynamic struct {
 	Vars     Vars
 	Options  CharacterOptions
 	ACounter int
+	AnInt    int
 	LastTile *Tile
 	NextTile *Tile
 	MoveType MoveType
@@ -30,6 +31,7 @@ type Dynamic struct {
 	Enemy    int
 	Color    string
 	Layer    int
+	Text
 
 	SFX *uuid.UUID
 }
@@ -49,6 +51,7 @@ func NewDynamic() *Dynamic {
 		Options: CharacterOptions{
 			Regen: false,
 		},
+		AnInt: -1,
 	}
 }
 

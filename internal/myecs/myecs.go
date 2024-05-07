@@ -40,6 +40,7 @@ var (
 	Action     = Manager.NewComponent()
 	LvlElement = Manager.NewComponent()
 	Bomb       = Manager.NewComponent()
+	Text       = Manager.NewComponent()
 
 	IsTemp    = ecs.BuildTag(Temp)
 	HasUpdate = ecs.BuildTag(Update)
@@ -65,6 +66,7 @@ var (
 	IsDoor       = ecs.BuildTag(Object, Door)
 	IsLvlElement = ecs.BuildTag(Object, LvlElement)
 	IsBomb       = ecs.BuildTag(Object, Bomb)
+	IsText       = ecs.BuildTag(Object, Drawable, Text)
 )
 
 func UpdateManager() {

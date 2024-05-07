@@ -56,7 +56,7 @@ func New(atlas string, align Alignment, lineHeight, relativeSize, maxWidth, maxH
 
 func (item *Text) Draw(target pixel.Target) {
 	if !item.NoShow {
-		item.Text.DrawColorMask(target, item.Obj.Mat, item.Obj.Mask)
+		item.Text.Draw(target, item.Obj.Mat)
 	}
 }
 

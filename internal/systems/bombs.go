@@ -116,7 +116,7 @@ func LightBomb(theBomb *data.Bomb, tile *data.Tile) {
 			if reanimator.FrameSwitch {
 				counter++
 			}
-			delay := constants.BombFuse + (constants.BombRegen * (theBomb.Metadata.RegenDelay + 2))
+			delay := constants.BombFuse + (constants.ItemRegen * (theBomb.Metadata.RegenDelay + 2))
 			if counter > delay && data.CurrLevel.FrameChange {
 				theBomb.Object.Pos = world.MapToWorld(theBomb.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
 				theBomb.Regen = true
@@ -162,7 +162,7 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 				if reanimator.FrameSwitch {
 					counter++
 				}
-				if counter > constants.BombRegen*(metadata.RegenDelay+2) && data.CurrLevel.FrameChange {
+				if counter > constants.ItemRegen*(metadata.RegenDelay+2) && data.CurrLevel.FrameChange {
 					obj.Hidden = false
 					counter = 0
 					waiting = false

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/object"
-	"gemrunner/pkg/typeface"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
 	"github.com/bytearena/ecs"
@@ -82,6 +81,7 @@ const (
 	BlockKeyCyan
 
 	BlockBox
+	BlockJetpack
 	BlockBomb
 	BlockBombLit
 
@@ -138,6 +138,8 @@ func (b Block) String() string {
 		return constants.TileBar
 	case BlockBox:
 		return constants.ItemBox
+	case BlockJetpack:
+		return constants.ItemJetpack
 	case BlockBomb:
 		return constants.ItemBomb
 	case BlockBombLit:
@@ -289,6 +291,7 @@ var toID = map[string]Block{
 	constants.TileLadderExitTurf:    BlockLadderExitTurf,
 	constants.TileBar:               BlockBar,
 	constants.ItemBox:               BlockBox,
+	constants.ItemJetpack:           BlockJetpack,
 	constants.ItemBomb:              BlockBomb,
 	constants.ItemBombLit:           BlockBombLit,
 	constants.CharPlayer1:           BlockPlayer1,
@@ -417,18 +420,17 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 //}
 
 type Tile struct {
-	Block     Block          `json:"tile"`
-	Metadata  TileMetadata   `json:"metadata"`
-	Flags     TileFlags      `json:"-"`
-	Coords    world.Coords   `json:"-"`
-	Object    *object.Object `json:"-"`
-	Update    bool           `json:"-"`
-	Entity    *ecs.Entity    `json:"-"`
-	Mask      *ecs.Entity    `json:"-"`
-	Counter   int            `json:"-"`
-	Live      bool           `json:"-"`
-	AltBlock  int            `json:"alt"`
-	WrenchTxt *typeface.Text `json:"-"`
+	Block    Block          `json:"tile"`
+	Metadata TileMetadata   `json:"metadata"`
+	Flags    TileFlags      `json:"-"`
+	Coords   world.Coords   `json:"-"`
+	Object   *object.Object `json:"-"`
+	Update   bool           `json:"-"`
+	Entity   *ecs.Entity    `json:"-"`
+	Mask     *ecs.Entity    `json:"-"`
+	Counter  int            `json:"-"`
+	Live     bool           `json:"-"`
+	AltBlock int            `json:"alt"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -454,7 +456,7 @@ func (t *Tile) ToEmpty() {
 }
 
 func (t *Tile) IsEmpty() bool {
-	return !(t.IsLadder() ||
+	return t != nil && !(t.IsLadder() ||
 		t.Block == BlockBar ||
 		t.Block == BlockTurf ||
 		t.Block == BlockBedrock ||
@@ -465,14 +467,14 @@ func (t *Tile) IsEmpty() bool {
 }
 
 func (t *Tile) IsSolid() bool {
-	return !t.Flags.Collapse &&
+	return t == nil || (!t.Flags.Collapse &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
-			t.Block == BlockSpike)
+			t.Block == BlockSpike))
 }
 
 func (t *Tile) IsNilOrSolid() bool {
@@ -539,6 +541,8 @@ func (t *Tile) CanDig() bool {
 
 // a* implementation
 
+var PlayerAbove bool
+
 func (t *Tile) PathNeighbors() []astar.Pather {
 	if CurrLevel == nil {
 		return []astar.Pather{}
@@ -546,10 +550,10 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	var neighbors []astar.Pather
 	// Down
 	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
-	if d != nil && !d.IsSolid() {
+	if d != nil && (d.IsEmpty() || d.IsLadder()) {
 		neighbors = append(neighbors, d)
 	}
-	notFalling := d == nil || d.IsSolid() || d.IsLadder() || t.IsLadder()
+	notFalling := d.IsSolid() || d.IsLadder() || t.IsLadder()
 	// Left
 	l := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y)
 	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
@@ -557,7 +561,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(l.Ladder || lb == nil || lb.IsSolid()) {
 	//	neighbors = append(neighbors, l)
 	//}
-	if notFalling && l != nil && !l.IsSolid() {
+	if notFalling && !l.IsSolid() {
 		neighbors = append(neighbors, l)
 	}
 	// Right
@@ -567,12 +571,12 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(r.Ladder || rb == nil || rb.IsSolid()) {
 	//	neighbors = append(neighbors, r)
 	//}
-	if notFalling && r != nil && !r.IsSolid() {
+	if notFalling && !r.IsSolid() {
 		neighbors = append(neighbors, r)
 	}
 	// Up
 	u := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y+1)
-	if notFalling && u != nil && !u.IsSolid() && t.IsLadder() {
+	if PlayerAbove && notFalling && !u.IsSolid() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}
 	return neighbors
@@ -604,6 +608,7 @@ type TileMetadata struct {
 	EnemyCrack  bool           `json:"enemyCrack"`
 	Regenerate  bool           `json:"regenerate"`
 	RegenDelay  int            `json:"regenDelay"`
+	Timer       int            `json:"timer"`
 	BombCross   bool           `json:"bombCross"`
 	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles"`
 	Phase       int            `json:"phase"`
@@ -614,6 +619,7 @@ type TileMetadata struct {
 func DefaultMetadata() TileMetadata {
 	return TileMetadata{
 		Regenerate: true,
+		Timer:      5,
 	}
 }
 

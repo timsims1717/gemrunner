@@ -69,6 +69,46 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 	throw.SetEndTrigger(func() {
 		ch.Flags.ItemAction = data.NoItemAction
 	})
+	jetpackLoop := []int{0, 0, 0, 1, 1, 1}
+	jetpack := reanimator.NewBatchAnimationCustom("jetpack", batch, fmt.Sprintf("%s_jetpack", sprPre), jetpackLoop, reanimator.Loop)
+	jetpack.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+		switch pre {
+		case "jetpack_up", "jetpack_down":
+			a.Step = f + 1
+			a.Step %= len(jetpackLoop)
+		case "jetpack":
+		default:
+			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+				a.Step = ch.AnInt
+			}
+		}
+	})
+	jetpackUp := reanimator.NewBatchAnimationCustom("jetpack_up", batch, fmt.Sprintf("%s_jetpack_up", sprPre), jetpackLoop, reanimator.Loop)
+	jetpackUp.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+		switch pre {
+		case "jetpack", "jetpack_down":
+			a.Step = f + 1
+			a.Step %= len(jetpackLoop)
+		case "jetpack_up":
+		default:
+			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+				a.Step = ch.AnInt
+			}
+		}
+	})
+	jetpackDown := reanimator.NewBatchAnimationCustom("jetpack_down", batch, fmt.Sprintf("%s_jetpack_down", sprPre), jetpackLoop, reanimator.Loop)
+	jetpackDown.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+		switch pre {
+		case "jetpack", "jetpack_up":
+			a.Step = f + 1
+			a.Step %= len(jetpackLoop)
+		case "jetpack_down":
+		default:
+			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+				a.Step = ch.AnInt
+			}
+		}
+	})
 	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 	hit.SetEndTrigger(func() {
@@ -105,6 +145,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(leapOff).
 		AddAnimation(leapTo).
 		AddAnimation(throw).
+		AddAnimation(jetpack).
+		AddAnimation(jetpackUp).
+		AddAnimation(jetpackDown).
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(blow).
@@ -128,8 +171,14 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 				} else {
 					return "none"
 				}
-			case data.Attack:
-				return "attack"
+			case data.Flying:
+				if ch.Actions.Direction == data.Up {
+					return "jetpack_up"
+				} else if ch.Actions.Direction == data.Down {
+					return "jetpack_down"
+				} else {
+					return "jetpack"
+				}
 			case data.DoingAction:
 				switch ch.Flags.ItemAction {
 				case data.MagicDig:

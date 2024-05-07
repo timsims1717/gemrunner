@@ -65,7 +65,7 @@ func CollectGem(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 func CreateDoor(pos pixel.Vec, key string) {
 	obj := object.New().WithID(key)
 	obj.Pos = pos
-	obj.SetRect(pixel.R(0, 0, 6, 6))
+	obj.SetRect(pixel.R(0, 0, 8, 8))
 	obj.Layer = 9
 	door := &data.Door{
 		Object: obj,
@@ -200,7 +200,7 @@ func CreateBox(pos pixel.Vec) {
 
 func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 	switch ch.State {
-	case data.OnLadder, data.OnBar:
+	case data.OnLadder, data.OnBar, data.Flying:
 		return
 	}
 	if (ch.Object.Flip && !ch.Flags.LeftWall) ||
@@ -290,9 +290,113 @@ func KeyUnlock(level *data.Level, chPos pixel.Vec, color string) bool {
 				d.DoorType == data.Locked &&
 				d.Color == color {
 				d.Unlock = true
+				sfx.SoundPlayer.PlaySound(constants.SFXKey, 0)
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func CreateJetpack(pos pixel.Vec, metadata data.TileMetadata, origin world.Coords) {
+	key := constants.ItemJetpack
+	obj := object.New().WithID(key).SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Layer = 12
+	e := myecs.Manager.NewEntity()
+	jetpack := &data.Jetpack{
+		Object:   obj,
+		PickUp:   data.NewPickUp("Jetpack", 5),
+		Entity:   e,
+		Metadata: metadata,
+		Origin:   origin,
+	}
+	jetpack.Action = JetpackAction(jetpack)
+	jpa := reanimator.NewBatchAnimation("jetpack", img.Batchers[constants.TileBatch], "jetpack", reanimator.Loop)
+	jpr := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "jetpack_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6}, reanimator.Tran)
+	jpr.SetEndTrigger(func() {
+		jetpack.Regen = false
+	})
+	jetpack.Anim = reanimator.New(reanimator.NewSwitch().
+		AddAnimation(jpa).
+		AddAnimation(jpr).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if jetpack.Waiting {
+				return "none"
+			} else if jetpack.Regen {
+				return "regen"
+			} else {
+				return "jetpack"
+			}
+		}), "jetpack")
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Drawable, jetpack.Anim)
+	e.AddComponent(myecs.Animated, jetpack.Anim)
+	e.AddComponent(myecs.PickUp, jetpack.PickUp)
+	e.AddComponent(myecs.Action, jetpack.Action)
+	e.AddComponent(myecs.LvlElement, struct{}{})
+}
+
+func JetpackAction(jetpack *data.Jetpack) *data.Interact {
+	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+		DropItem(ch)
+		// change the player's state to flying
+		ch.State = data.Flying
+		ch.Flags.Flying = true
+		// set the jetpack vars
+		jetpack.Using = true
+		jetpack.Counter = 0
+		// remove the pickup component
+		jetpack.Entity.RemoveComponent(myecs.PickUp)
+		// set the same animation frame for the player as the jetpack
+		ch.AnInt = jetpack.Anim.GetCurrentAnim().Step + 1
+		// add the player as a parent
+		jetpack.Entity.AddComponent(myecs.Parent, ch.Object)
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if jetpack.Using {
+				if data.CurrLevel.FrameChange {
+					if jetpack.Counter%2 == 0 {
+						// update timer visuals
+						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+						var txPos pixel.Vec
+						tile := level.Tiles.Get(x, y+1)
+						if tile == nil {
+							tile = level.Tiles.Get(x, y-1)
+							txPos = ch.Object.Pos.Add(pixel.V(0, -world.TileSize))
+						} else {
+							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
+						}
+						timer := jetpack.Metadata.Timer - jetpack.Counter/2
+						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, constants.TextTimer, txPos)
+					}
+					jetpack.Counter++
+					if jetpack.Counter > jetpack.Metadata.Timer*2 {
+						ch.Flags.Flying = false
+						if jetpack.Metadata.Regenerate {
+							jetpack.Using = false
+							jetpack.Waiting = true
+							jetpack.Counter = 0
+							jetpack.Entity.RemoveComponent(myecs.Parent)
+						} else {
+							myecs.Manager.DisposeEntity(jetpack.Entity)
+						}
+					}
+				}
+			} else if jetpack.Waiting {
+				if reanimator.FrameSwitch {
+					jetpack.Counter++
+				}
+				delay := constants.ItemRegen * (jetpack.Metadata.RegenDelay + 2)
+				if jetpack.Counter > delay && data.CurrLevel.FrameChange {
+					jetpack.Object.Pos = world.MapToWorld(jetpack.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					jetpack.Regen = true
+					jetpack.Waiting = false
+					jetpack.Entity.RemoveComponent(myecs.Update)
+					jetpack.Entity.AddComponent(myecs.PickUp, jetpack.PickUp)
+				}
+			}
+		}))
+	})
 }

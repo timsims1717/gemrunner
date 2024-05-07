@@ -38,7 +38,7 @@ func SoundEffects() {
 	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-bulletin.wav", constants.SFXFanfare1)
 	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-agile.wav", constants.SFXFanfare2)
 	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-sublime.wav", constants.SFXFanfare3)
-	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-rewind.wav", constants.SFXExitLevel)
+	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-footsie.wav", constants.SFXExitLevel)
 
 	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-unknown.wav", constants.SFXDemonAttack)
 	sfx.SoundPlayer.RegisterSound("assets/sfx/NFF-car-hit.wav", constants.SFXDemonCrush)

@@ -75,8 +75,9 @@ const (
 	ThrownHSpeed    = 3.1
 	SmashDistance   = TileSize * 3
 	BombFuse        = 24
-	BombRegen       = 16
+	ItemRegen       = 16
 	SpeedMod        = 0.001
+	TextTimer       = 16
 
 	// Player Constants
 	PlayerWalkSpeed       = 4
@@ -127,5 +128,5 @@ var (
 	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
 	CollapseRegenLayer = []int{31}         // turf that have masks
 	CollapseRegenMask  = []int{32}         // turf masks
-	EffectsLayer       = []int{33, 34, 35} // digging; explosions; deaths from explosions
+	EffectsLayer       = []int{33, 34, 35} // digging; explosions; deaths from explosions, text
 )

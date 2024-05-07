@@ -79,6 +79,8 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 				pickUp.Cycle[p] = 0
 			}
 			pickUp.Inventory = p
+			ch.Actions.Action = false
+			ch.Flags.ActionBuff = 0
 			heldEntity.obj.Hidden = true
 			ch.Flags.PickUpBuff = 0
 			return heldEntity.entity
@@ -170,6 +172,7 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 						ch.State = data.DoingAction
 						ch.Flags.ItemAction = data.MagicDig
 						ch.Object.Flip = isLeft
+						ch.Object.SetPos(tile.Object.Pos)
 						// start digging the tile
 						//things := ThingsOnTile(sideTile)
 						//collapse := true
@@ -252,7 +255,7 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 						} else {
 							ch.StoredBlocks = []*data.Tile{}
 						}
-						AddMask(digTile, "dig_mask", isLeft, true)
+						AddMask(digTile, "dig_mask_mask", isLeft, true)
 
 						// add reversed wand
 						obj := object.New()

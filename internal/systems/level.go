@@ -117,13 +117,16 @@ func LevelInit() {
 				tile.Block = data.BlockEmpty
 				CreateKey(obj.Pos, keyKey)
 			case data.BlockBomb:
-				key := constants.ItemBomb
+				key := tile.Block.String()
+				tile.Block = data.BlockEmpty
 				CreateBomb(obj.Pos, key, tile.Metadata, tile.Coords)
-				tile.Block = data.BlockEmpty
 			case data.BlockBombLit:
-				key := constants.ItemBombLit
-				CreateLitBomb(obj.Pos, key, tile.Metadata)
+				key := tile.Block.String()
 				tile.Block = data.BlockEmpty
+				CreateLitBomb(obj.Pos, key, tile.Metadata)
+			case data.BlockJetpack:
+				tile.Block = data.BlockEmpty
+				CreateJetpack(obj.Pos, tile.Metadata, tile.Coords)
 			case data.BlockGear:
 				var a *reanimator.Anim
 				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {

@@ -131,10 +131,10 @@ func CharacterActionSystem() {
 func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	ch.LastTile = tile
 	if tile != nil &&
-		ch.Actions.Jump &&
-		!ch.Flags.Ceiling { // jump time
-		jump(ch, tile)
-		return
+		ch.Actions.Jump { // jump time
+		if jump(ch, tile) {
+			return
+		}
 	}
 	if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
 		ch.Object.Pos.X -= ch.Vars.WalkSpeed
@@ -145,25 +145,31 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	}
 }
 
-func jump(ch *data.Dynamic, tile *data.Tile) {
-	ch.Flags.JumpBuff = 0
-	upLeft := data.CurrLevel.Tiles.Get(tile.Coords.X-1, tile.Coords.Y+1)
-	upRight := data.CurrLevel.Tiles.Get(tile.Coords.X+1, tile.Coords.Y+1)
+func jump(ch *data.Dynamic, tile *data.Tile) bool {
 	left := data.CurrLevel.Tiles.Get(tile.Coords.X-1, tile.Coords.Y)
 	right := data.CurrLevel.Tiles.Get(tile.Coords.X+1, tile.Coords.Y)
+	//if ch.Flags.Ceiling &&
+	//	((ch.Actions.Left() && left.IsSolid()) ||
+	//		(ch.Actions.Right() && right.IsSolid())) {
+	//	return false
+	//}
+	ch.Flags.JumpBuff = 0
 	// High Jump if:
+	//  there is no ceiling here
 	//  the character is not going left or right
 	//  or they are going left/right and there is a wall left/right
 	//  or they are going left/right and there is a wall up left or up right
 	// Otherwise, it's a long jump
-	if (!ch.Actions.Left() && !ch.Actions.Right()) ||
-		(ch.Actions.Left() && (left == nil || left.IsSolid())) ||
-		(ch.Actions.Right() && (right == nil || right.IsSolid())) ||
-		(ch.Actions.Left() && (upLeft == nil || upLeft.IsSolid())) ||
-		(ch.Actions.Right() && (upRight == nil || upRight.IsSolid())) {
+	if !ch.Flags.Ceiling &&
+		((!ch.Actions.Left() && !ch.Actions.Right()) ||
+			(ch.Actions.Left() && left.IsSolid()) ||
+			(ch.Actions.Right() && right.IsSolid())) {
 		ch.Flags.HighJump = true
-	} else {
+	} else if (ch.Actions.Left() && !left.IsSolid()) ||
+		(ch.Actions.Right() && !right.IsSolid()) {
 		ch.Flags.LongJump = true
+	} else {
+		return false
 	}
 	// for both kinds of jumps
 	ch.ACounter = 0
@@ -177,6 +183,7 @@ func jump(ch *data.Dynamic, tile *data.Tile) {
 		ch.Flags.JumpL = false
 		ch.Flags.JumpR = false
 	}
+	return true
 }
 
 func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
@@ -320,13 +327,17 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 func flying(ch *data.Dynamic, tile *data.Tile) {
 	if ch.Actions.Direction == data.Left { // fly left
 		ch.Object.Pos.X -= ch.Vars.WalkSpeed
+		ch.Object.Pos.Y = tile.Object.Pos.Y
 		ch.Object.Flip = true
 	} else if ch.Actions.Direction == data.Right { // fly right
 		ch.Object.Pos.X += ch.Vars.WalkSpeed
+		ch.Object.Pos.Y = tile.Object.Pos.Y
 		ch.Object.Flip = false
 	} else if ch.Actions.Direction == data.Up { // fly up
 		ch.Object.Pos.Y += ch.Vars.WalkSpeed
+		ch.Object.Pos.X = tile.Object.Pos.X
 	} else if ch.Actions.Direction == data.Down { // fly down
 		ch.Object.Pos.Y -= ch.Vars.WalkSpeed
+		ch.Object.Pos.X = tile.Object.Pos.X
 	}
 }

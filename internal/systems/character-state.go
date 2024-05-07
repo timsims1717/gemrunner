@@ -54,8 +54,7 @@ func CharacterStateSystem() {
 							ch.Object.Flip = false
 						}
 					} else if tile.IsLadder() &&
-						!(below == nil ||
-							below.IsSolid() ||
+						!(below.IsSolid() ||
 							below.IsRunnable()) { // can only leap if the stuff below isn't solid
 						if ch.Actions.Direction == data.Left &&
 							!ch.Flags.LeftWall { // leaping to the left

@@ -131,6 +131,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 		case data.BlockPhase:
 			sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, tile.Metadata.Phase), constants.UIBatch))
 		case data.BlockFly, data.BlockDemon,
+			data.BlockJetpack,
 			data.BlockCracked,
 			data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			for i := 0; i < 4; i++ {
@@ -141,7 +142,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 						(tile.Block == data.BlockCracked ||
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked ||
-							tile.Block == data.BlockBomb ||
+							tile.Block == data.BlockJetpack ||
 							tile.Block == data.BlockFly ||
 							tile.Block == data.BlockDemon) {
 						sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))

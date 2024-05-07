@@ -72,4 +72,21 @@ type Bomb struct {
 	LitKey   string
 	Regen    bool
 	Waiting  bool
+	Color    string
+}
+
+type Jetpack struct {
+	Object   *object.Object
+	Entity   *ecs.Entity
+	Anim     *reanimator.Tree
+	PickUp   *PickUp
+	Action   *Interact
+	Name     string
+	Metadata TileMetadata
+	Origin   world.Coords
+	Color    string
+	Counter  int
+	Using    bool
+	Regen    bool
+	Waiting  bool
 }

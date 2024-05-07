@@ -121,6 +121,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.MagicSystem()
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
+		systems.FloatingTextSystem()
 	} else {
 
 	}
@@ -160,12 +161,13 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
 	data.PuzzleView.Draw(win)
+	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
+	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
 	// draw debug
 	if debug.ShowDebug {
-		data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 		debug.DrawLines(data.PuzzleViewNoShader.Canvas)
-		data.PuzzleViewNoShader.Draw(win)
 	}
+	data.PuzzleViewNoShader.Draw(win)
 	// dialog draw system
 	systems.DialogDrawSystem(win)
 	systems.DrawLayerSystem(win, -10)

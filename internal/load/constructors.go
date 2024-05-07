@@ -29,6 +29,7 @@ var (
 	// editor mode dialogs
 	crackedTileOptionsConstructor *data.DialogConstructor
 	bombOptionsConstructor        *data.DialogConstructor
+	jetpackOptionsConstructor     *data.DialogConstructor
 )
 
 func InitConstructors() {
@@ -1406,6 +1407,107 @@ func InitConstructors() {
 			},
 			{
 				Key:         "bomb_regenerate_delay_plus",
+				SprKey:      "plus_btn",
+				ClickSprKey: "plus_btn_click",
+				Position:    pixel.V(54, -14),
+				Element:     data.ButtonElement,
+			},
+		},
+	}
+	jetpackOptionsConstructor = &data.DialogConstructor{
+		Key:    constants.DialogJetpack,
+		Width:  8,
+		Height: 6,
+		Elements: []data.ElementConstructor{
+			{
+				Key:      "jetpack_options_title",
+				Text:     "Jetpack Options",
+				Position: pixel.V(-60, 40),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "cancel_jetpack_options",
+				SprKey:      "cancel_btn_big",
+				ClickSprKey: "cancel_btn_click_big",
+				HelpText:    "Cancel",
+				Position:    pixel.V(52, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "confirm_jetpack_options",
+				SprKey:      "check_btn_big",
+				ClickSprKey: "check_btn_click_big",
+				HelpText:    "Confirm",
+				Position:    pixel.V(32, -36),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "jetpack_timer",
+				Text:     "Flight Time",
+				Position: pixel.V(-56, 22),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "jetpack_timer_input",
+				Text:     "3",
+				HelpText: "The delay of the jetpack's regeneration.",
+				Position: pixel.V(40, 22),
+				Element:  data.InputElement,
+				Width:    1,
+				Height:   1,
+			},
+			{
+				Key:         "jetpack_timer_minus",
+				SprKey:      "minus_btn",
+				ClickSprKey: "minus_btn_click",
+				Position:    pixel.V(26, 22),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "jetpack_timer_plus",
+				SprKey:      "plus_btn",
+				ClickSprKey: "plus_btn_click",
+				Position:    pixel.V(54, 22),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:      "jetpack_regenerate",
+				Text:     "Regenerates",
+				Position: pixel.V(-56, 4),
+				Element:  data.TextElement,
+			},
+			{
+				Key:         "jetpack_regenerate_check",
+				SprKey:      "checkbox_false",
+				ClickSprKey: "checkbox_true",
+				HelpText:    "Whether the Jetpack regenerates after running out of fuel.",
+				Position:    pixel.V(52, 4),
+				Element:     data.CheckboxElement,
+			},
+			{
+				Key:      "jetpack_regenerate_delay",
+				Text:     "Regeneration\nDelay",
+				Position: pixel.V(-56, -14),
+				Element:  data.TextElement,
+			},
+			{
+				Key:      "jetpack_regenerate_delay_input",
+				Text:     "0",
+				HelpText: "The delay of the jetpack's regeneration.",
+				Position: pixel.V(40, -14),
+				Element:  data.InputElement,
+				Width:    1,
+				Height:   1,
+			},
+			{
+				Key:         "jetpack_regenerate_delay_minus",
+				SprKey:      "minus_btn",
+				ClickSprKey: "minus_btn_click",
+				Position:    pixel.V(26, -14),
+				Element:     data.ButtonElement,
+			},
+			{
+				Key:         "jetpack_regenerate_delay_plus",
 				SprKey:      "plus_btn",
 				ClickSprKey: "plus_btn_click",
 				Position:    pixel.V(54, -14),

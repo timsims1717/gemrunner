@@ -62,7 +62,8 @@ func SmashSystem() {
 
 func thrown(ch *data.Dynamic, tile *data.Tile) {
 	if (ch.ACounter > constants.ThrownCounter) ||
-		(ch.Flags.LeftWall || ch.Flags.RightWall) ||
+		(ch.Flags.LeftWall && ch.Flags.JumpL) ||
+		(ch.Flags.RightWall && ch.Flags.JumpR) ||
 		ch.Flags.Floor {
 		ch.Flags.Thrown = false
 		ch.Flags.JumpL = false

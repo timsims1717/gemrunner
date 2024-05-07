@@ -4,16 +4,17 @@ import "image/color"
 
 // Tile Set Names
 const (
-	TileSetRock   = "rock"
-	TileSetSlate  = "slate"
-	TileSetBrick  = "brick"
-	TileSetGravel = "gravel"
-	TileSetDirt   = "dirt"
-	TileSetStone  = "stone"
-	TileSetShell  = "shell"
-	TileSetMetal  = "metal"
-	TileSetIce    = "ice"
-	TileSetTree   = "tree"
+	TileSetRock    = "rock"
+	TileSetSlate   = "slate"
+	TileSetBrick   = "brick"
+	TileSetGravel  = "gravel"
+	TileSetDirt    = "dirt"
+	TileSetStone   = "stone"
+	TileSetShell   = "shell"
+	TileSetMetal   = "metal"
+	TileSetIce     = "ice"
+	TileSetTree    = "tree"
+	TileSetCrystal = "crystal"
 )
 
 const (
@@ -27,6 +28,8 @@ const (
 	WorldRedRock
 	WorldIce
 	WorldSnow
+	WorldOtherPink
+	WorldCrystal
 	WorldAbyss
 	WorldReef
 	WorldSandstone
@@ -125,6 +128,12 @@ var (
 		B: 149,
 		A: 255,
 	}
+	ColorPink = color.RGBA{
+		R: 230,
+		G: 35,
+		B: 165,
+		A: 255,
+	}
 
 	Player1Color = ColorBlue
 	Player2Color = ColorOrange
@@ -142,6 +151,8 @@ var (
 		WorldRedRock:   "Red Rock",
 		WorldIce:       "Ice",
 		WorldSnow:      "Snow",
+		WorldOtherPink: "Other Pink",
+		WorldCrystal:   "Crystal",
 		WorldAbyss:     "Abyss",
 		WorldReef:      "Reef",
 		WorldSandstone: "Sandstone",
@@ -160,22 +171,24 @@ var (
 		WorldJungle:    TileSetTree,
 		WorldBrick:     TileSetBrick,
 		WorldBeam:      TileSetMetal,
-		WorldIce:       TileSetIce,
-		WorldSnow:      TileSetRock,
-		WorldDark:      TileSetGravel,
-		WorldDungeon:   TileSetBrick,
-		WorldBeach:     TileSetShell,
-		WorldRedRock:   TileSetStone,
 		WorldSlime:     TileSetTree,
 		WorldFungus:    TileSetDirt,
-		WorldSandstone: TileSetSlate,
-		WorldDunes:     TileSetDirt,
-		WorldLava:      TileSetIce,
-		WorldBasalt:    TileSetStone,
+		WorldBeach:     TileSetShell,
+		WorldRedRock:   TileSetStone,
+		WorldIce:       TileSetIce,
+		WorldSnow:      TileSetRock,
+		WorldOtherPink: TileSetRock,
+		WorldCrystal:   TileSetCrystal,
 		WorldAbyss:     TileSetSlate,
 		WorldReef:      TileSetShell,
+		WorldSandstone: TileSetSlate,
+		WorldDunes:     TileSetDirt,
+		WorldDark:      TileSetGravel,
+		WorldDungeon:   TileSetBrick,
 		WorldGravelPit: TileSetGravel,
 		WorldSpire:     TileSetMetal,
+		WorldLava:      TileSetIce,
+		WorldBasalt:    TileSetStone,
 	}
 
 	WorldPrimary = map[int]color.RGBA{
@@ -185,6 +198,8 @@ var (
 		WorldBeam:      ColorPurple,
 		WorldIce:       ColorCyan,
 		WorldSnow:      ColorBlue,
+		WorldOtherPink: ColorPink,
+		WorldCrystal:   ColorPurple,
 		WorldDark:      ColorBlue,
 		WorldDungeon:   ColorGray,
 		WorldBeach:     ColorYellow,
@@ -208,6 +223,8 @@ var (
 		WorldBeam:      ColorRed,
 		WorldIce:       ColorLightGray,
 		WorldSnow:      ColorCyan,
+		WorldOtherPink: ColorRed,
+		WorldCrystal:   ColorPink,
 		WorldDark:      ColorGray,
 		WorldDungeon:   ColorBlue,
 		WorldBeach:     ColorBrown,
@@ -231,6 +248,8 @@ var (
 		WorldBeam:      ColorRed,
 		WorldIce:       ColorLightGray,
 		WorldSnow:      ColorLightGray,
+		WorldOtherPink: ColorPink,
+		WorldCrystal:   ColorBlue,
 		WorldDark:      ColorBlue,
 		WorldDungeon:   ColorBlue,
 		WorldBeach:     ColorGreen,
@@ -254,6 +273,8 @@ var (
 		WorldBeam:      TrackUrban,
 		WorldIce:       TrackIce,
 		WorldSnow:      TrackIce,
+		WorldOtherPink: TrackJungle,
+		WorldCrystal:   TrackJungle,
 		WorldDark:      TrackDark,
 		WorldDungeon:   TrackDark,
 		WorldBeach:     TrackBeach,
@@ -277,6 +298,8 @@ var (
 		WorldBeam:      DoodadChain,
 		WorldIce:       DoodadBoulder,
 		WorldSnow:      DoodadSkull,
+		WorldOtherPink: DoodadBoulder,
+		WorldCrystal:   DoodadBoulder,
 		WorldDark:      DoodadReeds,
 		WorldDungeon:   DoodadSkull,
 		WorldBeach:     DoodadReeds,

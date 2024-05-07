@@ -34,8 +34,6 @@ func SetBlock(coords world.Coords, block data.Block) {
 						tile.Block = block
 					}
 				case data.BlockPhase:
-					rt := fmt.Sprintf("%d", tile.Metadata.Phase)
-					tile.WrenchTxt.SetText(rt)
 					tile.Block = block
 				case data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
 					if tile.Block == data.BlockTurf ||
