@@ -30,11 +30,11 @@ func TileSpriteSystem() {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok && !result.Entity.HasComponent(myecs.Animated) {
-			spr := GetTileSprites(tile)
-			if len(spr) == 1 {
-				result.Entity.AddComponent(myecs.Drawable, spr[0])
-			} else if len(spr) > 0 {
-				result.Entity.AddComponent(myecs.Drawable, spr)
+			sprs := GetTileSprites(tile)
+			if len(sprs) == 1 {
+				result.Entity.AddComponent(myecs.Drawable, sprs[0])
+			} else if len(sprs) > 0 {
+				result.Entity.AddComponent(myecs.Drawable, sprs)
 			} else {
 				result.Entity.RemoveComponent(myecs.Drawable)
 			}
@@ -111,10 +111,10 @@ func GetBlockSpritesEditor(tile *data.Tile) []*img.Sprite {
 
 func GetBlockSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
-	spr := img.NewSprite(GetBlockSprite(tile), constants.TileBatch)
 	if tile.Flags.Collapse && tile.Counter > constants.CollapseCounter {
 		return sprs
 	}
+	spr := img.NewSprite(GetBlockSprite(tile), constants.TileBatch)
 	sprs = append(sprs, spr)
 	if tile.Block == data.BlockCracked && !tile.Flags.Collapse {
 		if tile.Metadata.ShowCrack {

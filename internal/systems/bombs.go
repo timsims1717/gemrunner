@@ -226,6 +226,7 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 	var coords []world.Coords
 	x, y := world.WorldToMap(pos.X, pos.Y)
+
 	if cross {
 		for n := y - 3; n < y+4; n++ {
 			if n == y {
@@ -303,8 +304,52 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		// destroy turf
 		tile := data.CurrLevel.Tiles.Get(c.X, c.Y)
 		if tile != nil {
+		outSwitch:
 			switch tile.Block {
 			case data.BlockTurf, data.BlockCracked, data.BlockFall:
+				if util.Abs(c.X-x)+util.Abs(c.Y-y) > 1 {
+					if c.X == x {
+						if c.Y > y {
+							for tY := c.Y - 1; tY > y; tY-- {
+								tt := data.CurrLevel.Tiles.Get(x, tY)
+								if tt.Block == data.BlockBedrock {
+									break outSwitch
+								}
+							}
+						} else {
+							for tY := c.Y + 1; tY < y; tY++ {
+								tt := data.CurrLevel.Tiles.Get(x, tY)
+								if tt.Block == data.BlockBedrock {
+									break outSwitch
+								}
+							}
+						}
+					} else if c.Y == y {
+						if c.X > x {
+							for tX := c.X - 1; tX > x; tX-- {
+								tt := data.CurrLevel.Tiles.Get(tX, y)
+								if tt.Block == data.BlockBedrock {
+									break outSwitch
+								}
+							}
+						} else {
+							for tX := c.X + 1; tX < x; tX++ {
+								tt := data.CurrLevel.Tiles.Get(tX, y)
+								if tt.Block == data.BlockBedrock {
+									break outSwitch
+								}
+							}
+						}
+					} else {
+						tX := c.X
+						tY := c.Y
+						t1 := data.CurrLevel.Tiles.Get(tX, y)
+						t2 := data.CurrLevel.Tiles.Get(x, tY)
+						if t1.Block == data.BlockBedrock && t2.Block == data.BlockBedrock {
+							break outSwitch
+						}
+					}
+				}
 				tile.Flags.Collapse = true
 				tile.Counter = constants.CollapseCounter
 			}

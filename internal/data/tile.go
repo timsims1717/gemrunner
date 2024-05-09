@@ -550,7 +550,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	var neighbors []astar.Pather
 	// Down
 	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
-	if d != nil && (d.IsEmpty() || d.IsLadder()) {
+	if !PlayerAbove && d != nil && (d.IsEmpty() || d.IsLadder()) {
 		neighbors = append(neighbors, d)
 	}
 	notFalling := d.IsSolid() || d.IsLadder() || t.IsLadder()

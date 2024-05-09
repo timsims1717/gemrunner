@@ -10,6 +10,7 @@ func Music() {
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/dark.ogg", constants.TrackDark)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/desert.ogg", constants.TrackDesert)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/fungus.ogg", constants.TrackFungus)
+	sfx.MusicPlayer.RegisterMusicTrack("assets/music/gilded.ogg", constants.TrackGilded)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/ice.ogg", constants.TrackIce)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/jungle.ogg", constants.TrackJungle)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/lava.ogg", constants.TrackLava)

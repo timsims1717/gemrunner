@@ -15,6 +15,7 @@ const (
 	TileSetIce     = "ice"
 	TileSetTree    = "tree"
 	TileSetCrystal = "crystal"
+	TileSetBubble  = "bubble"
 )
 
 const (
@@ -28,16 +29,18 @@ const (
 	WorldRedRock
 	WorldIce
 	WorldSnow
-	WorldOtherPink
+	WorldBubblegum
 	WorldCrystal
 	WorldAbyss
 	WorldReef
+	WorldGravelPit
+	WorldSpire
 	WorldSandstone
 	WorldDunes
 	WorldDark
 	WorldDungeon
-	WorldGravelPit
-	WorldSpire
+	WorldGilded
+	WorldIvy
 	WorldLava
 	WorldBasalt
 	WorldCustom
@@ -134,6 +137,12 @@ var (
 		B: 165,
 		A: 255,
 	}
+	ColorBurnt = color.RGBA{
+		R: 193,
+		G: 68,
+		B: 27,
+		A: 255,
+	}
 
 	Player1Color = ColorBlue
 	Player2Color = ColorOrange
@@ -151,16 +160,18 @@ var (
 		WorldRedRock:   "Red Rock",
 		WorldIce:       "Ice",
 		WorldSnow:      "Snow",
-		WorldOtherPink: "Other Pink",
+		WorldBubblegum: "Bubblegum",
 		WorldCrystal:   "Crystal",
 		WorldAbyss:     "Abyss",
 		WorldReef:      "Reef",
+		WorldGravelPit: "Gravel Pit",
+		WorldSpire:     "Spire",
 		WorldSandstone: "Sandstone",
 		WorldDunes:     "Dunes",
 		WorldDark:      "Dark",
 		WorldDungeon:   "Dungeon",
-		WorldGravelPit: "Gravel Pit",
-		WorldSpire:     "Spire",
+		WorldGilded:    "Gilded",
+		WorldIvy:       "Ivy",
 		WorldLava:      "Lava",
 		WorldBasalt:    "Basalt",
 		WorldCustom:    "Custom",
@@ -177,16 +188,18 @@ var (
 		WorldRedRock:   TileSetStone,
 		WorldIce:       TileSetIce,
 		WorldSnow:      TileSetRock,
-		WorldOtherPink: TileSetRock,
+		WorldBubblegum: TileSetBubble,
 		WorldCrystal:   TileSetCrystal,
 		WorldAbyss:     TileSetSlate,
 		WorldReef:      TileSetShell,
+		WorldGravelPit: TileSetGravel,
+		WorldSpire:     TileSetMetal,
 		WorldSandstone: TileSetSlate,
 		WorldDunes:     TileSetDirt,
 		WorldDark:      TileSetGravel,
 		WorldDungeon:   TileSetBrick,
-		WorldGravelPit: TileSetGravel,
-		WorldSpire:     TileSetMetal,
+		WorldGilded:    TileSetBubble,
+		WorldIvy:       TileSetCrystal,
 		WorldLava:      TileSetIce,
 		WorldBasalt:    TileSetStone,
 	}
@@ -196,24 +209,26 @@ var (
 		WorldJungle:    ColorGreen,
 		WorldBrick:     ColorRed,
 		WorldBeam:      ColorPurple,
-		WorldIce:       ColorCyan,
-		WorldSnow:      ColorBlue,
-		WorldOtherPink: ColorPink,
-		WorldCrystal:   ColorPurple,
-		WorldDark:      ColorBlue,
-		WorldDungeon:   ColorGray,
-		WorldBeach:     ColorYellow,
-		WorldRedRock:   ColorTan,
 		WorldSlime:     ColorBrown,
 		WorldFungus:    ColorPurple,
-		WorldSandstone: ColorTan,
-		WorldDunes:     ColorGreen,
-		WorldLava:      ColorOrange,
-		WorldBasalt:    ColorGray,
+		WorldBeach:     ColorYellow,
+		WorldRedRock:   ColorBurnt,
+		WorldIce:       ColorCyan,
+		WorldSnow:      ColorBlue,
+		WorldBubblegum: ColorPink,
+		WorldCrystal:   ColorPurple,
 		WorldAbyss:     ColorPurple,
 		WorldReef:      ColorTan,
 		WorldGravelPit: ColorGray,
 		WorldSpire:     ColorGold,
+		WorldSandstone: ColorTan,
+		WorldDunes:     ColorGreen,
+		WorldDark:      ColorBlue,
+		WorldDungeon:   ColorGray,
+		WorldGilded:    ColorGold,
+		WorldIvy:       ColorGreen,
+		WorldLava:      ColorOrange,
+		WorldBasalt:    ColorGray,
 	}
 
 	WorldSecondary = map[int]color.RGBA{
@@ -221,24 +236,26 @@ var (
 		WorldJungle:    ColorBrown,
 		WorldBrick:     ColorBlue,
 		WorldBeam:      ColorRed,
-		WorldIce:       ColorLightGray,
-		WorldSnow:      ColorCyan,
-		WorldOtherPink: ColorRed,
-		WorldCrystal:   ColorPink,
-		WorldDark:      ColorGray,
-		WorldDungeon:   ColorBlue,
-		WorldBeach:     ColorBrown,
-		WorldRedRock:   ColorGold,
 		WorldSlime:     ColorTan,
 		WorldFungus:    ColorBrown,
-		WorldSandstone: ColorOrange,
-		WorldDunes:     ColorTan,
-		WorldLava:      ColorRed,
-		WorldBasalt:    ColorOrange,
+		WorldBeach:     ColorBrown,
+		WorldRedRock:   ColorYellow,
+		WorldIce:       ColorLightGray,
+		WorldSnow:      ColorCyan,
+		WorldBubblegum: ColorRed,
+		WorldCrystal:   ColorPink,
 		WorldAbyss:     ColorBlue,
 		WorldReef:      ColorPurple,
 		WorldGravelPit: ColorRed,
 		WorldSpire:     ColorGray,
+		WorldSandstone: ColorOrange,
+		WorldDunes:     ColorTan,
+		WorldDark:      ColorGray,
+		WorldDungeon:   ColorBlue,
+		WorldGilded:    ColorGray,
+		WorldIvy:       ColorGold,
+		WorldLava:      ColorRed,
+		WorldBasalt:    ColorOrange,
 	}
 
 	WorldDoodad = map[int]color.RGBA{
@@ -246,24 +263,26 @@ var (
 		WorldJungle:    ColorBrown,
 		WorldBrick:     ColorBlue,
 		WorldBeam:      ColorRed,
-		WorldIce:       ColorLightGray,
-		WorldSnow:      ColorLightGray,
-		WorldOtherPink: ColorPink,
-		WorldCrystal:   ColorBlue,
-		WorldDark:      ColorBlue,
-		WorldDungeon:   ColorBlue,
-		WorldBeach:     ColorGreen,
-		WorldRedRock:   ColorGreen,
 		WorldSlime:     ColorTan,
 		WorldFungus:    ColorRed,
-		WorldSandstone: ColorGreen,
-		WorldDunes:     ColorGreen,
-		WorldLava:      ColorRed,
-		WorldBasalt:    ColorOrange,
+		WorldBeach:     ColorGreen,
+		WorldRedRock:   ColorGreen,
+		WorldIce:       ColorLightGray,
+		WorldSnow:      ColorLightGray,
+		WorldBubblegum: ColorPink,
+		WorldCrystal:   ColorBlue,
 		WorldAbyss:     ColorBlue,
 		WorldReef:      ColorPurple,
 		WorldGravelPit: ColorRed,
 		WorldSpire:     ColorGray,
+		WorldSandstone: ColorGreen,
+		WorldDunes:     ColorGreen,
+		WorldDark:      ColorBlue,
+		WorldDungeon:   ColorBlue,
+		WorldGilded:    ColorGold,
+		WorldIvy:       ColorGold,
+		WorldLava:      ColorRed,
+		WorldBasalt:    ColorOrange,
 	}
 
 	WorldMusic = map[int]string{
@@ -271,24 +290,26 @@ var (
 		WorldJungle:    TrackJungle,
 		WorldBrick:     TrackUrban,
 		WorldBeam:      TrackUrban,
-		WorldIce:       TrackIce,
-		WorldSnow:      TrackIce,
-		WorldOtherPink: TrackJungle,
-		WorldCrystal:   TrackJungle,
-		WorldDark:      TrackDark,
-		WorldDungeon:   TrackDark,
-		WorldBeach:     TrackBeach,
-		WorldRedRock:   TrackBeach,
 		WorldSlime:     TrackFungus,
 		WorldFungus:    TrackFungus,
-		WorldSandstone: TrackDesert,
-		WorldDunes:     TrackDesert,
-		WorldLava:      TrackLava,
-		WorldBasalt:    TrackLava,
+		WorldBeach:     TrackBeach,
+		WorldRedRock:   TrackBeach,
+		WorldIce:       TrackIce,
+		WorldSnow:      TrackIce,
+		WorldBubblegum: TrackJungle,
+		WorldCrystal:   TrackJungle,
 		WorldAbyss:     TrackReef,
 		WorldReef:      TrackReef,
 		WorldGravelPit: TrackMech,
 		WorldSpire:     TrackMech,
+		WorldSandstone: TrackDesert,
+		WorldDunes:     TrackDesert,
+		WorldDark:      TrackDark,
+		WorldDungeon:   TrackDark,
+		WorldGilded:    TrackGilded,
+		WorldIvy:       TrackGilded,
+		WorldLava:      TrackLava,
+		WorldBasalt:    TrackLava,
 	}
 
 	WorldDoodads = map[int]string{
@@ -296,23 +317,25 @@ var (
 		WorldJungle:    DoodadNest,
 		WorldBrick:     DoodadReeds,
 		WorldBeam:      DoodadChain,
-		WorldIce:       DoodadBoulder,
-		WorldSnow:      DoodadSkull,
-		WorldOtherPink: DoodadBoulder,
-		WorldCrystal:   DoodadBoulder,
-		WorldDark:      DoodadReeds,
-		WorldDungeon:   DoodadSkull,
-		WorldBeach:     DoodadReeds,
-		WorldRedRock:   DoodadCactus2,
 		WorldSlime:     DoodadMush1,
 		WorldFungus:    DoodadMush1,
-		WorldSandstone: DoodadNest,
-		WorldDunes:     DoodadSkull,
-		WorldLava:      DoodadBoulder,
-		WorldBasalt:    DoodadReeds,
+		WorldBeach:     DoodadReeds,
+		WorldRedRock:   DoodadCactus2,
+		WorldIce:       DoodadBoulder,
+		WorldSnow:      DoodadSkull,
+		WorldBubblegum: DoodadBoulder,
+		WorldCrystal:   DoodadBoulder,
 		WorldAbyss:     DoodadVine,
 		WorldReef:      DoodadVine,
 		WorldGravelPit: DoodadChain,
 		WorldSpire:     DoodadGear,
+		WorldSandstone: DoodadNest,
+		WorldDunes:     DoodadSkull,
+		WorldDark:      DoodadReeds,
+		WorldDungeon:   DoodadSkull,
+		WorldGilded:    DoodadGear,
+		WorldIvy:       DoodadReeds,
+		WorldLava:      DoodadBoulder,
+		WorldBasalt:    DoodadReeds,
 	}
 )

@@ -8,6 +8,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/timing"
+	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 	"strings"
@@ -233,8 +234,6 @@ func customizeDialogs(win *pixelgl.Window) {
 										if o, okO := txt.Entity.GetComponentData(myecs.Object); okO {
 											if obj, okO1 := o.(*object.Object); okO1 {
 												switch txt.Key {
-												case "current_world":
-													obj.Hidden = x.Checked
 												case "primary_text", "secondary_text", "doodad_text":
 													obj.Hidden = !x.Checked
 												}
@@ -317,12 +316,13 @@ func customizeDialogs(win *pixelgl.Window) {
 				case "world_list":
 					for i := 0; i < constants.WorldCustom; i++ {
 						index := i
+						y := float64(i)*-18 + 7
 						entry := data.ElementConstructor{
 							Key:      fmt.Sprintf(worldListEntry.Key, i),
 							Width:    worldListEntry.Width,
 							Height:   worldListEntry.Height,
 							HelpText: fmt.Sprintf(worldListEntry.HelpText, constants.WorldNames[i]),
-							Position: pixel.V(0, float64(i)*-18+7),
+							Position: pixel.V(0, y),
 							Element:  worldListEntry.Element,
 						}
 						tti := data.ElementConstructor{
@@ -353,6 +353,15 @@ func customizeDialogs(win *pixelgl.Window) {
 							Element:  worldTxtItem.Element,
 						}
 						entry.SubElements = append(entry.SubElements, wti)
+						wtt := data.ElementConstructor{
+							Key:      worldTxtItem.Key,
+							Text:     constants.WorldNames[i],
+							Position: worldTxtItem.Position.Add(pixel.V(0, y+1)),
+							Element:  worldTxtItem.Element,
+						}
+						wtte := data.CreateTextElement(wtt, scroll.ViewPort)
+						wtte.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+						wtte.Text.NoShow = true
 						ct := data.CreateContainer(entry, dialog, scroll.ViewPort)
 						ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, scroll.ViewPort, func(hvc *data.HoverClick) {
 							if dialog.Open && dialog.Active {
@@ -365,33 +374,96 @@ func customizeDialogs(win *pixelgl.Window) {
 										data.SelectedDoodadColor = pixel.ToRGBA(constants.WorldDoodad[index])
 									}
 									for _, de := range dialog.Elements {
-										if it, okIT := de.(*data.Text); okIT {
-											if it.Key == "current_world" {
-												it.Text.SetText(fmt.Sprintf("World - %s", constants.WorldNames[index]))
+										if ct1, okCT := de.(*data.Container); okCT {
+											if ct1.Key == "world_container_selected" {
+												for _, ce := range ct1.Elements {
+													if spr1, okSpr := ce.(*data.SprElement); okSpr {
+														switch spr1.Key {
+														case "turf_tile":
+															spr1.Sprite.Key = constants.WorldSprites[data.SelectedWorldIndex]
+														case "doodad_tile":
+															spr1.Sprite.Key = constants.WorldDoodads[data.SelectedWorldIndex]
+														}
+													} else if tx, okTX := ce.(*data.Text); okTX {
+														tx.Text.SetText(constants.WorldNames[data.SelectedWorldIndex])
+													}
+												}
+												pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
+												sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
+												dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+												ct1.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
+												ct1.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
+												ct1.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
+												ct1.ViewPort.Canvas.SetUniform("uRedSecondary", float32(sc.R))
+												ct1.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(sc.G))
+												ct1.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(sc.B))
+												ct1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
+												ct1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
+												ct1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
 											}
 										}
 									}
 									for _, ie := range scroll.Elements {
-										if ctI, okC := ie.(*data.Container); okC {
-											for _, cie := range ctI.Elements {
-												if it, okIT := cie.(*data.Text); okIT {
-													it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
-												}
-											}
+										//if ctI, okC := ie.(*data.Container); okC {
+										//	for _, cie := range ctI.Elements {
+										//		if it, okIT := cie.(*data.Text); okIT {
+										//			it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+										//		}
+										//	}
+										//}
+										if it, okIT := ie.(*data.Text); okIT {
+											it.Text.NoShow = true
 										}
 									}
-									for _, ce := range ct.Elements {
-										if it, okIT := ce.(*data.Text); okIT {
-											it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-										}
-									}
+									//for _, ce := range ct.Elements {
+									//	if it, okIT := ce.(*data.Text); okIT {
+									//		it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+									//	}
+									//}
+									wtte.Text.NoShow = false
 									click.Consume()
 								}
 							}
 						}))
 						scroll.Elements = append(scroll.Elements, ct)
+						scroll.Elements = append(scroll.Elements, wtte)
 					}
 					data.UpdateScrollBounds(scroll)
+				}
+			} else if ct, okCt := e.(*data.Container); okCt {
+				if ct.Key == "world_container_selected" {
+					tti := data.ElementConstructor{
+						Key:      turfTileItem.Key,
+						SprKey:   constants.WorldSprites[0],
+						Position: turfTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
+						Element:  turfTileItem.Element,
+					}
+					s1 := data.CreateSpriteElement(tti)
+					ct.Elements = append(ct.Elements, s1)
+					lti := data.ElementConstructor{
+						Key:      ladderTileItem.Key,
+						SprKey:   constants.TileLadderMiddle,
+						Position: ladderTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
+						Element:  ladderTileItem.Element,
+					}
+					s2 := data.CreateSpriteElement(lti)
+					ct.Elements = append(ct.Elements, s2)
+					dti := data.ElementConstructor{
+						Key:      doodadTileItem.Key,
+						SprKey:   constants.WorldDoodads[0],
+						Position: doodadTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
+						Element:  doodadTileItem.Element,
+					}
+					s3 := data.CreateSpriteElement(dti)
+					ct.Elements = append(ct.Elements, s3)
+					wti := data.ElementConstructor{
+						Key:      worldTxtItem.Key,
+						Text:     constants.WorldNames[0],
+						Position: worldTxtItem.Position.Add(pixel.V(-world.HalfSize, 0)),
+						Element:  worldTxtItem.Element,
+					}
+					t1 := data.CreateTextElement(wti, ct.ViewPort)
+					ct.Elements = append(ct.Elements, t1)
 				}
 			}
 		}

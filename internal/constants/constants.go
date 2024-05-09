@@ -31,6 +31,7 @@ const (
 	TrackDark   = "dark"
 	TrackDesert = "desert"
 	TrackFungus = "fungus"
+	TrackGilded = "gilded"
 	TrackIce    = "ice"
 	TrackJungle = "jungle"
 	TrackLava   = "lava"

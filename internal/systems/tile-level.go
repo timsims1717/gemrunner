@@ -88,6 +88,8 @@ func TileSystem() {
 							tile.Counter++
 						}
 						if tile.Counter > constants.CrackedCounter {
+							tile.Entity.RemoveComponent(myecs.Animated)
+							tile.Entity.AddComponent(myecs.Drawable, img.NewSprite(GetBlockSprite(tile), constants.TileBatch))
 							tile.Flags.Collapse = true
 							tile.Flags.Cracked = false
 							tile.Counter = 0
@@ -110,7 +112,10 @@ func TileSystem() {
 									if tile.Block == data.BlockCracked {
 										tile.Flags.Cracked = true
 										tile.Flags.Collapse = false
-										AddMask(tile, "cracking_mask", false, false)
+										spr := img.NewSprite(GetBlockSprite(tile), constants.TileBatch)
+										anim := reanimator.NewSimple(reanimator.NewBatchAnimation("cracked", img.Batchers[constants.TileBatch], "cracking", reanimator.Hold))
+										tile.Entity.AddComponent(myecs.Drawable, []interface{}{spr, anim})
+										tile.Entity.AddComponent(myecs.Animated, anim)
 									} else if tile.Block == data.BlockFall {
 										tile.Flags.Collapse = true
 										tile.Flags.Cracked = false

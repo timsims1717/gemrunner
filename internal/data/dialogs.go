@@ -97,6 +97,9 @@ func NewDialog(dc *DialogConstructor) {
 		case CheckboxElement:
 			x := CreateCheckboxElement(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, x)
+		case ContainerElement:
+			ct2 := CreateContainer(element, dlg, dlg.ViewPort)
+			dlg.Elements = append(dlg.Elements, ct2)
 		case InputElement:
 			i := CreateInputElement(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, i)

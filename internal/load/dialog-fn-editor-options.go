@@ -273,9 +273,6 @@ func OpenChangeWorldDialog() {
 				if o, okO := txt.Entity.GetComponentData(myecs.Object); okO {
 					if obj, okO1 := o.(*object.Object); okO1 {
 						switch txt.Key {
-						case "current_world": // the world text
-							obj.Hidden = data.CustomWorldSelected
-							txt.Text.SetText(fmt.Sprintf("World - %s", constants.WorldNames[data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber]))
 						case "primary_text", "secondary_text", "doodad_text": // the custom color labels
 							obj.Hidden = !data.CustomWorldSelected
 						}
@@ -309,17 +306,36 @@ func OpenChangeWorldDialog() {
 				}
 			} else if scr, okScr := ele.(*data.Scroll); okScr { // the list of worlds
 				for ctI, ele2 := range scr.Elements {
-					if ct, okCt := ele2.(*data.Container); okCt {
-						for _, ce := range ct.Elements {
-							if it, okIT := ce.(*data.Text); okIT {
-								if data.SelectedWorldIndex == ctI {
-									it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-								} else {
-									it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
-								}
+					if it, okIT := ele2.(*data.Text); okIT {
+						it.Text.NoShow = data.SelectedWorldIndex != ctI/2
+					}
+				}
+			} else if ct, okCt := ele.(*data.Container); okCt {
+				if ct.Key == "world_container_selected" {
+					for _, ce := range ct.Elements {
+						if spr1, okSpr := ce.(*data.SprElement); okSpr {
+							switch spr1.Key {
+							case "turf_tile":
+								spr1.Sprite.Key = constants.WorldSprites[data.SelectedWorldIndex]
+							case "doodad_tile":
+								spr1.Sprite.Key = constants.WorldDoodads[data.SelectedWorldIndex]
 							}
+						} else if tx, okTX := ce.(*data.Text); okTX {
+							tx.Text.SetText(constants.WorldNames[data.SelectedWorldIndex])
 						}
 					}
+					pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
+					sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
+					dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+					ct.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
+					ct.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
+					ct.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
+					ct.ViewPort.Canvas.SetUniform("uRedSecondary", float32(sc.R))
+					ct.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(sc.G))
+					ct.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(sc.B))
+					ct.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
+					ct.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
+					ct.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
 				}
 			}
 		}

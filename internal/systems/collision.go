@@ -117,6 +117,8 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {
 			if !enemyDown {
 				ch.Flags.Floor = true
+			} else {
+				ch.Flags.Climbed = false
 			}
 			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
 		}
