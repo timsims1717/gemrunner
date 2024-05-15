@@ -77,13 +77,14 @@ var (
 	}
 	MenuInput = &pxginput.Input{
 		Buttons: map[string]*pxginput.ButtonSet{
-			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft),
+			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft).AddKey(pixelgl.KeyEnter).AddButton(pixelgl.ButtonA),
 			"rightClick":     pxginput.NewJoyless(pixelgl.MouseButtonRight),
-			"escape":         pxginput.NewJoyless(pixelgl.KeyEscape),
-			"left":           pxginput.NewJoyless(pixelgl.KeyLeft),
-			"right":          pxginput.NewJoyless(pixelgl.KeyRight),
-			"up":             pxginput.NewJoyless(pixelgl.KeyUp),
-			"down":           pxginput.NewJoyless(pixelgl.KeyDown),
+			"space":          pxginput.NewJoyless(pixelgl.KeySpace),
+			"escape":         pxginput.NewJoyless(pixelgl.KeyEscape).AddButton(pixelgl.ButtonB),
+			"left":           pxginput.NewJoyless(pixelgl.KeyLeft).AddButton(pixelgl.ButtonDpadLeft),
+			"right":          pxginput.NewJoyless(pixelgl.KeyRight).AddButton(pixelgl.ButtonDpadRight),
+			"up":             pxginput.NewJoyless(pixelgl.KeyUp).AddButton(pixelgl.ButtonDpadUp),
+			"down":           pxginput.NewJoyless(pixelgl.KeyDown).AddButton(pixelgl.ButtonDpadDown),
 			"backspace":      pxginput.NewJoyless(pixelgl.KeyBackspace),
 			"delete":         pxginput.NewJoyless(pixelgl.KeyDelete),
 			"home":           pxginput.NewJoyless(pixelgl.KeyHome),

@@ -1,5 +1,13 @@
 package constants
 
+// Main Menu Dialogs
+const (
+	DialogMainMenu   = "main_menu"
+	DialogAddPlayers = "add_players"
+	DialogPlayLocal  = "play_local"
+)
+
+// Editor Dialogs
 const (
 	DialogOpenPuzzle          = "open_puzzle"
 	DialogChangeName          = "change_name"

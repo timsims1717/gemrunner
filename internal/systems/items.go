@@ -174,7 +174,7 @@ func EnterPlayerDoor(color string) *data.Interact {
 	})
 }
 
-func CreateBox(pos pixel.Vec) {
+func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	key := constants.ItemBox
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
@@ -191,7 +191,7 @@ func CreateBox(pos pixel.Vec) {
 	e.AddComponent(myecs.PickUp, data.NewPickUp("Box", 10))
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, struct{}{})
-	box := data.NewDynamic()
+	box := data.NewDynamic(tile)
 	box.Object = obj
 	box.Entity = e
 	box.Flags.NoLadders = true

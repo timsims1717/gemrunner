@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/options"
@@ -25,7 +26,7 @@ type editorState struct {
 }
 
 func (s *editorState) Unload() {
-
+	systems.DisposeEditor()
 }
 
 func (s *editorState) Load() {
@@ -91,8 +92,8 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.FunctionSystem()
 
-	data.DialogStackOpen = len(data.DialogStack) > 0
-	if !data.DialogStackOpen {
+	ui.DialogStackOpen = len(ui.DialogStack) > 0
+	if !ui.DialogStackOpen {
 		// custom systems
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
@@ -104,7 +105,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystem()
 		data.CurrPuzzleSet.CurrPuzzle.Update = false
 	}
-	systems.DialogSystem()
+	systems.DialogSystem(win)
 	// object systems
 	systems.ParentSystem()
 	systems.ObjectSystem()
@@ -116,10 +117,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	data.PuzzleView.Update()
 	data.PuzzleViewNoShader.Update()
 
-	if data.Editor.SelectVis && !data.Dialogs[constants.DialogEditorBlockSelect].Open {
-		data.OpenDialog(constants.DialogEditorBlockSelect)
-	} else if !data.Editor.SelectVis && data.Dialogs[constants.DialogEditorBlockSelect].Open {
-		data.CloseDialog(constants.DialogEditorBlockSelect)
+	if data.Editor.SelectVis && !ui.Dialogs[constants.DialogEditorBlockSelect].Open {
+		ui.OpenDialog(constants.DialogEditorBlockSelect)
+	} else if !data.Editor.SelectVis && ui.Dialogs[constants.DialogEditorBlockSelect].Open {
+		ui.CloseDialog(constants.DialogEditorBlockSelect)
 	}
 
 	myecs.UpdateManager()

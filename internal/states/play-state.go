@@ -20,40 +20,21 @@ import (
 )
 
 var (
-	TestState = &testState{}
+	PlayState = &playState{}
 )
 
-type testState struct {
+type playState struct {
 	*state.AbstractState
 }
 
-func (s *testState) Unload() {
-	if data.Editor != nil {
-		if data.Editor.PosTop {
-			ui.OpenDialog(constants.DialogEditorPanelTop)
-			ui.OpenDialog(constants.DialogEditorOptionsBot)
-		} else {
-			ui.OpenDialog(constants.DialogEditorPanelLeft)
-			ui.OpenDialog(constants.DialogEditorOptionsRight)
-		}
-	}
+func (s *playState) Unload() {
 	systems.LevelDispose()
 	systems.ClearTemp()
-	data.EditorDraw = true
-	data.CurrPuzzleSet.CurrPuzzle.Update = true
-	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
-func (s *testState) Load() {
-	if data.Editor != nil {
-		if data.Editor.PosTop {
-			ui.CloseDialog(constants.DialogEditorPanelTop)
-			ui.CloseDialog(constants.DialogEditorOptionsBot)
-		} else {
-			ui.CloseDialog(constants.DialogEditorPanelLeft)
-			ui.CloseDialog(constants.DialogEditorOptionsRight)
-		}
-	}
+func (s *playState) Load() {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
 	systems.LevelInit()
 	systems.UpdateViews()
 	data.EditorDraw = false
@@ -62,13 +43,13 @@ func (s *testState) Load() {
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 }
 
-func (s *testState) Update(win *pixelgl.Window) {
+func (s *playState) Update(win *pixelgl.Window) {
 	data.P1Input.Update(win, viewport.MainCamera.Mat)
 	data.P2Input.Update(win, viewport.MainCamera.Mat)
 	data.P3Input.Update(win, viewport.MainCamera.Mat)
 	data.P4Input.Update(win, viewport.MainCamera.Mat)
 	systems.CursorSystem(true)
-	debug.AddText("Test State")
+	debug.AddText("Play State")
 	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
 	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
 	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
@@ -94,7 +75,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 				}
 				debug.AddText(fmt.Sprintf("Player %d Inv: %s", i+1, item))
 			}
-			debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))
+			//debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))
 		}
 	}
 
@@ -104,8 +85,11 @@ func (s *testState) Update(win *pixelgl.Window) {
 	reanimator.Update()
 
 	// function systems
+	systems.PlaySystem()
+	if data.CurrLevel == nil {
+		return
+	}
 	systems.FunctionSystem()
-	systems.TestSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)
 
@@ -139,7 +123,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
 }
 
-func (s *testState) Draw(win *pixelgl.Window) {
+func (s *playState) Draw(win *pixelgl.Window) {
 	// draw border
 	data.BorderView.Canvas.Clear(constants.ColorBlack)
 	systems.BorderSystem(1)
@@ -180,6 +164,6 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	}
 }
 
-func (s *testState) SetAbstract(aState *state.AbstractState) {
+func (s *playState) SetAbstract(aState *state.AbstractState) {
 	s.AbstractState = aState
 }

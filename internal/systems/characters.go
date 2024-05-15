@@ -15,8 +15,8 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-func PlayerCharacter(pos pixel.Vec, pIndex int) *data.Dynamic {
-	player := data.NewDynamic()
+func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile) *data.Dynamic {
+	player := data.NewDynamic(tile)
 	player.Layer = 27 - pIndex*2
 	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
@@ -71,8 +71,9 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 	data.CurrLevel.PControls[p] = ch.Control
 }
 
-func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
-	demon := data.NewDynamic()
+func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
+	metadata := tile.Metadata
+	demon := data.NewDynamic(tile)
 	obj := object.New().WithID("demon").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	demon.Layer = 29
@@ -129,8 +130,9 @@ func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) 
 	}
 }
 
-func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
-	fly := data.NewDynamic()
+func FlyCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
+	metadata := tile.Metadata
+	fly := data.NewDynamic(tile)
 	obj := object.New().WithID("fly").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 12))
 	obj.Flip = metadata.Flipped

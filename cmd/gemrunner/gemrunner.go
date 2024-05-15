@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/load"
 	"gemrunner/internal/states"
 	"gemrunner/internal/systems"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
@@ -42,8 +43,10 @@ func run() {
 	viewport.MainCamera.SetRect(pixel.R(0, 0, 1600, 900))
 	viewport.MainCamera.CamPos = pixel.V(1600*0.5, 900*0.5)
 
-	state.Register(states.EditorStateKey, state.New(states.EditorState))
-	state.Register(states.TestStateKey, state.New(states.TestState))
+	state.Register(constants.MainMenuKey, state.New(states.MainMenuState))
+	state.Register(constants.EditorStateKey, state.New(states.EditorState))
+	state.Register(constants.TestStateKey, state.New(states.TestState))
+	state.Register(constants.PlayStateKey, state.New(states.PlayState))
 	//state.PushState(states.TestStateKey)
 	//filename := fmt.Sprintf("%s/%s", constants.PuzzlesDir, "Get Those Gems.puzzle")
 	//err = systems.OpenPuzzle(filename)
@@ -51,6 +54,7 @@ func run() {
 	//	panic(err)
 	//}
 
+	typeface.RoundDot = true
 	mainFont, err := typeface.LoadTTF("assets/Jive_Talking.ttf", 128.)
 	typeface.Atlases["main"] = text.NewAtlas(mainFont, text.ASCII)
 
@@ -80,8 +84,11 @@ func run() {
 	load.Music()
 	load.SoundEffects()
 
-	load.InitConstructors()
-	load.Dialogs(win)
+	ui.ScrollSpeed = constants.ScrollSpeed
+	load.InitEditorConstructors()
+	load.InitMainMenuConstructors()
+	load.EditorDialogs(win)
+	load.MainDialogs(win)
 	systems.InitMainBorder()
 	systems.CursorInit()
 

@@ -31,12 +31,11 @@ type Dynamic struct {
 	Enemy    int
 	Color    string
 	Layer    int
-	Text
 
 	SFX *uuid.UUID
 }
 
-func NewDynamic() *Dynamic {
+func NewDynamic(tile *Tile) *Dynamic {
 	return &Dynamic{
 		Player:  -1,
 		Enemy:   -1,
@@ -51,7 +50,8 @@ func NewDynamic() *Dynamic {
 		Options: CharacterOptions{
 			Regen: false,
 		},
-		AnInt: -1,
+		AnInt:    -1,
+		LastTile: tile,
 	}
 }
 

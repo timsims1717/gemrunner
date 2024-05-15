@@ -27,17 +27,20 @@ const (
 	BlockSelectHeight = 11.
 
 	// Music Tracks
-	TrackBeach  = "beach"
-	TrackDark   = "dark"
-	TrackDesert = "desert"
-	TrackFungus = "fungus"
-	TrackGilded = "gilded"
-	TrackIce    = "ice"
-	TrackJungle = "jungle"
-	TrackLava   = "lava"
-	TrackMech   = "mech"
-	TrackReef   = "reef"
-	TrackUrban  = "urban"
+	TrackBeach   = "beach"
+	TrackCrystal = "crystal"
+	TrackDark    = "dark"
+	TrackDesert  = "desert"
+	TrackFungus  = "fungus"
+	TrackGilded  = "gilded"
+	TrackIce     = "ice"
+	TrackJungle  = "jungle"
+	TrackLava    = "lava"
+	TrackMain    = "main_theme"
+	TrackMech    = "mech"
+	TrackMenu    = "menu"
+	TrackReef    = "reef"
+	TrackUrban   = "urban"
 
 	// Batches
 	TileBatch = "tiles"

@@ -1,6 +1,7 @@
 package content
 
 import (
+	"encoding/json"
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
@@ -58,9 +59,28 @@ func LoadPuzzleContent() error {
 	var r []data.PuzzleSetMetadata
 	for _, d := range list {
 		if !d.IsDir() && filepath.Ext(d.Name()) == constants.PuzzleExt {
-			pi := data.PuzzleSetMetadata{
-				Name:     d.Name(),
-				Filename: d.Name(),
+			filename := fmt.Sprintf("%s/%s", constants.PuzzlesDir, d.Name())
+			pzlFile, err := os.ReadFile(filename)
+			if err != nil {
+				return errors.Wrap(err, errMsg)
+			}
+			pzs := &data.PuzzleSet{}
+			err = json.Unmarshal(pzlFile, pzs)
+			if err != nil {
+				return errors.Wrap(err, errMsg)
+			}
+			pi := pzs.Metadata
+			if pi.Name == "" {
+				pi.Name = "No Name"
+			}
+			if pi.Author == "" {
+				pi.Author = "Unknown"
+			}
+			if pi.NumPlayers == 0 {
+				pi.NumPlayers = 1
+			}
+			if pi.NumPuzzles == 0 {
+				pi.NumPuzzles = len(pzs.Puzzles)
 			}
 			r = append(r, pi)
 		}

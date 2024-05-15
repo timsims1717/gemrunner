@@ -7,6 +7,7 @@ import (
 
 func Music() {
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/beach.ogg", constants.TrackBeach)
+	sfx.MusicPlayer.RegisterMusicTrack("assets/music/crystal.ogg", constants.TrackCrystal)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/dark.ogg", constants.TrackDark)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/desert.ogg", constants.TrackDesert)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/fungus.ogg", constants.TrackFungus)
@@ -14,7 +15,9 @@ func Music() {
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/ice.ogg", constants.TrackIce)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/jungle.ogg", constants.TrackJungle)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/lava.ogg", constants.TrackLava)
+	sfx.MusicPlayer.RegisterMusicTrack("assets/music/main-theme.ogg", constants.TrackMain)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/mech.ogg", constants.TrackMech)
+	sfx.MusicPlayer.RegisterMusicTrack("assets/music/menu.ogg", constants.TrackMenu)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/reef.ogg", constants.TrackReef)
 	sfx.MusicPlayer.RegisterMusicTrack("assets/music/urban.ogg", constants.TrackUrban)
 

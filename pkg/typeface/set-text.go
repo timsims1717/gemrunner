@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gemrunner/pkg/object"
 	"github.com/gopxl/pixel"
-	"math"
 )
 
 const (
@@ -145,7 +144,10 @@ func (item *Text) updateText() {
 	//} else if item.Align.V == Bottom {
 	//	item.Text.Dot.Y += item.fullHeight
 	//}
-	for _, line := range item.rawLines {
+	for li, line := range item.rawLines {
+		if li != 0 {
+			item.Text.WriteRune('\n')
+		}
 		//b := 0
 		inBrackets = false
 		//if item.Align.H == Center {
@@ -154,7 +156,6 @@ func (item *Text) updateText() {
 		//	item.Text.Dot.X -= item.lineWidths[li]
 		//}
 		for _, r := range line {
-			item.roundDot()
 			if !inBrackets {
 				switch r {
 				case OpenMarker:
@@ -169,7 +170,6 @@ func (item *Text) updateText() {
 					switch mode {
 					case "symbol":
 						if sym, ok := theSymbols[buf.String()]; ok {
-							item.roundDot()
 							item.dotPosArray = append(item.dotPosArray, item.Text.Dot.Scaled(item.RelativeSize))
 							obj := object.New()
 							obj.Sca = pixel.V(item.SymbolSize, item.SymbolSize).Scaled(sym.sca)
@@ -195,9 +195,7 @@ func (item *Text) updateText() {
 				}
 			}
 		}
-		item.roundDot()
 		item.dotPosArray = append(item.dotPosArray, item.Text.Dot.Scaled(item.RelativeSize))
-		item.Text.WriteRune('\n')
 	}
 	bounds := item.Text.Bounds()
 	item.Obj.SetRect(pixel.R(0, 0, bounds.W()*item.RelativeSize, bounds.H()*item.RelativeSize))
@@ -211,11 +209,4 @@ func (item *Text) updateText() {
 	//} else if item.Align.V == Top {
 	//	item.Obj.Rect = item.Obj.Rect.Moved(pixel.V(item.Obj.Rect.H(), 0))
 	//}
-}
-
-func (item *Text) roundDot() {
-	if RoundDot {
-		item.Text.Dot.X = math.Floor(item.Text.Dot.X)
-		item.Text.Dot.Y = math.Floor(item.Text.Dot.Y)
-	}
 }

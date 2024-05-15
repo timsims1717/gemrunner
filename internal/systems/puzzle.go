@@ -161,6 +161,7 @@ func SavePuzzleSetToFile() error {
 	if data.CurrPuzzleSet.Metadata.Filename != "" {
 		svgFName = data.CurrPuzzleSet.Metadata.Filename
 	}
+	data.CurrPuzzleSet.Metadata.NumPuzzles = len(data.CurrPuzzleSet.Puzzles)
 	svgPath := fmt.Sprintf("%s/%s", constants.PuzzlesDir, svgFName)
 	saveFile, err := os.Create(svgPath)
 	if err != nil {

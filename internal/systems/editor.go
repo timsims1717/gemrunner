@@ -4,6 +4,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/util"
@@ -19,21 +20,24 @@ func EditorInit() {
 	// initialize editor panel
 	data.NewEditor()
 	//data.Editor.PosTop = true
-	data.Editor.BlockSelect = data.Dialogs[constants.DialogEditorBlockSelect].ViewPort
+	data.Editor.BlockSelect = ui.Dialogs[constants.DialogEditorBlockSelect].ViewPort
 
 	// open editor dialogs
 	if data.Editor.PosTop {
-		data.OpenDialog(constants.DialogEditorPanelTop)
-		data.OpenDialog(constants.DialogEditorOptionsBot)
+		ui.OpenDialog(constants.DialogEditorPanelTop)
+		ui.OpenDialog(constants.DialogEditorOptionsBot)
 	} else {
-		data.OpenDialog(constants.DialogEditorPanelLeft)
-		data.OpenDialog(constants.DialogEditorOptionsRight)
+		ui.OpenDialog(constants.DialogEditorPanelLeft)
+		ui.OpenDialog(constants.DialogEditorOptionsRight)
 	}
 }
 
 func UpdateEditorShaders() {
+	if data.Editor == nil {
+		return
+	}
 	// set editor panel shader uniforms
-	editorPanelLeft := data.Dialogs[constants.DialogEditorPanelLeft]
+	editorPanelLeft := ui.Dialogs[constants.DialogEditorPanelLeft]
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
@@ -43,7 +47,7 @@ func UpdateEditorShaders() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
-	editorPanelTop := data.Dialogs[constants.DialogEditorPanelTop]
+	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
@@ -383,11 +387,11 @@ func PuzzleEditSystem() {
 								case data.BlockFly:
 									PushUndoArray(true)
 								case data.BlockCracked, data.BlockLadderCracked:
-									data.OpenDialogInStack(constants.DialogCrackedTiles)
+									ui.OpenDialogInStack(constants.DialogCrackedTiles)
 								case data.BlockBomb, data.BlockBombLit:
-									data.OpenDialogInStack(constants.DialogBomb)
+									ui.OpenDialogInStack(constants.DialogBomb)
 								case data.BlockJetpack:
-									data.OpenDialogInStack(constants.DialogJetpack)
+									ui.OpenDialogInStack(constants.DialogJetpack)
 								}
 								data.CurrPuzzleSet.CurrPuzzle.Update = true
 								data.CurrPuzzleSet.CurrPuzzle.Changed = true
@@ -409,13 +413,13 @@ func PuzzleEditSystem() {
 							PushUndoArray(true)
 						case data.BlockCracked, data.BlockLadderCracked:
 							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							data.OpenDialogInStack(constants.DialogCrackedTiles)
+							ui.OpenDialogInStack(constants.DialogCrackedTiles)
 						case data.BlockBomb, data.BlockBombLit:
 							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							data.OpenDialogInStack(constants.DialogBomb)
+							ui.OpenDialogInStack(constants.DialogBomb)
 						case data.BlockJetpack:
 							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							data.OpenDialogInStack(constants.DialogJetpack)
+							ui.OpenDialogInStack(constants.DialogJetpack)
 						case data.BlockPhase:
 							if rClick.JustReleased() {
 								tile.Metadata.Phase--
@@ -618,14 +622,14 @@ func PuzzleEditSystem() {
 		case data.Save:
 			PlaceSelection()
 			if !SavePuzzleSet() {
-				data.OpenDialogInStack(constants.DialogUnableToSave)
+				ui.OpenDialogInStack(constants.DialogUnableToSave)
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Brush
 		case data.Open:
 			//if err := LoadPuzzle(); err != nil {
 			//	fmt.Println("Error:", err)
 			//}
-			data.OpenDialogInStack(constants.DialogOpenPuzzle)
+			ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Brush
 		}
 	}
@@ -692,21 +696,21 @@ func PuzzleEditSystem() {
 }
 
 func EditorPanelButtons() {
-	var panel *data.Dialog
+	var panel *ui.Dialog
 	if data.Editor.PosTop {
-		panel = data.Dialogs[constants.DialogEditorPanelTop]
+		panel = ui.Dialogs[constants.DialogEditorPanelTop]
 	} else {
-		panel = data.Dialogs[constants.DialogEditorPanelLeft]
+		panel = ui.Dialogs[constants.DialogEditorPanelLeft]
 	}
 	if !panel.Click {
 		for _, e := range panel.Elements {
-			if btn, ok := e.(*data.Button); ok {
-				if data.ModeFromSprString(btn.Sprite.Key) == data.Editor.Mode ||
-					(data.ModeFromSprString(btn.Sprite.Key) == data.Select &&
+			if e.ElementType == ui.ButtonElement {
+				if data.ModeFromSprString(e.Sprite.Key) == data.Editor.Mode ||
+					(data.ModeFromSprString(e.Sprite.Key) == data.Select &&
 						data.Editor.Mode == data.Move) {
-					btn.Entity.AddComponent(myecs.Drawable, btn.ClickSpr)
+					e.Entity.AddComponent(myecs.Drawable, e.Sprite2)
 				} else {
-					btn.Entity.AddComponent(myecs.Drawable, btn.Sprite)
+					e.Entity.AddComponent(myecs.Drawable, e.Sprite)
 				}
 			}
 		}
@@ -1001,5 +1005,12 @@ func PopRedoStack() {
 }
 
 func DisposeEditor() {
-
+	if data.Editor.PosTop {
+		ui.CloseDialog(constants.DialogEditorPanelTop)
+		ui.CloseDialog(constants.DialogEditorOptionsBot)
+	} else {
+		ui.CloseDialog(constants.DialogEditorPanelLeft)
+		ui.CloseDialog(constants.DialogEditorOptionsRight)
+	}
+	data.Editor = nil
 }

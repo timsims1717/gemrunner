@@ -1,8 +1,8 @@
-package data
+package ui
 
 import (
 	"fmt"
-	"gemrunner/internal/constants"
+	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
@@ -11,132 +11,30 @@ import (
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
 	"math"
 )
 
-var (
-	DialogStack     []*Dialog
-	DialogsOpen     []*Dialog
-	DialogStackOpen bool
-	Dialogs         = map[string]*Dialog{}
-)
-
-type Dialog struct {
-	Key          string
-	Pos          pixel.Vec
-	ViewPort     *viewport.ViewPort
-	BorderVP     *viewport.ViewPort
-	BorderObject *object.Object
-	BorderEntity *ecs.Entity
-	Elements     []interface{}
-	NoBorder     bool
-	OnOpen       func()
-	OnClose      func()
-	OnCloseSpc   func()
-
-	Open   bool
-	Active bool
-	Click  bool
-	Lock   bool
-	Layer  int
-}
-
-type DialogConstructor struct {
-	Key      string
-	Width    float64
-	Height   float64
-	Pos      pixel.Vec
-	Elements []ElementConstructor
-	NoBorder bool
-}
-
-func NewDialog(dc *DialogConstructor) {
-	vp := viewport.New(nil)
-	vp.SetRect(pixel.R(0, 0, dc.Width*world.TileSize, dc.Height*world.TileSize))
-	vp.CamPos = pixel.V(0, 0)
-	vp.PortPos = viewport.MainCamera.PostCamPos.Add(dc.Pos)
-
-	dlg := &Dialog{
-		Key:      dc.Key,
-		Pos:      dc.Pos,
-		ViewPort: vp,
-		NoBorder: dc.NoBorder,
-	}
-
-	if !dc.NoBorder {
-		bvp := viewport.New(nil)
-		bvp.SetRect(pixel.R(0, 0, (dc.Width+1)*world.TileSize, (dc.Height+1)*world.TileSize))
-		bvp.CamPos = pixel.V(0, 0)
-		bvp.PortPos = viewport.MainCamera.PostCamPos.Add(dc.Pos)
-
-		bObj := object.New()
-		bObj.Layer = 99
-		//bObj.Pos = dc.Pos
-		be := myecs.Manager.NewEntity()
-		be.AddComponent(myecs.Object, bObj).
-			AddComponent(myecs.Border, &Border{
-				Width:  int(dc.Width),
-				Height: int(dc.Height),
-			})
-
-		dlg.BorderVP = bvp
-		dlg.BorderObject = bObj
-		dlg.BorderEntity = be
-	}
-
-	for _, element := range dc.Elements {
-		if element.Key == "" {
-			fmt.Println("WARNING: element constructor has no key")
-		}
-		switch element.Element {
-		case ButtonElement:
-			b := CreateButtonElement(element, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, b)
-		case CheckboxElement:
-			x := CreateCheckboxElement(element, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, x)
-		case ContainerElement:
-			ct2 := CreateContainer(element, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, ct2)
-		case InputElement:
-			i := CreateInputElement(element, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, i)
-		case ScrollElement:
-			s := CreateScrollElement(element, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, s)
-		case SpriteElement:
-			s := CreateSpriteElement(element)
-			dlg.Elements = append(dlg.Elements, s)
-		case TextElement:
-			t := CreateTextElement(element, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, t)
-		}
-	}
-
-	Dialogs[dc.Key] = dlg
-}
-
-func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Button {
+func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
-	obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
-	spr := img.NewSprite(element.SprKey, constants.UIBatch)
-	cSpr := img.NewSprite(element.ClickSprKey, constants.UIBatch)
+	obj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
+	spr := img.NewSprite(element.SprKey, element.Batch)
+	cSpr := img.NewSprite(element.SprKey2, element.Batch)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Drawable, spr)
-	b := &Button{
-		Key:      element.Key,
-		Sprite:   spr,
-		ClickSpr: cSpr,
-		HelpText: element.HelpText,
-		Object:   obj,
-		Entity:   e,
+	b := &Element{
+		Key:         element.Key,
+		Sprite:      spr,
+		Sprite2:     cSpr,
+		HelpText:    element.HelpText,
+		Object:      obj,
+		Entity:      e,
+		ElementType: ButtonElement,
 	}
-	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, vp, func(hvc *HoverClick) {
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
 		if dlg.Open && dlg.Active && !dlg.Lock {
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
@@ -144,8 +42,8 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			}
 			if hvc.Hover && click.Pressed() && dlg.Click {
 				e.AddComponent(myecs.Drawable, cSpr)
-				if b.OnHeld != nil {
-					b.OnHeld(hvc)
+				if b.OnHold != nil {
+					b.OnHold()
 				}
 			} else {
 				if hvc.Hover && click.JustReleased() && dlg.Click {
@@ -154,17 +52,17 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 						if b.Delay > 0. {
 							dlg.Lock = true
 							entity := myecs.Manager.NewEntity()
-							entity.AddComponent(myecs.Update, NewTimerFunc(func() bool {
-								MenuInput.Get("click").Consume()
-								MenuInput.Get("rClick").Consume()
+							entity.AddComponent(myecs.Update, data.NewTimerFunc(func() bool {
+								data.MenuInput.Get("click").Consume()
+								data.MenuInput.Get("rClick").Consume()
 								b.OnClick()
 								dlg.Lock = false
 								myecs.Manager.DisposeEntity(entity)
 								return false
 							}, b.Delay))
 						} else {
-							MenuInput.Get("click").Consume()
-							MenuInput.Get("rClick").Consume()
+							data.MenuInput.Get("click").Consume()
+							data.MenuInput.Get("rClick").Consume()
 							b.OnClick()
 						}
 					}
@@ -180,25 +78,26 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	return b
 }
 
-func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Checkbox {
+func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
-	obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
-	spr := img.NewSprite(element.SprKey, constants.UIBatch)
-	cSpr := img.NewSprite(element.ClickSprKey, constants.UIBatch)
+	obj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
+	spr := img.NewSprite(element.SprKey, element.Batch)
+	cSpr := img.NewSprite(element.SprKey2, element.Batch)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Drawable, spr)
-	x := &Checkbox{
-		Key:      element.Key,
-		Sprite:   spr,
-		CheckSpr: cSpr,
-		HelpText: element.HelpText,
-		Object:   obj,
-		Entity:   e,
+	x := &Element{
+		Key:         element.Key,
+		Sprite:      spr,
+		Sprite2:     cSpr,
+		HelpText:    element.HelpText,
+		Object:      obj,
+		Entity:      e,
+		ElementType: CheckboxElement,
 	}
-	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, vp, func(hvc *HoverClick) {
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
 		if dlg.Open && dlg.Active && !dlg.Lock && !dlg.Click {
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
@@ -209,58 +108,60 @@ func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport
 	return x
 }
 
-func SetChecked(x *Checkbox, c bool) {
+func SetChecked(x *Element, c bool) {
 	x.Checked = c
 	if x.Checked {
-		x.Entity.AddComponent(myecs.Drawable, x.CheckSpr)
+		x.Entity.AddComponent(myecs.Drawable, x.Sprite2)
 	} else {
 		x.Entity.AddComponent(myecs.Drawable, x.Sprite)
 	}
 }
 
-func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Container {
+func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	ctvp := viewport.New(nil)
 	ctvp.ParentView = vp
-	ctvp.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	ctvp.SetRect(pixel.R(0, 0, element.Width, element.Height))
 	ctvp.CamPos = pixel.V(0, 0)
 	ctvp.PortPos = element.Position
 
 	vpObj := object.New()
-	vpObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
 	bvp := viewport.New(nil)
-	bvp.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	bvp.CamPos = pixel.V(0, 0)
 	bvp.PortPos = element.Position
 
 	bObj := object.New()
-	bObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	bObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	bObj.Layer = 99
+	bord := &Border{
+		Rect:  pixel.R(0, 0, element.Width, element.Height),
+		Style: ThinBorder,
+	}
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, bObj).
-		AddComponent(myecs.Border, &Border{
-			Width:  int(element.Width),
-			Height: int(element.Height),
-			Style:  ThinBorder,
-		})
+		AddComponent(myecs.Border, bord)
 
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
-	ct := &Container{
+	ct := &Element{
 		Key:          element.Key,
+		Border:       bord,
 		BorderVP:     bvp,
 		BorderObject: bObj,
 		Object:       vpObj,
 		BorderEntity: be,
 		Entity:       e,
 		ViewPort:     ctvp,
+		ElementType:  ContainerElement,
 	}
 	for _, ele := range element.SubElements {
 		if ele.Key == "" {
 			fmt.Println("WARNING: element constructor has no key")
 		}
-		switch ele.Element {
+		switch ele.ElementType {
 		case ButtonElement:
 			b := CreateButtonElement(ele, dlg, ct.ViewPort)
 			ct.Elements = append(ct.Elements, b)
@@ -287,32 +188,36 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 	return ct
 }
 
-func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Input {
+func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	ivp := viewport.New(nil)
 	ivp.ParentView = vp
-	ivp.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	ivp.SetRect(pixel.R(0, 0, element.Width, element.Height))
 	ivp.CamPos = pixel.V(ivp.Rect.W()*0.5-2, 0)
 	ivp.PortPos = element.Position
 
 	bvp := viewport.New(nil)
-	bvp.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	bvp.CamPos = pixel.V(0, 0)
 	bvp.PortPos = element.Position
 
 	bObj := object.New()
-	bObj.SetRect(pixel.R(0, 0, (element.Width)*world.TileSize, (element.Height)*world.TileSize))
+	bObj.SetRect(pixel.R(0, 0, element.Width, element.Height))
 	bObj.Layer = 99
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, bObj).
 		AddComponent(myecs.Border, &Border{
-			Width:  int(element.Width),
-			Height: int(element.Height),
-			Style:  ThinBorder,
+			Rect:  pixel.R(0, 0, element.Width, element.Height),
+			Style: ThinBorder,
 		})
+
+	vpObj := object.New()
+	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
+	vpObj.SetPos(element.Position)
+	vpObj.Layer = 99
 
 	tf := typeface.New("main", typeface.NewAlign(typeface.Left, typeface.Top), 1, 0.0625, 0, 0)
 	tf.SetPos(pixel.ZV)
-	tf.SetColor(pixel.ToRGBA(constants.ColorWhite))
+	tf.SetColor(pixel.ToRGBA(element.Color))
 	tf.SetText(element.Text)
 	te := myecs.Manager.NewEntity()
 	te.AddComponent(myecs.Object, tf.Obj)
@@ -321,47 +226,48 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 
 	cObj := object.New()
 	cObj.Pos = tf.GetEndPos()
-	cObj.SetRect(img.Batchers[constants.UIBatch].GetSprite(constants.TextCaret).Frame())
-	cSpr := img.NewSprite(constants.TextCaret, constants.UIBatch)
+	cObj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
+	cSpr := img.NewSprite(element.SprKey, element.Batch)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, cObj)
 	e.AddComponent(myecs.Drawable, cSpr)
 
-	i := &Input{
+	i := &Element{
 		Key:          element.Key,
 		Value:        element.Text,
 		Text:         tf,
-		TextEntity:   te,
+		Object:       vpObj,
 		CaretObj:     cObj,
-		CaretSpr:     cSpr,
+		Sprite:       cSpr,
 		CaretIndex:   len(element.Text),
 		BorderVP:     bvp,
 		BorderObject: bObj,
 		BorderEntity: be,
 		ViewPort:     ivp,
 		Entity:       e,
+		ElementType:  InputElement,
 	}
 
 	flashTimer := timing.New(0.53)
-	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, ivp, func(hvc *HoverClick) {
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ivp, func(hvc *data.HoverClick) {
 		flashTimer.Update()
-		wasActive := i.Active
+		wasActive := i.Focused
 		click := hvc.Input.Get("click")
 		if dlg.Open && dlg.Active && !dlg.Lock {
 			if click.JustPressed() {
-				i.Active = hvc.ViewHover
+				i.Focused = hvc.ViewHover
 				if hvc.ViewHover && !wasActive {
 					click.Consume()
 				}
 			}
 		} else {
-			i.Active = false
+			i.Focused = false
 		}
-		if !wasActive && i.Active {
+		if !wasActive && i.Focused {
 			flashTimer.Reset()
 			cObj.Hidden = false
 		}
-		if i.Active {
+		if i.Focused {
 			changed := false
 			ci := i.CaretIndex
 			left := hvc.Input.Get("left")
@@ -434,7 +340,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 	return i
 }
 
-func ChangeText(input *Input, rt string) {
+func ChangeText(input *Element, rt string) {
 	input.Value = rt
 	input.Text.SetText(input.Value)
 	input.CaretIndex = input.Text.Len() - 1
@@ -443,51 +349,53 @@ func ChangeText(input *Input, rt string) {
 	input.CaretObj.Hidden = false
 }
 
-func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Scroll {
+func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	svp := viewport.New(nil)
 	svp.ParentView = vp
-	svp.SetRect(pixel.R(0, 0, (element.Width-1)*world.TileSize, element.Height*world.TileSize))
+	svp.SetRect(pixel.R(0, 0, element.Width-world.TileSize, element.Height))
 	svp.CamPos = pixel.V(0, 0)
 	svp.PortPos = element.Position
 	svp.PortPos.X -= world.HalfSize
 
 	bvp := viewport.New(nil)
-	bvp.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	bvp.CamPos = pixel.V(0, 0)
 	bvp.PortPos = element.Position
 
 	vpObj := object.New()
-	vpObj.SetRect(pixel.R(0, 0, element.Width*world.TileSize, element.Height*world.TileSize))
+	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
 	bObj := object.New()
-	bObj.SetRect(pixel.R(0, 0, (element.Width+1)*world.TileSize, (element.Height+1)*world.TileSize))
+	bObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	bObj.Layer = 99
+	bord := &Border{
+		Rect:  pixel.R(0, 0, element.Width, element.Height),
+		Style: ThinBorder,
+	}
 	be := myecs.Manager.NewEntity()
 	be.AddComponent(myecs.Object, bObj).
-		AddComponent(myecs.Border, &Border{
-			Width:  int(element.Width),
-			Height: int(element.Height),
-			Style:  ThinBorder,
-		})
+		AddComponent(myecs.Border, bord)
 
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
-	s := &Scroll{
+	s := &Element{
 		Key:          element.Key,
+		Border:       bord,
 		BorderVP:     bvp,
 		BorderObject: bObj,
 		Object:       vpObj,
 		BorderEntity: be,
 		Entity:       e,
 		ViewPort:     svp,
+		ElementType:  ScrollElement,
 	}
-	e.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, svp, func(hvc *HoverClick) {
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, svp, func(hvc *data.HoverClick) {
 		if hvc.ViewHover {
 			if hvc.Input.ScrollV > 0. {
-				s.ViewPort.CamPos.Y += constants.ScrollSpeed * timing.DT
+				s.ViewPort.CamPos.Y += ScrollSpeed * timing.DT
 			} else if hvc.Input.ScrollV < 0. {
-				s.ViewPort.CamPos.Y -= constants.ScrollSpeed * timing.DT
+				s.ViewPort.CamPos.Y -= ScrollSpeed * timing.DT
 			}
 			RestrictScroll(s)
 			AlignBarToView(s)
@@ -517,9 +425,10 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		btn := ElementConstructor{
 			Key:         key,
 			SprKey:      sprKey,
-			ClickSprKey: cSprKey,
+			SprKey2:     cSprKey,
+			Batch:       element.Batch,
 			Position:    pos,
-			Element:     ButtonElement,
+			ElementType: ButtonElement,
 		}
 		b := CreateButtonElement(btn, dlg, dlg.ViewPort)
 		dlg.Elements = append(dlg.Elements, b)
@@ -527,15 +436,15 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		case 0:
 			s.ButtonHeight = b.Object.Rect.H()
 			b.Object.Pos.Y -= b.Object.Rect.H() * 0.5
-			b.OnHeld = func(_ *HoverClick) {
-				s.ViewPort.CamPos.Y += constants.ScrollSpeed * timing.DT
+			b.OnHold = func() {
+				s.ViewPort.CamPos.Y += ScrollSpeed * timing.DT
 				RestrictScroll(s)
 				AlignBarToView(s)
 			}
 		case 1:
 			b.Object.Pos.Y += b.Object.Rect.H() * 0.5
-			b.OnHeld = func(_ *HoverClick) {
-				s.ViewPort.CamPos.Y -= constants.ScrollSpeed * timing.DT
+			b.OnHold = func() {
+				s.ViewPort.CamPos.Y -= ScrollSpeed * timing.DT
 				RestrictScroll(s)
 				AlignBarToView(s)
 			}
@@ -543,11 +452,11 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			s.Bar = b
 			offset := 0.
 			barClick := false
-			b.Entity.AddComponent(myecs.Update, NewHoverClickFn(MenuInput, dlg.ViewPort, func(hvc *HoverClick) {
+			b.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dlg.ViewPort, func(hvc *data.HoverClick) {
 				if dlg.Open && dlg.Active && !dlg.Lock {
 					click := hvc.Input.Get("click")
 					if hvc.Hover && click.JustPressed() {
-						b.Entity.AddComponent(myecs.Drawable, b.ClickSpr)
+						b.Entity.AddComponent(myecs.Drawable, b.Sprite2)
 						offset = hvc.Pos.Y - b.Object.Pos.Y
 						barClick = true
 					}
@@ -567,7 +476,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		if ele.Key == "" {
 			fmt.Println("WARNING: element constructor has no key")
 		}
-		switch ele.Element {
+		switch ele.ElementType {
 		case ButtonElement:
 			b := CreateButtonElement(ele, dlg, s.ViewPort)
 			s.Elements = append(s.Elements, b)
@@ -595,7 +504,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	return s
 }
 
-func AlignViewToBar(s *Scroll) {
+func AlignViewToBar(s *Element) {
 	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
 	viewHeight := s.ViewPort.Rect.H()
 	if math.Abs(s.YTop-s.YBot) < viewHeight {
@@ -611,7 +520,7 @@ func AlignViewToBar(s *Scroll) {
 	s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
 }
 
-func AlignBarToView(s *Scroll) {
+func AlignBarToView(s *Element) {
 	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
 	viewHeight := s.ViewPort.Rect.H()
 	if math.Abs(s.YTop-s.YBot) < viewHeight {
@@ -634,7 +543,7 @@ func AlignBarToView(s *Scroll) {
 	//s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
 }
 
-func RestrictScroll(s *Scroll) {
+func RestrictScroll(s *Element) {
 	if s.Bar.Object.Pos.Y > s.ViewPort.PortPos.Y+s.ViewPort.Rect.H()*0.5-s.ButtonHeight-s.Bar.Object.Rect.H()*0.5 {
 		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
 	}
@@ -649,33 +558,26 @@ func RestrictScroll(s *Scroll) {
 	}
 }
 
-func UpdateScrollBounds(scroll *Scroll) {
+func UpdateScrollBounds(scroll *Element) {
 	yTop := 0.
 	yBot := 0.
 	for i, ele := range scroll.Elements {
 		obj := object.New()
-		if spr, okS := ele.(*SprElement); okS {
-			obj.Rect = spr.Object.Rect
-			obj.Pos = spr.Object.Pos
-		} else if btn, okB := ele.(*Button); okB {
-			obj.Rect = btn.Object.Rect
-			obj.Pos = btn.Object.Pos
-		} else if x, okX := ele.(*Checkbox); okX {
-			obj.Rect = x.Object.Rect
-			obj.Pos = x.Object.Pos
-		} else if ct, okC := ele.(*Container); okC {
-			obj.Rect = ct.ViewPort.Canvas.Bounds()
-			obj.Pos = ct.ViewPort.PortPos
-		} else if in, okI := ele.(*Input); okI {
-			obj.Rect = in.Text.Obj.Rect
-			obj.Pos = in.Text.Obj.Pos
-		} else if txt, okT := ele.(*Text); okT {
-			obj.Rect = txt.Text.Obj.Rect
-			obj.Pos = txt.Text.Obj.Pos
-		} else if scr, okScr := ele.(*Scroll); okScr {
-			obj.Rect = scr.BorderObject.Rect
-			obj.Pos = scr.ViewPort.PortPos
-		}
+		obj.Rect = ele.Object.Rect
+		obj.Pos = ele.Object.Pos
+		//if ct, okC := ele.(*Container); okC {
+		//	obj.Rect = ct.ViewPort.Canvas.Bounds()
+		//	obj.Pos = ct.ViewPort.PortPos
+		//} else if in, okI := ele.(*Input); okI {
+		//	obj.Rect = in.Text.Obj.Rect
+		//	obj.Pos = in.Text.Obj.Pos
+		//} else if txt, okT := ele.(*Text); okT {
+		//	obj.Rect = txt.Text.Obj.Rect
+		//	obj.Pos = txt.Text.Obj.Pos
+		//} else if scr, okScr := ele.(*Scroll); okScr {
+		//	obj.Rect = scr.BorderObject.Rect
+		//	obj.Pos = scr.ViewPort.PortPos
+		//}
 		oTop := obj.Pos.Y + obj.Rect.H()*0.5 + 1
 		oBot := obj.Pos.Y - obj.Rect.H()*0.5 - 1
 		if i == 0 || yTop < oTop {
@@ -691,164 +593,40 @@ func UpdateScrollBounds(scroll *Scroll) {
 	scroll.Bar.Object.Pos.Y = scroll.ViewPort.PortPos.Y + scroll.ViewPort.Rect.H()*0.5 - scroll.ButtonHeight - scroll.Bar.Object.Rect.H()*0.5
 }
 
-func CreateSpriteElement(element ElementConstructor) *SprElement {
+func CreateSpriteElement(element ElementConstructor) *Element {
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
-	obj.SetRect(img.Batchers[constants.UIBatch].GetSprite(element.SprKey).Frame())
-	spr := img.NewSprite(element.SprKey, constants.UIBatch)
+	obj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
+	spr := img.NewSprite(element.SprKey, element.Batch)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Drawable, spr)
-	s := &SprElement{
-		Key:    element.Key,
-		Sprite: spr,
-		Object: obj,
-		Entity: e,
+	s := &Element{
+		Key:         element.Key,
+		Sprite:      spr,
+		Object:      obj,
+		Entity:      e,
+		ElementType: SpriteElement,
 	}
 	return s
 }
 
-func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Text {
+func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Element {
 	tf := typeface.New("main", typeface.NewAlign(typeface.Left, typeface.Top), 1, 0.0625, 0, 0)
 	tf.SetPos(element.Position)
-	tf.SetColor(pixel.ToRGBA(constants.ColorWhite))
+	tf.SetColor(element.Color)
 	tf.SetText(element.Text)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, tf.Obj)
 	e.AddComponent(myecs.Drawable, tf)
 	e.AddComponent(myecs.DrawTarget, vp.Canvas)
-	t := &Text{
-		Key:    element.Key,
-		Text:   tf,
-		Entity: e,
+	t := &Element{
+		Key:         element.Key,
+		Text:        tf,
+		Object:      tf.Obj,
+		Entity:      e,
+		ElementType: TextElement,
 	}
 	return t
-}
-
-func ClearDialogStack() {
-	DialogStack = []*Dialog{}
-}
-
-func ClearDialogsOpen() {
-	DialogsOpen = []*Dialog{}
-}
-
-func OpenDialog(key string) {
-	dialog, ok := Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = true
-	DialogsOpen = append(DialogsOpen, dialog)
-	if dialog.OnOpen != nil {
-		dialog.OnOpen()
-	}
-}
-
-func OpenDialogInStack(key string) {
-	dialog, ok := Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = true
-	DialogStack = append(DialogStack, dialog)
-	if dialog.OnOpen != nil {
-		dialog.OnOpen()
-	}
-}
-
-func SetCloseSpcFn(key string, fn func()) {
-	dialog, ok := Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: SetCloseSpcFn: %s not registered\n", key)
-		return
-	}
-	dialog.OnCloseSpc = fn
-}
-
-func SetOnClick(dlgKey, btnKey string, fn func()) {
-	dialog, ok := Dialogs[dlgKey]
-	if !ok {
-		fmt.Printf("Warning: SetOnClick: Dialog %s not registered\n", dlgKey)
-		return
-	}
-	for _, ele := range dialog.Elements {
-		if btn, okB := ele.(*Button); okB && btn.Key == btnKey {
-			btn.OnClick = fn
-			return
-		}
-	}
-	fmt.Printf("Warning: SetOnClick: Button %s not registered in Dialog %s\n", btnKey, dlgKey)
-}
-
-func SetTempOnClick(dlgKey, btnKey string, fn func()) {
-	dialog, ok := Dialogs[dlgKey]
-	if !ok {
-		fmt.Printf("Warning: SetTempOnClick: Dialog %s not registered\n", dlgKey)
-		return
-	}
-	for _, ele := range dialog.Elements {
-		if btn, okB := ele.(*Button); okB && btn.Key == btnKey {
-			oldFn := btn.OnClick
-			btn.OnClick = func() {
-				fn()
-				btn.OnClick = oldFn
-				oldFn()
-			}
-			return
-		}
-	}
-	fmt.Printf("Warning: SetTempOnClick: Button %s not registered in Dialog %s\n", btnKey, dlgKey)
-}
-
-func CloseDialog(key string) {
-	dialog, ok := Dialogs[key]
-	if !ok {
-		fmt.Printf("Warning: CloseDialog: %s not registered\n", key)
-		return
-	}
-	dialog.Open = false
-	index := -1
-	stack := false
-	for i, d := range DialogsOpen {
-		if d.Key == key {
-			index = i
-			break
-		}
-	}
-	for i, d := range DialogStack {
-		if d.Key == key {
-			index = i
-			stack = true
-			break
-		}
-	}
-	if index == -1 {
-		fmt.Printf("Warning: CloseDialog: %s not open\n", key)
-		return
-	} else {
-		if stack {
-			if len(DialogStack) == 1 {
-				ClearDialogStack()
-			} else {
-				DialogStack = append(DialogStack[:index], DialogStack[index+1:]...)
-			}
-		} else {
-			if len(DialogsOpen) == 1 {
-				ClearDialogsOpen()
-			} else {
-				DialogsOpen = append(DialogsOpen[:index], DialogsOpen[index+1:]...)
-			}
-		}
-		if dialog.OnClose != nil {
-			dialog.OnClose()
-		}
-		if dialog.OnCloseSpc != nil {
-			dialog.OnCloseSpc()
-			dialog.OnCloseSpc = nil
-		}
-	}
 }

@@ -54,47 +54,56 @@ type MusicStream struct {
 }
 
 // PlayTrack plays the requested track, but does not change the
-// mode or change the tracks of the stream.
+// mode or change the tracks of the stream. Will not start the
+// track over if the requested track is already playing.
 func (s *MusicStream) PlayTrack(track string) {
 	if MusicPlayer.HasTrack(track) {
-		s.pause(true)
-		if track == "" {
-			s.stopped = true
-			return
+		if s.stopped || s.paused || s.curr != track {
+			s.pause(true)
+			if track == "" {
+				s.stopped = true
+				return
+			}
+			s.next = track
+			s.playNext = true
+			s.stopped = false
 		}
-		s.next = track
-		s.playNext = true
-		s.stopped = false
 	} else {
 		fmt.Printf("MUSIC WARNING: track %s not registered", track)
 	}
 }
 
 // SingleTrack plays the requested track and changes the stream's mode
-// to Single.
+// to Single. Will not start the track over if the requested track is
+// already playing.
 func (s *MusicStream) SingleTrack(track string) {
 	if MusicPlayer.HasTrack(track) {
-		s.pause(true)
-		s.next = track
-		s.tracks = []string{}
-		s.playNext = true
-		s.mode = Single
-		s.stopped = false
+		if s.stopped || s.paused || s.curr != track {
+			s.pause(true)
+			s.next = track
+			s.tracks = []string{}
+			s.playNext = true
+			s.mode = Single
+			s.stopped = false
+		}
 	} else {
 		fmt.Printf("MUSIC WARNING: track %s not registered", track)
 	}
 }
 
 // RepeatTrack plays the requested track and changes the stream's mode
-// to Repeat.
+// to Repeat. Will not start the track over if the requested track is
+// already playing.
 func (s *MusicStream) RepeatTrack(track string) {
 	if MusicPlayer.HasTrack(track) {
-		s.pause(true)
-		s.next = track
-		s.tracks = []string{track}
-		s.playNext = true
-		s.mode = Repeat
-		s.stopped = false
+		if s.stopped || s.paused || s.curr != track {
+			s.pause(true)
+			s.next = track
+			s.tracks = []string{track}
+			s.playNext = true
+			s.mode = Repeat
+			s.stopped = false
+		}
 	} else {
 		fmt.Printf("MUSIC WARNING: track %s not registered", track)
 	}

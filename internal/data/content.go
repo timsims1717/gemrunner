@@ -1,6 +1,10 @@
 package data
 
-import "github.com/gopxl/pixel"
+import (
+	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/pixelgl"
+	pxginput "github.com/timsims1717/pixel-go-input"
+)
 
 var (
 	PuzzleSetFileList      []PuzzleSetMetadata
@@ -11,6 +15,10 @@ var (
 	SelectedPrimaryColor   pixel.RGBA
 	SelectedSecondaryColor pixel.RGBA
 	SelectedDoodadColor    pixel.RGBA
+
+	Players       []Player
+	MenuInputUsed = pxginput.KeyboardMouse
+	MainJoystick  = -1
 )
 
 type PuzzleMetadata struct {
@@ -26,7 +34,17 @@ type PuzzleMetadata struct {
 }
 
 type PuzzleSetMetadata struct {
-	Name     string `json:"title"`
-	Filename string `json:"filename"`
-	Author   string `json:"author"`
+	Name       string `json:"title"`
+	Filename   string `json:"filename"`
+	Author     string `json:"author"`
+	NumPlayers int    `json:"numPlayers"`
+	NumPuzzles int    `json:"numPuzzles"`
+	Favorite   bool   `json:"favorite"`
+	Publish    bool   `json:"publish"`
+}
+
+type Player struct {
+	PlayerNum int
+	Keyboard  bool
+	Gamepad   pixelgl.Joystick
 }

@@ -4,8 +4,13 @@ import (
 	"fmt"
 	"gemrunner/pkg/object"
 	"github.com/gopxl/pixel"
+	"github.com/gopxl/pixel/imdraw"
 	"github.com/gopxl/pixel/text"
 	"golang.org/x/image/colornames"
+)
+
+var (
+	imd *imdraw.IMDraw
 )
 
 type Text struct {
@@ -14,7 +19,8 @@ type Text struct {
 	Color   pixel.RGBA
 	Align   Alignment
 	Symbols []symbolHandle
-	NoShow  bool
+	Hidden  bool
+	Debug   bool
 
 	Increment bool
 	CurrPos   int
@@ -55,8 +61,27 @@ func New(atlas string, align Alignment, lineHeight, relativeSize, maxWidth, maxH
 }
 
 func (item *Text) Draw(target pixel.Target) {
-	if !item.NoShow {
+	if !item.Hidden {
 		item.Text.Draw(target, item.Obj.Mat)
+		if item.Debug {
+			if imd == nil {
+				imd = imdraw.New(nil)
+			}
+			imd.Clear()
+			for _, d := range item.dotPosArray {
+				imd.Color = colornames.Cadetblue
+				imd.Push(d.Add(item.Obj.Pos), d.Add(item.Obj.Pos))
+				imd.Line(2)
+			}
+			imd.EndShape = imdraw.RoundEndShape
+			imd.Color = colornames.Indianred
+			imd.Push(item.Text.Orig.Add(item.Obj.Pos), item.Text.Orig.Add(item.Obj.Pos))
+			imd.Line(2)
+			imd.Color = colornames.Lawngreen
+			imd.Push(item.Text.Dot.Scaled(item.RelativeSize).Add(item.Obj.Pos), item.Text.Dot.Scaled(item.RelativeSize).Add(item.Obj.Pos))
+			imd.Line(2)
+			imd.Draw(target)
+		}
 	}
 }
 
@@ -88,6 +113,10 @@ func (item *Text) SetPos(pos pixel.Vec) {
 func (item *Text) SetOffset(pos pixel.Vec) {
 	item.Obj.Offset = pos
 	//item.updateText()
+}
+
+func (item *Text) UpdateText() {
+	item.updateText()
 }
 
 func (item *Text) IncrementTextPos() {

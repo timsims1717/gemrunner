@@ -2,7 +2,7 @@ package load
 
 import (
 	"fmt"
-	"gemrunner/internal/data"
+	"gemrunner/internal/ui"
 )
 
 func Test(s string) func() {
@@ -13,12 +13,12 @@ func Test(s string) func() {
 
 func CloseDialog(key string) func() {
 	return func() {
-		data.CloseDialog(key)
+		ui.CloseDialog(key)
 	}
 }
 
 func OpenDialog(key string) func() {
 	return func() {
-		data.OpenDialogInStack(key)
+		ui.OpenDialogInStack(key)
 	}
 }

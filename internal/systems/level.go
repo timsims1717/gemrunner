@@ -57,13 +57,13 @@ func LevelInit() {
 					i = 3
 				}
 				tile.Block = data.BlockEmpty
-				PlayerCharacter(obj.Pos, i)
+				PlayerCharacter(obj.Pos, i, tile)
 			case data.BlockDemon:
 				tile.Block = data.BlockEmpty
-				DemonCharacter(obj.Pos, tile.Metadata)
+				DemonCharacter(obj.Pos, tile)
 			case data.BlockFly:
 				tile.Block = data.BlockEmpty
-				FlyCharacter(obj.Pos, tile.Metadata)
+				FlyCharacter(obj.Pos, tile)
 			case data.BlockGemYellow,
 				data.BlockGemOrange,
 				data.BlockGemGray,
@@ -104,7 +104,7 @@ func LevelInit() {
 				CreateDoor(obj.Pos, doorKey)
 			case data.BlockBox:
 				tile.Block = data.BlockEmpty
-				CreateBox(obj.Pos)
+				CreateBox(obj.Pos, tile)
 			case data.BlockKeyYellow,
 				data.BlockKeyOrange,
 				data.BlockKeyGray,
