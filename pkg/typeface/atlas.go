@@ -31,3 +31,15 @@ func LoadTTF(path string, size float64) (font.Face, error) {
 		GlyphCacheEntries: 1,
 	}), nil
 }
+
+func LoadBytes(bytes []byte, size float64) (font.Face, error) {
+	f, err := truetype.Parse(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return truetype.NewFace(f, &truetype.Options{
+		Size:              size,
+		GlyphCacheEntries: 1,
+	}), nil
+}

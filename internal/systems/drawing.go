@@ -48,7 +48,7 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 	for _, layer := range layers {
 		for _, result := range myecs.Manager.Query(myecs.IsDrawable) {
 			obj, okO := result.Components[myecs.Object].(*object.Object)
-			if okO && obj.Layer == layer && !obj.Hidden {
+			if okO && obj.Layer == layer && !obj.Hidden && !obj.Unloaded {
 				draw := result.Components[myecs.Drawable]
 				if draw == nil {
 					continue
@@ -105,7 +105,7 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 	count := 0
 	for _, result := range myecs.Manager.Query(myecs.IsDrawable) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
-		if okO && obj.Layer == layer && !obj.Hidden {
+		if okO && obj.Layer == layer && !obj.Hidden && !obj.Unloaded {
 			draw := result.Components[myecs.Drawable]
 			if draw == nil {
 				continue

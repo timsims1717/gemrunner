@@ -27,14 +27,22 @@ type playState struct {
 	*state.AbstractState
 }
 
-func (s *playState) Unload() {
-	systems.LevelDispose()
-	systems.ClearTemp()
-}
-
-func (s *playState) Load() {
+func (s *playState) Unload(win *pixelgl.Window) {
 	ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
+	systems.DisposeInGameDialogs()
+	systems.LevelSessionDispose()
+	systems.LevelDispose()
+	systems.ClearTemp()
+	systems.PuzzleDispose()
+	data.CurrPuzzleSet = nil
+}
+
+func (s *playState) Load(win *pixelgl.Window) {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
+	systems.InGameDialogs(win)
+	systems.LevelSessionInit()
 	systems.LevelInit()
 	systems.UpdateViews()
 	data.EditorDraw = false
@@ -51,17 +59,19 @@ func (s *playState) Update(win *pixelgl.Window) {
 	systems.CursorSystem(true)
 	debug.AddText("Play State")
 	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
+	debug.AddText(systems.FormatTimePlayed())
 	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
-	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
+	//debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
 	debug.AddText(fmt.Sprintf("Frame Cycle: %d", data.CurrLevel.FrameCycle))
-	debug.AddTruthText("Frame Change", data.CurrLevel.FrameChange)
+	//debug.AddTruthText("Frame Change", data.CurrLevel.FrameChange)
 	for i, player := range data.CurrLevel.Players {
 		if player != nil {
 			pos := player.Object.Pos
 			debug.AddIntCoords(fmt.Sprintf("Player %d Pos", i+1), int(pos.X), int(pos.Y))
 			cx, cy := world.WorldToMap(pos.X, pos.Y)
 			debug.AddIntCoords(fmt.Sprintf("Player %d Coords", i+1), cx, cy)
-			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevel.Stats[i].Score))
+			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevelSess.PlayerStats[i].Score))
+			debug.AddText(fmt.Sprintf("Player %d Deaths: %d", i+1, data.CurrLevelSess.PlayerStats[i].Deaths))
 			debug.AddText(fmt.Sprintf("Player %d State: %s", i+1, player.State.String()))
 			if player.Inventory == nil {
 				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))
@@ -86,9 +96,6 @@ func (s *playState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.PlaySystem()
-	if data.CurrLevel == nil {
-		return
-	}
 	systems.FunctionSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)

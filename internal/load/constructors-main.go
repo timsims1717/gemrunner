@@ -8,20 +8,29 @@ import (
 )
 
 var (
-	mainMenuConstructor   *ui.DialogConstructor
-	addPlayersConstructor *ui.DialogConstructor
-	playLocalConstructor  *ui.DialogConstructor
-	puzzleListEntry       ui.ElementConstructor
-	puzzleTitleItem       ui.ElementConstructor
-	puzzleTitleShadowItem ui.ElementConstructor
-	puzzleNumberSpr       ui.ElementConstructor
-	playerNumberSpr       ui.ElementConstructor
-	numberItems           ui.ElementConstructor
-	favoriteItem          ui.ElementConstructor
+	// main menu
+	MainMenuConstructor   *ui.DialogConstructor
+	AddPlayersConstructor *ui.DialogConstructor
+	PlayLocalConstructor  *ui.DialogConstructor
+	PuzzleListEntry       ui.ElementConstructor
+	PuzzleTitleItem       ui.ElementConstructor
+	PuzzleTitleShadowItem ui.ElementConstructor
+	PuzzleNumberSpr       ui.ElementConstructor
+	PlayerNumberSpr       ui.ElementConstructor
+	NumberItems           ui.ElementConstructor
+	FavoriteItem          ui.ElementConstructor
+	// options
+
+	// in game
+	PauseConstructor      *ui.DialogConstructor
+	Player1InvConstructor *ui.DialogConstructor
+	Player2InvConstructor *ui.DialogConstructor
+	Player3InvConstructor *ui.DialogConstructor
+	Player4InvConstructor *ui.DialogConstructor
 )
 
 func InitMainMenuConstructors() {
-	mainMenuConstructor = &ui.DialogConstructor{
+	MainMenuConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogMainMenu,
 		Width:  28,
 		Height: 16,
@@ -73,7 +82,7 @@ func InitMainMenuConstructors() {
 			},
 		},
 	}
-	addPlayersConstructor = &ui.DialogConstructor{
+	AddPlayersConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogAddPlayers,
 		Width:  18,
 		Height: 6,
@@ -183,7 +192,7 @@ func InitMainMenuConstructors() {
 			},
 		},
 	}
-	playLocalConstructor = &ui.DialogConstructor{
+	PlayLocalConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogPlayLocal,
 		Width:  11,
 		Height: 12,
@@ -234,24 +243,6 @@ func InitMainMenuConstructors() {
 					},
 				},
 			},
-			//{
-			//	Key:         "play_continue_local",
-			//	SprKey:      "play_continue_btn_big",
-			//	SprKey2:     "play_continue_btn_click_big",
-			//	Batch:       constants.UIBatch,
-			//	HelpText:    "Start where you left off",
-			//	Position:    pixel.V(36, -84),
-			//	ElementType: ui.ButtonElement,
-			//},
-			{
-				Key:         "play_new_local",
-				SprKey:      "play_btn_big",
-				SprKey2:     "play_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Start at the Beginning",
-				Position:    pixel.V(56, -84),
-				ElementType: ui.ButtonElement,
-			},
 			{
 				Key:         "cancel_play_local",
 				SprKey:      "cancel_btn_big",
@@ -262,60 +253,463 @@ func InitMainMenuConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "custom_puzzle_list",
+				Key:         "main_tab_display",
 				Batch:       constants.UIBatch,
-				ElementType: ui.ScrollElement,
-				Position:    pixel.V(0, -7),
-				Width:       10 * world.TileSize,
-				Height:      8 * world.TileSize,
+				ElementType: ui.ContainerElement,
+				Width:       11 * world.TileSize,
+				Height:      12 * world.TileSize,
+			},
+			{
+				Key:         "custom_tab_display",
+				Batch:       constants.UIBatch,
+				ElementType: ui.ContainerElement,
+				Width:       11 * world.TileSize,
+				Height:      12 * world.TileSize,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "custom_puzzle_loading",
+						Batch:       constants.UIBatch,
+						ElementType: ui.ContainerElement,
+						Position:    pixel.V(0, -7),
+						Width:       10 * world.TileSize,
+						Height:      8 * world.TileSize,
+						SubElements: []ui.ElementConstructor{
+							{
+								Key:         "custom_loading_text",
+								Text:        "Loading...",
+								Color:       pixel.ToRGBA(constants.ColorWhite),
+								Position:    pixel.V(-28, 0),
+								ElementType: ui.TextElement,
+							},
+						},
+					},
+					{
+						Key:         "custom_puzzle_list",
+						Batch:       constants.UIBatch,
+						ElementType: ui.ScrollElement,
+						Position:    pixel.V(0, -7),
+						Width:       10 * world.TileSize,
+						Height:      8 * world.TileSize,
+					},
+					{
+						Key:         "custom_continue_game",
+						SprKey:      "play_continue_btn_big",
+						SprKey2:     "play_continue_btn_click_big",
+						Batch:       constants.UIBatch,
+						HelpText:    "Start where you left off",
+						Position:    pixel.V(36, -84),
+						ElementType: ui.ButtonElement,
+					},
+					{
+						Key:         "custom_new_game",
+						SprKey:      "play_btn_big",
+						SprKey2:     "play_btn_click_big",
+						Batch:       constants.UIBatch,
+						HelpText:    "Start at the Beginning",
+						Position:    pixel.V(56, -84),
+						ElementType: ui.ButtonElement,
+					},
+				},
 			},
 		},
 	}
-	puzzleListEntry = ui.ElementConstructor{
+	PuzzleListEntry = ui.ElementConstructor{
 		Key:         "puzzle_container_%d",
 		HelpText:    "Select this puzzle.",
 		ElementType: ui.ContainerElement,
 		Width:       9 * world.TileSize,
 		Height:      2 * world.TileSize,
 	}
-	puzzleTitleShadowItem = ui.ElementConstructor{
+	PuzzleTitleShadowItem = ui.ElementConstructor{
 		Key:         "puzzle_title_shadow",
 		Position:    pixel.V(-18, 9),
 		Color:       pixel.ToRGBA(constants.ColorBlue),
 		ElementType: ui.TextElement,
 	}
-	puzzleTitleItem = ui.ElementConstructor{
+	PuzzleTitleItem = ui.ElementConstructor{
 		Key:         "puzzle_title",
 		Position:    pixel.V(-18, 8),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
 	}
-	puzzleNumberSpr = ui.ElementConstructor{
+	PuzzleNumberSpr = ui.ElementConstructor{
 		Key:         "puzzle_num",
 		SprKey:      "puzzle_symbol",
 		Position:    pixel.V(-32, 8),
 		Batch:       constants.UIBatch,
 		ElementType: ui.SpriteElement,
 	}
-	playerNumberSpr = ui.ElementConstructor{
+	PlayerNumberSpr = ui.ElementConstructor{
 		Key:         "player_num",
 		SprKey:      "player_symbol",
 		Position:    pixel.V(-48, 8),
 		Batch:       constants.UIBatch,
 		ElementType: ui.SpriteElement,
 	}
-	numberItems = ui.ElementConstructor{
+	NumberItems = ui.ElementConstructor{
 		Key:         "number_text",
 		Position:    pixel.V(-50, -4),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
 	}
-	favoriteItem = ui.ElementConstructor{
+	FavoriteItem = ui.ElementConstructor{
 		Key:         "favorite_symbol",
 		SprKey:      "heart_empty",
 		SprKey2:     "heart_full",
 		Position:    pixel.V(-64, 0),
 		Batch:       constants.UIBatch,
 		ElementType: ui.CheckboxElement,
+	}
+	// pause menu
+	PauseConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPauseMenu,
+		Width:  7,
+		Height: 9,
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "pause_resume_ct",
+				Position:    pixel.V(0, 56),
+				ElementType: ui.ContainerElement,
+				Width:       7*world.TileSize - 8,
+				Height:      world.TileSize * 1.5,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "pause_resume_text",
+						Text:        "Resume",
+						Color:       pixel.ToRGBA(constants.ColorWhite),
+						Position:    pixel.V(-16, 0),
+						ElementType: ui.TextElement,
+					},
+				},
+			},
+			{
+				Key:         "pause_restart_ct",
+				Position:    pixel.V(0, 28),
+				ElementType: ui.ContainerElement,
+				Width:       7*world.TileSize - 8,
+				Height:      world.TileSize * 1.5,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "pause_restart_text",
+						Text:        "Restart",
+						Color:       pixel.ToRGBA(constants.ColorWhite),
+						Position:    pixel.V(-18, 0),
+						ElementType: ui.TextElement,
+					},
+				},
+			},
+			{
+				Key:         "pause_options_ct",
+				Position:    pixel.V(0, 0),
+				ElementType: ui.ContainerElement,
+				Width:       7*world.TileSize - 8,
+				Height:      world.TileSize * 1.5,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "pause_restart_text",
+						Text:        "Options",
+						Color:       pixel.ToRGBA(constants.ColorWhite),
+						Position:    pixel.V(-17, 0),
+						ElementType: ui.TextElement,
+					},
+				},
+			},
+			{
+				Key:         "pause_quit_mm_ct",
+				Position:    pixel.V(0, -28),
+				ElementType: ui.ContainerElement,
+				Width:       7*world.TileSize - 8,
+				Height:      world.TileSize * 1.5,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "pause_quit_mm_text",
+						Text:        "Quit to Menu",
+						Color:       pixel.ToRGBA(constants.ColorWhite),
+						Position:    pixel.V(-36, 0),
+						ElementType: ui.TextElement,
+					},
+				},
+			},
+			{
+				Key:         "pause_quit_full_ct",
+				Position:    pixel.V(0, -56),
+				ElementType: ui.ContainerElement,
+				Width:       7*world.TileSize - 8,
+				Height:      world.TileSize * 1.5,
+				SubElements: []ui.ElementConstructor{
+					{
+						Key:         "pause_quit_full_text",
+						Text:        "Quit to Desktop",
+						Color:       pixel.ToRGBA(constants.ColorWhite),
+						Position:    pixel.V(-42, 0),
+						ElementType: ui.TextElement,
+					},
+				},
+			},
+		},
+	}
+	Player1InvConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPlayer1Inv,
+		Width:  6,
+		Height: 1,
+		Pos:    pixel.V(-528, -414),
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "player_score",
+				Text:        "0000000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-12, 5),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_skull",
+				SprKey:      "player1_skull",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 1's total deaths",
+				Position:    pixel.V(-42, -4),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_deaths",
+				Text:        "x000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-36, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_gem",
+				SprKey:      "player1_gem",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 1's total gems",
+				Position:    pixel.V(-6, -3),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_gems",
+				Text:        "x0000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_inv_cnt",
+				Position:    pixel.V(40, 0),
+				ElementType: ui.ContainerElement,
+				Width:       world.TileSize,
+				Height:      world.TileSize,
+			},
+			{
+				Key:         "player_inv_item",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_inv_item_2",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+		},
+	}
+	Player2InvConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPlayer2Inv,
+		Width:  6,
+		Height: 1,
+		Pos:    pixel.V(-264, -414),
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "player_score",
+				Text:        "0000000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-12, 5),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_skull",
+				SprKey:      "player2_skull",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 2's total deaths",
+				Position:    pixel.V(-42, -4),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_deaths",
+				Text:        "x000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-36, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_gem",
+				SprKey:      "player2_gem",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 2's total gems",
+				Position:    pixel.V(-6, -3),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_gems",
+				Text:        "x0000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_inv_cnt",
+				Position:    pixel.V(40, 0),
+				ElementType: ui.ContainerElement,
+				Width:       world.TileSize,
+				Height:      world.TileSize,
+			},
+			{
+				Key:         "player_inv_item",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_inv_item_2",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+		},
+	}
+	Player3InvConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPlayer3Inv,
+		Width:  6,
+		Height: 1,
+		Pos:    pixel.V(264, -414),
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "player_score",
+				Text:        "0000000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-12, 5),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_skull",
+				SprKey:      "player3_skull",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 3's total deaths",
+				Position:    pixel.V(-42, -4),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_deaths",
+				Text:        "x000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-36, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_gem",
+				SprKey:      "player3_gem",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 3's total gems",
+				Position:    pixel.V(-6, -3),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_gems",
+				Text:        "x0000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_inv_cnt",
+				Position:    pixel.V(40, 0),
+				ElementType: ui.ContainerElement,
+				Width:       world.TileSize,
+				Height:      world.TileSize,
+			},
+			{
+				Key:         "player_inv_item",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_inv_item_2",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+		},
+	}
+	Player4InvConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPlayer4Inv,
+		Width:  6,
+		Height: 1,
+		Pos:    pixel.V(528, -414),
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "player_score",
+				Text:        "0000000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-12, 5),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_skull",
+				SprKey:      "player4_skull",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 4's total deaths",
+				Position:    pixel.V(-42, -4),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_deaths",
+				Text:        "x000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(-36, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_gem",
+				SprKey:      "player4_gem",
+				Batch:       constants.UIBatch,
+				HelpText:    "Player 4's total gems",
+				Position:    pixel.V(-6, -3),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_gems",
+				Text:        "x0000",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, -3),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "player_inv_cnt",
+				Position:    pixel.V(40, 0),
+				ElementType: ui.ContainerElement,
+				Width:       world.TileSize,
+				Height:      world.TileSize,
+			},
+			{
+				Key:         "player_inv_item",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+			{
+				Key:         "player_inv_item_2",
+				SprKey:      "rock",
+				Batch:       constants.TileBatch,
+				Position:    pixel.V(40, 0),
+				ElementType: ui.SpriteElement,
+			},
+		},
 	}
 }

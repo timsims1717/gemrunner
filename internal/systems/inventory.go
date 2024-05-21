@@ -129,7 +129,7 @@ func DoAction(ch *data.Dynamic) bool {
 		ch.Inventory != nil && ch.Inventory.HasComponent(myecs.Action) {
 		if fnA, ok := ch.Inventory.GetComponentData(myecs.Action); ok {
 			if colFn, okC := fnA.(*data.Interact); okC {
-				colFn.Fn(data.CurrLevel, ch.Player, ch, ch.Inventory)
+				colFn.Fn(ch.Player, ch, ch.Inventory)
 				ch.Flags.ActionBuff = 0
 				return true
 			}

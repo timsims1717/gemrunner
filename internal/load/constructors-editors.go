@@ -9,32 +9,32 @@ import (
 
 var (
 	// editor panels
-	editorPanelTopConstructor  *ui.DialogConstructor
-	editorPanelLeftConstructor *ui.DialogConstructor
-	editorOptBottomConstructor *ui.DialogConstructor
-	editorOptRightConstructor  *ui.DialogConstructor
+	EditorPanelTopConstructor  *ui.DialogConstructor
+	EditorPanelLeftConstructor *ui.DialogConstructor
+	EditorOptBottomConstructor *ui.DialogConstructor
+	EditorOptRightConstructor  *ui.DialogConstructor
 	// editor options dialogs
-	openPuzzleConstructor          *ui.DialogConstructor
-	changeNameConstructor          *ui.DialogConstructor
-	noPlayersInPuzzleConstructor   *ui.DialogConstructor
-	areYouSureDeleteConstructor    *ui.DialogConstructor
-	unableToSaveConstructor        *ui.DialogConstructor
-	unableToSaveConfirmConstructor *ui.DialogConstructor
-	worldDialogConstructor         *ui.DialogConstructor
-	worldListEntry                 ui.ElementConstructor
-	turfTileItem                   ui.ElementConstructor
-	ladderTileItem                 ui.ElementConstructor
-	doodadTileItem                 ui.ElementConstructor
-	worldTxtItem                   ui.ElementConstructor
+	OpenPuzzleConstructor          *ui.DialogConstructor
+	ChangeNameConstructor          *ui.DialogConstructor
+	NoPlayersInPuzzleConstructor   *ui.DialogConstructor
+	AreYouSureDeleteConstructor    *ui.DialogConstructor
+	UnableToSaveConstructor        *ui.DialogConstructor
+	UnableToSaveConfirmConstructor *ui.DialogConstructor
+	WorldDialogConstructor         *ui.DialogConstructor
+	WorldListEntry                 ui.ElementConstructor
+	TurfTileItem                   ui.ElementConstructor
+	LadderTileItem                 ui.ElementConstructor
+	DoodadTileItem                 ui.ElementConstructor
+	WorldTxtItem                   ui.ElementConstructor
 	// editor mode dialogs
-	crackedTileOptionsConstructor *ui.DialogConstructor
-	bombOptionsConstructor        *ui.DialogConstructor
-	jetpackOptionsConstructor     *ui.DialogConstructor
+	CrackedTileOptionsConstructor *ui.DialogConstructor
+	BombOptionsConstructor        *ui.DialogConstructor
+	JetpackOptionsConstructor     *ui.DialogConstructor
 )
 
 func InitEditorConstructors() {
 	// Editor Options
-	openPuzzleConstructor = &ui.DialogConstructor{
+	OpenPuzzleConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogOpenPuzzle,
 		Width:  11,
 		Height: 10,
@@ -75,7 +75,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	changeNameConstructor = &ui.DialogConstructor{
+	ChangeNameConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogChangeName,
 		Width:  12,
 		Height: 4,
@@ -119,7 +119,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	noPlayersInPuzzleConstructor = &ui.DialogConstructor{
+	NoPlayersInPuzzleConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogNoPlayersInPuzzle,
 		Width:  8,
 		Height: 3,
@@ -142,7 +142,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	areYouSureDeleteConstructor = &ui.DialogConstructor{
+	AreYouSureDeleteConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogAreYouSureDelete,
 		Width:  8,
 		Height: 3,
@@ -174,7 +174,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	unableToSaveConstructor = &ui.DialogConstructor{
+	UnableToSaveConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogUnableToSave,
 		Width:  8,
 		Height: 3,
@@ -197,7 +197,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	unableToSaveConfirmConstructor = &ui.DialogConstructor{
+	UnableToSaveConfirmConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogUnableToSaveConfirm,
 		Width:  8,
 		Height: 4,
@@ -229,7 +229,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	worldDialogConstructor = &ui.DialogConstructor{
+	WorldDialogConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogChangeWorld,
 		Width:  17,
 		Height: 12,
@@ -987,39 +987,39 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	worldListEntry = ui.ElementConstructor{
+	WorldListEntry = ui.ElementConstructor{
 		Key:         "world_container_%d",
 		HelpText:    "Change to %s world.",
 		ElementType: ui.ContainerElement,
 		Width:       7 * world.TileSize,
 		Height:      1 * world.TileSize,
 	}
-	turfTileItem = ui.ElementConstructor{
+	TurfTileItem = ui.ElementConstructor{
 		Key:         "turf_tile",
 		Position:    pixel.V(-48, 0),
 		Batch:       constants.TileBatch,
 		ElementType: ui.SpriteElement,
 	}
-	ladderTileItem = ui.ElementConstructor{
+	LadderTileItem = ui.ElementConstructor{
 		Key:         "ladder_tile",
 		Position:    pixel.V(-32, 0),
 		Batch:       constants.TileBatch,
 		ElementType: ui.SpriteElement,
 	}
-	doodadTileItem = ui.ElementConstructor{
+	DoodadTileItem = ui.ElementConstructor{
 		Key:         "doodad_tile",
 		Position:    pixel.V(-16, 0),
 		Batch:       constants.TileBatch,
 		ElementType: ui.SpriteElement,
 	}
-	worldTxtItem = ui.ElementConstructor{
+	WorldTxtItem = ui.ElementConstructor{
 		Key:         "world_text",
 		Position:    pixel.V(-4, 0),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
 	}
 	// Editor Panels
-	editorPanelTopConstructor = &ui.DialogConstructor{
+	EditorPanelTopConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogEditorPanelTop,
 		Width:  17,
 		Height: 1,
@@ -1178,11 +1178,11 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	editorPanelLeftConstructor = &ui.DialogConstructor{
+	EditorPanelLeftConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogEditorPanelLeft,
 		Width:  2,
 		Height: 10,
-		Pos:    pixel.V(-692, 0),
+		Pos:    pixel.V(-747, 0),
 		Elements: []ui.ElementConstructor{
 			{
 				Key:         "brush_btn",
@@ -1337,7 +1337,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	editorOptBottomConstructor = &ui.DialogConstructor{
+	EditorOptBottomConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogEditorOptionsBot,
 		Width:  9,
 		Height: 1,
@@ -1417,11 +1417,11 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	editorOptRightConstructor = &ui.DialogConstructor{
+	EditorOptRightConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogEditorOptionsRight,
 		Width:  2,
 		Height: 10,
-		Pos:    pixel.V(692, 0),
+		Pos:    pixel.V(747, 0),
 		Elements: []ui.ElementConstructor{
 			{
 				Key:      "test_btn",
@@ -1514,7 +1514,7 @@ func InitEditorConstructors() {
 		},
 	}
 	// Wrench
-	crackedTileOptionsConstructor = &ui.DialogConstructor{
+	CrackedTileOptionsConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogCrackedTiles,
 		Width:  8,
 		Height: 6,
@@ -1594,7 +1594,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	bombOptionsConstructor = &ui.DialogConstructor{
+	BombOptionsConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogBomb,
 		Width:  8,
 		Height: 6,
@@ -1693,7 +1693,7 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	jetpackOptionsConstructor = &ui.DialogConstructor{
+	JetpackOptionsConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogJetpack,
 		Width:  8,
 		Height: 6,

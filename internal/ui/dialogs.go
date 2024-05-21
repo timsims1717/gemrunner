@@ -22,6 +22,7 @@ type Dialog struct {
 	Key          string
 	Pos          pixel.Vec
 	ViewPort     *viewport.ViewPort
+	Border       *Border
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
 	BorderEntity *ecs.Entity
@@ -35,6 +36,7 @@ type Dialog struct {
 
 	Open   bool
 	Active bool
+	Loaded bool
 	Click  bool
 	Lock   bool
 	Layer  int
@@ -71,13 +73,15 @@ func NewDialog(dc *DialogConstructor) {
 		bObj := object.New()
 		bObj.Layer = 99
 		//bObj.Pos = dc.Pos
+		bord := &Border{
+			Width:  int(dc.Width),
+			Height: int(dc.Height),
+		}
 		be := myecs.Manager.NewEntity()
 		be.AddComponent(myecs.Object, bObj).
-			AddComponent(myecs.Border, &Border{
-				Width:  int(dc.Width),
-				Height: int(dc.Height),
-			})
+			AddComponent(myecs.Border, bord)
 
+		dlg.Border = bord
 		dlg.BorderVP = bvp
 		dlg.BorderObject = bObj
 		dlg.BorderEntity = be
@@ -101,7 +105,7 @@ func NewDialog(dc *DialogConstructor) {
 			i := CreateInputElement(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, i)
 		case ScrollElement:
-			s := CreateScrollElement(element, dlg, dlg.ViewPort)
+			s := CreateScrollElement(element, dlg, nil, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, s)
 		case SpriteElement:
 			s := CreateSpriteElement(element)
@@ -113,6 +117,15 @@ func NewDialog(dc *DialogConstructor) {
 	}
 
 	Dialogs[dc.Key] = dlg
+}
+
+func (d *Dialog) Get(key string) *Element {
+	for _, e := range d.Elements {
+		if e.Key == key {
+			return e
+		}
+	}
+	return nil
 }
 
 func (d *Dialog) ActionFocus() {
@@ -133,4 +146,17 @@ func (d *Dialog) UpFocus() {
 
 func (d *Dialog) DownFocus() {
 
+}
+
+func Dispose(d *Dialog) {
+	DisposeSubElements(d.Elements)
+	myecs.Manager.DisposeEntity(d.BorderEntity)
+}
+
+func DisposeSubElements(elements []*Element) {
+	for _, e := range elements {
+		DisposeSubElements(e.Elements)
+		myecs.Manager.DisposeEntity(e.Entity)
+		myecs.Manager.DisposeEntity(e.BorderEntity)
+	}
 }

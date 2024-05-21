@@ -48,25 +48,28 @@ func DialogSystem(win *pixelgl.Window) {
 	layer += 100
 	for key, dialog := range ui.Dialogs {
 		if !util.ContainsStr(key, updated) {
+			//UpdateDialogLayer99(dialog)
 			layer = UpdateDialogLayers(dialog, layer)
 		}
 	}
 }
 
 func UpdateDialog(dialog *ui.Dialog, layer int) int {
+	dialog.Loaded = true
 	dialog.Layer = layer
 	if !dialog.NoBorder {
 		dialog.BorderVP.Update()
 		dialog.BorderObject.Layer = layer
 	}
 	dialog.ViewPort.Update()
-	nextLayer := UpdateSubElements(dialog.Elements, layer)
+	nextLayer := UpdateSubElements(dialog.Elements, dialog.ViewPort, layer)
 	return nextLayer
 }
 
-func UpdateSubElements(elements []*ui.Element, layer int) int {
+func UpdateSubElements(elements []*ui.Element, vp *viewport.ViewPort, layer int) int {
 	nextLayer := layer + 1
 	for _, e := range elements {
+		e.Object.Unloaded = !vp.PointInside(e.Object.Pos)
 		switch e.ElementType {
 		case ui.SpriteElement, ui.ButtonElement, ui.CheckboxElement:
 			e.Object.Layer = layer
@@ -74,19 +77,25 @@ func UpdateSubElements(elements []*ui.Element, layer int) int {
 			e.Text.Obj.Layer = layer
 		case ui.InputElement:
 			e.Layer = nextLayer
-			e.BorderVP.Update()
 			e.BorderObject.Layer = e.Layer
-			e.ViewPort.Update()
 			e.Text.Obj.Layer = e.Layer
 			e.CaretObj.Layer = e.Layer
+			if !e.Object.Hidden && !e.Object.Unloaded {
+				e.BorderVP.Update()
+				e.ViewPort.Update()
+			}
 			nextLayer++
 		case ui.ScrollElement, ui.ContainerElement:
-			e.BorderVP.Update()
 			e.BorderObject.Layer = nextLayer
 			e.Object.Layer = nextLayer
-			e.ViewPort.Update()
 			e.Layer = nextLayer
-			nextLayer = UpdateSubElements(e.Elements, e.Layer)
+			if !e.Object.Hidden && !e.Object.Unloaded {
+				e.BorderVP.Update()
+				e.ViewPort.Update()
+				nextLayer = UpdateSubElements(e.Elements, e.ViewPort, e.Layer)
+			} else {
+				nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
+			}
 		}
 	}
 	return nextLayer
@@ -126,10 +135,45 @@ func UpdateSubElementLayers(elements []*ui.Element, layer int) int {
 			e.Object.Layer = nextLayer
 			//e.ViewPort.Update()
 			e.Layer = nextLayer
-			nextLayer = UpdateSubElements(e.Elements, e.Layer)
+			nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
 		}
 	}
 	return nextLayer
+}
+
+func UpdateDialogLayer99(dialog *ui.Dialog) {
+	dialog.Layer = 99
+	if !dialog.NoBorder {
+		//dialog.BorderVP.Update()
+		dialog.BorderObject.Layer = 99
+	}
+	//dialog.ViewPort.Update()
+	UpdateSubElementLayer99(dialog.Elements)
+}
+
+func UpdateSubElementLayer99(elements []*ui.Element) {
+	for _, e := range elements {
+		switch e.ElementType {
+		case ui.SpriteElement, ui.ButtonElement, ui.CheckboxElement:
+			e.Object.Layer = 99
+		case ui.TextElement:
+			e.Text.Obj.Layer = 99
+		case ui.InputElement:
+			e.Layer = 99
+			//e.BorderVP.Update()
+			e.BorderObject.Layer = e.Layer
+			//e.ViewPort.Update()
+			e.Text.Obj.Layer = e.Layer
+			e.CaretObj.Layer = e.Layer
+		case ui.ScrollElement, ui.ContainerElement:
+			//e.BorderVP.Update()
+			e.BorderObject.Layer = 99
+			e.Object.Layer = 99
+			//e.ViewPort.Update()
+			e.Layer = 99
+			UpdateSubElementLayer99(e.Elements)
+		}
+	}
 }
 
 func DialogDrawSystem(win *pixelgl.Window) {
@@ -168,6 +212,9 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		return
 	}
 	if element.Object.Hidden {
+		return
+	}
+	if element.Object.Unloaded {
 		return
 	}
 	switch element.ElementType {

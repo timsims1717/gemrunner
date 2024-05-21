@@ -67,7 +67,6 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 		ch.Color = constants.StrColorBrown
 	}
 	data.CurrLevel.Players[p] = ch
-	data.CurrLevel.Stats[p] = data.NewStats()
 	data.CurrLevel.PControls[p] = ch.Control
 }
 
@@ -101,7 +100,7 @@ func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	return demon
 }
 
-func KillPlayer(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if p < 0 ||
 		p >= constants.MaxPlayers ||
 		ch.State == data.Hit ||

@@ -24,12 +24,18 @@ type mainMenuState struct {
 	*state.AbstractState
 }
 
-func (s *mainMenuState) Unload() {
-	ui.CloseDialog(constants.DialogMainMenu)
+func (s *mainMenuState) Unload(win *pixelgl.Window) {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
+	systems.DisposeMainDialogs()
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
-func (s *mainMenuState) Load() {
+func (s *mainMenuState) Load(win *pixelgl.Window) {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
+	systems.MainDialogs(win)
+	systems.PreLoadCustomPuzzleList()
 	ui.OpenDialog(constants.DialogMainMenu)
 	systems.UpdateViews()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(constants.TrackMenu)

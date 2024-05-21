@@ -8,8 +8,8 @@ import (
 )
 
 type State interface {
-	Unload()
-	Load()
+	Unload(*pixelgl.Window)
+	Load(*pixelgl.Window)
 	Update(*pixelgl.Window)
 	Draw(*pixelgl.Window)
 	SetAbstract(*AbstractState)
@@ -70,7 +70,7 @@ func SetClearColor(col color.Color) {
 }
 
 func Update(win *pixelgl.Window) {
-	updateState()
+	updateState(win)
 	if loading {
 		select {
 		case <-done:
@@ -116,14 +116,14 @@ func Draw(win *pixelgl.Window) {
 	}
 }
 
-func updateState() {
+func updateState(win *pixelgl.Window) {
 	if !loading {
 		if len(stateStack)-1 > stackPtr {
 			// states need to be popped
 			for si := len(stateStack) - 1; si > stackPtr; si-- {
 				if cState, ok := states[stateStack[si]]; ok {
 					// unload
-					cState.Unload()
+					cState.Unload(win)
 				}
 			}
 			if stackPtr == -1 {
@@ -138,7 +138,7 @@ func updateState() {
 				stackPtr++
 				go func() {
 					// initialize
-					cState.Load()
+					cState.Load(win)
 					done <- struct{}{}
 				}()
 				loading = true

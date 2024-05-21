@@ -12,10 +12,10 @@ var objIndex = uint32(0)
 var ILock bool
 
 type Object struct {
-	ID     string
-	Hidden bool
-	Loaded bool
-	Killed bool
+	ID       string
+	Hidden   bool
+	Unloaded bool
+	Killed   bool
 
 	Pos  pixel.Vec
 	Mat  pixel.Matrix

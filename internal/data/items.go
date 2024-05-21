@@ -10,10 +10,10 @@ import (
 )
 
 type Interact struct {
-	Fn func(*Level, int, *Dynamic, *ecs.Entity)
+	Fn func(int, *Dynamic, *ecs.Entity)
 }
 
-func NewInteract(fn func(*Level, int, *Dynamic, *ecs.Entity)) *Interact {
+func NewInteract(fn func(int, *Dynamic, *ecs.Entity)) *Interact {
 	return &Interact{Fn: fn}
 }
 

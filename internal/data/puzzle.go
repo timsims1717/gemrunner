@@ -7,6 +7,7 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/imdraw"
+	"time"
 )
 
 var (
@@ -15,6 +16,7 @@ var (
 	BorderView         *viewport.ViewPort
 	IMDraw             *imdraw.IMDraw
 
+	CurrLevelSess *LevelSession
 	CurrLevel     *Level
 	CurrPuzzleSet *PuzzleSet
 	CurrSelect    *Selection
@@ -24,11 +26,37 @@ var (
 	PuzzleShader string
 )
 
+type LevelSession struct {
+	PlayerStats [constants.MaxPlayers]*PlayerStats `json:"playerStats"`
+	Levels      LevelCompletion                    `json:"levels"`
+
+	LevelStart   time.Time     `json:"-"`
+	TimePlayed   time.Duration `json:"-"`
+	TotalTime    time.Duration `json:"totalTime"`
+	PuzzleIndex  int           `json:"puzzleIndex"`
+	PuzzleFile   string        `json:"puzzleFile"`
+	Filename     string        `json:"filename"`
+	TotalGems    int           `json:"totalGems"`
+	TotalRedGems int           `json:"totalRedGems"`
+
+	// who has a red key
+	// abilities
+
+	PuzzleSet *PuzzleSet        `json:"-"`
+	Metadata  PuzzleSetMetadata `json:"-"`
+}
+
+type LevelCompletion struct {
+	Index     int            `json:"index"`
+	GemScore  int            `json:"gemScore"`
+	Completed bool           `json:"completed"`
+	Changed   []world.Coords `json:"changed"`
+}
+
 type Level struct {
 	Tiles     *Tiles
 	Enemies   []*Dynamic
 	Players   [constants.MaxPlayers]*Dynamic
-	Stats     [constants.MaxPlayers]*PlayerStats
 	PControls [constants.MaxPlayers]Controller
 	Start     bool
 	Failed    bool
@@ -248,4 +276,19 @@ playerCheck:
 		}
 	}
 	return hasPlayers
+}
+
+func (p *Puzzle) NumPlayers() int {
+	numPlayers := 0
+	for _, row := range p.Tiles.T {
+		for _, t := range row {
+			if t.Block == BlockPlayer1 ||
+				t.Block == BlockPlayer2 ||
+				t.Block == BlockPlayer3 ||
+				t.Block == BlockPlayer4 {
+				numPlayers++
+			}
+		}
+	}
+	return numPlayers
 }

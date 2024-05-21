@@ -3,9 +3,11 @@ package systems
 import (
 	"gemrunner/internal/data"
 	"gemrunner/pkg/state"
+	"time"
 )
 
 func TestSystem() {
+	data.CurrLevelSess.TimePlayed = time.Since(data.CurrLevelSess.LevelStart)
 	allDead := true
 	for _, p := range data.CurrLevel.Players {
 		if p == nil {

@@ -50,6 +50,21 @@ func ContainsStr(s string, a []string) bool {
 	return false
 }
 
+func RemoveStrUO(s string, a []string) []string {
+	in := -1
+	for i, c := range a {
+		if c == s {
+			in = i
+			break
+		}
+	}
+	if in > -1 {
+		a[in] = a[0]
+		return a[1:]
+	}
+	return a
+}
+
 // PointInside returns true if the pixel.Vec is inside the pixel.Rect
 // when unprojected by the pixel.Matrix
 func PointInside(p pixel.Vec, r pixel.Rect, m pixel.Matrix) bool {

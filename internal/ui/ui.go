@@ -82,3 +82,12 @@ type Element struct {
 	YTop         float64
 	YBot         float64
 }
+
+func (e *Element) Get(key string) *Element {
+	for _, e1 := range e.Elements {
+		if e1.Key == key {
+			return e1
+		}
+	}
+	return nil
+}

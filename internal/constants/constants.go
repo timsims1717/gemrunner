@@ -1,12 +1,11 @@
 package constants
 
 const (
-	Title     = "Gem Runner"
-	Release   = 0
-	Version   = 1
-	Build     = 20240322
-	WinWidth  = 1600
-	WinHeight = 900
+	Title            = "Gem Runner"
+	Release          = 0
+	Version          = 1
+	Build            = 20240322
+	ScreenRatioLimit = 0.8
 
 	// Directories
 	LinuxDir  = "/.local/share/GemRunnerEditor"
@@ -16,6 +15,7 @@ const (
 	SaveDir   = "/saves"
 	PuzzleExt = ".puzzle"
 	SaveExt   = ".savegame"
+	Favorites = ".favorites"
 
 	// World Constants
 	TileSize     = 16.
@@ -126,6 +126,8 @@ var (
 	ConfigFile string
 
 	// Options
+	WinWidth  = 1600.
+	WinHeight = 900.
 	FrameRate = 30
 
 	// In Game Vars

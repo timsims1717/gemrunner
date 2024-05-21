@@ -1,7 +1,9 @@
 package main
 
 import (
+	"gemrunner/embed"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/load"
 	"gemrunner/internal/states"
@@ -12,7 +14,6 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/sfx"
-	"gemrunner/pkg/shaders"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/typeface"
@@ -25,9 +26,12 @@ import (
 
 func run() {
 	world.SetTileSize(constants.TileSize)
+	constants.WinWidth = 1920
+	constants.WinHeight = 1080
+	options.RegisterResolution(pixel.V(1920, 1080))
 	cfg := pixelgl.WindowConfig{
 		Title:  "Gem Runner",
-		Bounds: pixel.R(0, 0, 1600, 900),
+		Bounds: pixel.R(0, 0, constants.WinWidth, constants.WinHeight),
 		VSync:  true,
 	}
 	options.BilinearFilter = false
@@ -40,8 +44,8 @@ func run() {
 	win.SetCursorVisible(false)
 	viewport.ILockDefault = true
 	viewport.MainCamera = viewport.New(win.Canvas())
-	viewport.MainCamera.SetRect(pixel.R(0, 0, 1600, 900))
-	viewport.MainCamera.CamPos = pixel.V(1600*0.5, 900*0.5)
+	viewport.MainCamera.SetRect(pixel.R(0, 0, constants.WinWidth, constants.WinHeight))
+	viewport.MainCamera.CamPos = pixel.V(constants.WinWidth*0.5, constants.WinHeight*0.5)
 
 	state.Register(constants.MainMenuKey, state.New(states.MainMenuState))
 	state.Register(constants.EditorStateKey, state.New(states.EditorState))
@@ -49,13 +53,13 @@ func run() {
 	state.Register(constants.PlayStateKey, state.New(states.PlayState))
 	//state.PushState(states.TestStateKey)
 	//filename := fmt.Sprintf("%s/%s", constants.PuzzlesDir, "Get Those Gems.puzzle")
-	//err = systems.OpenPuzzle(filename)
+	//err = systems.OpenPuzzleFile(filename)
 	//if err != nil {
 	//	panic(err)
 	//}
 
-	typeface.RoundDot = true
-	mainFont, err := typeface.LoadTTF("assets/Jive_Talking.ttf", 128.)
+	//mainFont, err := typeface.LoadTTF("embed/Jive_Talking.ttf", 128.)
+	mainFont, err := typeface.LoadBytes(embed.JiveTalking, 128.)
 	typeface.Atlases["main"] = text.NewAtlas(mainFont, text.ASCII)
 
 	uiSheet, err := img.LoadSpriteSheet("assets/ui.json")
@@ -69,11 +73,12 @@ func run() {
 	}
 	img.AddBatcher(constants.TileBatch, tileSheet, true, true)
 
-	sh, err := shaders.LoadFileToString("assets/shaders/puzzle-shader.frag.glsl")
-	if err != nil {
-		panic(err)
-	}
-	data.PuzzleShader = sh
+	//sh, err := shaders.LoadFileToString("embed/puzzle-shader.frag.glsl")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//data.PuzzleShader = sh
+	data.PuzzleShader = embed.PuzzleShader
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.ShowText = false
@@ -81,14 +86,14 @@ func run() {
 
 	object.ILock = true
 
+	content.LoadFavoritesFile()
+
 	load.Music()
 	load.SoundEffects()
 
 	ui.ScrollSpeed = constants.ScrollSpeed
 	load.InitEditorConstructors()
 	load.InitMainMenuConstructors()
-	load.EditorDialogs(win)
-	load.MainDialogs(win)
 	systems.InitMainBorder()
 	systems.CursorInit()
 

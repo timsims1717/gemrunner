@@ -16,7 +16,7 @@ func UpdateViews() {
 	if hRatio < wRatio {
 		maxRatio = hRatio
 	}
-	maxRatio *= 0.9
+	maxRatio *= constants.ScreenRatioLimit
 
 	pickedRatio := 1.
 	for pickedRatio+1 < maxRatio {
@@ -65,4 +65,5 @@ func UpdateViews() {
 			//data.Editor.BlockSelect.PortPos.Y -= (panel.ViewPort.Canvas.Bounds().H()*0.5 - constants.BlockSelectHeight*world.TileSize*0.5 - world.HalfSize) * data.Editor.BlockSelect.PortSize.Y
 		}
 	}
+	//viewport.MainCamera.CamPos.Y -= world.TileSize * 2
 }

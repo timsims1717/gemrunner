@@ -22,6 +22,8 @@ func BorderSystem(layer int) {
 				DrawFancyBorder(bord, obj)
 			case ui.ThinBorder:
 				DrawThinBorder(bord, obj)
+			case ui.ThinBorderReverse:
+				DrawThinBorderReverse(bord, obj)
 			case ui.ThinBorderWhite:
 				DrawThinBorderWhite(bord, obj)
 			case ui.ThinBorderBlue:
@@ -93,6 +95,19 @@ func DrawThinBorder(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matTB.Moved(obj.PostPos).Moved(pixel.V(0, bord.Rect.H()*-0.5-0.5)))
 	// left
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
+}
+
+func DrawThinBorderReverse(bord *ui.Border, obj *object.Object) {
+	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
+	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
+	// top
+	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matTB.Moved(obj.PostPos).Moved(pixel.V(0, bord.Rect.H()*0.5+0.5)))
+	// right
+	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*0.5+0.5, 0)))
+	// bottom
+	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matTB.Moved(obj.PostPos).Moved(pixel.V(0, bord.Rect.H()*-0.5-0.5)))
+	// left
+	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
 }
 
 func DrawThinBorderWhite(bord *ui.Border, obj *object.Object) {

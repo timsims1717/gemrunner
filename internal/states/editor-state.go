@@ -25,11 +25,19 @@ type editorState struct {
 	*state.AbstractState
 }
 
-func (s *editorState) Unload() {
+func (s *editorState) Unload(win *pixelgl.Window) {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
 	systems.DisposeEditor()
+	systems.DisposeEditorDialogs()
+	systems.DisposeInGameDialogs()
 }
 
-func (s *editorState) Load() {
+func (s *editorState) Load(win *pixelgl.Window) {
+	ui.ClearDialogsOpen()
+	ui.ClearDialogStack()
+	systems.EditorDialogs(win)
+	systems.InGameDialogs(win)
 	if data.CurrPuzzleSet == nil {
 		data.CurrPuzzleSet = data.CreatePuzzleSet()
 	}

@@ -5,6 +5,12 @@ const (
 	DialogMainMenu   = "main_menu"
 	DialogAddPlayers = "add_players"
 	DialogPlayLocal  = "play_local"
+
+	DialogPauseMenu  = "pause_menu"
+	DialogPlayer1Inv = "player1_inv"
+	DialogPlayer2Inv = "player2_inv"
+	DialogPlayer3Inv = "player3_inv"
+	DialogPlayer4Inv = "player4_inv"
 )
 
 // Editor Dialogs

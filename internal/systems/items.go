@@ -53,11 +53,12 @@ func CreateGem(pos pixel.Vec, key string) {
 		AddComponent(myecs.LvlElement, struct{}{})
 }
 
-func CollectGem(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+func CollectGem(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if p < 0 || p >= constants.MaxPlayers {
 		return
 	}
-	level.Stats[p].Score += 1
+	data.CurrLevelSess.PlayerStats[p].LScore += 1
+	data.CurrLevelSess.PlayerStats[p].LGems++
 	sfx.SoundPlayer.PlaySound(constants.SFXGem, -2.)
 	myecs.Manager.DisposeEntity(entity)
 }
@@ -153,24 +154,24 @@ func CreateDoor(pos pixel.Vec, key string) {
 }
 
 func EnterDoor() *data.Interact {
-	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if p < 0 || p >= constants.MaxPlayers {
 			return
 		}
-		level.Stats[p].Score += 12
+		data.CurrLevelSess.PlayerStats[p].LScore += 12
 		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
-		level.Complete = true
+		data.CurrLevel.Complete = true
 	})
 }
 
 func EnterPlayerDoor(color string) *data.Interact {
-	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if p < 0 || p >= constants.MaxPlayers || ch.Color != color {
 			return
 		}
-		level.Stats[p].Score += 12
+		data.CurrLevelSess.PlayerStats[p].LScore += 12
 		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
-		level.Complete = true
+		data.CurrLevel.Complete = true
 	})
 }
 
@@ -198,7 +199,7 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Dynamic, box)
 }
 
-func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	switch ch.State {
 	case data.OnLadder, data.OnBar, data.Flying:
 		return
@@ -233,7 +234,7 @@ func BoxAction(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
 	}
 }
 
-func BoxBonk(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	s, ok := entity.GetComponentData(myecs.Smash)
 	d, okD := entity.GetComponentData(myecs.Dynamic)
 	if ok && okD {
@@ -270,15 +271,15 @@ func CreateKey(pos pixel.Vec, key string) {
 }
 
 func KeyAction(color string) *data.Interact {
-	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if KeyUnlock(level, ch.Object.Pos, color) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+		if KeyUnlock(ch.Object.Pos, color) {
 			DropItem(ch)
 			myecs.Manager.DisposeEntity(entity)
 		}
 	})
 }
 
-func KeyUnlock(level *data.Level, chPos pixel.Vec, color string) bool {
+func KeyUnlock(chPos pixel.Vec, color string) bool {
 	chX, chY := world.WorldToMap(chPos.X, chPos.Y)
 	for _, result := range myecs.Manager.Query(myecs.IsDoor) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
@@ -340,7 +341,7 @@ func CreateJetpack(pos pixel.Vec, metadata data.TileMetadata, origin world.Coord
 }
 
 func JetpackAction(jetpack *data.Jetpack) *data.Interact {
-	return data.NewInteract(func(level *data.Level, p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		DropItem(ch)
 		// change the player's state to flying
 		ch.State = data.Flying
@@ -361,9 +362,9 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 						// update timer visuals
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 						var txPos pixel.Vec
-						tile := level.Tiles.Get(x, y+1)
+						tile := data.CurrLevel.Tiles.Get(x, y+1)
 						if tile == nil {
-							tile = level.Tiles.Get(x, y-1)
+							tile = data.CurrLevel.Tiles.Get(x, y-1)
 							txPos = ch.Object.Pos.Add(pixel.V(0, -world.TileSize))
 						} else {
 							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))

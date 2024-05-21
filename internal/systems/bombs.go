@@ -51,7 +51,7 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin wo
 	})
 	theBomb.Anim = reanimator.New(reanimator.NewSwitch().
 		AddAnimation(regenA).
-		AddAnimation(reanimator.NewBatchSprite("item", img.Batchers[constants.TileBatch], "bomb", reanimator.Hold)).
+		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], "bomb", reanimator.Hold)).
 		AddNull("none").
 		SetChooseFn(func() string {
 			if theBomb.Waiting {
@@ -59,9 +59,9 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin wo
 			} else if theBomb.Regen {
 				return "regen"
 			} else {
-				return "item"
+				return "bomb"
 			}
-		}), "fuse1")
+		}), "bomb")
 	theBomb.Draws = append(theBomb.Draws, theBomb.Anim)
 	name := "Bomb"
 	litKey := constants.ItemBombLit
@@ -95,14 +95,14 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin wo
 }
 
 func BombAction(theBomb *data.Bomb) *data.Interact {
-	return data.NewInteract(func(lvl *data.Level, p int, ch *data.Dynamic, e *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, e *ecs.Entity) {
 		switch ch.State {
 		case data.OnBar, data.Jumping, data.Falling:
 			return
 		}
 		DropItem(ch)
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-		tile := lvl.Tiles.Get(x, y)
+		tile := data.CurrLevel.Tiles.Get(x, y)
 		LightBomb(theBomb, tile)
 	})
 }

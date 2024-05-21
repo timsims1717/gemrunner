@@ -1,13 +1,18 @@
 package data
 
 import (
+	"github.com/google/uuid"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 	pxginput "github.com/timsims1717/pixel-go-input"
+	"time"
 )
 
 var (
 	PuzzleSetFileList      []PuzzleSetMetadata
+	PuzzleSetSortedList    []PuzzleSetMetadata
+	CustomPuzzleListLoaded bool
+	FavoritesList          []string
 	SelectedPuzzleIndex    int
 	CustomWorldSelected    bool
 	CustomSelectedBefore   bool
@@ -34,13 +39,21 @@ type PuzzleMetadata struct {
 }
 
 type PuzzleSetMetadata struct {
-	Name       string `json:"title"`
-	Filename   string `json:"filename"`
-	Author     string `json:"author"`
-	NumPlayers int    `json:"numPlayers"`
-	NumPuzzles int    `json:"numPuzzles"`
-	Favorite   bool   `json:"favorite"`
-	Publish    bool   `json:"publish"`
+	UUID       *uuid.UUID `json:"uuid"`
+	Name       string     `json:"title"`
+	Filename   string     `json:"filename"`
+	Author     string     `json:"author"`
+	NumPlayers int        `json:"numPlayers"`
+	NumPuzzles int        `json:"numPuzzles"`
+	Favorite   bool       `json:"favorite"`
+	Publish    bool       `json:"publish"`
+	Local      bool       `json:"local"`
+	Online     bool       `json:"online"`
+	RecentPlay *time.Time `json:"recentPlay"`
+	RecordDate *time.Time `json:"recordDate"`
+	Downloads  int        `json:"downloads"`
+	Favorites  int        `json:"favorites"`
+	Desc       string     `json:"desc"`
 }
 
 type Player struct {

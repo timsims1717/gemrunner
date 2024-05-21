@@ -53,16 +53,16 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 							dlg.Lock = true
 							entity := myecs.Manager.NewEntity()
 							entity.AddComponent(myecs.Update, data.NewTimerFunc(func() bool {
-								data.MenuInput.Get("click").Consume()
-								data.MenuInput.Get("rClick").Consume()
+								hvc.Input.Get("click").Consume()
+								hvc.Input.Get("rClick").Consume()
 								b.OnClick()
 								dlg.Lock = false
 								myecs.Manager.DisposeEntity(entity)
 								return false
 							}, b.Delay))
 						} else {
-							data.MenuInput.Get("click").Consume()
-							data.MenuInput.Get("rClick").Consume()
+							hvc.Input.Get("click").Consume()
+							hvc.Input.Get("rClick").Consume()
 							b.OnClick()
 						}
 					}
@@ -175,7 +175,7 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 			i := CreateInputElement(ele, dlg, ct.ViewPort)
 			ct.Elements = append(ct.Elements, i)
 		case ScrollElement:
-			s := CreateScrollElement(ele, dlg, ct.ViewPort)
+			s := CreateScrollElement(ele, dlg, ct, ct.ViewPort)
 			ct.Elements = append(ct.Elements, s)
 		case SpriteElement:
 			s := CreateSpriteElement(ele)
@@ -349,7 +349,7 @@ func ChangeText(input *Element, rt string) {
 	input.CaretObj.Hidden = false
 }
 
-func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
+func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort) *Element {
 	svp := viewport.New(nil)
 	svp.ParentView = vp
 	svp.SetRect(pixel.R(0, 0, element.Width-world.TileSize, element.Height))
@@ -430,8 +430,14 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			Position:    pos,
 			ElementType: ButtonElement,
 		}
-		b := CreateButtonElement(btn, dlg, dlg.ViewPort)
-		dlg.Elements = append(dlg.Elements, b)
+		var b *Element
+		if parent != nil {
+			b = CreateButtonElement(btn, dlg, parent.ViewPort)
+			parent.Elements = append(parent.Elements, b)
+		} else {
+			b = CreateButtonElement(btn, dlg, dlg.ViewPort)
+			dlg.Elements = append(dlg.Elements, b)
+		}
 		switch i {
 		case 0:
 			s.ButtonHeight = b.Object.Rect.H()
@@ -490,7 +496,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 			i := CreateInputElement(ele, dlg, s.ViewPort)
 			s.Elements = append(s.Elements, i)
 		case ScrollElement:
-			s2 := CreateScrollElement(ele, dlg, s.ViewPort)
+			s2 := CreateScrollElement(ele, dlg, s, s.ViewPort)
 			s.Elements = append(s.Elements, s2)
 		case SpriteElement:
 			s2 := CreateSpriteElement(ele)

@@ -193,6 +193,9 @@ func CharacterStateSystem() {
 				case data.Hit:
 					if !ch.Flags.Hit {
 						ch.State = data.Dead
+						if ch.Player > -1 {
+							data.CurrLevelSess.PlayerStats[ch.Player].Deaths++
+						}
 					}
 				case data.Attack:
 					if !ch.Flags.Attack {

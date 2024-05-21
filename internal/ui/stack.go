@@ -3,10 +3,18 @@ package ui
 import "fmt"
 
 func ClearDialogStack() {
+	for _, dialog := range DialogStack {
+		dialog.Open = false
+		dialog.Active = false
+	}
 	DialogStack = []*Dialog{}
 }
 
 func ClearDialogsOpen() {
+	for _, dialog := range DialogsOpen {
+		dialog.Open = false
+		dialog.Active = false
+	}
 	DialogsOpen = []*Dialog{}
 }
 
@@ -87,6 +95,7 @@ func CloseDialog(key string) {
 		return
 	}
 	dialog.Open = false
+	dialog.Active = false
 	index := -1
 	stack := false
 	for i, d := range DialogsOpen {

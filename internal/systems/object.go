@@ -58,8 +58,10 @@ func FunctionSystem() {
 				hcF.ViewHover = true
 			}
 			hcF.Hover = false
+			var obj *object.Object
+			var okO bool
 			if objC, okOC := result.Entity.GetComponentData(myecs.Object); okOC {
-				if obj, okO := objC.(*object.Object); okO {
+				if obj, okO = objC.(*object.Object); okO {
 					if !obj.Hidden {
 						if hcF.View != nil {
 							hcF.Hover = obj.PointInside(hcF.Pos) && hcF.ViewHover

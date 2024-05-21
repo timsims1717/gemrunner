@@ -20,6 +20,7 @@ type BorderStyle int
 const (
 	FancyBorder = iota
 	ThinBorder
+	ThinBorderReverse
 	ThinBorderWhite
 	ThinBorderBlue
 )

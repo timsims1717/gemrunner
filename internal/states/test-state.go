@@ -27,7 +27,7 @@ type testState struct {
 	*state.AbstractState
 }
 
-func (s *testState) Unload() {
+func (s *testState) Unload(win *pixelgl.Window) {
 	if data.Editor != nil {
 		if data.Editor.PosTop {
 			ui.OpenDialog(constants.DialogEditorPanelTop)
@@ -37,6 +37,7 @@ func (s *testState) Unload() {
 			ui.OpenDialog(constants.DialogEditorOptionsRight)
 		}
 	}
+	systems.LevelSessionDispose()
 	systems.LevelDispose()
 	systems.ClearTemp()
 	data.EditorDraw = true
@@ -44,7 +45,7 @@ func (s *testState) Unload() {
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
-func (s *testState) Load() {
+func (s *testState) Load(win *pixelgl.Window) {
 	if data.Editor != nil {
 		if data.Editor.PosTop {
 			ui.CloseDialog(constants.DialogEditorPanelTop)
@@ -54,6 +55,7 @@ func (s *testState) Load() {
 			ui.CloseDialog(constants.DialogEditorOptionsRight)
 		}
 	}
+	systems.LevelSessionInit()
 	systems.LevelInit()
 	systems.UpdateViews()
 	data.EditorDraw = false
@@ -80,7 +82,8 @@ func (s *testState) Update(win *pixelgl.Window) {
 			debug.AddIntCoords(fmt.Sprintf("Player %d Pos", i+1), int(pos.X), int(pos.Y))
 			cx, cy := world.WorldToMap(pos.X, pos.Y)
 			debug.AddIntCoords(fmt.Sprintf("Player %d Coords", i+1), cx, cy)
-			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevel.Stats[i].Score))
+			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevelSess.PlayerStats[i].Score))
+			debug.AddText(fmt.Sprintf("Player %d Deaths: %d", i+1, data.CurrLevelSess.PlayerStats[i].Deaths))
 			debug.AddText(fmt.Sprintf("Player %d State: %s", i+1, player.State.String()))
 			if player.Inventory == nil {
 				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))

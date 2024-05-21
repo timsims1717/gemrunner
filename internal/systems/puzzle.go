@@ -1,17 +1,15 @@
 package systems
 
 import (
-	"encoding/json"
 	"fmt"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
-	"github.com/pkg/errors"
-	"os"
 )
 
 func PuzzleInit() {
@@ -136,7 +134,7 @@ func SavePuzzleSet() bool {
 			data.CurrPuzzleSet.Metadata.Filename = "test.puzzle"
 		}
 		data.CurrPuzzleSet.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzleSet.Metadata.Name)
-		err := SavePuzzleSetToFile()
+		err := content.SavePuzzleSetToFile()
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return false
@@ -152,79 +150,31 @@ func SavePuzzleSet() bool {
 	}
 }
 
-func SavePuzzleSetToFile() error {
-	errMsg := "save puzzle set"
-	if data.CurrPuzzleSet == nil {
-		return errors.Wrap(errors.New("no puzzle set to save"), errMsg)
-	}
-	var svgFName = "test.puzzle"
-	if data.CurrPuzzleSet.Metadata.Filename != "" {
-		svgFName = data.CurrPuzzleSet.Metadata.Filename
-	}
-	data.CurrPuzzleSet.Metadata.NumPuzzles = len(data.CurrPuzzleSet.Puzzles)
-	svgPath := fmt.Sprintf("%s/%s", constants.PuzzlesDir, svgFName)
-	saveFile, err := os.Create(svgPath)
-	if err != nil {
-		return errors.Wrap(err, errMsg)
-	}
-	bts, err := json.Marshal(data.CurrPuzzleSet)
-	if err != nil {
-		return errors.Wrap(err, errMsg)
-	}
-	_, err = saveFile.Write(bts)
-	if err != nil {
-		return errors.Wrap(err, errMsg)
-	}
-	fmt.Printf("INFO: saved puzzle set to %s\n", svgPath)
-	return nil
-}
-
 func OpenPuzzleSet(filename string) error {
-	errMsg := "open puzzle set"
-	if filename == "" {
-		return errors.Wrap(errors.New("no filename provided"), errMsg)
-	}
-	pzlFile, err := os.ReadFile(filename)
-	if err != nil {
-		return errors.Wrap(err, errMsg)
-	}
 	PuzzleDispose()
-	data.CurrPuzzleSet = &data.PuzzleSet{}
-	err = json.Unmarshal(pzlFile, data.CurrPuzzleSet)
+	err := content.OpenPuzzleSetFile(filename)
 	if err != nil {
-		return errors.Wrap(err, errMsg)
+		return err
 	}
 	data.CurrPuzzleSet.SetToFirst()
+	if data.CurrPuzzleSet.Metadata.NumPlayers < 1 {
+		data.CurrPuzzleSet.Metadata.NumPlayers = data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
+	}
 	PuzzleInit()
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
-	fmt.Printf("INFO: loaded puzzle set from %s\n", filename)
 	return nil
 }
 
-func OpenPuzzle(filename string) error {
-	errMsg := "open puzzle"
-	if filename == "" {
-		return errors.Wrap(errors.New("no filename provided"), errMsg)
-	}
-	pzlFile, err := os.ReadFile(filename)
-	if err != nil {
-		return errors.Wrap(err, errMsg)
-	}
+func OpenPuzzle(filename string) {
 	PuzzleDispose()
-	data.CurrPuzzleSet = data.CreatePuzzleSet()
-	err = json.Unmarshal(pzlFile, data.CurrPuzzleSet.CurrPuzzle)
+	err := content.OpenPuzzleFile(filename)
 	if err != nil {
-		return errors.Wrap(err, errMsg)
+		fmt.Printf("ERROR: failed to open puzzle: %s\n", err)
+		NewPuzzleSet()
+		return
 	}
-	if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name == "" {
-		return errors.Wrap(errors.New("not a puzzle"), errMsg)
-	}
-	data.CurrPuzzleSet.Metadata.Name = data.CurrPuzzleSet.CurrPuzzle.Metadata.Name
-	data.CurrPuzzleSet.Metadata.Filename = data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename
 	PuzzleInit()
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
-	fmt.Printf("INFO: loaded puzzle from %s\n", filename)
-	return nil
 }

@@ -23,7 +23,7 @@ func TouchSystem() {
 							if okP {
 								p = player.(int)
 							}
-							colFn.Fn(data.CurrLevel, p, ch, result.Entity)
+							colFn.Fn(p, ch, result.Entity)
 						}
 					}
 				}
