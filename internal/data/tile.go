@@ -474,7 +474,8 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
-			t.Block == BlockSpike))
+			t.Block == BlockSpike ||
+			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
 }
 
 func (t *Tile) IsNilOrSolid() bool {
@@ -485,7 +486,8 @@ func (t *Tile) IsNilOrSolid() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
-			t.Block == BlockSpike))
+			t.Block == BlockSpike ||
+			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
 }
 
 func (t *Tile) IsRunnable() bool {

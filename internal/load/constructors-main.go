@@ -22,11 +22,12 @@ var (
 	// options
 
 	// in game
-	PauseConstructor      *ui.DialogConstructor
-	Player1InvConstructor *ui.DialogConstructor
-	Player2InvConstructor *ui.DialogConstructor
-	Player3InvConstructor *ui.DialogConstructor
-	Player4InvConstructor *ui.DialogConstructor
+	PauseConstructor       *ui.DialogConstructor
+	Player1InvConstructor  *ui.DialogConstructor
+	Player2InvConstructor  *ui.DialogConstructor
+	Player3InvConstructor  *ui.DialogConstructor
+	Player4InvConstructor  *ui.DialogConstructor
+	PuzzleTitleConstructor *ui.DialogConstructor
 )
 
 func InitMainMenuConstructors() {
@@ -709,6 +710,28 @@ func InitMainMenuConstructors() {
 				Batch:       constants.TileBatch,
 				Position:    pixel.V(40, 0),
 				ElementType: ui.SpriteElement,
+			},
+		},
+	}
+	PuzzleTitleConstructor = &ui.DialogConstructor{
+		Key:    constants.DialogPuzzleTitle,
+		Width:  6,
+		Height: 1,
+		Pos:    pixel.V(0, 414),
+		Elements: []ui.ElementConstructor{
+			{
+				Key:         "puzzle_title_bg",
+				Text:        "-",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, 1),
+				ElementType: ui.TextElement,
+			},
+			{
+				Key:         "puzzle_title",
+				Text:        "-",
+				Color:       pixel.ToRGBA(constants.ColorWhite),
+				Position:    pixel.V(0, 0),
+				ElementType: ui.TextElement,
 			},
 		},
 	}

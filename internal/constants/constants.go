@@ -119,6 +119,7 @@ const (
 var (
 	// Config
 	System     string
+	Username   string
 	HomeDir    string
 	ContentDir string
 	PuzzlesDir string

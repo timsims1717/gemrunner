@@ -37,6 +37,10 @@ func (s *testState) Unload(win *pixelgl.Window) {
 			ui.OpenDialog(constants.DialogEditorOptionsRight)
 		}
 	}
+	ui.CloseDialog(constants.DialogPlayer1Inv)
+	ui.CloseDialog(constants.DialogPlayer2Inv)
+	ui.CloseDialog(constants.DialogPlayer3Inv)
+	ui.CloseDialog(constants.DialogPlayer4Inv)
 	systems.LevelSessionDispose()
 	systems.LevelDispose()
 	systems.ClearTemp()

@@ -51,6 +51,7 @@ func TileSystem() {
 										ch.Object.Pos.X = tile.Object.Pos.X
 										ch.Object.Pos.Y = tile.Object.Pos.Y
 										ch.Flags.Crush = true
+										ch.Flags.Hit = true
 										ch.State = data.Hit
 									}
 								}
@@ -157,6 +158,7 @@ func TileSystem() {
 									ch.Object.Pos.X = tile.Object.Pos.X
 									ch.Object.Pos.Y = tile.Object.Pos.Y
 									ch.Flags.Crush = true
+									ch.Flags.Hit = true
 									ch.State = data.Hit
 								}
 							}

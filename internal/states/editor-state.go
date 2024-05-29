@@ -31,6 +31,8 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 	systems.DisposeEditor()
 	systems.DisposeEditorDialogs()
 	systems.DisposeInGameDialogs()
+	systems.PuzzleDispose()
+	data.CurrPuzzleSet = nil
 }
 
 func (s *editorState) Load(win *pixelgl.Window) {

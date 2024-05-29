@@ -13,6 +13,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	constants.Username = usr.Name
 	constants.HomeDir = usr.HomeDir
 	constants.ContentDir = constants.HomeDir
 	constants.System = runtime.GOOS

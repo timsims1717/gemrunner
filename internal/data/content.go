@@ -28,6 +28,7 @@ var (
 
 type PuzzleMetadata struct {
 	Name           string     `json:"title"`
+	Author         string     `json:"author"`
 	Filename       string     `json:"filename"`
 	WorldSprite    string     `json:"sprite"`
 	WorldNumber    int        `json:"world"`
@@ -35,6 +36,9 @@ type PuzzleMetadata struct {
 	SecondaryColor pixel.RGBA `json:"secondaryColor"`
 	DoodadColor    pixel.RGBA `json:"doodadColor"`
 	MusicTrack     string     `json:"musicTrack"`
+	HubLevel       bool       `json:"hubLevel"`
+	SecretLevel    bool       `json:"secretLevel"`
+	Darkness       bool       `json:"darkness"`
 	Completed      bool       `json:"completed"`
 }
 
@@ -43,6 +47,7 @@ type PuzzleSetMetadata struct {
 	Name       string     `json:"title"`
 	Filename   string     `json:"filename"`
 	Author     string     `json:"author"`
+	Adventure  bool       `json:"adventure"`
 	NumPlayers int        `json:"numPlayers"`
 	NumPuzzles int        `json:"numPuzzles"`
 	Favorite   bool       `json:"favorite"`

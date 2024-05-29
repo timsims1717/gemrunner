@@ -41,6 +41,7 @@ func LevelSessionInit() {
 			ui.OpenDialog(constants.DialogPlayer4Inv)
 		}
 	}
+	ui.OpenDialog(constants.DialogPuzzleTitle)
 }
 
 func LevelSessionDispose() {

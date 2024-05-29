@@ -444,51 +444,23 @@
       "w": 16
     },
     {
-      "key": "wire_btn",
+      "key": "wrench_btn_click",
       "x": 80,
       "y": 112,
       "h": 16,
       "w": 16
     },
     {
-      "key": "undo_btn",
-      "x": 0,
-      "y": 128,
+      "key": "arrange_btn",
+      "x": 96,
+      "y": 112,
       "h": 16,
       "w": 16
     },
     {
-      "key": "undo_btn_click",
-      "x": 16,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "redo_btn",
-      "x": 32,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "redo_btn_click",
-      "x": 48,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "wrench_btn_click",
-      "x": 64,
-      "y": 128,
-      "h": 16,
-      "w": 16
-    },
-    {
-      "key": "wire_btn_click",
-      "x": 80,
-      "y": 128,
+      "key": "arrange_btn_click",
+      "x": 112,
+      "y": 112,
       "h": 16,
       "w": 16
     },
@@ -519,6 +491,76 @@
       "y": 112,
       "h": 16,
       "w": 12
+    },
+    {
+      "key": "undo_btn",
+      "x": 0,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "undo_btn_click",
+      "x": 16,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "redo_btn",
+      "x": 32,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "redo_btn_click",
+      "x": 48,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "wire_btn",
+      "x": 64,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "wire_btn_click",
+      "x": 80,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "puzzle_settings_btn",
+      "x": 96,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "puzzle_settings_btn_click",
+      "x": 112,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "puzzle_set_settings_btn",
+      "x": 128,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "puzzle_set_settings_btn_click",
+      "x": 144,
+      "y": 128,
+      "h": 16,
+      "w": 16
     },
     {
       "key": "quit_btn",
@@ -558,6 +600,34 @@
     {
       "key": "prev_btn_click",
       "x": 80,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "music_btn",
+      "x": 96,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "music_btn_click",
+      "x": 112,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "delete_btn",
+      "x": 128,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "delete_btn_click",
+      "x": 144,
       "y": 144,
       "h": 16,
       "w": 16
@@ -619,16 +689,16 @@
       "w": 16
     },
     {
-      "key": "delete_btn",
+      "key": "combine_btn",
       "x": 128,
-      "y": 144,
+      "y": 160,
       "h": 16,
       "w": 16
     },
     {
-      "key": "delete_btn_click",
+      "key": "combine_btn_click",
       "x": 144,
-      "y": 144,
+      "y": 160,
       "h": 16,
       "w": 16
     },

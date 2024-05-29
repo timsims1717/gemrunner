@@ -20,6 +20,7 @@ func InGameDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.Player2InvConstructor)
 	ui.NewDialog(load.Player3InvConstructor)
 	ui.NewDialog(load.Player4InvConstructor)
+	ui.NewDialog(load.PuzzleTitleConstructor)
 	customizeInGameDialogs(win)
 }
 
@@ -27,7 +28,11 @@ func DisposeInGameDialogs() {
 	for k, d := range ui.Dialogs {
 		switch k {
 		case constants.DialogPauseMenu,
-			constants.DialogPlayer1Inv:
+			constants.DialogPlayer1Inv,
+			constants.DialogPlayer2Inv,
+			constants.DialogPlayer3Inv,
+			constants.DialogPlayer4Inv,
+			constants.DialogPuzzleTitle:
 			ui.Dispose(d)
 		}
 	}
@@ -130,9 +135,37 @@ func customizeInGameDialogs(win *pixelgl.Window) {
 			}
 		}
 		switch dialog.Key {
-		case constants.DialogPlayer1Inv:
+		case constants.DialogPlayer1Inv,
+			constants.DialogPlayer2Inv,
+			constants.DialogPlayer3Inv,
+			constants.DialogPlayer4Inv,
+			constants.DialogPuzzleTitle:
 			dialog.Border.Style = ui.ThinBorder
 			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
 		}
+	}
+}
+
+func SetPuzzleTitle() {
+	if data.CurrLevel == nil {
+		return
+	}
+	title := data.CurrLevel.Metadata.Name
+	dlg := ui.Dialogs[constants.DialogPuzzleTitle]
+	txt := dlg.Get("puzzle_title")
+	width := txt.Text.Text.BoundsOf(title).W() * txt.Text.RelativeSize
+	dlgWidth := world.TileSize * 6
+	for width > dlgWidth {
+		dlgWidth += world.TileSize
+	}
+	dlg.Border.Rect = pixel.R(0, 0, dlgWidth, float64(dlg.Border.Height)*world.TileSize)
+	dlg.BorderVP.SetRect(pixel.R(0, 0, dlgWidth+1, float64(dlg.Border.Rect.H())+1))
+	dlg.ViewPort.SetRect(pixel.R(0, 0, dlgWidth, dlg.Border.Rect.H()))
+	for _, ele := range dlg.Elements {
+		if ele.Key == "puzzle_title_bg" {
+			ele.Text.SetColor(data.CurrLevel.Metadata.PrimaryColor)
+		}
+		ele.Object.Pos.X = width * -0.5
+		ele.Text.SetText(title)
 	}
 }

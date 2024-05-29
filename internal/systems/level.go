@@ -23,6 +23,7 @@ func LevelInit() {
 	data.CurrLevel.Tiles = data.CurrPuzzleSet.CurrPuzzle.CopyTiles()
 	data.CurrLevel.Metadata = data.CurrPuzzleSet.CurrPuzzle.Metadata
 	data.CurrLevel.Puzzle = data.CurrPuzzleSet.CurrPuzzle
+	SetPuzzleTitle()
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
 	random.SetLevelSeed(random.RandomSeed())
 

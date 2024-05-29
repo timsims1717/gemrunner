@@ -19,6 +19,7 @@ import (
 func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.OpenPuzzleConstructor)
 	ui.NewDialog(load.ChangeNameConstructor)
+	ui.NewDialog(load.PuzzleSettingsConstructor)
 	ui.NewDialog(load.NoPlayersInPuzzleConstructor)
 	ui.NewDialog(load.AreYouSureDeleteConstructor)
 	ui.NewDialog(load.UnableToSaveConstructor)
@@ -39,6 +40,7 @@ func DisposeEditorDialogs() {
 		switch k {
 		case constants.DialogOpenPuzzle,
 			constants.DialogChangeName,
+			constants.DialogPuzzleSettings,
 			constants.DialogNoPlayersInPuzzle,
 			constants.DialogAreYouSureDelete,
 			constants.DialogUnableToSave,
@@ -83,6 +85,10 @@ func customizeEditorDialogs(win *pixelgl.Window) {
 					ele.OnClick = TestPuzzle
 				case "check_puzzle_name":
 					ele.OnClick = ChangeName
+				case "puzzle_settings_btn":
+					ele.OnClick = OpenPuzzleSettingsDialog
+				case "confirm_puzzle_settings":
+					ele.OnClick = ConfirmPuzzleSettings
 				case "check_cracked_tile":
 					ele.OnClick = ConfirmCrackTileOptions
 				case "confirm_bomb_options":

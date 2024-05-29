@@ -216,8 +216,7 @@ func OnChangeNameDialog() {
 			if ele.ElementType == ui.InputElement {
 				if data.CurrPuzzleSet.Metadata.Name != "" {
 					if ele.Value != data.CurrPuzzleSet.Metadata.Name {
-						ele.Value = data.CurrPuzzleSet.Metadata.Name
-						ui.ChangeText(ele, ele.Value)
+						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Name)
 					}
 				} else {
 					ui.ChangeText(ele, "Untitled")
@@ -248,6 +247,70 @@ func ChangeName() {
 				ui.OpenDialogInStack(constants.DialogUnableToSave)
 			}
 		}
+	}
+}
+
+// puzzle settings dialog
+
+func OpenPuzzleSettingsDialog() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		for _, ele := range ui.Dialogs[constants.DialogPuzzleSettings].Elements {
+			switch ele.Key {
+			case "puzzle_name":
+				if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name != "" {
+					if ele.Value != data.CurrPuzzleSet.CurrPuzzle.Metadata.Name {
+						ui.ChangeText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Name)
+					}
+				} else {
+					ui.ChangeText(ele, "Untitled")
+				}
+			case "puzzle_author":
+				if data.CurrPuzzleSet.CurrPuzzle.Metadata.Author != "" {
+					if ele.Value != data.CurrPuzzleSet.CurrPuzzle.Metadata.Author {
+						ui.ChangeText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Author)
+					}
+				} else {
+					ui.ChangeText(ele, constants.Username)
+				}
+			case "puzzle_hub_check":
+				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.HubLevel)
+				ele.Object.Hidden = !data.CurrPuzzleSet.Metadata.Adventure
+			case "puzzle_hub_label":
+				ele.Object.Hidden = !data.CurrPuzzleSet.Metadata.Adventure
+			case "puzzle_secret_check":
+				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.SecretLevel)
+				ele.Object.Hidden = data.CurrPuzzleSet.Metadata.Adventure
+			case "puzzle_secret_label":
+				ele.Object.Hidden = data.CurrPuzzleSet.Metadata.Adventure
+			case "puzzle_darkness_check":
+				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness)
+			}
+		}
+		ui.OpenDialogInStack(constants.DialogPuzzleSettings)
+	}
+}
+
+func ConfirmPuzzleSettings() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		for _, ele := range ui.Dialogs[constants.DialogPuzzleSettings].Elements {
+			switch ele.Key {
+			case "puzzle_name":
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.Name = ele.Value
+			case "puzzle_author":
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.Author = ele.Value
+			case "puzzle_hub_check":
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.HubLevel = ele.Checked
+			case "puzzle_secret_check":
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.SecretLevel = ele.Checked
+			case "puzzle_darkness_check":
+				data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness = ele.Checked
+			}
+		}
+		ui.CloseDialog(constants.DialogPuzzleSettings)
+		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+		//if !SavePuzzleSet() {
+		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
+		//}
 	}
 }
 
@@ -341,6 +404,7 @@ func ConfirmChangeWorld() {
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
+	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	ui.CloseDialog(constants.DialogChangeWorld)
 }
 

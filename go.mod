@@ -8,7 +8,7 @@ require (
 	github.com/bytearena/ecs v1.0.0
 	github.com/faiface/pixel v0.10.0
 	github.com/pkg/errors v0.9.1
-	github.com/timsims1717/pixel-go-input v0.0.0-20240514025832-d87d5d2d0aae
+	github.com/timsims1717/pixel-go-input v0.0.0-20240528203700-0f52dc92abe8
 	golang.org/x/image v0.16.0
 )
 

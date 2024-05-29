@@ -6,11 +6,12 @@ const (
 	DialogAddPlayers = "add_players"
 	DialogPlayLocal  = "play_local"
 
-	DialogPauseMenu  = "pause_menu"
-	DialogPlayer1Inv = "player1_inv"
-	DialogPlayer2Inv = "player2_inv"
-	DialogPlayer3Inv = "player3_inv"
-	DialogPlayer4Inv = "player4_inv"
+	DialogPauseMenu   = "pause_menu"
+	DialogPlayer1Inv  = "player1_inv"
+	DialogPlayer2Inv  = "player2_inv"
+	DialogPlayer3Inv  = "player3_inv"
+	DialogPlayer4Inv  = "player4_inv"
+	DialogPuzzleTitle = "puzzle_title"
 )
 
 // Editor Dialogs
@@ -22,6 +23,7 @@ const (
 	DialogUnableToSaveConfirm = "unable_to_save_confirm"
 	DialogChangeWorld         = "change_world"
 	DialogAreYouSureDelete    = "are_you_sure_delete"
+	DialogPuzzleSettings      = "puzzle_settings"
 
 	DialogEditorPanelTop     = "editor_panel_top"
 	DialogEditorPanelLeft    = "editor_panel_left"
