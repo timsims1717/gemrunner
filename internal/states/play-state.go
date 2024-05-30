@@ -97,6 +97,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.PlaySystem()
 	systems.FunctionSystem()
+	systems.InterpolationSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)
 

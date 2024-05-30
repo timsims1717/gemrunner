@@ -136,21 +136,24 @@ func CreatePuzzleSet() *PuzzleSet {
 	return pzSet
 }
 
-func (set *PuzzleSet) Add() {
+func (set *PuzzleSet) AppendNew() {
 	pzl := CreateBlankPuzzle()
 	set.Puzzles = append(set.Puzzles, pzl)
 	set.CurrPuzzle = pzl
 	set.PuzzleIndex = len(set.Puzzles) - 1
 }
 
-func (set *PuzzleSet) Insert(i int) {
+func (set *PuzzleSet) Insert(pzl *Puzzle, i int) {
 	if i > -1 && len(set.Puzzles) > i {
-		pzl := CreateBlankPuzzle()
-		set.Puzzles = append(append(set.Puzzles[:i], pzl), set.Puzzles[i:]...)
+		if pzl == nil {
+			pzl = CreateBlankPuzzle()
+		}
+		set.Puzzles = append(append(set.Puzzles[:i+1], set.Puzzles[i:]...))
+		set.Puzzles[i] = pzl
 		set.CurrPuzzle = pzl
 		set.PuzzleIndex = i
 	} else {
-		set.Add()
+		set.Append(pzl)
 	}
 }
 
@@ -174,7 +177,11 @@ func (set *PuzzleSet) Delete(i int) {
 	}
 }
 
-func (set *PuzzleSet) AddPuzzle(pzl *Puzzle) {
+func (set *PuzzleSet) Append(pzl *Puzzle) {
+	if pzl == nil {
+		set.AppendNew()
+		return
+	}
 	set.Puzzles = append(set.Puzzles, pzl)
 	set.CurrPuzzle = pzl
 	set.PuzzleIndex = len(set.Puzzles) - 1

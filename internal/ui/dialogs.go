@@ -148,9 +148,19 @@ func (d *Dialog) DownFocus() {
 
 }
 
-func Dispose(d *Dialog) {
+func Dispose(key string) {
+	CloseDialog(key)
+	for _, d := range Dialogs {
+		if d.Key == key {
+			DisposeDialog(d)
+		}
+	}
+}
+
+func DisposeDialog(d *Dialog) {
 	DisposeSubElements(d.Elements)
 	myecs.Manager.DisposeEntity(d.BorderEntity)
+	delete(Dialogs, d.Key)
 }
 
 func DisposeSubElements(elements []*Element) {

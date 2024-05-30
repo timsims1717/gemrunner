@@ -112,6 +112,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.FunctionSystem()
+	systems.InterpolationSystem()
 	systems.TestSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)

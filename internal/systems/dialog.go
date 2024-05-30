@@ -69,7 +69,7 @@ func UpdateDialog(dialog *ui.Dialog, layer int) int {
 func UpdateSubElements(elements []*ui.Element, vp *viewport.ViewPort, layer int) int {
 	nextLayer := layer + 1
 	for _, e := range elements {
-		e.Object.Unloaded = !vp.PointInside(e.Object.Pos)
+		e.Object.Unloaded = !vp.RectInside(e.Object.Rect.Moved(e.Object.Pos))
 		switch e.ElementType {
 		case ui.SpriteElement, ui.ButtonElement, ui.CheckboxElement:
 			e.Object.Layer = layer

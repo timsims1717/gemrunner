@@ -636,3 +636,7 @@ func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Eleme
 	}
 	return t
 }
+
+func (e *Element) Hide() {
+
+}

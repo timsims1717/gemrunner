@@ -18,9 +18,9 @@ func UpdateViews() {
 	}
 	maxRatio *= constants.ScreenRatioLimit
 
-	pickedRatio := 1.
-	for pickedRatio+1 < maxRatio {
-		pickedRatio += 1
+	constants.PickedRatio = 1.
+	for constants.PickedRatio+1 < maxRatio {
+		constants.PickedRatio += 1
 	}
 
 	//maxRatio := 1.
@@ -35,22 +35,14 @@ func UpdateViews() {
 		//	maxRatio = hRatio
 		//}
 		//maxRatio *= 0.8
-		data.PuzzleView.PortSize = pixel.V(pickedRatio, pickedRatio)
-		data.PuzzleViewNoShader.PortSize = pixel.V(pickedRatio, pickedRatio)
-		data.BorderView.PortSize = pixel.V(pickedRatio, pickedRatio)
+		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	}
-	data.CursorObj.Sca = pixel.V(pickedRatio, pickedRatio)
-	data.CursorObj.Offset = pixel.V(9, -9).Scaled(pickedRatio)
+	data.CursorObj.Sca = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	data.CursorObj.Offset = pixel.V(9, -9).Scaled(constants.PickedRatio)
 	for _, dialog := range ui.Dialogs {
-		posRatX := viewport.MainCamera.Rect.W() / constants.WinWidth
-		posRatY := viewport.MainCamera.Rect.H() / constants.WinHeight
-		nPos := pixel.V(dialog.Pos.X*posRatX, dialog.Pos.Y*posRatY)
-		if !dialog.NoBorder {
-			dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
-			dialog.BorderVP.PortSize = pixel.V(pickedRatio, pickedRatio)
-		}
-		dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
-		dialog.ViewPort.PortSize = pixel.V(pickedRatio, pickedRatio)
+		UpdateDialogView(dialog)
 	}
 	if data.Editor != nil {
 		if data.Editor.PosTop {
@@ -66,4 +58,16 @@ func UpdateViews() {
 		}
 	}
 	//viewport.MainCamera.CamPos.Y -= world.TileSize * 2
+}
+
+func UpdateDialogView(dialog *ui.Dialog) {
+	posRatX := viewport.MainCamera.Rect.W() / constants.WinWidth
+	posRatY := viewport.MainCamera.Rect.H() / constants.WinHeight
+	nPos := pixel.V(dialog.Pos.X*posRatX, dialog.Pos.Y*posRatY)
+	if !dialog.NoBorder {
+		dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
+		dialog.BorderVP.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
+	dialog.ViewPort.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
+	dialog.ViewPort.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 }

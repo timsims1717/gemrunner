@@ -247,6 +247,25 @@ func OpenPuzzleSetFile(filename string) error {
 	return nil
 }
 
+func OpenPuzzleSetFileRt(filename string) (*data.PuzzleSet, error) {
+	errMsg := "open puzzle set"
+	if filename == "" {
+		return nil, errors.Wrap(errors.New("no filename provided"), errMsg)
+	}
+	pzlFName := fmt.Sprintf("%s/%s", constants.PuzzlesDir, filename)
+	pzlFile, err := os.ReadFile(pzlFName)
+	if err != nil {
+		return nil, errors.Wrap(err, errMsg)
+	}
+	rtPzlSet := &data.PuzzleSet{}
+	err = json.Unmarshal(pzlFile, rtPzlSet)
+	if err != nil {
+		return nil, errors.Wrap(err, errMsg)
+	}
+	fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
+	return rtPzlSet, nil
+}
+
 func OpenPuzzleFile(filename string) error {
 	localPzlMu.Lock()
 	defer localPzlMu.Unlock()

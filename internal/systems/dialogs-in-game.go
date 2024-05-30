@@ -33,7 +33,7 @@ func DisposeInGameDialogs() {
 			constants.DialogPlayer3Inv,
 			constants.DialogPlayer4Inv,
 			constants.DialogPuzzleTitle:
-			ui.Dispose(d)
+			ui.DisposeDialog(d)
 		}
 	}
 }

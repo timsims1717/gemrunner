@@ -24,6 +24,8 @@ const (
 	DialogChangeWorld         = "change_world"
 	DialogAreYouSureDelete    = "are_you_sure_delete"
 	DialogPuzzleSettings      = "puzzle_settings"
+	DialogCombineSets         = "combine_sets"
+	DialogRearrangePuzzleSet  = "rearrange_puzzle_set"
 
 	DialogEditorPanelTop     = "editor_panel_top"
 	DialogEditorPanelLeft    = "editor_panel_left"

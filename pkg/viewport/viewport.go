@@ -407,6 +407,11 @@ func (v *ViewPort) PointInside(vec pixel.Vec) bool {
 	//return v.Rect.Moved(pixel.V(-(v.Rect.W() * 0.5), -(v.Rect.H() * 0.5))).Contains(v.Mat.Unproject(vec))
 }
 
+func (v *ViewPort) RectInside(r pixel.Rect) bool {
+	return v.Canvas.Bounds().Intersects(r)
+	//return v.Rect.Moved(pixel.V(-(v.Rect.W() * 0.5), -(v.Rect.H() * 0.5))).Contains(v.Mat.Unproject(vec))
+}
+
 func (v *ViewPort) ProjectWorld(vec pixel.Vec) pixel.Vec {
 	//return v.Mat.Unproject(vec).Add(v.PostCamPos)
 	if v.ParentView != nil {

@@ -46,7 +46,7 @@ func CharacterStateSystem() {
 						ch.State = data.Falling
 					}
 				case data.OnLadder:
-					if ch.Flags.Floor && ch.Actions.Up() { // just got to the top
+					if ch.Flags.Floor && ch.Actions.Up() && !tile.IsLadder() { // just got to the top
 						ch.State = data.Grounded
 						if ch.Actions.Left() { // to the left
 							ch.Object.Flip = true

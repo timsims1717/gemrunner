@@ -26,7 +26,7 @@ func DisposeMainDialogs() {
 		case constants.DialogMainMenu,
 			constants.DialogAddPlayers,
 			constants.DialogPlayLocal:
-			ui.Dispose(d)
+			ui.DisposeDialog(d)
 		}
 	}
 }

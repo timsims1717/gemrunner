@@ -1,6 +1,7 @@
 package data
 
 import (
+	"gemrunner/internal/constants"
 	"github.com/google/uuid"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -20,6 +21,12 @@ var (
 	SelectedPrimaryColor   pixel.RGBA
 	SelectedSecondaryColor pixel.RGBA
 	SelectedDoodadColor    pixel.RGBA
+	RearrangePuzzleMove    bool
+	RearrangePuzzleIndex   int
+	RearrangePuzzles       []int
+	RearrangeLeftX         = constants.TileSize * -8
+	RearrangeRightX        = constants.TileSize * 8
+	RearrangeFloatX        = constants.TileSize * -16
 
 	Players       []Player
 	MenuInputUsed = pxginput.KeyboardMouse

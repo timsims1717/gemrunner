@@ -25,6 +25,7 @@ const (
 	// Editor Constants
 	BlockSelectWidth  = 8.
 	BlockSelectHeight = 11.
+	RearrangeMoveDur  = 0.2
 
 	// Music Tracks
 	TrackBeach   = "beach"
@@ -127,9 +128,10 @@ var (
 	ConfigFile string
 
 	// Options
-	WinWidth  = 1600.
-	WinHeight = 900.
-	FrameRate = 30
+	WinWidth    = 1600.
+	WinHeight   = 900.
+	FrameRate   = 30
+	PickedRatio = 1.
 
 	// In Game Vars
 	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}

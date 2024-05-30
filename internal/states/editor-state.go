@@ -101,6 +101,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.FunctionSystem()
+	systems.InterpolationSystem()
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	if !ui.DialogStackOpen {
@@ -117,9 +118,9 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	}
 	systems.DialogSystem(win)
 	// object systems
+	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
-	systems.AnimationSystem()
 
 	//s.UpdateViews()
 

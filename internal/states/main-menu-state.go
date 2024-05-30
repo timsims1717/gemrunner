@@ -60,6 +60,7 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.FunctionSystem()
+	systems.InterpolationSystem()
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	if !ui.DialogStackOpen {
@@ -68,9 +69,9 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 	systems.UpdateInputType(win)
 	systems.DialogSystem(win)
 	// object systems
+	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
-	systems.AnimationSystem()
 
 	//data.BorderView.Update()
 

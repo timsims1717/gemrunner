@@ -109,17 +109,17 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 			ch.Flags.Floor = true
 		}
 	} else {
-		if ((down.IsSolid() ||
-			enemyDown ||
+		if enemyDown && ch.State == data.Falling && touchingFloor {
+			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+		} else if enemyDown && ch.State == data.OnLadder && touchingFloor {
+			ch.Flags.Climbed = false
+			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+		} else if ((down.IsSolid() ||
 			(down.IsLadder() && (ch.State != data.OnLadder && ch.State != data.Leaping)) ||
 			standOnBelow) &&
 			touchingFloor) ||
 			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {
-			if !enemyDown {
-				ch.Flags.Floor = true
-			} else {
-				ch.Flags.Climbed = false
-			}
+			ch.Flags.Floor = true
 			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
 		}
 	}

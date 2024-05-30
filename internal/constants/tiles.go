@@ -155,3 +155,18 @@ const (
 	ExpLine   = "exp_line"
 	ExpEnd    = "exp_end"
 )
+
+// previews
+const (
+	PreviewTurf    = "preview_turf"
+	PreviewBedrock = "preview_bedrock"
+	PreviewLadder  = "preview_ladder"
+	PreviewKey     = "preview_key"
+	PreviewPlayer  = "preview_player"
+	PreviewEnemy   = "preview_enemy"
+	PreviewDoor    = "preview_door"
+	PreviewGem     = "preview_gem"
+	PreviewBar     = "preview_bar"
+	PreviewBomb    = "preview_bomb"
+	PreviewTool    = "preview_tool"
+)

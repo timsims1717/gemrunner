@@ -17,6 +17,12 @@ func CloseDialog(key string) func() {
 	}
 }
 
+func DisposeDialog(key string) func() {
+	return func() {
+		ui.Dispose(key)
+	}
+}
+
 func OpenDialog(key string) func() {
 	return func() {
 		ui.OpenDialogInStack(key)

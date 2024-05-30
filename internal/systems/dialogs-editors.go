@@ -8,9 +8,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
-	"gemrunner/pkg/object"
 	"gemrunner/pkg/timing"
-	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 	"strings"
@@ -24,7 +22,7 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.AreYouSureDeleteConstructor)
 	ui.NewDialog(load.UnableToSaveConstructor)
 	ui.NewDialog(load.UnableToSaveConfirmConstructor)
-	ui.NewDialog(load.WorldDialogConstructor)
+	ui.NewDialog(load.CombineSetsConstructor)
 	ui.NewDialog(load.CrackedTileOptionsConstructor)
 	ui.NewDialog(load.BombOptionsConstructor)
 	ui.NewDialog(load.JetpackOptionsConstructor)
@@ -32,7 +30,6 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.EditorOptBottomConstructor)
 	ui.NewDialog(load.EditorOptRightConstructor)
 	customizeEditorDialogs(win)
-	worldDialogShaders()
 }
 
 func DisposeEditorDialogs() {
@@ -46,6 +43,8 @@ func DisposeEditorDialogs() {
 			constants.DialogUnableToSave,
 			constants.DialogUnableToSaveConfirm,
 			constants.DialogChangeWorld,
+			constants.DialogCombineSets,
+			constants.DialogRearrangePuzzleSet,
 			constants.DialogCrackedTiles,
 			constants.DialogBomb,
 			constants.DialogJetpack,
@@ -54,7 +53,7 @@ func DisposeEditorDialogs() {
 			constants.DialogEditorOptionsRight,
 			constants.DialogEditorOptionsBot,
 			constants.DialogEditorBlockSelect:
-			ui.Dispose(d)
+			ui.DisposeDialog(d)
 		}
 	}
 }
@@ -69,12 +68,18 @@ func customizeEditorDialogs(win *pixelgl.Window) {
 				switch ele.Key {
 				case "open_puzzle":
 					ele.OnClick = OnOpenPuzzle
+				case "confirm_combine_puzzle":
+					ele.OnClick = OnCombinePuzzleSet
 				case "new_btn":
 					ele.OnClick = NewPuzzle
 				case "open_btn":
 					ele.OnClick = OpenOpenPuzzleDialog
+				case "combine_btn":
+					ele.OnClick = OpenCombineSetsDialog
+				case "rearrange_btn":
+					ele.OnClick = OpenRearrangePuzzlesDialog
 				case "exit_editor_btn":
-					ele.OnClick = ExitEditor()
+					ele.OnClick = ExitEditor
 				case "save_btn":
 					ele.OnClick = OnSavePuzzleSet
 				case "world_btn":
@@ -121,8 +126,6 @@ func customizeEditorDialogs(win *pixelgl.Window) {
 					}
 				case "check_no_players":
 					ele.OnClick = CloseDialog(dialog.Key)
-				case "check_change_world":
-					ele.OnClick = ConfirmChangeWorld
 				case "confirm_unable_to_save":
 					ele.OnClick = CloseDialog(dialog.Key)
 				case "add_btn":
@@ -252,256 +255,10 @@ func customizeEditorDialogs(win *pixelgl.Window) {
 					}
 					b++
 				}
-			} else if ele.ElementType == ui.CheckboxElement {
+			} else if ele.ElementType == ui.TextElement {
 				switch ele.Key {
-				case "custom_world_check":
-					ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
-						if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
-							click := hvc.Input.Get("click")
-							if hvc.Hover && click.JustPressed() {
-								ui.SetChecked(ele, !ele.Checked)
-								data.CustomWorldSelected = ele.Checked
-								for _, ele2 := range dialog.Elements {
-									if ele2.ElementType == ui.TextElement {
-										if o, okO := ele2.Entity.GetComponentData(myecs.Object); okO {
-											if obj, okO1 := o.(*object.Object); okO1 {
-												switch ele2.Key {
-												case "primary_text", "secondary_text", "doodad_text":
-													obj.Hidden = !ele.Checked
-												}
-											}
-										}
-									} else if ele2.ElementType == ui.CheckboxElement {
-										if o, okO := ele2.Entity.GetComponentData(myecs.Object); okO {
-											if obj, okO1 := o.(*object.Object); okO1 {
-												if strings.Contains(ele2.Key, "check_primary") ||
-													strings.Contains(ele2.Key, "check_secondary") ||
-													strings.Contains(ele2.Key, "check_doodad") {
-													obj.Hidden = !ele.Checked
-												}
-											}
-										}
-									} else if ele2.ElementType == ui.SpriteElement {
-										if o, okO := ele2.Entity.GetComponentData(myecs.Object); okO {
-											if obj, okO1 := o.(*object.Object); okO1 {
-												if strings.Contains(ele2.Key, "color_primary") ||
-													strings.Contains(ele2.Key, "color_secondary") ||
-													strings.Contains(ele2.Key, "color_doodad") {
-													obj.Hidden = !ele.Checked
-												}
-											}
-										}
-									}
-								}
-								if ele.Checked {
-									for _, ele2 := range dialog.Elements {
-										if ele2.ElementType == ui.CheckboxElement {
-											if !data.CustomSelectedBefore {
-												updateColorCheckbox(ele2)
-											} else if ele2.Checked {
-												changeSelectedColor(ele2.Key)
-											}
-										}
-									}
-									worldDialogCustomShaders()
-								} else {
-									worldDialogNormalShaders()
-								}
-								data.CustomSelectedBefore = true
-							}
-						}
-					}))
-				default:
-					if strings.Contains(ele.Key, "check_primary") ||
-						strings.Contains(ele.Key, "check_secondary") ||
-						strings.Contains(ele.Key, "check_doodad") {
-						ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
-							if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
-								click := hvc.Input.Get("click")
-								if hvc.Hover && click.JustPressed() && !ele.Checked {
-									ui.SetChecked(ele, true)
-									changeSelectedColor(ele.Key)
-									if strings.Contains(ele.Key, "check_primary") {
-										worldDialogCustomShadersPrimary()
-									} else if strings.Contains(ele.Key, "check_secondary") {
-										worldDialogCustomShadersSecondary()
-									} else if strings.Contains(ele.Key, "check_doodad") {
-										worldDialogCustomShadersDoodad()
-									}
-									for _, ele2 := range dialog.Elements {
-										if ele2.ElementType == ui.CheckboxElement {
-											if ((strings.Contains(ele2.Key, "check_primary") && strings.Contains(ele.Key, "check_primary")) ||
-												(strings.Contains(ele2.Key, "check_secondary") && strings.Contains(ele.Key, "check_secondary")) ||
-												(strings.Contains(ele2.Key, "check_doodad") && strings.Contains(ele.Key, "check_doodad"))) &&
-												ele2.Key != ele.Key {
-												ui.SetChecked(ele2, false)
-											}
-										}
-									}
-								}
-							}
-						}))
-					}
-				}
-			} else if ele.ElementType == ui.ScrollElement {
-				switch ele.Key {
-				case "world_list":
-					for i := 0; i < constants.WorldCustom; i++ {
-						index := i
-						y := float64(i)*-18 + 7
-						entry := ui.ElementConstructor{
-							Key:         fmt.Sprintf(load.WorldListEntry.Key, i),
-							Width:       load.WorldListEntry.Width,
-							Height:      load.WorldListEntry.Height,
-							HelpText:    fmt.Sprintf(load.WorldListEntry.HelpText, constants.WorldNames[i]),
-							Position:    pixel.V(0, y),
-							ElementType: load.WorldListEntry.ElementType,
-						}
-						tti := ui.ElementConstructor{
-							Key:         load.TurfTileItem.Key,
-							SprKey:      constants.WorldSprites[i],
-							Batch:       load.TurfTileItem.Batch,
-							Position:    load.TurfTileItem.Position,
-							ElementType: load.TurfTileItem.ElementType,
-						}
-						entry.SubElements = append(entry.SubElements, tti)
-						lti := ui.ElementConstructor{
-							Key:         load.LadderTileItem.Key,
-							SprKey:      constants.TileLadderMiddle,
-							Batch:       load.LadderTileItem.Batch,
-							Position:    load.LadderTileItem.Position,
-							ElementType: load.LadderTileItem.ElementType,
-						}
-						entry.SubElements = append(entry.SubElements, lti)
-						dti := ui.ElementConstructor{
-							Key:         load.DoodadTileItem.Key,
-							SprKey:      constants.WorldDoodads[i],
-							Batch:       load.DoodadTileItem.Batch,
-							Position:    load.DoodadTileItem.Position,
-							ElementType: load.DoodadTileItem.ElementType,
-						}
-						entry.SubElements = append(entry.SubElements, dti)
-						wti := ui.ElementConstructor{
-							Key:         load.WorldTxtItem.Key,
-							Text:        constants.WorldNames[i],
-							Position:    load.WorldTxtItem.Position,
-							ElementType: load.WorldTxtItem.ElementType,
-						}
-						entry.SubElements = append(entry.SubElements, wti)
-						wtt := ui.ElementConstructor{
-							Key:         load.WorldTxtItem.Key,
-							Text:        constants.WorldNames[i],
-							Position:    load.WorldTxtItem.Position.Add(pixel.V(0, y+1)),
-							ElementType: load.WorldTxtItem.ElementType,
-						}
-						wtte := ui.CreateTextElement(wtt, ele.ViewPort)
-						wtte.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-						wtte.Text.Hidden = true
-						ct := ui.CreateContainer(entry, dialog, ele.ViewPort)
-						ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ele.ViewPort, func(hvc *data.HoverClick) {
-							if dialog.Open && dialog.Active {
-								click := hvc.Input.Get("click")
-								if hvc.Hover && click.JustPressed() {
-									data.SelectedWorldIndex = index
-									if !data.CustomWorldSelected {
-										data.SelectedPrimaryColor = pixel.ToRGBA(constants.WorldPrimary[index])
-										data.SelectedSecondaryColor = pixel.ToRGBA(constants.WorldSecondary[index])
-										data.SelectedDoodadColor = pixel.ToRGBA(constants.WorldDoodad[index])
-									}
-									for _, de := range dialog.Elements {
-										if de.ElementType == ui.ContainerElement {
-											if de.Key == "world_container_selected" {
-												for _, ce := range de.Elements {
-													if ce.ElementType == ui.SpriteElement {
-														switch ce.Key {
-														case "turf_tile":
-															ce.Sprite.Key = constants.WorldSprites[data.SelectedWorldIndex]
-														case "doodad_tile":
-															ce.Sprite.Key = constants.WorldDoodads[data.SelectedWorldIndex]
-														}
-													} else if ce.ElementType == ui.TextElement {
-														ce.Text.SetText(constants.WorldNames[data.SelectedWorldIndex])
-													}
-												}
-												pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
-												sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
-												dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
-												de.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
-												de.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
-												de.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
-												de.ViewPort.Canvas.SetUniform("uRedSecondary", float32(sc.R))
-												de.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(sc.G))
-												de.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(sc.B))
-												de.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
-												de.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
-												de.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
-											}
-										}
-									}
-									for _, ie := range ele.Elements {
-										//if ctI, okC := ie.(*data.Container); okC {
-										//	for _, cie := range ctI.Elements {
-										//		if it, okIT := cie.(*data.Text); okIT {
-										//			it.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
-										//		}
-										//	}
-										//}
-										if ie.ElementType == ui.TextElement {
-											ie.Text.Hidden = true
-										}
-									}
-									//for _, ce := range ct.Elements {
-									//	if it, okIT := ce.(*data.Text); okIT {
-									//		it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-									//	}
-									//}
-									wtte.Text.Hidden = false
-									click.Consume()
-								}
-							}
-						}))
-						ele.Elements = append(ele.Elements, ct)
-						ele.Elements = append(ele.Elements, wtte)
-					}
-					ui.UpdateScrollBounds(ele)
-				}
-			} else if ele.ElementType == ui.ContainerElement {
-				if ele.Key == "world_container_selected" {
-					tti := ui.ElementConstructor{
-						Key:         load.TurfTileItem.Key,
-						SprKey:      constants.WorldSprites[0],
-						Batch:       load.TurfTileItem.Batch,
-						Position:    load.TurfTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
-						ElementType: load.TurfTileItem.ElementType,
-					}
-					s1 := ui.CreateSpriteElement(tti)
-					ele.Elements = append(ele.Elements, s1)
-					lti := ui.ElementConstructor{
-						Key:         load.LadderTileItem.Key,
-						SprKey:      constants.TileLadderMiddle,
-						Batch:       load.LadderTileItem.Batch,
-						Position:    load.LadderTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
-						ElementType: load.LadderTileItem.ElementType,
-					}
-					s2 := ui.CreateSpriteElement(lti)
-					ele.Elements = append(ele.Elements, s2)
-					dti := ui.ElementConstructor{
-						Key:         load.DoodadTileItem.Key,
-						SprKey:      constants.WorldDoodads[0],
-						Batch:       load.DoodadTileItem.Batch,
-						Position:    load.DoodadTileItem.Position.Add(pixel.V(-world.HalfSize, 0)),
-						ElementType: load.DoodadTileItem.ElementType,
-					}
-					s3 := ui.CreateSpriteElement(dti)
-					ele.Elements = append(ele.Elements, s3)
-					wti := ui.ElementConstructor{
-						Key:         load.WorldTxtItem.Key,
-						Text:        constants.WorldNames[0],
-						Position:    load.WorldTxtItem.Position.Add(pixel.V(-world.HalfSize, 0)),
-						ElementType: load.WorldTxtItem.ElementType,
-					}
-					t1 := ui.CreateTextElement(wti, ele.ViewPort)
-					ele.Elements = append(ele.Elements, t1)
+				case "puzzle_number":
+					ele.Text.SetText("0001")
 				}
 			}
 		}

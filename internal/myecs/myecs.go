@@ -16,10 +16,11 @@ type ClearFlag bool
 var (
 	Manager = ecs.NewManager()
 
-	Object = Manager.NewComponent()
-	Parent = Manager.NewComponent()
-	Temp   = Manager.NewComponent()
-	Update = Manager.NewComponent()
+	Object        = Manager.NewComponent()
+	Parent        = Manager.NewComponent()
+	Temp          = Manager.NewComponent()
+	Update        = Manager.NewComponent()
+	Interpolation = Manager.NewComponent()
 
 	Drawable   = Manager.NewComponent()
 	Animated   = Manager.NewComponent()
@@ -48,8 +49,9 @@ var (
 	HasAnimation = ecs.BuildTag(Animated, Object)
 	IsDrawable   = ecs.BuildTag(Drawable, Object)
 
-	IsObject  = ecs.BuildTag(Object)
-	HasParent = ecs.BuildTag(Object, Parent)
+	IsObject         = ecs.BuildTag(Object)
+	HasParent        = ecs.BuildTag(Object, Parent)
+	HasInterpolation = ecs.BuildTag(Object, Interpolation)
 
 	IsTile       = ecs.BuildTag(Object, Tile)
 	HasBorder    = ecs.BuildTag(Object, Border)

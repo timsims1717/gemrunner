@@ -6,10 +6,12 @@ import (
 	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
+	"github.com/pkg/errors"
 )
 
 func PuzzleInit() {
@@ -49,6 +51,10 @@ func PuzzleInit() {
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 	} else {
 		panic("no puzzle loaded")
+	}
+	if data.Editor != nil {
+		num := ui.Dialogs[constants.DialogEditorOptionsRight].Get("puzzle_number")
+		num.Text.SetText(fmt.Sprintf("%04d", data.CurrPuzzleSet.PuzzleIndex+1))
 	}
 	PuzzleViewInit()
 	UpdateEditorShaders()
@@ -105,7 +111,7 @@ func NewPuzzleSet() {
 
 func AddPuzzle() {
 	PuzzleDispose()
-	data.CurrPuzzleSet.Add()
+	data.CurrPuzzleSet.AppendNew()
 	PuzzleInit()
 }
 
@@ -166,15 +172,20 @@ func OpenPuzzleSet(filename string) error {
 	return nil
 }
 
-func OpenPuzzle(filename string) {
-	PuzzleDispose()
-	err := content.OpenPuzzleFile(filename)
+func CombinePuzzleSet(filename string) error {
+	pzlSet, err := content.OpenPuzzleSetFileRt(filename)
 	if err != nil {
-		fmt.Printf("ERROR: failed to open puzzle: %s\n", err)
-		NewPuzzleSet()
-		return
+		return err
+	} else if pzlSet == nil {
+		return errors.New("no puzzle set to combine")
 	}
+	oIndex := data.CurrPuzzleSet.PuzzleIndex + 1
+	for _, pzl := range pzlSet.Puzzles {
+		data.CurrPuzzleSet.Insert(pzl, data.CurrPuzzleSet.PuzzleIndex+1)
+	}
+	data.CurrPuzzleSet.SetTo(oIndex)
 	PuzzleInit()
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
+	return nil
 }

@@ -10,7 +10,6 @@ import (
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
-	"strings"
 )
 
 // open puzzle dialog
@@ -143,29 +142,27 @@ func NewPuzzle() {
 	}
 }
 
-func ExitEditor() func() {
-	return func() {
-		if data.Editor != nil && data.CurrPuzzleSet != nil {
-			if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
-				ui.SetCloseSpcFn(constants.DialogChangeName, func() {
+func ExitEditor() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
+			ui.SetCloseSpcFn(constants.DialogChangeName, func() {
+				state.SwitchState(constants.MainMenuKey)
+			})
+			ui.OpenDialogInStack(constants.DialogChangeName)
+		} else if data.CurrPuzzleSet.Changed {
+			if SavePuzzleSet() {
+				state.SwitchState(constants.MainMenuKey)
+			} else {
+				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
 					state.SwitchState(constants.MainMenuKey)
 				})
-				ui.OpenDialogInStack(constants.DialogChangeName)
-			} else if data.CurrPuzzleSet.Changed {
-				if SavePuzzleSet() {
-					state.SwitchState(constants.MainMenuKey)
-				} else {
-					ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
-						state.SwitchState(constants.MainMenuKey)
-					})
-					ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
-				}
-			} else {
-				state.SwitchState(constants.MainMenuKey)
+				ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
 			}
 		} else {
 			state.SwitchState(constants.MainMenuKey)
 		}
+	} else {
+		state.SwitchState(constants.MainMenuKey)
 	}
 }
 
@@ -314,98 +311,83 @@ func ConfirmPuzzleSettings() {
 	}
 }
 
-// change world dialog
+// combine puzzles
 
-func OpenChangeWorldDialog() {
-	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		changeWorld := ui.Dialogs[constants.DialogChangeWorld]
-		// check if this is a custom world
-		data.CustomWorldSelected = data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom
-		data.CustomSelectedBefore = data.CustomWorldSelected
-		data.SelectedPrimaryColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor
-		data.SelectedSecondaryColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor
-		data.SelectedDoodadColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor
-		for _, ele := range changeWorld.Elements {
-			if strings.Contains(ele.Key, "color_primary") ||
-				strings.Contains(ele.Key, "color_secondary") ||
-				strings.Contains(ele.Key, "color_doodad") ||
-				strings.Contains(ele.Key, "check_primary") ||
-				strings.Contains(ele.Key, "check_secondary") ||
-				strings.Contains(ele.Key, "check_doodad") ||
-				strings.Contains(ele.Key, "primary_text") ||
-				strings.Contains(ele.Key, "secondary_text") ||
-				strings.Contains(ele.Key, "doodad_text") {
-				ele.Object.Hidden = !data.CustomWorldSelected
-			}
-			switch ele.ElementType {
-			case ui.CheckboxElement:
-				switch ele.Key {
-				case "custom_world_check": // whether Custom World is checked
-					ui.SetChecked(ele, data.CustomWorldSelected)
-				default:
-					updateColorCheckbox(ele)
-				}
-			case ui.ScrollElement: // world list
-				for ctI, ele2 := range ele.Elements {
-					if ele2.ElementType == ui.TextElement {
-						ele2.Text.Hidden = data.SelectedWorldIndex != ctI/2
+func OpenCombineSetsDialog() {
+	combinePzl := ui.Dialogs[constants.DialogCombineSets]
+	for _, ele := range combinePzl.Elements {
+		if ele.ElementType == ui.ScrollElement {
+			content.LoadLocalPuzzleList()
+			total := len(data.PuzzleSetFileList)
+			xPos := ele.ViewPort.CamPos.X - ele.ViewPort.Rect.W()*0.5 + 4
+			for i := 0; i < total; i++ {
+				index := i
+				if len(ele.Elements) <= i {
+					ec := ui.ElementConstructor{
+						Key:         "sub_text",
+						ElementType: ui.TextElement,
+						SubElements: nil,
 					}
+					t := ui.CreateTextElement(ec, ele.ViewPort)
+					ele.Elements = append(ele.Elements, t)
 				}
-			case ui.ContainerElement: // selected world
-				if ele.Key == "world_container_selected" {
-					for _, ce := range ele.Elements {
-						switch ce.Key {
-						case "turf_tile":
-							ce.Sprite.Key = constants.WorldSprites[data.SelectedWorldIndex]
-						case "doodad_tile":
-							ce.Sprite.Key = constants.WorldDoodads[data.SelectedWorldIndex]
-						case "world_text":
-							ce.Text.SetText(constants.WorldNames[data.SelectedWorldIndex])
+				txt := ele.Elements[i]
+				if txt.ElementType == ui.TextElement {
+					txt.Key = fmt.Sprintf("combine_puzzle_list_%d", i)
+					txt.Text.SetPos(pixel.V(xPos, float64(-i)*world.TileSize))
+					txt.Text.SetText(data.PuzzleSetFileList[i].Name)
+					if i == 0 {
+						txt.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+						data.SelectedPuzzleIndex = 0
+					} else {
+						txt.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+					}
+					txt.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ele.ViewPort, func(hvc *data.HoverClick) {
+						if combinePzl.Open && combinePzl.Active {
+							click := hvc.Input.Get("click")
+							if hvc.Hover && click.JustPressed() {
+								data.SelectedPuzzleIndex = index
+								for _, ie := range ele.Elements {
+									if ie.ElementType == ui.TextElement {
+										ie.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+									}
+								}
+								txt.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+								click.Consume()
+							}
 						}
-					}
-					pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
-					sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
-					dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
-					ele.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
-					ele.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
-					ele.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
-					ele.ViewPort.Canvas.SetUniform("uRedSecondary", float32(sc.R))
-					ele.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(sc.G))
-					ele.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(sc.B))
-					ele.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
-					ele.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
-					ele.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+					}))
 				}
 			}
+			if len(ele.Elements) > total {
+				for i := len(ele.Elements) - 1; i >= total; i-- {
+					txt := ele.Elements[i]
+					if txt.ElementType == ui.TextElement {
+						myecs.Manager.DisposeEntity(txt.Entity)
+					}
+				}
+				if total > 0 {
+					ele.Elements = ele.Elements[:total]
+				} else {
+					ele.Elements = []*ui.Element{}
+				}
+			}
+			ui.UpdateScrollBounds(ele)
 		}
-		if data.CustomWorldSelected {
-			worldDialogCustomShaders()
-		} else {
-			worldDialogNormalShaders()
-		}
-		ui.OpenDialogInStack(constants.DialogChangeWorld)
 	}
+	ui.OpenDialogInStack(constants.DialogCombineSets)
 }
 
-func ConfirmChangeWorld() {
-	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
-		//changeWorld := data.Dialogs[constants.DialogChangeWorld]
-		if data.CustomWorldSelected {
-			data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber = constants.WorldCustom
-		} else {
-			data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber = data.SelectedWorldIndex
-			data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[data.SelectedWorldIndex]
+func OnCombinePuzzleSet() {
+	if data.Editor != nil &&
+		data.SelectedPuzzleIndex > -1 &&
+		data.SelectedPuzzleIndex < len(data.PuzzleSetFileList) {
+		err := CombinePuzzleSet(data.PuzzleSetFileList[data.SelectedPuzzleIndex].Filename)
+		if err != nil {
+			fmt.Println("ERROR:", err)
 		}
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor = data.SelectedPrimaryColor
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor = data.SelectedSecondaryColor
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor = data.SelectedDoodadColor
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[data.SelectedWorldIndex]
 	}
-	UpdateEditorShaders()
-	UpdatePuzzleShaders()
-	data.CurrPuzzleSet.CurrPuzzle.Update = true
-	data.CurrPuzzleSet.CurrPuzzle.Changed = true
-	ui.CloseDialog(constants.DialogChangeWorld)
+	ui.CloseDialog(constants.DialogCombineSets)
 }
 
 // individual puzzle buttons
