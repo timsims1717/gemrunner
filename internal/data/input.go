@@ -85,16 +85,17 @@ var (
 	}
 	MenuInput = &pxginput.Input{
 		Buttons: map[string]*pxginput.ButtonSet{
-			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft).AddKey(pixelgl.KeyEnter).AddButton(pixelgl.ButtonA),
+			"click":          pxginput.NewJoyless(pixelgl.MouseButtonLeft),
 			"rightClick":     pxginput.NewJoyless(pixelgl.MouseButtonRight),
 			"space":          pxginput.NewJoyless(pixelgl.KeySpace),
-			"escape":         pxginput.NewJoyless(pixelgl.KeyEscape).AddButton(pixelgl.ButtonB),
+			"escape":         pxginput.NewJoyless(pixelgl.KeyEscape),
 			"left":           pxginput.NewJoyless(pixelgl.KeyLeft).AddButton(pixelgl.ButtonDpadLeft),
 			"right":          pxginput.NewJoyless(pixelgl.KeyRight).AddButton(pixelgl.ButtonDpadRight),
 			"up":             pxginput.NewJoyless(pixelgl.KeyUp).AddButton(pixelgl.ButtonDpadUp),
 			"down":           pxginput.NewJoyless(pixelgl.KeyDown).AddButton(pixelgl.ButtonDpadDown),
 			"backspace":      pxginput.NewJoyless(pixelgl.KeyBackspace),
 			"delete":         pxginput.NewJoyless(pixelgl.KeyDelete),
+			"enter":          pxginput.NewJoyless(pixelgl.KeyEnter),
 			"home":           pxginput.NewJoyless(pixelgl.KeyHome),
 			"end":            pxginput.NewJoyless(pixelgl.KeyEnd),
 			"Brush":          pxginput.NewJoyless(pixelgl.KeyB),
@@ -110,6 +111,8 @@ var (
 			"FlipVertical":   pxginput.NewJoyless(pixelgl.KeyK),
 			"FlipHorizontal": pxginput.NewJoyless(pixelgl.KeyU),
 			"Wrench":         pxginput.NewJoyless(pixelgl.KeyP),
+			"Wire":           pxginput.NewJoyless(pixelgl.KeyI),
+			"Text":           pxginput.NewJoyless(pixelgl.KeyT),
 			"ctrlUndo":       pxginput.NewJoyless(pixelgl.KeyZ),
 			"ctrlShiftRedo":  pxginput.NewJoyless(pixelgl.KeyZ),
 			"ctrlSave":       pxginput.NewJoyless(pixelgl.KeyS),

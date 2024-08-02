@@ -41,6 +41,7 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	ui.CloseDialog(constants.DialogPlayer2Inv)
 	ui.CloseDialog(constants.DialogPlayer3Inv)
 	ui.CloseDialog(constants.DialogPlayer4Inv)
+	ui.CloseDialog(constants.DialogPuzzleTitle)
 	systems.LevelSessionDispose()
 	systems.LevelDispose()
 	systems.ClearTemp()
@@ -172,6 +173,7 @@ func (s *testState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Draw(win)
 	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
+	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
 	// draw debug
 	if debug.ShowDebug {
 		debug.DrawLines(data.PuzzleViewNoShader.Canvas)

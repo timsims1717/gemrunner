@@ -8,6 +8,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 )
@@ -209,34 +210,32 @@ func OnSavePuzzleSet() {
 
 func OnChangeNameDialog() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		for _, ele := range ui.Dialogs[constants.DialogChangeName].Elements {
-			if ele.ElementType == ui.InputElement {
-				if data.CurrPuzzleSet.Metadata.Name != "" {
-					if ele.Value != data.CurrPuzzleSet.Metadata.Name {
-						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Name)
-					}
-				} else {
-					ui.ChangeText(ele, "Untitled")
-				}
-				break
+		changeName := ui.Dialogs[constants.DialogChangeName]
+		inEle := changeName.Get("puzzle_name")
+		if data.CurrPuzzleSet.Metadata.Name != "" {
+			if inEle.Value != data.CurrPuzzleSet.Metadata.Name {
+				ui.ChangeText(inEle, data.CurrPuzzleSet.Metadata.Name)
 			}
+		} else {
+			ui.ChangeText(inEle, "Untitled")
 		}
+		changeName.Get("change_name_error").Object.Hidden = true
 	}
 }
 
 func ChangeName() {
 	if data.CurrPuzzleSet != nil {
 		changeName := ui.Dialogs[constants.DialogChangeName]
-		newName := ""
-		for _, ele := range changeName.Elements {
-			if ele.ElementType == ui.InputElement {
-				if ele.Value != "" {
-					newName = ele.Value
-				}
-				break
-			}
-		}
-		if newName != "" {
+		newName := changeName.Get("puzzle_name").Value
+		if newName == "" {
+			errorTxt := changeName.Get("change_name_error")
+			errorTxt.Text.SetText("Name can't be empty.")
+			errorTxt.Object.Hidden = false
+		} else if util.ProfanityDetector.IsProfane(newName) {
+			errorTxt := changeName.Get("change_name_error")
+			errorTxt.Text.SetText("Name can't contain\nprofanity.")
+			errorTxt.Object.Hidden = false
+		} else {
 			data.CurrPuzzleSet.Metadata.Name = newName
 			ui.CloseDialog(constants.DialogChangeName)
 			if !SavePuzzleSet() {

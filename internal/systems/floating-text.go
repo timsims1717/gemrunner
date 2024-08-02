@@ -18,7 +18,8 @@ func FloatingTextSystem() {
 			}
 			// temp
 			if tf.Temp && tf.Counter > constants.TextTimer {
-				myecs.Manager.DisposeEntity(result.Entity)
+				myecs.Manager.DisposeEntity(tf.Entity)
+				myecs.Manager.DisposeEntity(tf.ShEntity)
 				continue
 			}
 			// prox

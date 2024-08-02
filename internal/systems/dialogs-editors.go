@@ -26,6 +26,7 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.CrackedTileOptionsConstructor)
 	ui.NewDialog(load.BombOptionsConstructor)
 	ui.NewDialog(load.JetpackOptionsConstructor)
+	ui.NewDialog(load.FloatingTextConstructor)
 	editorPanels()
 	ui.NewDialog(load.EditorOptBottomConstructor)
 	ui.NewDialog(load.EditorOptRightConstructor)
@@ -64,6 +65,11 @@ func customizeEditorDialogs(win *pixelgl.Window) {
 		b := 0
 		for _, e := range dialog.Elements {
 			ele := e
+			switch ele.Key {
+			case "floating_text_value":
+				ele.InputType = ui.Special
+				ele.MultiLine = true
+			}
 			if ele.ElementType == ui.ButtonElement {
 				switch ele.Key {
 				case "open_puzzle":

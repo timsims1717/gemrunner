@@ -161,17 +161,8 @@ func PuzzleEditSystem() {
 		(click.JustPressed() || rClick.JustPressed()) {
 		data.Editor.SelectVis = false
 	}
-	//if data.Editor.Consume != "select" {
-	//	data.Editor.SelectObj.Pos = data.BlockSelectPlacement(int(data.Editor.CurrBlock))
-	//}
 	if data.Editor.SelectVis {
 		data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
-		//switch data.Editor.Consume {
-		//case "move":
-		//	if data.Editor.Offset.X != 0 || data.Editor.Offset.Y != 0 {
-		//		data.Editor.ViewPort.PortPos = data.MenuInput.World.Add(data.Editor.Offset)
-		//	}
-		//}
 	} else {
 		data.CurrPuzzleSet.CurrPuzzle.Click = rClick.Pressed() || click.Pressed()
 		if !rClick.Pressed() && !rClick.JustReleased() &&
@@ -494,6 +485,21 @@ func PuzzleEditSystem() {
 							data.IMDraw.Push(lt.Object.Pos, projPos)
 							data.IMDraw.Line(2)
 						}
+					}
+				}
+			case data.Text:
+				if legal {
+					if click.JustReleased() { // open the text tool dialog
+						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+						ui.OpenDialogInStack(constants.DialogFloatingText)
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+					} else if rClick.JustReleased() { // remove text
+						//tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
 					}
 				}
 			case data.Select:

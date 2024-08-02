@@ -206,3 +206,14 @@ func OnlyAlphaNumeric(s string) string {
 	}
 	return result.String()
 }
+
+func JustChars(s string) string {
+	var result strings.Builder
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if ' ' <= b && b <= '~' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
+}

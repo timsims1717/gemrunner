@@ -93,6 +93,7 @@ func run() {
 
 	ui.ScrollSpeed = constants.ScrollSpeed
 	load.InitEditorConstructors()
+	load.InitEditorPanels()
 	load.InitMainMenuConstructors()
 	systems.InitMainBorder()
 	systems.CursorInit()

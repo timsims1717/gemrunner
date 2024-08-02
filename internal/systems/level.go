@@ -129,6 +129,9 @@ func LevelInit() {
 			case data.BlockJetpack:
 				tile.Block = data.BlockEmpty
 				CreateJetpack(obj.Pos, tile.Metadata, tile.Coords)
+			case data.BlockDisguise:
+				tile.Block = data.BlockEmpty
+				CreateDisguise(obj.Pos, tile.Metadata, tile.Coords)
 			case data.BlockGear:
 				var a *reanimator.Anim
 				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {

@@ -370,7 +370,16 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
 						}
 						timer := jetpack.Metadata.Timer - jetpack.Counter/2
-						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, constants.TextTimer, txPos)
+						pColor := constants.Player1Color
+						switch p {
+						case 1:
+							pColor = constants.Player2Color
+						case 2:
+							pColor = constants.Player3Color
+						case 3:
+							pColor = constants.Player4Color
+						}
+						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, txPos, pixel.ToRGBA(constants.ColorWhite), pixel.ToRGBA(pColor), nil)
 					}
 					jetpack.Counter++
 					if jetpack.Counter > jetpack.Metadata.Timer*2 {
@@ -396,6 +405,123 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 					jetpack.Waiting = false
 					jetpack.Entity.RemoveComponent(myecs.Update)
 					jetpack.Entity.AddComponent(myecs.PickUp, jetpack.PickUp)
+				}
+			}
+		}))
+	})
+}
+
+func CreateDisguise(pos pixel.Vec, metadata data.TileMetadata, origin world.Coords) {
+	key := constants.ItemDisguise
+	obj := object.New().WithID(key).SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Layer = 12
+	e := myecs.Manager.NewEntity()
+	disguise := &data.Disguise{
+		Object:   obj,
+		PickUp:   data.NewPickUp("Jetpack", 5),
+		Entity:   e,
+		Metadata: metadata,
+		Origin:   origin,
+	}
+	disguise.Action = DisguiseAction(disguise)
+	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "disguise_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
+	regenA.SetTriggerAll(func() {
+		switch regenA.Step {
+		case 7, 8:
+			obj.Pos.Y = pos.Y + 2
+		case 9:
+			obj.Pos.Y = pos.Y
+		case 10:
+			obj.Pos.Y = pos.Y + 1
+		}
+	})
+	regenA.SetEndTrigger(func() {
+		obj.Pos.Y = pos.Y
+		disguise.Regen = false
+	})
+	disguise.Anim = reanimator.New(reanimator.NewSwitch().
+		AddAnimation(regenA).
+		AddAnimation(reanimator.NewBatchSprite("disguise", img.Batchers[constants.TileBatch], "disguise", reanimator.Hold)).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if disguise.Waiting || disguise.Using {
+				return "none"
+			} else if disguise.Regen {
+				return "regen"
+			} else {
+				return "disguise"
+			}
+		}), "disguise")
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Drawable, disguise.Anim)
+	e.AddComponent(myecs.Animated, disguise.Anim)
+	e.AddComponent(myecs.PickUp, disguise.PickUp)
+	e.AddComponent(myecs.Action, disguise.Action)
+	e.AddComponent(myecs.LvlElement, struct{}{})
+}
+
+func DisguiseAction(disguise *data.Disguise) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+		DropItem(ch)
+		// change the player to disguised
+		ch.Flags.Disguised = true
+		ch.Anims[1].SetAnim(ch.Anims[0].GetCurrentAnim().Key, ch.Anims[0].GetCurrentFrame())
+		// set the disguise vars
+		disguise.Using = true
+		disguise.Counter = 0
+		// remove the pickup component
+		disguise.Entity.RemoveComponent(myecs.PickUp)
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if disguise.Using {
+				if data.CurrLevel.FrameChange {
+					if disguise.Counter%2 == 0 {
+						// update timer visuals
+						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+						var txPos pixel.Vec
+						tile := data.CurrLevel.Tiles.Get(x, y+1)
+						if tile == nil {
+							tile = data.CurrLevel.Tiles.Get(x, y-1)
+							txPos = ch.Object.Pos.Add(pixel.V(0, -world.TileSize))
+						} else {
+							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
+						}
+						timer := disguise.Metadata.Timer - disguise.Counter/2
+						pColor := constants.Player1Color
+						switch p {
+						case 1:
+							pColor = constants.Player2Color
+						case 2:
+							pColor = constants.Player3Color
+						case 3:
+							pColor = constants.Player4Color
+						}
+						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, txPos, pixel.ToRGBA(constants.ColorWhite), pixel.ToRGBA(pColor), nil)
+					}
+					disguise.Counter++
+					if disguise.Counter > disguise.Metadata.Timer*2 {
+						ch.Flags.Disguised = false
+						if disguise.Metadata.Regenerate {
+							disguise.Using = false
+							disguise.Waiting = true
+							disguise.Counter = 0
+						} else {
+							myecs.Manager.DisposeEntity(disguise.Entity)
+						}
+					}
+				}
+			} else if disguise.Waiting {
+				if reanimator.FrameSwitch {
+					disguise.Counter++
+				}
+				delay := constants.ItemRegen * (disguise.Metadata.RegenDelay + 2)
+				if disguise.Counter > delay && data.CurrLevel.FrameChange {
+					disguise.Object.Pos = world.MapToWorld(disguise.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					disguise.Regen = true
+					disguise.Waiting = false
+					disguise.Entity.RemoveComponent(myecs.Update)
+					disguise.Entity.AddComponent(myecs.PickUp, disguise.PickUp)
 				}
 			}
 		}))

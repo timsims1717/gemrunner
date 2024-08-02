@@ -154,6 +154,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		AddAnimation(portalWait).
 		AddNull("none").
 		SetChooseFn(func() string {
+			if sprPre == "disguise" && !ch.Flags.Disguised {
+				return "none"
+			}
 			switch ch.State {
 			case data.Waiting:
 				return "portal"

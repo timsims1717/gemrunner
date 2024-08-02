@@ -90,3 +90,19 @@ type Jetpack struct {
 	Regen    bool
 	Waiting  bool
 }
+
+type Disguise struct {
+	Object   *object.Object
+	Entity   *ecs.Entity
+	Anim     *reanimator.Tree
+	PickUp   *PickUp
+	Action   *Interact
+	Name     string
+	Metadata TileMetadata
+	Origin   world.Coords
+	Color    string
+	Counter  int
+	Using    bool
+	Regen    bool
+	Waiting  bool
+}

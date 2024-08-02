@@ -61,13 +61,14 @@ type Element struct {
 
 	ElementType ElementType
 
-	Checked     bool
-	Value       string
-	Focused     bool
-	Text        *typeface.Text
-	CaretIndex  int
-	CaretObj    *object.Object
-	NumbersOnly bool
+	Checked    bool
+	Value      string
+	Focused    bool
+	Text       *typeface.Text
+	CaretIndex int
+	CaretObj   *object.Object
+	InputType  InputType
+	MultiLine  bool
 
 	Border       *Border
 	BorderVP     *viewport.ViewPort
@@ -82,6 +83,15 @@ type Element struct {
 	YTop         float64
 	YBot         float64
 }
+
+type InputType int
+
+const (
+	AlphaNumeric = iota
+	Numeric
+	Special
+	Any
+)
 
 func (e *Element) Get(key string) *Element {
 	for _, e1 := range e.Elements {

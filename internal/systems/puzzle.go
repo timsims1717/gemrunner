@@ -136,10 +136,12 @@ func DeletePuzzle() {
 func SavePuzzleSet() bool {
 	if data.CurrPuzzleSet != nil {
 		if data.CurrPuzzleSet.Metadata.Name == "" {
-			data.CurrPuzzleSet.Metadata.Name = "test"
-			data.CurrPuzzleSet.Metadata.Filename = "test.puzzle"
+			fmt.Println("ERROR: puzzle set has no name")
+			return false
 		}
-		data.CurrPuzzleSet.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzleSet.Metadata.Name)
+		if data.CurrPuzzleSet.Metadata.Filename == "" {
+			data.CurrPuzzleSet.Metadata.Filename = fmt.Sprintf("%s.puzzle", data.CurrPuzzleSet.Metadata.Name)
+		}
 		err := content.SavePuzzleSetToFile()
 		if err != nil {
 			fmt.Println("ERROR:", err)

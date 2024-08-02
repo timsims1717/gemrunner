@@ -192,12 +192,12 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 	ivp := viewport.New(nil)
 	ivp.ParentView = vp
 	ivp.SetRect(pixel.R(0, 0, element.Width, element.Height))
-	ivp.CamPos = pixel.V(ivp.Rect.W()*0.5-2, 0)
+	ivp.CamPos = pixel.V(ivp.Rect.W()*0.5-2, ivp.Rect.H()*-0.5+8)
 	ivp.PortPos = element.Position
 
 	bvp := viewport.New(nil)
 	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
-	bvp.CamPos = pixel.V(0, 0)
+	bvp.CamPos = pixel.ZV
 	bvp.PortPos = element.Position
 
 	bObj := object.New()
@@ -292,10 +292,11 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 				}
 				i.CaretIndex = closest
 			}
+			if i.CaretIndex > tf.Len()-1 {
+				i.CaretIndex = tf.Len() - 1
+			}
 			if i.CaretIndex < 0 {
 				i.CaretIndex = 0
-			} else if i.CaretIndex > tf.Len()-1 {
-				i.CaretIndex = tf.Len() - 1
 			}
 			back := hvc.Input.Get("backspace")
 			if (back.JustPressed() || back.Repeated()) && i.CaretIndex > 0 {
@@ -308,12 +309,23 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, vp *viewport.Vi
 				i.Value = fmt.Sprintf("%s%s", i.Value[:i.CaretIndex], i.Value[i.CaretIndex+1:])
 				changed = true
 			}
+			if i.MultiLine {
+				enter := hvc.Input.Get("enter")
+				if enter.JustPressed() || enter.Repeated() {
+					i.Value = fmt.Sprintf("%s\n%s", i.Value[:i.CaretIndex], i.Value[i.CaretIndex:])
+					changed = true
+					i.CaretIndex++
+				}
+			}
 			typed := hvc.Input.Typed
 			if typed != "" {
-				if i.NumbersOnly {
-					typed = util.OnlyNumbers(typed)
-				} else {
+				switch i.InputType {
+				case AlphaNumeric:
 					typed = util.OnlyAlphaNumeric(typed)
+				case Numeric:
+					typed = util.OnlyNumbers(typed)
+				case Special:
+					typed = util.JustChars(typed)
 				}
 				i.Value = fmt.Sprintf("%s%s%s", i.Value[:i.CaretIndex], typed, i.Value[i.CaretIndex:])
 				changed = true
@@ -541,12 +553,6 @@ func AlignBarToView(s *Element) {
 	barDist := scrollRatio * barHeight
 	barTop := s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
 	s.Bar.Object.Pos.Y = barTop - barDist
-
-	//barPos := s.Bar.Object.Pos.Y
-	//barDist := barTop - barPos
-	//barRatio := barDist / barHeight
-	//scrollDist := barRatio * scrollHeight
-	//s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
 }
 
 func RestrictScroll(s *Element) {
@@ -571,19 +577,6 @@ func UpdateScrollBounds(scroll *Element) {
 		obj := object.New()
 		obj.Rect = ele.Object.Rect
 		obj.Pos = ele.Object.Pos
-		//if ct, okC := ele.(*Container); okC {
-		//	obj.Rect = ct.ViewPort.Canvas.Bounds()
-		//	obj.Pos = ct.ViewPort.PortPos
-		//} else if in, okI := ele.(*Input); okI {
-		//	obj.Rect = in.Text.Obj.Rect
-		//	obj.Pos = in.Text.Obj.Pos
-		//} else if txt, okT := ele.(*Text); okT {
-		//	obj.Rect = txt.Text.Obj.Rect
-		//	obj.Pos = txt.Text.Obj.Pos
-		//} else if scr, okScr := ele.(*Scroll); okScr {
-		//	obj.Rect = scr.BorderObject.Rect
-		//	obj.Pos = scr.ViewPort.PortPos
-		//}
 		oTop := obj.Pos.Y + obj.Rect.H()*0.5 + 1
 		oBot := obj.Pos.Y - obj.Rect.H()*0.5 - 1
 		if i == 0 || yTop < oTop {
@@ -635,8 +628,4 @@ func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Eleme
 		ElementType: TextElement,
 	}
 	return t
-}
-
-func (e *Element) Hide() {
-
 }

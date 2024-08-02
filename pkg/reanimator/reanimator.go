@@ -74,6 +74,10 @@ func (t *Tree) GetCurrentAnim() *Anim {
 	return t.anim
 }
 
+func (t *Tree) GetCurrentFrame() int {
+	return t.frame
+}
+
 func (t *Tree) Update() {
 	if !t.Done {
 		if FrameSwitch || t.update {
@@ -123,6 +127,17 @@ func (t *Tree) Update() {
 					t.frame = t.anim.Step
 				}
 			}
+		}
+	}
+}
+
+func (t *Tree) SetAnim(key string, frame int) {
+	if a, ok := t.Root.Elements[key]; ok {
+		if a.Anim != nil {
+			t.anim = a.Anim
+			t.animKey = key
+			t.frame = frame
+			t.anim.Step = frame
 		}
 	}
 }

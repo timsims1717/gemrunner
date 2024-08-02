@@ -66,6 +66,7 @@ const (
 	FlipHorizontal
 	Wrench
 	Wire
+	Text
 	Undo
 	Redo
 	Delete
@@ -106,6 +107,8 @@ func (m EditorMode) String() string {
 		return "Wrench"
 	case Wire:
 		return "Wire"
+	case Text:
+		return "Text"
 	case Undo:
 		return "Undo"
 	case Redo:
@@ -154,6 +157,8 @@ func ModeFromSprString(s string) EditorMode {
 		return Wrench
 	case "wire":
 		return Wire
+	case "text":
+		return Text
 	case "undo":
 		return Undo
 	case "redo":
@@ -239,7 +244,7 @@ var BlockList = []Block{
 	BlockBomb,
 	BlockBombLit,
 	BlockJetpack,
-	BlockEmpty,
+	BlockDisguise,
 	BlockEmpty,
 	BlockEmpty,
 	BlockEmpty,

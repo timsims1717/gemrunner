@@ -226,6 +226,7 @@ func CharacterStateSystem() {
 					}
 				case data.Dead:
 					ch.Object.Layer = ch.Layer
+					ch.Flags.Disguised = false
 					ch.Flags.Flying = false
 					ch.Flags.Attack = false
 					ch.Flags.Hit = false

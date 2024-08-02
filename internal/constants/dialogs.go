@@ -36,4 +36,5 @@ const (
 	DialogCrackedTiles = "cracked_tile_options"
 	DialogBomb         = "bomb_options"
 	DialogJetpack      = "jetpack_options"
+	DialogFloatingText = "floating_text"
 )

@@ -84,6 +84,7 @@ const (
 	BlockJetpack
 	BlockBomb
 	BlockBombLit
+	BlockDisguise
 
 	BlockReeds
 	BlockFlowers
@@ -140,6 +141,8 @@ func (b Block) String() string {
 		return constants.ItemBox
 	case BlockJetpack:
 		return constants.ItemJetpack
+	case BlockDisguise:
+		return constants.ItemDisguise
 	case BlockBomb:
 		return constants.ItemBomb
 	case BlockBombLit:
@@ -292,6 +295,7 @@ var toID = map[string]Block{
 	constants.TileBar:               BlockBar,
 	constants.ItemBox:               BlockBox,
 	constants.ItemJetpack:           BlockJetpack,
+	constants.ItemDisguise:          BlockDisguise,
 	constants.ItemBomb:              BlockBomb,
 	constants.ItemBombLit:           BlockBombLit,
 	constants.CharPlayer1:           BlockPlayer1,
@@ -431,6 +435,7 @@ type Tile struct {
 	Counter  int            `json:"-"`
 	Live     bool           `json:"-"`
 	AltBlock int            `json:"alt"`
+	FText    *FloatingText  `json:"text"`
 }
 
 func (t *Tile) Copy() *Tile {

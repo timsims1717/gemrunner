@@ -11,7 +11,7 @@ import (
 
 type Dynamic struct {
 	Object       *object.Object
-	Anim         *reanimator.Tree
+	Anims        []*reanimator.Tree
 	Entity       *ecs.Entity
 	Inventory    *ecs.Entity
 	StoredBlocks []*Tile
@@ -218,6 +218,7 @@ type Flags struct {
 	Attack       bool
 	Regen        bool
 	Flying       bool
+	Disguised    bool
 	Frame        bool
 	JumpBuff     int
 	PickUpBuff   int

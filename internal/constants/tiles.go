@@ -112,8 +112,9 @@ const (
 	ItemGemPurple = "gem_purple"
 	ItemGemBrown  = "gem_brown"
 
-	ItemBox     = "box"
-	ItemJetpack = "jetpack"
+	ItemBox      = "box"
+	ItemJetpack  = "jetpack"
+	ItemDisguise = "disguise"
 
 	ItemBomb           = "bomb"
 	ItemBombLit        = "bomb_lit"

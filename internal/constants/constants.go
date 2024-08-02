@@ -138,4 +138,5 @@ var (
 	CollapseRegenLayer = []int{31}         // turf that have masks
 	CollapseRegenMask  = []int{32}         // turf masks
 	EffectsLayer       = []int{33, 34, 35} // digging; explosions; deaths from explosions, text
+	TextLayer          = []int{36, 37}     // floating text
 )

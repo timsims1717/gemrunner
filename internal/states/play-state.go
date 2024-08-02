@@ -156,6 +156,7 @@ func (s *playState) Draw(win *pixelgl.Window) {
 	data.PuzzleView.Draw(win)
 	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
+	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
 	// draw debug
 	if debug.ShowDebug {
 		debug.DrawLines(data.PuzzleViewNoShader.Canvas)

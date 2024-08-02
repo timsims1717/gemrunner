@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/TwiN/go-away v1.6.13 // indirect
 	github.com/aquilax/go-perlin v1.1.0 // indirect
 	github.com/beefsack/go-astar v0.0.0-20200827232313-4ecf9e304482 // indirect
 	github.com/ebitengine/oto/v3 v3.1.0 // indirect
@@ -31,4 +32,5 @@ require (
 	github.com/jfreymuth/oggvorbis v1.0.5 // indirect
 	github.com/jfreymuth/vorbis v1.0.2 // indirect
 	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 )

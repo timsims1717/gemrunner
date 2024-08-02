@@ -23,18 +23,10 @@ func UpdateViews() {
 		constants.PickedRatio += 1
 	}
 
-	//maxRatio := 1.
 	if data.PuzzleView != nil {
 		data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
 		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
 		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
-		//wRatio := viewport.MainCamera.Rect.W() / data.PuzzleView.Rect.W()
-		//hRatio := viewport.MainCamera.Rect.H() / data.PuzzleView.Rect.H()
-		//maxRatio = wRatio
-		//if hRatio < wRatio {
-		//	maxRatio = hRatio
-		//}
-		//maxRatio *= 0.8
 		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)

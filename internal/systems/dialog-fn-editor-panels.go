@@ -30,6 +30,25 @@ func EditorMode(mode data.EditorMode, btn *ui.Element, dialog *ui.Dialog) func()
 	}
 }
 
+// floating text
+
+func OnOpenFloatingText() {
+	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
+		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
+			fmt.Println("WARNING: no tiles selected by wrench")
+			ui.CloseDialog(constants.DialogFloatingText)
+			return
+		}
+		//firstTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
+		//ftDialog := ui.Dialogs[constants.DialogFloatingText]
+		//for _, ele := range ftDialog.Elements {
+		//	switch ele.Key {
+		//
+		//	}
+		//}
+	}
+}
+
 // wrench dialogs
 
 func OnOpenCrackTileOptions() {
@@ -115,7 +134,7 @@ func OnOpenBombOptions() {
 					ele.Text.SetText("Lit Bomb Options")
 				}
 			case "bomb_regenerate_delay_input":
-				ele.NumbersOnly = true
+				ele.InputType = ui.Numeric
 				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
 			}
 		}
@@ -185,10 +204,10 @@ func OnOpenJetpackOptions() {
 			case "jetpack_regenerate_check":
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "jetpack_regenerate_delay_input":
-				ele.NumbersOnly = true
+				ele.InputType = ui.Numeric
 				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
 			case "jetpack_timer_input":
-				ele.NumbersOnly = true
+				ele.InputType = ui.Numeric
 				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
 			}
 		}
