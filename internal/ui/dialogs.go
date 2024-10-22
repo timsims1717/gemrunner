@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	ScrollSpeed     float64
-	DialogStack     []*Dialog
-	DialogsOpen     []*Dialog
-	DialogStackOpen bool
-	Dialogs         = map[string]*Dialog{}
+	ScrollSpeed        float64
+	DialogStack        []*Dialog
+	DialogsOpen        []*Dialog
+	DialogStackOpen    bool
+	Dialogs            = map[string]*Dialog{}
+	DialogConstructors = map[string]*DialogConstructor{}
 )
 
 type Dialog struct {
@@ -43,12 +44,12 @@ type Dialog struct {
 }
 
 type DialogConstructor struct {
-	Key      string
-	Width    float64
-	Height   float64
-	Pos      pixel.Vec
-	Elements []ElementConstructor
-	NoBorder bool
+	Key      string               `json:"key"`
+	Width    float64              `json:"width"`
+	Height   float64              `json:"height"`
+	Pos      pixel.Vec            `json:"pos"`
+	Elements []ElementConstructor `json:"elements,omitempty"`
+	NoBorder bool                 `json:"noBorder,omitempty"`
 }
 
 func NewDialog(dc *DialogConstructor) {
@@ -102,7 +103,10 @@ func NewDialog(dc *DialogConstructor) {
 			ct2 := CreateContainer(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, ct2)
 		case InputElement:
-			i := CreateInputElement(element, dlg, dlg.ViewPort)
+			i := CreateInputElement(element, dlg, nil, dlg.ViewPort, false)
+			dlg.Elements = append(dlg.Elements, i)
+		case MultiLineInputElement:
+			i := CreateInputElement(element, dlg, nil, dlg.ViewPort, true)
 			dlg.Elements = append(dlg.Elements, i)
 		case ScrollElement:
 			s := CreateScrollElement(element, dlg, nil, dlg.ViewPort)

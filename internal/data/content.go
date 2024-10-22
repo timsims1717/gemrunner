@@ -21,6 +21,8 @@ var (
 	SelectedPrimaryColor   pixel.RGBA
 	SelectedSecondaryColor pixel.RGBA
 	SelectedDoodadColor    pixel.RGBA
+	SelectedTextColor      pixel.RGBA
+	SelectedShadowColor    pixel.RGBA
 	RearrangePuzzleMove    bool
 	RearrangePuzzleIndex   int
 	RearrangePuzzles       []int

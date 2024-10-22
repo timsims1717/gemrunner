@@ -14,7 +14,9 @@ var (
 )
 
 func InitializeText() {
-	debugText = typeface.New("basic", typeface.NewAlign(typeface.Left, typeface.Top), 1.0, 2.0, 0., 0.)
+	debugText = typeface.New("basic").
+		WithAnchor(pixel.BottomRight).
+		WithScalar(2.)
 }
 
 func DrawText(win *pixelgl.Window) {

@@ -15,6 +15,7 @@ var (
 	PuzzleListEntry       ui.ElementConstructor
 	PuzzleTitleItem       ui.ElementConstructor
 	PuzzleTitleShadowItem ui.ElementConstructor
+	PuzzleAuthorItem      ui.ElementConstructor
 	PuzzleNumberSpr       ui.ElementConstructor
 	PlayerNumberSpr       ui.ElementConstructor
 	NumberItems           ui.ElementConstructor
@@ -94,6 +95,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-48, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "any_button_p3",
@@ -101,6 +103,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(20, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "any_button_p4",
@@ -108,6 +111,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(88, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "selected_p1_cnt",
@@ -211,6 +215,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorBlue),
 						Position:    pixel.V(-31, 1),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 					{
 						Key:         "main_tab_text",
@@ -218,6 +223,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-31, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -234,6 +240,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorBlue),
 						Position:    pixel.V(-18, 1),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 					{
 						Key:         "custom_tab_text",
@@ -241,6 +248,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-18, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -281,6 +289,7 @@ func InitMainMenuConstructors() {
 								Color:       pixel.ToRGBA(constants.ColorWhite),
 								Position:    pixel.V(-28, 0),
 								ElementType: ui.TextElement,
+								Anchor:      pixel.Right,
 							},
 						},
 					},
@@ -326,12 +335,21 @@ func InitMainMenuConstructors() {
 		Position:    pixel.V(-18, 9),
 		Color:       pixel.ToRGBA(constants.ColorBlue),
 		ElementType: ui.TextElement,
+		Anchor:      pixel.Right,
 	}
 	PuzzleTitleItem = ui.ElementConstructor{
 		Key:         "puzzle_title",
 		Position:    pixel.V(-18, 8),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
+		Anchor:      pixel.Right,
+	}
+	PuzzleAuthorItem = ui.ElementConstructor{
+		Key:         "puzzle_author",
+		Position:    pixel.V(-12, 0),
+		Color:       pixel.ToRGBA(constants.ColorWhite),
+		ElementType: ui.TextElement,
+		Anchor:      pixel.Right,
 	}
 	PuzzleNumberSpr = ui.ElementConstructor{
 		Key:         "puzzle_num",
@@ -352,6 +370,7 @@ func InitMainMenuConstructors() {
 		Position:    pixel.V(-50, -4),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
+		Anchor:      pixel.Right,
 	}
 	FavoriteItem = ui.ElementConstructor{
 		Key:         "favorite_symbol",
@@ -380,6 +399,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-16, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -396,6 +416,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-18, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -412,6 +433,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-17, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -428,6 +450,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-36, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -444,6 +467,7 @@ func InitMainMenuConstructors() {
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						Position:    pixel.V(-42, 0),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 				},
 			},
@@ -461,6 +485,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-12, 5),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_skull",
@@ -476,6 +501,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-36, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_gem",
@@ -491,6 +517,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_inv_cnt",
@@ -527,6 +554,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-12, 5),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_skull",
@@ -542,6 +570,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-36, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_gem",
@@ -557,6 +586,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_inv_cnt",
@@ -593,6 +623,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-12, 5),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_skull",
@@ -608,6 +639,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-36, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_gem",
@@ -623,6 +655,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_inv_cnt",
@@ -659,6 +692,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-12, 5),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_skull",
@@ -674,6 +708,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-36, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_gem",
@@ -689,6 +724,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, -3),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "player_inv_cnt",
@@ -725,6 +761,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, 1),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_title",
@@ -732,6 +769,7 @@ func InitMainMenuConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(0, 0),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 		},
 	}

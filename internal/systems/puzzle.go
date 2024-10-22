@@ -30,6 +30,9 @@ func PuzzleInit() {
 					AddComponent(myecs.Tile, tile)
 				tile.Object = obj
 				tile.Entity = e
+				if tile.FText != nil {
+					tile.FText.Init(tile)
+				}
 			}
 		}
 		num := data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber
@@ -84,6 +87,12 @@ func PuzzleViewInit() {
 }
 
 func PuzzleDispose() {
+	for _, result := range myecs.Manager.Query(myecs.IsText) {
+		if ft, ok := result.Components[myecs.Text].(*data.FloatingText); ok {
+			myecs.Manager.DisposeEntity(ft.Entity)
+			myecs.Manager.DisposeEntity(ft.ShEntity)
+		}
+	}
 	for _, result := range myecs.Manager.Query(myecs.IsTile) {
 		myecs.Manager.DisposeEntity(result.Entity)
 	}

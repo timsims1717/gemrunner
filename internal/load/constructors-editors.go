@@ -28,8 +28,6 @@ var (
 	// editor mode dialogs
 	CrackedTileOptionsConstructor *ui.DialogConstructor
 	BombOptionsConstructor        *ui.DialogConstructor
-	JetpackOptionsConstructor     *ui.DialogConstructor
-	FloatingTextConstructor       *ui.DialogConstructor
 )
 
 func InitEditorConstructors() {
@@ -45,6 +43,7 @@ func InitEditorConstructors() {
 				Position:    pixel.V(-84, 72),
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_open_puzzle",
@@ -86,6 +85,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-92, 24),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_puzzle_name",
@@ -123,6 +123,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorRed),
 				Position:    pixel.V(-89, -12),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 		},
 	}
@@ -137,6 +138,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-92, 56),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_puzzle_settings",
@@ -162,6 +164,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-88, 38),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_name",
@@ -181,6 +184,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-88, 20),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_author",
@@ -201,6 +205,7 @@ func InitEditorConstructors() {
 				HelpText:    "Hub levels can be returned to as checkpoints.",
 				Position:    pixel.V(-88, 2),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_hub_check",
@@ -218,6 +223,7 @@ func InitEditorConstructors() {
 				HelpText:    "Secret levels can't be picked when starting a puzzle set.",
 				Position:    pixel.V(-88, 2),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_secret_check",
@@ -235,6 +241,7 @@ func InitEditorConstructors() {
 				HelpText:    "Turn on darkness for this level.",
 				Position:    pixel.V(-88, -16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "puzzle_darkness_check",
@@ -258,6 +265,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "check_no_players",
@@ -281,6 +289,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "confirm_delete",
@@ -313,6 +322,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "confirm_unable_to_save",
@@ -336,6 +346,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 24),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "confirm_unable_to_save",
@@ -368,6 +379,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-132, 88),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "world_container_selected",
@@ -383,6 +395,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(8, 80),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "custom_world_check",
@@ -399,6 +412,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(16, 64),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "red_color_primary",
@@ -630,6 +644,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(16, 16),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "red_color_secondary",
@@ -861,6 +876,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(16, -32),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "red_color_doodad",
@@ -1145,6 +1161,7 @@ func InitEditorConstructors() {
 		Position:    pixel.V(-4, 0),
 		Color:       pixel.ToRGBA(constants.ColorWhite),
 		ElementType: ui.TextElement,
+		Anchor:      pixel.Right,
 	}
 
 	CombineSetsConstructor = &ui.DialogConstructor{
@@ -1158,6 +1175,7 @@ func InitEditorConstructors() {
 				Position:    pixel.V(-84, 72),
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_combine_puzzle",
@@ -1199,6 +1217,7 @@ func InitEditorConstructors() {
 				Position:    pixel.V(-108, 64),
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_rearrange_puzzle",
@@ -1286,6 +1305,7 @@ func InitEditorConstructors() {
 						Position:    pixel.V(-11, 41),
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 					{
 						Key:         "rearrange_puzzle_name",
@@ -1293,6 +1313,7 @@ func InitEditorConstructors() {
 						Position:    pixel.V(0, -40),
 						Color:       pixel.ToRGBA(constants.ColorWhite),
 						ElementType: ui.TextElement,
+						Anchor:      pixel.Right,
 					},
 					{
 						Key:         "puzzle_center",
@@ -1338,6 +1359,7 @@ func InitEditorConstructors() {
 			//			Position:    pixel.V(-22, 2),
 			//			Color:       pixel.ToRGBA(constants.ColorWhite),
 			//			ElementType: ui.TextElement,
+			//          Anchor:      pixel.Right,
 			//		},
 			//	},
 			//},
@@ -1355,6 +1377,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-60, 40),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_cracked_tile",
@@ -1380,6 +1403,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 22),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cracked_tile_regenerate_check",
@@ -1396,6 +1420,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 4),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cracked_tile_show_check",
@@ -1412,6 +1437,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, -14),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cracked_tile_enemy_check",
@@ -1435,6 +1461,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-60, 40),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "cancel_bomb_options",
@@ -1460,6 +1487,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 22),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "bomb_cross_check",
@@ -1476,6 +1504,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, 4),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "bomb_regenerate_check",
@@ -1492,6 +1521,7 @@ func InitEditorConstructors() {
 				Color:       pixel.ToRGBA(constants.ColorWhite),
 				Position:    pixel.V(-56, -14),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:         "bomb_regenerate_delay_input",
@@ -1523,201 +1553,139 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	JetpackOptionsConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogJetpack,
-		Width:  8,
-		Height: 6,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "jetpack_options_title",
-				Text:        "Jetpack Options",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-60, 40),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "cancel_jetpack_options",
-				SprKey:      "cancel_btn_big",
-				SprKey2:     "cancel_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Cancel",
-				Position:    pixel.V(52, -36),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "confirm_jetpack_options",
-				SprKey:      "check_btn_big",
-				SprKey2:     "check_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Confirm",
-				Position:    pixel.V(32, -36),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "jetpack_timer",
-				Text:        "Flight Time",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-56, 22),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "jetpack_timer_input",
-				Text:        "3",
-				Batch:       constants.UIBatch,
-				SprKey:      constants.TextCaret,
-				HelpText:    "The delay of the jetpack's regeneration.",
-				Position:    pixel.V(40, 22),
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				ElementType: ui.InputElement,
-				Width:       1 * world.TileSize,
-				Height:      1 * world.TileSize,
-			},
-			{
-				Key:         "jetpack_timer_minus",
-				SprKey:      "minus_btn",
-				SprKey2:     "minus_btn_click",
-				Batch:       constants.UIBatch,
-				Position:    pixel.V(26, 22),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "jetpack_timer_plus",
-				SprKey:      "plus_btn",
-				SprKey2:     "plus_btn_click",
-				Batch:       constants.UIBatch,
-				Position:    pixel.V(54, 22),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "jetpack_regenerate",
-				Text:        "Regenerates",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-56, 4),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "jetpack_regenerate_check",
-				SprKey:      "checkbox_false",
-				SprKey2:     "checkbox_true",
-				Batch:       constants.UIBatch,
-				HelpText:    "Whether the Jetpack regenerates after running out of fuel.",
-				Position:    pixel.V(52, 4),
-				ElementType: ui.CheckboxElement,
-			},
-			{
-				Key:         "jetpack_regenerate_delay",
-				Text:        "Regeneration\nDelay",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-56, -14),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "jetpack_regenerate_delay_input",
-				Text:        "0",
-				SprKey:      constants.TextCaret,
-				Batch:       constants.UIBatch,
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "The delay of the jetpack's regeneration.",
-				Position:    pixel.V(40, -14),
-				ElementType: ui.InputElement,
-				Width:       1 * world.TileSize,
-				Height:      1 * world.TileSize,
-			},
-			{
-				Key:         "jetpack_regenerate_delay_minus",
-				SprKey:      "minus_btn",
-				SprKey2:     "minus_btn_click",
-				Batch:       constants.UIBatch,
-				Position:    pixel.V(26, -14),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "jetpack_regenerate_delay_plus",
-				SprKey:      "plus_btn",
-				SprKey2:     "plus_btn_click",
-				Batch:       constants.UIBatch,
-				Position:    pixel.V(54, -14),
-				ElementType: ui.ButtonElement,
-			},
-		},
-	}
-	FloatingTextConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogFloatingText,
-		Width:  12,
-		Height: 11,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "floating_text_title",
-				Text:        "Floating Text",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-92, 80),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "cancel_floating_text",
-				SprKey:      "cancel_btn_big",
-				SprKey2:     "cancel_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Cancel",
-				Position:    pixel.V(84, -76),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "confirm_floating_text",
-				SprKey:      "check_btn_big",
-				SprKey2:     "check_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Confirm",
-				Position:    pixel.V(64, -76),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "floating_text_value_label",
-				Text:        "Text",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, 64),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "floating_text_value",
-				Text:        "",
-				SprKey:      constants.TextCaret,
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Enter the text to display.",
-				Batch:       constants.UIBatch,
-				ElementType: ui.InputElement,
-				Position:    pixel.V(16, 54),
-				Width:       9 * world.TileSize,
-				Height:      2 * world.TileSize,
-			},
-			{
-				Key:         "floating_text_color_label",
-				Text:        "Text Color",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, 28),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "floating_text_shadow_label",
-				Text:        "Shadow",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, 1),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "floating_text_show_label",
-				Text:        "Show in Proximity",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, -26),
-				ElementType: ui.TextElement,
-			},
-			{
-				Key:         "floating_text_bob_label",
-				Text:        "Bob Up and Down",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, -44),
-				ElementType: ui.TextElement,
-			},
-		},
-	}
+	//JetpackOptionsConstructor = &ui.DialogConstructor{
+	//	Key:    constants.DialogJetpack,
+	//	Width:  8,
+	//	Height: 6,
+	//	Elements: []ui.ElementConstructor{
+	//		{
+	//			Key:         "jetpack_options_title",
+	//			Text:        "Jetpack Options",
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			Position:    pixel.V(-60, 40),
+	//			ElementType: ui.TextElement,
+	//			Anchor:      pixel.Right,
+	//		},
+	//		{
+	//			Key:         "cancel_jetpack_options",
+	//			SprKey:      "cancel_btn_big",
+	//			SprKey2:     "cancel_btn_click_big",
+	//			Batch:       constants.UIBatch,
+	//			HelpText:    "Cancel",
+	//			Position:    pixel.V(52, -36),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//		{
+	//			Key:         "confirm_jetpack_options",
+	//			SprKey:      "check_btn_big",
+	//			SprKey2:     "check_btn_click_big",
+	//			Batch:       constants.UIBatch,
+	//			HelpText:    "Confirm",
+	//			Position:    pixel.V(32, -36),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//		{
+	//			Key:         "jetpack_timer",
+	//			Text:        "Flight Time",
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			Position:    pixel.V(-56, 22),
+	//			ElementType: ui.TextElement,
+	//			Anchor:      pixel.Right,
+	//		},
+	//		{
+	//			Key:         "jetpack_timer_input",
+	//			Text:        "3",
+	//			Batch:       constants.UIBatch,
+	//			SprKey:      constants.TextCaret,
+	//			HelpText:    "The delay of the jetpack's regeneration.",
+	//			Position:    pixel.V(40, 22),
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			ElementType: ui.InputElement,
+	//			Width:       1 * world.TileSize,
+	//			Height:      1 * world.TileSize,
+	//		},
+	//		{
+	//			Key:         "jetpack_timer_minus",
+	//			SprKey:      "minus_btn",
+	//			SprKey2:     "minus_btn_click",
+	//			Batch:       constants.UIBatch,
+	//			Position:    pixel.V(26, 22),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//		{
+	//			Key:         "jetpack_timer_plus",
+	//			SprKey:      "plus_btn",
+	//			SprKey2:     "plus_btn_click",
+	//			Batch:       constants.UIBatch,
+	//			Position:    pixel.V(54, 22),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate",
+	//			Text:        "Regenerates",
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			Position:    pixel.V(-56, 4),
+	//			ElementType: ui.TextElement,
+	//			Anchor:      pixel.Right,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate_check",
+	//			SprKey:      "checkbox_false",
+	//			SprKey2:     "checkbox_true",
+	//			Batch:       constants.UIBatch,
+	//			HelpText:    "Whether the Jetpack regenerates after running out of fuel.",
+	//			Position:    pixel.V(52, 4),
+	//			ElementType: ui.CheckboxElement,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate_delay",
+	//			Text:        "Regeneration\nDelay",
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			Position:    pixel.V(-56, -14),
+	//			ElementType: ui.TextElement,
+	//			Anchor:      pixel.Right,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate_delay_input",
+	//			Text:        "0",
+	//			SprKey:      constants.TextCaret,
+	//			Batch:       constants.UIBatch,
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			HelpText:    "The delay of the jetpack's regeneration.",
+	//			Position:    pixel.V(40, -14),
+	//			ElementType: ui.InputElement,
+	//			Width:       1 * world.TileSize,
+	//			Height:      1 * world.TileSize,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate_delay_minus",
+	//			SprKey:      "minus_btn",
+	//			SprKey2:     "minus_btn_click",
+	//			Batch:       constants.UIBatch,
+	//			Position:    pixel.V(26, -14),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//		{
+	//			Key:         "jetpack_regenerate_delay_plus",
+	//			SprKey:      "plus_btn",
+	//			SprKey2:     "plus_btn_click",
+	//			Batch:       constants.UIBatch,
+	//			Position:    pixel.V(54, -14),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//	},
+	//}
+	//f, err := os.Create("assets/ui/jetpack_options.json")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//bts, err := json.Marshal(JetpackOptionsConstructor)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//_, err = f.Write(bts)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//f.Close()
 }

@@ -23,6 +23,7 @@ func LevelInit() {
 	data.CurrLevel.Tiles = data.CurrPuzzleSet.CurrPuzzle.CopyTiles()
 	data.CurrLevel.Metadata = data.CurrPuzzleSet.CurrPuzzle.Metadata
 	data.CurrLevel.Puzzle = data.CurrPuzzleSet.CurrPuzzle
+	FloatingTextStartLevel()
 	SetPuzzleTitle()
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
 	random.SetLevelSeed(random.RandomSeed())
@@ -152,6 +153,10 @@ func LevelDispose() {
 	if data.CurrLevel != nil {
 		for _, row := range data.CurrLevel.Tiles.T {
 			for _, tile := range row {
+				if tile.FText != nil {
+					myecs.Manager.DisposeEntity(tile.FText.Entity)
+					myecs.Manager.DisposeEntity(tile.FText.ShEntity)
+				}
 				myecs.Manager.DisposeEntity(tile.Entity)
 			}
 		}

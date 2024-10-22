@@ -27,14 +27,19 @@ func OnOpenPuzzleDialog() {
 			//	return
 			//}
 			total := len(data.PuzzleSetFileList)
+			if total < data.SelectedPuzzleIndex {
+				data.SelectedPuzzleIndex = 0
+			}
 			xPos := ele.ViewPort.CamPos.X - ele.ViewPort.Rect.W()*0.5 + 4
 			for i := 0; i < total; i++ {
+				yPos := float64(-i) * world.TileSize
 				index := i
 				if len(ele.Elements) <= i {
 					ec := ui.ElementConstructor{
 						Key:         "sub_text",
 						ElementType: ui.TextElement,
 						SubElements: nil,
+						Anchor:      pixel.Right,
 					}
 					t := ui.CreateTextElement(ec, ele.ViewPort)
 					ele.Elements = append(ele.Elements, t)
@@ -42,11 +47,11 @@ func OnOpenPuzzleDialog() {
 				txt := ele.Elements[i]
 				if txt.ElementType == ui.TextElement {
 					txt.Key = fmt.Sprintf("open_puzzle_list_%d", i)
-					txt.Text.SetPos(pixel.V(xPos, float64(-i)*world.TileSize))
+					txt.Text.SetPos(pixel.V(xPos, yPos))
 					txt.Text.SetText(data.PuzzleSetFileList[i].Name)
-					if i == 0 {
+					if i == data.SelectedPuzzleIndex {
 						txt.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-						data.SelectedPuzzleIndex = 0
+						ui.MoveScrollToInclude(ele, yPos+world.HalfSize+2, yPos-world.HalfSize)
 					} else {
 						txt.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
 					}
@@ -81,6 +86,7 @@ func OnOpenPuzzleDialog() {
 				}
 			}
 			ui.UpdateScrollBounds(ele)
+			ui.MoveToScrollTop(ele)
 		}
 	}
 }
@@ -372,6 +378,7 @@ func OpenCombineSetsDialog() {
 				}
 			}
 			ui.UpdateScrollBounds(ele)
+			ui.MoveToScrollTop(ele)
 		}
 	}
 	ui.OpenDialogInStack(constants.DialogCombineSets)

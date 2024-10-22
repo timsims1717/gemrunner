@@ -67,7 +67,7 @@ func CustomizeWorldDialog() {
 							for _, ele2 := range dialog.Elements {
 								if ele2.ElementType == ui.CheckboxElement {
 									if !data.CustomSelectedBefore {
-										updateColorCheckbox(ele2)
+										updateColorCheckboxWorld(ele2)
 									} else if ele2.Checked {
 										changeSelectedColor(ele2.Key)
 									}
@@ -122,6 +122,7 @@ func CustomizeWorldDialog() {
 					Text:        constants.WorldNames[i],
 					Position:    load.WorldTxtItem.Position,
 					ElementType: load.WorldTxtItem.ElementType,
+					Anchor:      pixel.Right,
 				}
 				entry.SubElements = append(entry.SubElements, wti)
 				wtt := ui.ElementConstructor{
@@ -129,10 +130,11 @@ func CustomizeWorldDialog() {
 					Text:        constants.WorldNames[i],
 					Position:    load.WorldTxtItem.Position.Add(pixel.V(0, y+1)),
 					ElementType: load.WorldTxtItem.ElementType,
+					Anchor:      pixel.Right,
 				}
 				wtte := ui.CreateTextElement(wtt, ele.ViewPort)
 				wtte.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
-				wtte.Text.Hidden = true
+				wtte.Text.Hide()
 				ct := ui.CreateContainer(entry, dialog, ele.ViewPort)
 				ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ele.ViewPort, func(hvc *data.HoverClick) {
 					if dialog.Open && dialog.Active {
@@ -183,7 +185,7 @@ func CustomizeWorldDialog() {
 								//	}
 								//}
 								if ie.ElementType == ui.TextElement {
-									ie.Text.Hidden = true
+									ie.Text.Hide()
 								}
 							}
 							//for _, ce := range ct.Elements {
@@ -191,7 +193,7 @@ func CustomizeWorldDialog() {
 							//		it.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
 							//	}
 							//}
-							wtte.Text.Hidden = false
+							wtte.Text.Show()
 							click.Consume()
 						}
 					}
@@ -200,6 +202,7 @@ func CustomizeWorldDialog() {
 				ele.Elements = append(ele.Elements, wtte)
 			}
 			ui.UpdateScrollBounds(ele)
+			ui.MoveToScrollTop(ele)
 		case "world_container_selected":
 			tti := ui.ElementConstructor{
 				Key:         load.TurfTileItem.Key,
@@ -308,12 +311,15 @@ func OpenChangeWorldDialog() {
 				case "custom_world_check": // whether Custom World is checked
 					ui.SetChecked(ele, data.CustomWorldSelected)
 				default:
-					updateColorCheckbox(ele)
+					updateColorCheckboxWorld(ele)
 				}
 			case ui.ScrollElement: // world list
 				for ctI, ele2 := range ele.Elements {
 					if ele2.ElementType == ui.TextElement {
-						ele2.Text.Hidden = data.SelectedWorldIndex != ctI/2
+						ele2.Text.Obj.Hidden = data.SelectedWorldIndex != ctI/2
+					} else if ele2.ElementType == ui.ContainerElement && data.SelectedWorldIndex == ctI/2 {
+						diff := ele2.Object.Rect.H()*0.5 + 1
+						ui.MoveScrollToInclude(ele, ele2.Object.Pos.Y+diff, ele2.Object.Pos.Y-diff)
 					}
 				}
 			case ui.ContainerElement: // selected world
@@ -565,6 +571,7 @@ func changeSelectedColor(key string) {
 		data.SelectedPrimaryColor = pixel.ToRGBA(constants.ColorGray)
 	case "burnt_check_primary":
 		data.SelectedPrimaryColor = pixel.ToRGBA(constants.ColorBurnt)
+
 	case "red_check_secondary":
 		data.SelectedSecondaryColor = pixel.ToRGBA(constants.ColorRed)
 	case "orange_check_secondary":
@@ -593,6 +600,7 @@ func changeSelectedColor(key string) {
 		data.SelectedSecondaryColor = pixel.ToRGBA(constants.ColorGray)
 	case "burnt_check_secondary":
 		data.SelectedSecondaryColor = pixel.ToRGBA(constants.ColorBurnt)
+
 	case "red_check_doodad":
 		data.SelectedDoodadColor = pixel.ToRGBA(constants.ColorRed)
 	case "orange_check_doodad":
@@ -621,10 +629,72 @@ func changeSelectedColor(key string) {
 		data.SelectedDoodadColor = pixel.ToRGBA(constants.ColorGray)
 	case "burnt_check_doodad":
 		data.SelectedDoodadColor = pixel.ToRGBA(constants.ColorBurnt)
+
+	case "white_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorWhite)
+	case "red_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorRed)
+	case "orange_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorOrange)
+	case "green_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorGreen)
+	case "cyan_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorCyan)
+	case "blue_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorBlue)
+	case "purple_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorPurple)
+	case "pink_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorPink)
+	case "black_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorBlack)
+	case "yellow_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorYellow)
+	case "gold_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorGold)
+	case "brown_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorBrown)
+	case "tan_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorTan)
+	case "light_gray_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorLightGray)
+	case "gray_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorGray)
+	case "burnt_check_color":
+		data.SelectedTextColor = pixel.ToRGBA(constants.ColorBurnt)
+
+	case "red_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorRed)
+	case "orange_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorOrange)
+	case "green_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorGreen)
+	case "cyan_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorCyan)
+	case "blue_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBlue)
+	case "purple_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorPurple)
+	case "pink_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorPink)
+	case "yellow_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorYellow)
+	case "gold_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorGold)
+	case "brown_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBrown)
+	case "tan_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorTan)
+	case "light_gray_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorLightGray)
+	case "gray_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorGray)
+	case "burnt_check_shadow":
+		data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBurnt)
 	}
 }
 
-func updateColorCheckbox(x *ui.Element) {
+func updateColorCheckboxWorld(x *ui.Element) {
 	switch x.Key {
 	case "red_check_primary":
 		ui.SetChecked(x, data.SelectedPrimaryColor == pixel.ToRGBA(constants.ColorRed))

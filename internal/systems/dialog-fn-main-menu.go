@@ -74,7 +74,7 @@ func ConfirmAddPlayers() {
 		case "play_main_tab":
 			for _, ele2 := range ele.Elements {
 				if ele2.Key == "main_tab_text_shadow" {
-					ele2.Text.Hidden = true
+					ele2.Text.Hide()
 				}
 			}
 		case "main_tab_display":
@@ -136,11 +136,7 @@ func OpenAddPlayers() {
 				ele.Object.Hidden = true
 			}
 		} else if ele.ElementType == ui.TextElement {
-			if ele.Key == "any_button_p2" {
-				ele.Text.Hidden = false
-			} else {
-				ele.Text.Hidden = true
-			}
+			ele.Text.Obj.Hidden = ele.Key != "any_button_p2"
 		}
 	}
 	p1 := data.Player{}
@@ -177,6 +173,7 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 				Color:       load.PuzzleTitleShadowItem.Color,
 				Position:    load.PuzzleTitleShadowItem.Position,
 				ElementType: load.PuzzleTitleShadowItem.ElementType,
+				Anchor:      load.PuzzleTitleShadowItem.Anchor,
 			}
 			entry.SubElements = append(entry.SubElements, pts)
 			pti := ui.ElementConstructor{
@@ -184,8 +181,17 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 				Color:       load.PuzzleTitleItem.Color,
 				Position:    load.PuzzleTitleItem.Position,
 				ElementType: load.PuzzleTitleItem.ElementType,
+				Anchor:      load.PuzzleTitleItem.Anchor,
 			}
 			entry.SubElements = append(entry.SubElements, pti)
+			pn := ui.ElementConstructor{
+				Key:         load.PuzzleAuthorItem.Key,
+				Color:       load.PuzzleAuthorItem.Color,
+				Position:    load.PuzzleAuthorItem.Position,
+				ElementType: load.PuzzleAuthorItem.ElementType,
+				Anchor:      load.PuzzleAuthorItem.Anchor,
+			}
+			entry.SubElements = append(entry.SubElements, pn)
 			pzns := ui.ElementConstructor{
 				Key:         load.PuzzleNumberSpr.Key,
 				SprKey:      load.PuzzleNumberSpr.SprKey,
@@ -207,6 +213,7 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 				Color:       load.NumberItems.Color,
 				Position:    load.NumberItems.Position,
 				ElementType: load.NumberItems.ElementType,
+				Anchor:      load.NumberItems.Anchor,
 			}
 			entry.SubElements = append(entry.SubElements, ni)
 			fsi := ui.ElementConstructor{
@@ -244,10 +251,12 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 		for _, cEle := range ct.Elements {
 			switch cEle.Key {
 			case "puzzle_title":
-				cEle.Text.SetText(fmt.Sprintf("%s\n %s", pz.Name, pz.Author))
+				cEle.Text.SetText(pz.Name)
+			case "puzzle_author":
+				cEle.Text.SetText(pz.Author)
 			case "puzzle_title_shadow":
 				cEle.Text.SetText(pz.Name)
-				cEle.Text.Hidden = pzIndex != data.SelectedPuzzleIndex
+				cEle.Text.Obj.Hidden = pzIndex != data.SelectedPuzzleIndex
 			case "number_text":
 				cEle.Text.SetText(fmt.Sprintf("%d %d", pz.NumPlayers, pz.NumPuzzles))
 			}
@@ -264,7 +273,7 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 								for _, ce2 := range ie.Elements {
 									switch ce2.Key {
 									case "puzzle_title_shadow":
-										ce2.Text.Hidden = ih != data.SelectedPuzzleIndex
+										ce2.Text.Obj.Hidden = ih != data.SelectedPuzzleIndex
 									}
 								}
 							}
@@ -294,4 +303,5 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 		}
 	}
 	ui.UpdateScrollBounds(ele)
+	ui.MoveToScrollTop(ele)
 }

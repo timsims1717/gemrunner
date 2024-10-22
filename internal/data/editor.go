@@ -51,73 +51,73 @@ func BlockSelectPlacement(b, w, h int) pixel.Vec {
 type EditorMode int
 
 const (
-	Brush = iota
-	Line
-	Square
-	Fill
-	Erase
-	Eyedrop
-	Select
-	Move
-	Cut
-	Copy
-	Paste
-	FlipVertical
-	FlipHorizontal
-	Wrench
-	Wire
-	Text
-	Undo
-	Redo
-	Delete
-	Save
-	Open
+	ModeBrush = iota
+	ModeLine
+	ModeSquare
+	ModeFill
+	ModeErase
+	ModeEyedrop
+	ModeSelect
+	ModeMove
+	ModeCut
+	ModeCopy
+	ModePaste
+	ModeFlipVertical
+	ModeFlipHorizontal
+	ModeWrench
+	ModeWire
+	ModeText
+	ModeUndo
+	ModeRedo
+	ModeDelete
+	ModeSave
+	ModeOpen
 	EndModeList
 )
 
 func (m EditorMode) String() string {
 	switch m {
-	case Brush:
+	case ModeBrush:
 		return "Brush"
-	case Line:
+	case ModeLine:
 		return "Line"
-	case Square:
+	case ModeSquare:
 		return "Square"
-	case Fill:
+	case ModeFill:
 		return "Fill"
-	case Erase:
+	case ModeErase:
 		return "Erase"
-	case Eyedrop:
+	case ModeEyedrop:
 		return "Eyedrop"
-	case Select:
+	case ModeSelect:
 		return "Select"
-	case Move:
+	case ModeMove:
 		return "Move"
-	case Cut:
+	case ModeCut:
 		return "Cut"
-	case Copy:
+	case ModeCopy:
 		return "Copy"
-	case Paste:
+	case ModePaste:
 		return "Paste"
-	case FlipVertical:
+	case ModeFlipVertical:
 		return "FlipVertical"
-	case FlipHorizontal:
+	case ModeFlipHorizontal:
 		return "FlipHorizontal"
-	case Wrench:
+	case ModeWrench:
 		return "Wrench"
-	case Wire:
+	case ModeWire:
 		return "Wire"
-	case Text:
+	case ModeText:
 		return "Text"
-	case Undo:
+	case ModeUndo:
 		return "Undo"
-	case Redo:
+	case ModeRedo:
 		return "Redo"
-	case Delete:
+	case ModeDelete:
 		return "Delete"
-	case Save:
+	case ModeSave:
 		return "Save"
-	case Open:
+	case ModeOpen:
 		return "Open"
 	}
 	return ""
@@ -128,41 +128,41 @@ func ModeFromSprString(s string) EditorMode {
 	ms := ss[0]
 	switch ms {
 	case "brush":
-		return Brush
+		return ModeBrush
 	case "line":
-		return Line
+		return ModeLine
 	case "square":
-		return Square
+		return ModeSquare
 	case "fill":
-		return Fill
+		return ModeFill
 	case "erase":
-		return Erase
+		return ModeErase
 	case "eyedrop":
-		return Eyedrop
+		return ModeEyedrop
 	case "select":
-		return Select
+		return ModeSelect
 	case "move":
-		return Move
+		return ModeMove
 	case "cut":
-		return Cut
+		return ModeCut
 	case "copy":
-		return Copy
+		return ModeCopy
 	case "paste":
-		return Paste
+		return ModePaste
 	case "flipv":
-		return FlipVertical
+		return ModeFlipVertical
 	case "fliph":
-		return FlipHorizontal
+		return ModeFlipHorizontal
 	case "wrench":
-		return Wrench
+		return ModeWrench
 	case "wire":
-		return Wire
+		return ModeWire
 	case "text":
-		return Text
+		return ModeText
 	case "undo":
-		return Undo
+		return ModeUndo
 	case "redo":
-		return Redo
+		return ModeRedo
 	}
 	return EndModeList
 }

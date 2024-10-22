@@ -126,12 +126,13 @@ func GetBlockSprites(tile *data.Tile) []*img.Sprite {
 
 func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
-	if data.Editor.Mode == data.Wrench {
+	if data.Editor.Mode == data.ModeWrench {
 		switch tile.Block {
 		case data.BlockPhase:
 			sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, tile.Metadata.Phase), constants.UIBatch))
 		case data.BlockFly, data.BlockDemon,
 			data.BlockJetpack,
+			data.BlockDisguise,
 			data.BlockCracked,
 			data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			for i := 0; i < 4; i++ {
@@ -143,6 +144,7 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked ||
 							tile.Block == data.BlockJetpack ||
+							tile.Block == data.BlockDisguise ||
 							tile.Block == data.BlockFly ||
 							tile.Block == data.BlockDemon) {
 						sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(offset))

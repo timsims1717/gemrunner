@@ -153,7 +153,7 @@ func SetPuzzleTitle() {
 	title := data.CurrLevel.Metadata.Name
 	dlg := ui.Dialogs[constants.DialogPuzzleTitle]
 	txt := dlg.Get("puzzle_title")
-	width := txt.Text.Text.BoundsOf(title).W() * txt.Text.RelativeSize
+	width := txt.Text.Text.BoundsOf(title).W() * txt.Text.Scalar
 	dlgWidth := world.TileSize * 6
 	for width > dlgWidth {
 		dlgWidth += world.TileSize

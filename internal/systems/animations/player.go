@@ -10,79 +10,40 @@ import (
 	"gemrunner/pkg/timing"
 )
 
-func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
+func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator.Tree {
 	batch := img.Batchers[constants.TileBatch]
 	idle := reanimator.NewBatchSprite("idle", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Hold)
 	breath := reanimator.NewBatchAnimation("breath", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Tran)
-	breath.SetEndTrigger(func() {
-		ch.Flags.Breath = false
-	})
+
 	regenFrames := []int{0, 1, 2, 3, 4, 5, 6, 6, 7}
 	regen := reanimator.NewBatchAnimationCustom("regen", batch, fmt.Sprintf("%s_regen", sprPre), regenFrames, reanimator.Tran)
-	regen.SetTriggerAll(func() {
-		if regen.Step > 2 && !ch.Flags.Floor {
-			ch.Flags.Regen = false
-		}
-	})
-	regen.SetEndTrigger(func() {
-		ch.Flags.Regen = false
-	})
+
 	wall := reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
 	run := reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
 	climb := reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
-	climb.SetTriggerAll(func() {
-		climb.Freeze = !ch.Flags.Climbed
-		ch.Flags.Climbed = false
-	})
+
 	slide := reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
 	bar := reanimator.NewBatchAnimation("bar", batch, fmt.Sprintf("%s_bar", sprPre), reanimator.Loop)
-	bar.SetTriggerAll(func() {
-		bar.Freeze = !ch.Flags.Climbed
-		ch.Flags.Climbed = false
-	})
+
 	digFrames := []int{0, 0, 1, 2, 3, 3, 4, 4, 4, 4}
 	dig := reanimator.NewBatchAnimationCustom("dig", batch, fmt.Sprintf("%s_dig", sprPre), digFrames, reanimator.Tran)
-	dig.SetEndTrigger(func() {
-		ch.Flags.ItemAction = data.NoItemAction
-	})
+
 	fall := reanimator.NewBatchSprite("fall", batch, fmt.Sprintf("%s_fall", sprPre), reanimator.Hold)
 	jump := reanimator.NewBatchSprite("jump", batch, fmt.Sprintf("%s_jump", sprPre), reanimator.Hold)
 	leapOnI := []int{1, 2}
 	leapOffI := []int{2, 0, 1, 2}
 	leapToI := []int{2, 0, 1, 2, 2}
 	leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
-	leapOn.SetEndTrigger(func() {
-		ch.Flags.LeapOn = false
-		ch.ACounter = 0
-	})
+
 	leapOff := reanimator.NewBatchAnimationCustom("leap_off", batch, fmt.Sprintf("%s_leap", sprPre), leapOffI, reanimator.Tran)
-	leapOff.SetEndTrigger(func() {
-		ch.Flags.LeapOff = false
-		ch.ACounter = 0
-	})
+
 	leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
-	leapTo.SetEndTrigger(func() {
-		ch.Flags.LeapTo = false
-		ch.ACounter = 0
-	})
+
 	throw := reanimator.NewBatchAnimation("throw", batch, fmt.Sprintf("%s_throw", sprPre), reanimator.Tran)
-	throw.SetEndTrigger(func() {
-		ch.Flags.ItemAction = data.NoItemAction
-	})
+
 	jetpackLoop := []int{0, 0, 0, 1, 1, 1}
 	jetpack := reanimator.NewBatchAnimationCustom("jetpack", batch, fmt.Sprintf("%s_jetpack", sprPre), jetpackLoop, reanimator.Loop)
-	jetpack.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
-		switch pre {
-		case "jetpack_up", "jetpack_down":
-			a.Step = f + 1
-			a.Step %= len(jetpackLoop)
-		case "jetpack":
-		default:
-			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
-				a.Step = ch.AnInt
-			}
-		}
-	})
+
 	jetpackUp := reanimator.NewBatchAnimationCustom("jetpack_up", batch, fmt.Sprintf("%s_jetpack_up", sprPre), jetpackLoop, reanimator.Loop)
 	jetpackUp.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 		switch pre {
@@ -97,38 +58,94 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string) *reanimator.Tree {
 		}
 	})
 	jetpackDown := reanimator.NewBatchAnimationCustom("jetpack_down", batch, fmt.Sprintf("%s_jetpack_down", sprPre), jetpackLoop, reanimator.Loop)
-	jetpackDown.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
-		switch pre {
-		case "jetpack", "jetpack_up":
-			a.Step = f + 1
-			a.Step %= len(jetpackLoop)
-		case "jetpack_down":
-		default:
-			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
-				a.Step = ch.AnInt
-			}
-		}
-	})
+
 	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
-	hit.SetEndTrigger(func() {
-		ch.Flags.Hit = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
-	})
+
 	crush := reanimator.NewBatchAnimation("crush", batch, fmt.Sprintf("%s_crush", sprPre), reanimator.Tran)
-	crush.SetEndTrigger(func() {
-		ch.Flags.Hit = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
-	})
+
 	blow := reanimator.NewBatchAnimation("blow", batch, "exp_player", reanimator.Tran)
-	blow.SetEndTrigger(func() {
-		ch.Flags.Hit = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
-	})
+
 	portalWait := reanimator.NewBatchAnimation("portal", batch, "portal_magic", reanimator.Loop)
+	// triggers
+	if triggers {
+		breath.SetEndTrigger(func() {
+			ch.Flags.Breath = false
+		})
+		regen.SetTriggerAll(func() {
+			if regen.Step > 2 && !ch.Flags.Floor {
+				ch.Flags.Regen = false
+			}
+		})
+		regen.SetEndTrigger(func() {
+			ch.Flags.Regen = false
+		})
+		climb.SetTriggerAll(func() {
+			climb.Freeze = !ch.Flags.Climbed
+			ch.Flags.Climbed = false
+		})
+		bar.SetTriggerAll(func() {
+			bar.Freeze = !ch.Flags.Climbed
+			ch.Flags.Climbed = false
+		})
+		dig.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+		})
+		leapOn.SetEndTrigger(func() {
+			ch.Flags.LeapOn = false
+			ch.ACounter = 0
+		})
+		leapOff.SetEndTrigger(func() {
+			ch.Flags.LeapOff = false
+			ch.ACounter = 0
+		})
+		leapTo.SetEndTrigger(func() {
+			ch.Flags.LeapTo = false
+			ch.ACounter = 0
+		})
+		throw.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+		})
+		jetpack.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+			switch pre {
+			case "jetpack_up", "jetpack_down":
+				a.Step = f + 1
+				a.Step %= len(jetpackLoop)
+			case "jetpack":
+			default:
+				if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+					a.Step = ch.AnInt
+				}
+			}
+		})
+		jetpackDown.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+			switch pre {
+			case "jetpack", "jetpack_up":
+				a.Step = f + 1
+				a.Step %= len(jetpackLoop)
+			case "jetpack_down":
+			default:
+				if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+					a.Step = ch.AnInt
+				}
+			}
+		})
+		hit.SetEndTrigger(func() {
+			ch.Flags.Hit = false
+			ch.Flags.Crush = false
+			ch.Flags.Blow = false
+		})
+		crush.SetEndTrigger(func() {
+			ch.Flags.Hit = false
+			ch.Flags.Crush = false
+			ch.Flags.Blow = false
+		})
+		blow.SetEndTrigger(func() {
+			ch.Flags.Hit = false
+			ch.Flags.Crush = false
+			ch.Flags.Blow = false
+		})
+	}
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
 		AddAnimation(idle).

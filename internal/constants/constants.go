@@ -83,6 +83,9 @@ const (
 	ItemRegen       = 16
 	SpeedMod        = 0.001
 	TextTimer       = 16
+	TextProxDist    = 48.
+	TextProxBuffer  = 48
+	BobInterval     = 16
 
 	// Player Constants
 	PlayerWalkSpeed       = 4

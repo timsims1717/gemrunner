@@ -4,17 +4,19 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/load"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/options"
+	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
+	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
-	"image/color"
 )
 
 var (
@@ -47,8 +49,10 @@ func (s *editorState) Load(win *pixelgl.Window) {
 	systems.EditorInit()
 	systems.PuzzleInit()
 	systems.UpdateViews()
-	systems.PushUndoArray(true)
 	data.EditorDraw = true
+	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.Reset()
+	systems.PushUndoArray(true)
 }
 
 func (s *editorState) Update(win *pixelgl.Window) {
@@ -92,12 +96,14 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed = true
+		load.ReloadDialog(constants.DialogFloatingText)
+		systems.CustomizeEditorDialog(constants.DialogFloatingText)
+		systems.UpdateDialogView(ui.Dialogs[constants.DialogFloatingText])
 	}
-
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		systems.ChangeWorldToNext()
 	}
+	reanimator.Update()
 
 	// function systems
 	systems.FunctionSystem()
@@ -109,6 +115,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
 		systems.PuzzleEditSystem()
+		systems.FloatingTextEditorSystem()
 	} else {
 		// todo: add draw selection here?
 	}
@@ -155,8 +162,15 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		systems.DrawLayerSystem(data.PuzzleView.Canvas, 4) // ui
 		img.Clear()
 		data.PuzzleView.Draw(win)
-		data.PuzzleViewNoShader.Canvas.Clear(color.RGBA{})
+		data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 		data.IMDraw.Draw(data.PuzzleViewNoShader.Canvas)
+		systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
+		systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
+
+		// draw debug
+		if debug.ShowDebug {
+			debug.DrawLines(data.PuzzleViewNoShader.Canvas)
+		}
 		data.PuzzleViewNoShader.Draw(win)
 		// dialog draw system
 		systems.DialogDrawSystem(win)

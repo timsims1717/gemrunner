@@ -627,7 +627,7 @@ func RearrangeSetNameAndNum(index int) {
 	name := pzlView.Get("rearrange_puzzle_name")
 	num.Text.SetText(fmt.Sprintf("%04d", index+1))
 	theName := data.CurrPuzzleSet.Puzzles[data.RearrangePuzzles[index]].Metadata.Name
-	width := name.Text.Text.BoundsOf(theName).W() * name.Text.RelativeSize
+	width := name.Text.Text.BoundsOf(theName).W() * name.Text.Scalar
 	name.Text.Obj.Pos.X = width * -0.5
 	name.Text.SetText(theName)
 }

@@ -18,6 +18,8 @@ func AnimationSystem() {
 		if okO && !obj.Hidden {
 			if theAnim == nil {
 				continue
+			} else if animSet, okAS := theAnim.(*reanimator.TreeSet); okAS {
+				animSet.Update()
 			} else if anims, okS := theAnim.([]*reanimator.Tree); okS {
 				for _, anim := range anims {
 					anim.Update()
@@ -54,6 +56,14 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 					continue
 				} else if draws, okD := draw.([]*img.Sprite); okD {
 					for _, d := range draws {
+						if d == nil {
+							continue
+						}
+						DrawBatchThing(d, obj, batch)
+						count++
+					}
+				} else if anim, okAS := draw.(*reanimator.TreeSet); okAS {
+					for _, d := range anim.Set {
 						if d == nil {
 							continue
 						}
@@ -111,6 +121,14 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 				continue
 			} else if draws, okD := draw.([]*img.Sprite); okD {
 				for _, d := range draws {
+					if d == nil {
+						continue
+					}
+					DrawThing(d, obj, target)
+					count++
+				}
+			} else if anim, okAS := draw.(*reanimator.TreeSet); okAS {
+				for _, d := range anim.Set {
 					if d == nil {
 						continue
 					}

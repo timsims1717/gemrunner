@@ -35,8 +35,9 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile) *data.Dynamic {
 	player.Options.Regen = true
 	player.Options.StoredCount = 12
 	player.Options.LinkedTiles = []world.Coords{world.NewCoords(world.WorldToMap(pos.X, pos.Y))}
-	dsg := animations.PlayerAnimation(player, "disguise")
-	player.Anims = append(player.Anims, dsg)
+	dsg := animations.PlayerAnimation(player, "disguise", false)
+	dsg.Dependent = true
+	player.Anims.Set = append(player.Anims.Set, dsg)
 	e.AddComponent(myecs.Animated, player.Anims)
 	e.AddComponent(myecs.Drawable, player.Anims)
 	e.AddComponent(myecs.Dynamic, player)
@@ -50,22 +51,22 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 	case 0:
 		ch.Control = controllers.NewPlayerInput(data.P1Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anims = append(ch.Anims, animations.PlayerAnimation(ch, "player1"))
+		ch.Anims.Add(animations.PlayerAnimation(ch, "player1", true))
 		ch.Color = constants.StrColorBlue
 	case 1:
 		ch.Control = controllers.NewPlayerInput(data.P2Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anims = append(ch.Anims, animations.PlayerAnimation(ch, "player2"))
+		ch.Anims.Add(animations.PlayerAnimation(ch, "player2", true))
 		ch.Color = constants.StrColorGreen
 	case 2:
 		ch.Control = controllers.NewPlayerInput(data.P3Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anims = append(ch.Anims, animations.PlayerAnimation(ch, "player3"))
+		ch.Anims.Add(animations.PlayerAnimation(ch, "player3", true))
 		ch.Color = constants.StrColorPurple
 	case 3:
 		ch.Control = controllers.NewPlayerInput(data.P4Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
-		ch.Anims = append(ch.Anims, animations.PlayerAnimation(ch, "player4"))
+		ch.Anims.Add(animations.PlayerAnimation(ch, "player4", true))
 		ch.Color = constants.StrColorBrown
 	}
 	data.CurrLevel.Players[p] = ch
@@ -80,7 +81,7 @@ func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	demon.Layer = 29
 	obj.Layer = demon.Layer
 	demon.Object = obj
-	demon.Anims = []*reanimator.Tree{animations.DemonAnimation(demon)}
+	demon.Anims = reanimator.NewSet().Add(animations.DemonAnimation(demon))
 	demon.State = data.Regen
 	demon.Flags.Regen = true
 	demon.Options.Regen = metadata.Regenerate
@@ -149,7 +150,7 @@ func FlyCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	fly.State = data.Regen
 	fly.Flags.Regen = true
 	fly.Object = obj
-	fly.Anims = []*reanimator.Tree{animations.FlyAnimation(fly)}
+	fly.Anims = reanimator.NewSet().Add(animations.FlyAnimation(fly))
 	fly.Vars = data.FlyVars()
 	e := myecs.Manager.NewEntity()
 	fly.Entity = e

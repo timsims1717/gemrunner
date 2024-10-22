@@ -60,7 +60,7 @@ func customizeMainDialogs(win *pixelgl.Window) {
 				switch ele.Key {
 				default:
 					if strings.Contains(ele.Key, "any_button") {
-						ele.Text.Hidden = true
+						ele.Text.Hide()
 					}
 				}
 			} else if ele.ElementType == ui.ContainerElement {
@@ -93,9 +93,9 @@ func customizeMainDialogs(win *pixelgl.Window) {
 											for _, txt1 := range dle.Elements {
 												if (ele.Key == "play_main_tab" && txt1.Key == "main_tab_text_shadow") ||
 													(ele.Key == "play_custom_tab" && txt1.Key == "custom_tab_text_shadow") {
-													txt1.Text.Hidden = false
+													txt1.Text.Show()
 												} else if txt1.Key == "main_tab_text_shadow" || txt1.Key == "custom_tab_text_shadow" {
-													txt1.Text.Hidden = true
+													txt1.Text.Hide()
 												}
 											}
 										}
@@ -155,9 +155,9 @@ func AddPlayersDialog(win *pixelgl.Window) bool {
 				if ele.Key == tCntKey {
 					ele.Object.Hidden = true
 				} else if ele.Key == nTxtKey {
-					ele.Text.Hidden = true
+					ele.Text.Hide()
 				} else if ele.Key == tTxtKey {
-					ele.Text.Hidden = false
+					ele.Text.Show()
 				}
 			}
 		}
@@ -200,9 +200,9 @@ func AddPlayersDialog(win *pixelgl.Window) bool {
 				if ele.Key == nCntKey {
 					ele.Object.Hidden = false
 				} else if ele.Key == nTxtKey {
-					ele.Text.Hidden = false
+					ele.Text.Show()
 				} else if ele.Key == pTxtKey {
-					ele.Text.Hidden = true
+					ele.Text.Hide()
 				}
 			}
 		}

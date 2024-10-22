@@ -379,7 +379,12 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 						case 3:
 							pColor = constants.Player4Color
 						}
-						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, txPos, pixel.ToRGBA(constants.ColorWhite), pixel.ToRGBA(pColor), nil)
+						data.NewFloatingText().
+							WithPos(txPos).
+							WithColor(pixel.ToRGBA(constants.ColorWhite)).
+							WithShadow(pixel.ToRGBA(pColor)).
+							WithText(fmt.Sprintf("%d", timer)).
+							WithTimer(1)
 					}
 					jetpack.Counter++
 					if jetpack.Counter > jetpack.Metadata.Timer*2 {
@@ -467,7 +472,7 @@ func DisguiseAction(disguise *data.Disguise) *data.Interact {
 		DropItem(ch)
 		// change the player to disguised
 		ch.Flags.Disguised = true
-		ch.Anims[1].SetAnim(ch.Anims[0].GetCurrentAnim().Key, ch.Anims[0].GetCurrentFrame())
+		ch.Anims.Set[1].SetAnim(ch.Anims.Set[0].GetCurrentAnim().Key, ch.Anims.Set[0].GetCurrentFrame())
 		// set the disguise vars
 		disguise.Using = true
 		disguise.Counter = 0
@@ -497,7 +502,12 @@ func DisguiseAction(disguise *data.Disguise) *data.Interact {
 						case 3:
 							pColor = constants.Player4Color
 						}
-						data.NewFloatingText(fmt.Sprintf("%d", timer), true, false, false, txPos, pixel.ToRGBA(constants.ColorWhite), pixel.ToRGBA(pColor), nil)
+						data.NewFloatingText().
+							WithPos(txPos).
+							WithColor(pixel.ToRGBA(constants.ColorWhite)).
+							WithShadow(pixel.ToRGBA(pColor)).
+							WithText(fmt.Sprintf("%d", timer)).
+							WithTimer(1)
 					}
 					disguise.Counter++
 					if disguise.Counter > disguise.Metadata.Timer*2 {

@@ -434,8 +434,9 @@ func InitEditorPanels() {
 				Key:         "puzzle_number",
 				Text:        "0000",
 				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-11, 4.5*world.TileSize+1),
+				Position:    pixel.V(-11., 4.5*world.TileSize),
 				ElementType: ui.TextElement,
+				Anchor:      pixel.Right,
 			},
 			{
 				Key:      "test_btn",

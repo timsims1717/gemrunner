@@ -17,8 +17,12 @@ var (
 )
 
 func InitializeFPS() {
-	fpsText = typeface.New("basic", typeface.NewAlign(typeface.Left, typeface.Bottom), 1.0, 2.0, 0., 0.)
-	versionText = typeface.New("basic", typeface.NewAlign(typeface.Right, typeface.Bottom), 1.0, 2.0, 0., 0.)
+	fpsText = typeface.New("basic").
+		WithAnchor(pixel.TopRight).
+		WithScalar(2.)
+	versionText = typeface.New("basic").
+		WithAnchor(pixel.TopLeft).
+		WithScalar(2.)
 }
 
 func DrawFPS(win *pixelgl.Window) {

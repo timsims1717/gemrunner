@@ -92,6 +92,7 @@ func run() {
 	load.SoundEffects()
 
 	ui.ScrollSpeed = constants.ScrollSpeed
+	load.DialogConstructors()
 	load.InitEditorConstructors()
 	load.InitEditorPanels()
 	load.InitMainMenuConstructors()

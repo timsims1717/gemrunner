@@ -11,7 +11,7 @@ import (
 
 type Dynamic struct {
 	Object       *object.Object
-	Anims        []*reanimator.Tree
+	Anims        *reanimator.TreeSet
 	Entity       *ecs.Entity
 	Inventory    *ecs.Entity
 	StoredBlocks []*Tile
@@ -37,6 +37,7 @@ type Dynamic struct {
 
 func NewDynamic(tile *Tile) *Dynamic {
 	return &Dynamic{
+		Anims:   reanimator.NewSet(),
 		Player:  -1,
 		Enemy:   -1,
 		Actions: NewAction(),

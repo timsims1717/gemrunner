@@ -139,7 +139,7 @@ func DrawThinBorderBlue(bord *ui.Border, obj *object.Object) {
 func DrawBlackSquare(x, y int, bord *ui.Border, obj *object.Object) {
 	mat := pixel.IM
 	offset := pixel.V(world.TileSize*(float64(x)-float64(bord.Width+1)*0.5), world.TileSize*(float64(y)-float64(bord.Height+1)*0.5))
-	sKey := "black_square"
+	sKey := "black_square_16"
 	img.Batchers[constants.UIBatch].DrawSpriteColor(sKey, mat.Moved(obj.PostPos).Moved(offset), colornames.White)
 }
 

@@ -132,9 +132,9 @@ var (
 		A: 255,
 	}
 	ColorPink = color.RGBA{
-		R: 230,
-		G: 35,
-		B: 165,
+		R: 255,
+		G: 74,
+		B: 242,
 		A: 255,
 	}
 	ColorBurnt = color.RGBA{

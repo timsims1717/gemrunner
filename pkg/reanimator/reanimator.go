@@ -16,15 +16,44 @@ var (
 	FrameSwitch bool
 )
 
+type TreeSet struct {
+	Set []*Tree
+}
+
+func NewSet() *TreeSet {
+	return &TreeSet{}
+}
+
+func (ts *TreeSet) Add(tree *Tree) *TreeSet {
+	ts.Set = append(ts.Set, tree)
+	return ts
+}
+
+func (ts *TreeSet) Update() {
+	var base *Tree
+	for i, anim := range ts.Set {
+		if i == 0 {
+			base = anim
+		}
+		anim.Update()
+	}
+	for _, anim := range ts.Set {
+		if anim.Dependent {
+			anim.SetAnim(base.anim.Key, base.frame)
+		}
+	}
+}
+
 type Tree struct {
-	Root    *Switch
-	spr     *pixel.Sprite
-	anim    *Anim
-	animKey string
-	frame   int
-	update  bool
-	Done    bool
-	Default string
+	Root      *Switch
+	spr       *pixel.Sprite
+	anim      *Anim
+	animKey   string
+	frame     int
+	update    bool
+	Done      bool
+	Default   string
+	Dependent bool
 }
 
 func SetFrameRate(fRate int) {
