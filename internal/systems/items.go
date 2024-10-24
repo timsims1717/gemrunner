@@ -429,7 +429,7 @@ func CreateDisguise(pos pixel.Vec, metadata data.TileMetadata, origin world.Coor
 		Metadata: metadata,
 		Origin:   origin,
 	}
-	disguise.Action = DisguiseAction(disguise)
+	disguise.Action = DonDisguise(disguise)
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "disguise_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
@@ -445,13 +445,26 @@ func CreateDisguise(pos pixel.Vec, metadata data.TileMetadata, origin world.Coor
 		obj.Pos.Y = pos.Y
 		disguise.Regen = false
 	})
+	dropped := reanimator.NewBatchAnimation("doff", img.Batchers[constants.TileBatch], "disguise_doff", reanimator.Tran)
+	dropped.SetEndTrigger(func() {
+		if disguise.Metadata.Regenerate {
+			disguise.Counter = 0
+			disguise.Waiting = true
+			disguise.Doff = false
+		} else {
+			myecs.Manager.DisposeEntity(disguise.Entity)
+		}
+	})
 	disguise.Anim = reanimator.New(reanimator.NewSwitch().
 		AddAnimation(regenA).
 		AddAnimation(reanimator.NewBatchSprite("disguise", img.Batchers[constants.TileBatch], "disguise", reanimator.Hold)).
+		AddAnimation(dropped).
 		AddNull("none").
 		SetChooseFn(func() string {
 			if disguise.Waiting || disguise.Using {
 				return "none"
+			} else if disguise.Doff {
+				return "doff"
 			} else if disguise.Regen {
 				return "regen"
 			} else {
@@ -467,20 +480,30 @@ func CreateDisguise(pos pixel.Vec, metadata data.TileMetadata, origin world.Coor
 	e.AddComponent(myecs.LvlElement, struct{}{})
 }
 
-func DisguiseAction(disguise *data.Disguise) *data.Interact {
+func DonDisguise(disguise *data.Disguise) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		DropItem(ch)
-		// change the player to disguised
-		ch.Flags.Disguised = true
-		ch.Anims.Set[1].SetAnim(ch.Anims.Set[0].GetCurrentAnim().Key, ch.Anims.Set[0].GetCurrentFrame())
+		// remove the pickup component
+		disguise.Entity.RemoveComponent(myecs.PickUp)
+		// set action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.DonDisguise
 		// set the disguise vars
 		disguise.Using = true
 		disguise.Counter = 0
-		// remove the pickup component
-		disguise.Entity.RemoveComponent(myecs.PickUp)
 		entity.AddComponent(myecs.Update, data.NewFn(func() {
 			if disguise.Using {
-				if data.CurrLevel.FrameChange {
+				if ch.State == data.Dead {
+					if disguise.Metadata.Regenerate {
+						disguise.Counter = 0
+						disguise.Waiting = true
+						disguise.Doff = false
+						disguise.Using = false
+						ch.Flags.Disguised = false
+					} else {
+						myecs.Manager.DisposeEntity(disguise.Entity)
+					}
+				} else if data.CurrLevel.FrameChange {
 					if disguise.Counter%2 == 0 {
 						// update timer visuals
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -512,13 +535,10 @@ func DisguiseAction(disguise *data.Disguise) *data.Interact {
 					disguise.Counter++
 					if disguise.Counter > disguise.Metadata.Timer*2 {
 						ch.Flags.Disguised = false
-						if disguise.Metadata.Regenerate {
-							disguise.Using = false
-							disguise.Waiting = true
-							disguise.Counter = 0
-						} else {
-							myecs.Manager.DisposeEntity(disguise.Entity)
-						}
+						disguise.Using = false
+						disguise.Doff = true
+						disguise.Counter = 0
+						disguise.Object.Pos = ch.Object.Pos
 					}
 				}
 			} else if disguise.Waiting {
@@ -536,4 +556,8 @@ func DisguiseAction(disguise *data.Disguise) *data.Interact {
 			}
 		}))
 	})
+}
+
+func DisguiseAction(p int, ch *data.Dynamic, entity *ecs.Entity, disguise *data.Disguise) {
+
 }

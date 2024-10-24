@@ -13,7 +13,6 @@ var (
 	OpenPuzzleConstructor          *ui.DialogConstructor
 	ChangeNameConstructor          *ui.DialogConstructor
 	PuzzleSettingsConstructor      *ui.DialogConstructor
-	NoPlayersInPuzzleConstructor   *ui.DialogConstructor
 	AreYouSureDeleteConstructor    *ui.DialogConstructor
 	UnableToSaveConstructor        *ui.DialogConstructor
 	UnableToSaveConfirmConstructor *ui.DialogConstructor
@@ -254,30 +253,30 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	NoPlayersInPuzzleConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogNoPlayersInPuzzle,
-		Width:  8,
-		Height: 3,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "no_players_msg",
-				Text:        "You don't have any\nplayers in your\npuzzle.",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-56, 16),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "check_no_players",
-				SprKey:      "check_btn_big",
-				SprKey2:     "check_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Confirm",
-				Position:    pixel.V(52, -12),
-				ElementType: ui.ButtonElement,
-			},
-		},
-	}
+	//NoPlayersInPuzzleConstructor = &ui.DialogConstructor{
+	//	Key:    constants.DialogNoPlayersInPuzzle,
+	//	Width:  8,
+	//	Height: 3,
+	//	Elements: []ui.ElementConstructor{
+	//		{
+	//			Key:         "no_players_msg",
+	//			Text:        "You don't have any\nplayers in your\npuzzle.",
+	//			Color:       pixel.ToRGBA(constants.ColorWhite),
+	//			Position:    pixel.V(-56, 16),
+	//			ElementType: ui.TextElement,
+	//			Anchor:      pixel.Right,
+	//		},
+	//		{
+	//			Key:         "check_no_players",
+	//			SprKey:      "check_btn_big",
+	//			SprKey2:     "check_btn_click_big",
+	//			Batch:       constants.UIBatch,
+	//			HelpText:    "Confirm",
+	//			Position:    pixel.V(52, -12),
+	//			ElementType: ui.ButtonElement,
+	//		},
+	//	},
+	//}
 	AreYouSureDeleteConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogAreYouSureDelete,
 		Width:  8,
@@ -1553,133 +1552,11 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	//JetpackOptionsConstructor = &ui.DialogConstructor{
-	//	Key:    constants.DialogJetpack,
-	//	Width:  8,
-	//	Height: 6,
-	//	Elements: []ui.ElementConstructor{
-	//		{
-	//			Key:         "jetpack_options_title",
-	//			Text:        "Jetpack Options",
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			Position:    pixel.V(-60, 40),
-	//			ElementType: ui.TextElement,
-	//			Anchor:      pixel.Right,
-	//		},
-	//		{
-	//			Key:         "cancel_jetpack_options",
-	//			SprKey:      "cancel_btn_big",
-	//			SprKey2:     "cancel_btn_click_big",
-	//			Batch:       constants.UIBatch,
-	//			HelpText:    "Cancel",
-	//			Position:    pixel.V(52, -36),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//		{
-	//			Key:         "confirm_jetpack_options",
-	//			SprKey:      "check_btn_big",
-	//			SprKey2:     "check_btn_click_big",
-	//			Batch:       constants.UIBatch,
-	//			HelpText:    "Confirm",
-	//			Position:    pixel.V(32, -36),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//		{
-	//			Key:         "jetpack_timer",
-	//			Text:        "Flight Time",
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			Position:    pixel.V(-56, 22),
-	//			ElementType: ui.TextElement,
-	//			Anchor:      pixel.Right,
-	//		},
-	//		{
-	//			Key:         "jetpack_timer_input",
-	//			Text:        "3",
-	//			Batch:       constants.UIBatch,
-	//			SprKey:      constants.TextCaret,
-	//			HelpText:    "The delay of the jetpack's regeneration.",
-	//			Position:    pixel.V(40, 22),
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			ElementType: ui.InputElement,
-	//			Width:       1 * world.TileSize,
-	//			Height:      1 * world.TileSize,
-	//		},
-	//		{
-	//			Key:         "jetpack_timer_minus",
-	//			SprKey:      "minus_btn",
-	//			SprKey2:     "minus_btn_click",
-	//			Batch:       constants.UIBatch,
-	//			Position:    pixel.V(26, 22),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//		{
-	//			Key:         "jetpack_timer_plus",
-	//			SprKey:      "plus_btn",
-	//			SprKey2:     "plus_btn_click",
-	//			Batch:       constants.UIBatch,
-	//			Position:    pixel.V(54, 22),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate",
-	//			Text:        "Regenerates",
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			Position:    pixel.V(-56, 4),
-	//			ElementType: ui.TextElement,
-	//			Anchor:      pixel.Right,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate_check",
-	//			SprKey:      "checkbox_false",
-	//			SprKey2:     "checkbox_true",
-	//			Batch:       constants.UIBatch,
-	//			HelpText:    "Whether the Jetpack regenerates after running out of fuel.",
-	//			Position:    pixel.V(52, 4),
-	//			ElementType: ui.CheckboxElement,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate_delay",
-	//			Text:        "Regeneration\nDelay",
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			Position:    pixel.V(-56, -14),
-	//			ElementType: ui.TextElement,
-	//			Anchor:      pixel.Right,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate_delay_input",
-	//			Text:        "0",
-	//			SprKey:      constants.TextCaret,
-	//			Batch:       constants.UIBatch,
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			HelpText:    "The delay of the jetpack's regeneration.",
-	//			Position:    pixel.V(40, -14),
-	//			ElementType: ui.InputElement,
-	//			Width:       1 * world.TileSize,
-	//			Height:      1 * world.TileSize,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate_delay_minus",
-	//			SprKey:      "minus_btn",
-	//			SprKey2:     "minus_btn_click",
-	//			Batch:       constants.UIBatch,
-	//			Position:    pixel.V(26, -14),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//		{
-	//			Key:         "jetpack_regenerate_delay_plus",
-	//			SprKey:      "plus_btn",
-	//			SprKey2:     "plus_btn_click",
-	//			Batch:       constants.UIBatch,
-	//			Position:    pixel.V(54, -14),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//	},
-	//}
-	//f, err := os.Create("assets/ui/jetpack_options.json")
+	//f, err := os.Create("assets/ui/no_players.json")
 	//if err != nil {
 	//	panic(err)
 	//}
-	//bts, err := json.Marshal(JetpackOptionsConstructor)
+	//bts, err := json.Marshal(NoPlayersInPuzzleConstructor)
 	//if err != nil {
 	//	panic(err)
 	//}

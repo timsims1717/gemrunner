@@ -41,6 +41,8 @@ const (
 )
 
 var DialogKeys = []string{
+	DialogNoPlayersInPuzzle,
+
 	DialogJetpack,
 	DialogFloatingText,
 	DialogDisguise,

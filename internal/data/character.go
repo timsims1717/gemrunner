@@ -160,6 +160,7 @@ const (
 	MagicDig
 	MagicPlace
 	ThrowBox
+	DonDisguise
 )
 
 func (s CharacterState) String() string {

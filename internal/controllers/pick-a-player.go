@@ -44,7 +44,7 @@ func PickClosestPlayerXFirst(ch *data.Dynamic) *data.Dynamic {
 	}
 }
 
-// PickClosestPlayerYFirst chooses a player by checking the X distance first
+// PickClosestPlayerYFirst chooses a player by checking the Y distance first
 func PickClosestPlayerYFirst(ch *data.Dynamic) *data.Dynamic {
 	x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 	cx := -1
@@ -77,7 +77,7 @@ func PickClosestPlayerYFirst(ch *data.Dynamic) *data.Dynamic {
 		}
 	}
 	if ci == -1 {
-		return nil
+		return data.CurrLevel.FakePlayer
 	} else {
 		return data.CurrLevel.Players[ci]
 	}

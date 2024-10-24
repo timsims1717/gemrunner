@@ -1,0 +1,38 @@
+{
+  "key":"no_players",
+  "width":8,
+  "height":2,
+  "elements":[
+    {
+      "key":"no_players_msg",
+      "text":"You don't have any\nplayers in your\npuzzle.",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-56,
+        "Y":0
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"check_no_players",
+      "spriteKey":"check_btn_big",
+      "spriteKey2":"check_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Confirm",
+      "pos":{
+        "X":52,
+        "Y":-4
+      },
+      "type":"button"
+    }
+  ]
+}

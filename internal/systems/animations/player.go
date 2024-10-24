@@ -59,6 +59,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	})
 	jetpackDown := reanimator.NewBatchAnimationCustom("jetpack_down", batch, fmt.Sprintf("%s_jetpack_down", sprPre), jetpackLoop, reanimator.Loop)
 
+	donDisguise := reanimator.NewBatchAnimation("don_disguise", batch, fmt.Sprintf("%s_don", sprPre), reanimator.Tran)
+
 	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 
@@ -105,6 +107,11 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		})
 		throw.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
+		})
+		donDisguise.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+			// set the player to disguised
+			ch.Flags.Disguised = true
 		})
 		jetpack.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 			switch pre {
@@ -165,6 +172,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(jetpack).
 		AddAnimation(jetpackUp).
 		AddAnimation(jetpackDown).
+		AddAnimation(donDisguise).
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(blow).
@@ -207,6 +215,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "dig"
 				case data.ThrowBox:
 					return "throw"
+				case data.DonDisguise:
+					return "don_disguise"
 				default:
 					return "idle"
 				}

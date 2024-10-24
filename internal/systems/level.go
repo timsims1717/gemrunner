@@ -2,6 +2,7 @@ package systems
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/controllers"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
@@ -146,6 +147,7 @@ func LevelInit() {
 			}
 		}
 	}
+	CreateFakePlayer()
 	PuzzleViewInit()
 }
 
@@ -169,8 +171,41 @@ func LevelDispose() {
 		for _, enemy := range data.CurrLevel.Enemies {
 			myecs.Manager.DisposeEntity(enemy.Entity)
 		}
+		if data.CurrLevel.FakePlayer != nil {
+			myecs.Manager.DisposeEntity(data.CurrLevel.FakePlayer.Entity)
+		}
 		data.CurrLevel = nil
 	}
+}
+
+func CreateFakePlayer() {
+	if data.CurrLevel == nil {
+		return
+	}
+	tile := GetRandomRegenTile()
+	if tile == nil {
+		x := random.Level.Intn(constants.PuzzleWidth)
+		y := random.Level.Intn(constants.PuzzleHeight)
+		tile = data.CurrLevel.Tiles.Get(x, y)
+	}
+	ch := data.NewDynamic(tile)
+	ch.Layer = 0
+	e := myecs.Manager.NewEntity()
+	obj := object.New().WithID("fake_player").SetPos(tile.Object.Pos)
+	obj.Pos = world.MapToWorld(tile.Coords)
+	obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+	obj.Layer = 0
+	obj.SetRect(pixel.R(0., 0., 16., 16.))
+	ch.Object = obj
+	ch.State = data.Grounded
+	ch.Vars = data.DemonVars()
+	ch.Control = controllers.NewRandomWalk(ch, e)
+	e.AddComponent(myecs.Object, obj).
+		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
+		AddComponent(myecs.Dynamic, ch).
+		AddComponent(myecs.Controller, ch.Control)
+	ch.Entity = e
+	data.CurrLevel.FakePlayer = ch
 }
 
 func GetBestRegenTile(tiles []*data.Tile) *data.Tile {

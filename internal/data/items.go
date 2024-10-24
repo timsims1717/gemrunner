@@ -103,6 +103,7 @@ type Disguise struct {
 	Color    string
 	Counter  int
 	Using    bool
+	Doff     bool
 	Regen    bool
 	Waiting  bool
 }

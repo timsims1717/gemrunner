@@ -63,6 +63,10 @@ type Level struct {
 	Complete  bool
 	DoorsOpen bool
 
+	FakePlayer        *Dynamic
+	FakePlayerDir     Direction
+	FakePlayerCounter int
+
 	FrameNumber  int
 	FrameCounter int
 	FrameCycle   int

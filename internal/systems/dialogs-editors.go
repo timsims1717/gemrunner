@@ -18,7 +18,7 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.OpenPuzzleConstructor)
 	ui.NewDialog(load.ChangeNameConstructor)
 	ui.NewDialog(load.PuzzleSettingsConstructor)
-	ui.NewDialog(load.NoPlayersInPuzzleConstructor)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogNoPlayersInPuzzle])
 	ui.NewDialog(load.AreYouSureDeleteConstructor)
 	ui.NewDialog(load.UnableToSaveConstructor)
 	ui.NewDialog(load.UnableToSaveConfirmConstructor)

@@ -132,6 +132,34 @@ func (d *Dialog) Get(key string) *Element {
 	return nil
 }
 
+func (d *Dialog) SetFocus(e *Element, isFocused bool) {
+	if !isFocused {
+		e.Focused = false
+		return
+	}
+	for _, ele := range d.Elements {
+		ele.setFocus(e.Key)
+	}
+}
+
+func (e *Element) setFocus(key string) {
+	if e.Key == key {
+		e.Focused = true
+	} else {
+		e.Focused = false
+	}
+	switch e.ElementType {
+	case ContainerElement:
+		for _, ele := range e.Elements {
+			ele.setFocus(key)
+		}
+	case ScrollElement:
+		for _, ele := range e.Elements {
+			ele.setFocus(key)
+		}
+	}
+}
+
 func (d *Dialog) ActionFocus() {
 
 }

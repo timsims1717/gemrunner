@@ -86,6 +86,7 @@ const (
 	TextProxDist    = 48.
 	TextProxBuffer  = 48
 	BobInterval     = 16
+	FakePlayerR     = 16
 
 	// Player Constants
 	PlayerWalkSpeed       = 4

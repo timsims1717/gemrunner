@@ -32,12 +32,18 @@ func (ts *TreeSet) Add(tree *Tree) *TreeSet {
 func (ts *TreeSet) Update() {
 	var base *Tree
 	for i, anim := range ts.Set {
+		if anim == nil {
+			continue
+		}
 		if i == 0 {
 			base = anim
 		}
 		anim.Update()
 	}
 	for _, anim := range ts.Set {
+		if anim == nil || base == nil || base.anim == nil {
+			continue
+		}
 		if anim.Dependent {
 			anim.SetAnim(base.anim.Key, base.frame)
 		}

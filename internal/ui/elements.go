@@ -273,13 +273,17 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 		click := hvc.Input.Get("click")
 		if dlg.Open && dlg.Active && !dlg.Lock {
 			if click.JustPressed() {
-				i.Focused = hvc.ViewHover
-				if hvc.ViewHover && !wasActive {
-					click.Consume()
+				if hvc.ViewHover {
+					if !wasActive {
+						click.Consume()
+					}
+					dlg.SetFocus(i, true)
+				} else {
+					dlg.SetFocus(i, false)
 				}
 			}
 		} else {
-			i.Focused = false
+			dlg.SetFocus(i, false)
 		}
 		if !wasActive && i.Focused {
 			flashTimer.Reset()
