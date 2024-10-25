@@ -3,8 +3,8 @@ package constants
 const (
 	Title            = "Gem Runner"
 	Release          = 0
-	Version          = 1
-	Build            = 20240322
+	Version          = 2
+	Build            = 20241025
 	ScreenRatioLimit = 0.8
 
 	// Directories
@@ -26,6 +26,7 @@ const (
 	BlockSelectWidth  = 8.
 	BlockSelectHeight = 11.
 	RearrangeMoveDur  = 0.2
+	UndoStackSize     = 50
 
 	// Music Tracks
 	TrackBeach   = "beach"

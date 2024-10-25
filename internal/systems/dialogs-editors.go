@@ -318,6 +318,29 @@ func CustomizeEditorDialog(key string) {
 					}
 				}
 			}))
+		} else if ele.Key == "floating_text_shadow_check" {
+			ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+				if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
+					click := hvc.Input.Get("click")
+					if hvc.Hover && click.JustPressed() {
+						ui.SetChecked(ele, !ele.Checked)
+						if ele.Checked {
+							shadowPicked := false
+							for _, ele2 := range dialog.Elements {
+								if strings.Contains(ele2.Key, "check_shadow") && ele2.Checked {
+									shadowPicked = true
+									break
+								}
+							}
+							if !shadowPicked {
+								blueShadow := dialog.Get("blue_check_shadow")
+								ui.SetChecked(blueShadow, true)
+								changeSelectedColor(blueShadow.Key)
+							}
+						}
+					}
+				}
+			}))
 		}
 	}
 	switch dialog.Key {

@@ -7,7 +7,6 @@
 * Jump: jump from the ground (or boxes)
 * Pick up/Drop: Pick up an item, drop that item
 * Action: Use item (the one in your inventory)
-* Lift/Throw: Lift up an item, throw that item
 
 # Jumping
 
@@ -20,13 +19,13 @@
 * If there is a block left or right (when facing that way), high jump
 * Otherwise, long jump
 
-# Items that can be Carried
+# Items
 
 * Box
   * Can be walked on from above
   * Can be jumped on
   * Can be dropped down from (press down)
-  * No use action
+  * Thrown when used
 * Key
   * When used at a locked door of the matching color, unlock that door
 * Regular Bombs
@@ -47,8 +46,6 @@
   * When used, drill straight down through the floor
 * Bubble/Jetpack
   * When used, changes the player's method of travelling to flying
-* Other players
-  * That player can get away by jumping, can grab stuff
 
 # Puzzle Load Dialog Information
 

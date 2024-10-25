@@ -30,8 +30,8 @@ func PuzzleInit() {
 					AddComponent(myecs.Tile, tile)
 				tile.Object = obj
 				tile.Entity = e
-				if tile.FText != nil {
-					tile.FText.Init(tile)
+				if tile.TextData != nil {
+					data.CreateFloatingText(tile, tile.TextData)
 				}
 			}
 		}
@@ -156,7 +156,7 @@ func SavePuzzleSet() bool {
 			fmt.Println("ERROR:", err)
 			return false
 		}
-		data.CurrPuzzleSet.Changed = false
+		data.CurrPuzzleSet.NeedToSave = false
 		for _, pzl := range data.CurrPuzzleSet.Puzzles {
 			pzl.Changed = false
 		}

@@ -155,9 +155,9 @@ func LevelDispose() {
 	if data.CurrLevel != nil {
 		for _, row := range data.CurrLevel.Tiles.T {
 			for _, tile := range row {
-				if tile.FText != nil {
-					myecs.Manager.DisposeEntity(tile.FText.Entity)
-					myecs.Manager.DisposeEntity(tile.FText.ShEntity)
+				if tile.FloatingText != nil {
+					myecs.Manager.DisposeEntity(tile.FloatingText.Entity)
+					myecs.Manager.DisposeEntity(tile.FloatingText.ShEntity)
 				}
 				myecs.Manager.DisposeEntity(tile.Entity)
 			}

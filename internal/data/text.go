@@ -7,24 +7,35 @@ import (
 	"github.com/gopxl/pixel"
 )
 
+type FloatingTextData struct {
+	Pos       pixel.Vec  `json:"pos"`
+	Raw       string     `json:"text"`
+	Prox      bool       `json:"prox"`
+	Bob       bool       `json:"bob"`
+	Timer     int        `json:"timer"`
+	HasShadow bool       `json:"hasShadow"`
+	Color     pixel.RGBA `json:"color"`
+	ShadowCol pixel.RGBA `json:"shadow"`
+}
+
 type FloatingText struct {
-	Tile        *Tile          `json:"-"`
-	Pos         pixel.Vec      `json:"pos"`
-	Entity      *ecs.Entity    `json:"-"`
-	ShEntity    *ecs.Entity    `json:"-"`
-	Text        *typeface.Text `json:"-"`
-	Shadow      *typeface.Text `json:"-"`
-	Raw         string         `json:"text"`
-	Temp        bool           `json:"-"`
-	Prox        bool           `json:"prox"`
-	ProxCounter int            `json:"-"`
-	Bob         bool           `json:"bob"`
-	BobCounter  int            `json:"-"`
-	TempCounter int            `json:"-"`
-	Timer       int            `json:"timer"`
-	HasShadow   bool           `json:"hasShadow"`
-	Color       pixel.RGBA     `json:"color"`
-	ShadowCol   pixel.RGBA     `json:"shadow"`
+	Tile        *Tile
+	Pos         pixel.Vec
+	Entity      *ecs.Entity
+	ShEntity    *ecs.Entity
+	Text        *typeface.Text
+	Shadow      *typeface.Text
+	Raw         string
+	Temp        bool
+	Prox        bool
+	ProxCounter int
+	Bob         bool
+	BobCounter  int
+	TempCounter int
+	Timer       int
+	HasShadow   bool
+	Color       pixel.RGBA
+	ShadowCol   pixel.RGBA
 }
 
 func NewFloatingText() *FloatingText {
@@ -171,4 +182,47 @@ func (ft *FloatingText) Init(tile *Tile) {
 	ft.Text.Update()
 	ft.Shadow.Update()
 	ft.Tile = tile
+}
+
+func CreateFloatingText(tile *Tile, ftd *FloatingTextData) {
+	if ftd == nil {
+		if tile.FloatingText != nil {
+			myecs.Manager.DisposeEntity(tile.FloatingText.Entity)
+			myecs.Manager.DisposeEntity(tile.FloatingText.ShEntity)
+			tile.FloatingText = nil
+		}
+		return
+	}
+	if tile.FloatingText == nil {
+		tile.FloatingText = NewFloatingText()
+	}
+	tile.FloatingText.WithTile(tile).
+		WithText(ftd.Raw).
+		WithPos(tile.Object.Pos).
+		WithColor(ftd.Color).
+		WithTimer(ftd.Timer).
+		WithBools(ftd.Prox, ftd.Bob)
+	if ftd.HasShadow {
+		tile.FloatingText.WithShadow(ftd.ShadowCol)
+	} else {
+		tile.FloatingText.RemoveShadow()
+	}
+	tile.FloatingText.Text.Update()
+	tile.FloatingText.Shadow.Update()
+}
+
+func (ftd *FloatingTextData) Copy() *FloatingTextData {
+	if ftd == nil {
+		return nil
+	}
+	return &FloatingTextData{
+		Pos:       ftd.Pos,
+		Raw:       ftd.Raw,
+		Prox:      ftd.Prox,
+		Bob:       ftd.Bob,
+		Timer:     ftd.Timer,
+		HasShadow: ftd.HasShadow,
+		Color:     ftd.Color,
+		ShadowCol: ftd.ShadowCol,
+	}
 }

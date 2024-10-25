@@ -2,7 +2,7 @@
 
 This is a game being developed using the pixel-go library originally by faiface.
 
-The Level Editor works, including save/load, and you can test the puzzles you make. Currently, I am working on features for the game.
+Currently includes a robust level editor and fully functioning gameplay.
 
 * Enemies
 * Items that can be picked up and used

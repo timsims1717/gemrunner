@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
 	"github.com/beefsack/go-astar"
@@ -424,18 +425,19 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 //}
 
 type Tile struct {
-	Block    Block          `json:"tile"`
-	Metadata TileMetadata   `json:"metadata"`
-	Flags    TileFlags      `json:"-"`
-	Coords   world.Coords   `json:"-"`
-	Object   *object.Object `json:"-"`
-	Update   bool           `json:"-"`
-	Entity   *ecs.Entity    `json:"-"`
-	Mask     *ecs.Entity    `json:"-"`
-	Counter  int            `json:"-"`
-	Live     bool           `json:"-"`
-	AltBlock int            `json:"alt"`
-	FText    *FloatingText  `json:"text"`
+	Block        Block             `json:"tile"`
+	Metadata     TileMetadata      `json:"metadata"`
+	Flags        TileFlags         `json:"-"`
+	Coords       world.Coords      `json:"-"`
+	Object       *object.Object    `json:"-"`
+	Update       bool              `json:"-"`
+	Entity       *ecs.Entity       `json:"-"`
+	Mask         *ecs.Entity       `json:"-"`
+	Counter      int               `json:"-"`
+	Live         bool              `json:"-"`
+	AltBlock     int               `json:"alt"`
+	FloatingText *FloatingText     `json:"-"`
+	TextData     *FloatingTextData `json:"text,omitempty"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -443,7 +445,8 @@ func (t *Tile) Copy() *Tile {
 		Block:    t.Block,
 		AltBlock: t.AltBlock,
 		Coords:   t.Coords,
-		Metadata: t.Metadata,
+		Metadata: CopyMetadata(t.Metadata),
+		TextData: t.TextData.Copy(),
 	}
 }
 
@@ -452,12 +455,20 @@ func (t *Tile) CopyInto(c *Tile) {
 	c.AltBlock = t.AltBlock
 	c.Object.Flip = t.Metadata.Flipped
 	c.Metadata = CopyMetadata(t.Metadata)
+	c.TextData = t.TextData.Copy()
+	CreateFloatingText(c, c.TextData)
 }
 
 func (t *Tile) ToEmpty() {
 	t.Block = BlockEmpty
 	t.Metadata = DefaultMetadata()
 	t.Flags = DefaultFlags()
+	t.TextData = nil
+	if t.FloatingText != nil {
+		myecs.Manager.DisposeEntity(t.FloatingText.Entity)
+		myecs.Manager.DisposeEntity(t.FloatingText.ShEntity)
+		t.FloatingText = nil
+	}
 }
 
 func (t *Tile) IsEmpty() bool {
@@ -636,6 +647,7 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		EnemyCrack:  m.EnemyCrack,
 		Regenerate:  m.Regenerate,
 		RegenDelay:  m.RegenDelay,
+		Timer:       m.Timer,
 		BombCross:   m.BombCross,
 		LinkedTiles: nil,
 		Phase:       m.Phase,

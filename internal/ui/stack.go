@@ -112,7 +112,6 @@ func CloseDialog(key string) {
 		}
 	}
 	if index == -1 {
-		fmt.Printf("Warning: CloseDialog: %s not open\n", key)
 		return
 	} else {
 		if stack {

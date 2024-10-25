@@ -126,7 +126,11 @@ func FloatingTextEditorSystem() {
 			}
 
 			if data.Editor.Mode == data.ModeText && tf.Tile != nil {
-				data.IMDraw.Color = tf.ShadowCol
+				if tf.HasShadow {
+					data.IMDraw.Color = tf.ShadowCol
+				} else {
+					data.IMDraw.Color = constants.ColorLightGray
+				}
 				data.IMDraw.EndShape = imdraw.SharpEndShape
 				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)))
 				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, -world.HalfSize)))

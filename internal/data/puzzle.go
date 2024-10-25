@@ -83,7 +83,7 @@ type PuzzleSet struct {
 	CurrPuzzle *Puzzle `json:"-"`
 
 	PuzzleIndex int  `json:"-"`
-	Changed     bool `json:"-"`
+	NeedToSave  bool `json:"-"`
 }
 
 type Puzzle struct {

@@ -43,7 +43,7 @@ func OnOpenFloatingText() {
 		}
 		theTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
 		ftDialog := ui.Dialogs[constants.DialogFloatingText]
-		if theTile.FText == nil {
+		if theTile.FloatingText == nil {
 			data.SelectedTextColor = pixel.ToRGBA(constants.ColorWhite)
 			data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBlue)
 			ui.ChangeText(ftDialog.Get("floating_text_value"), "")
@@ -62,22 +62,22 @@ func OnOpenFloatingText() {
 			ui.ChangeText(ftDialog.Get("floating_text_time_input"), "0")
 			// add alignment here
 		} else {
-			data.SelectedTextColor = theTile.FText.Color
-			data.SelectedShadowColor = theTile.FText.ShadowCol
-			ui.ChangeText(ftDialog.Get("floating_text_value"), theTile.FText.Raw)
+			data.SelectedTextColor = theTile.FloatingText.Color
+			data.SelectedShadowColor = theTile.FloatingText.ShadowCol
+			ui.ChangeText(ftDialog.Get("floating_text_value"), theTile.FloatingText.Raw)
 			for _, ele := range ftDialog.Elements {
 				if strings.Contains(ele.Key, "_check_color") {
-					updateColorCheckbox(ele, theTile.FText.Color)
+					updateColorCheckbox(ele, theTile.FloatingText.Color)
 				} else if strings.Contains(ele.Key, "_check_shadow") {
-					updateColorCheckbox(ele, theTile.FText.ShadowCol)
+					updateColorCheckbox(ele, theTile.FloatingText.ShadowCol)
 				}
 			}
-			ui.SetChecked(ftDialog.Get("floating_text_shadow_check"), theTile.FText.HasShadow)
-			ui.SetChecked(ftDialog.Get("floating_text_show_check"), theTile.FText.Prox)
-			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), theTile.FText.Bob)
+			ui.SetChecked(ftDialog.Get("floating_text_shadow_check"), theTile.FloatingText.HasShadow)
+			ui.SetChecked(ftDialog.Get("floating_text_show_check"), theTile.FloatingText.Prox)
+			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), theTile.FloatingText.Bob)
 			timerInput := ftDialog.Get("floating_text_time_input")
 			timerInput.InputType = ui.Numeric
-			ui.ChangeText(timerInput, strconv.Itoa(theTile.FText.Timer))
+			ui.ChangeText(timerInput, strconv.Itoa(theTile.FloatingText.Timer))
 			// add alignment here
 		}
 	}
@@ -99,26 +99,28 @@ func ConfirmFloatingText() {
 			timer = 0
 		}
 
-		if theTile.FText == nil {
-			theTile.FText = data.NewFloatingText().
+		if theTile.TextData == nil {
+			theTile.TextData = &data.FloatingTextData{}
+		}
+		theTile.TextData.Raw = ftDialog.Get("floating_text_value").Value
+		theTile.TextData.Color = data.SelectedTextColor
+		theTile.TextData.ShadowCol = data.SelectedShadowColor
+		theTile.TextData.Timer = timer
+		theTile.TextData.HasShadow = ftDialog.Get("floating_text_shadow_check").Checked
+		theTile.TextData.Prox = ftDialog.Get("floating_text_show_check").Checked
+		theTile.TextData.Bob = ftDialog.Get("floating_text_bob_check").Checked
+
+		if theTile.FloatingText == nil {
+			theTile.FloatingText = data.NewFloatingText().
 				WithTile(theTile).
 				WithPos(theTile.Object.Pos)
 		}
 
-		theTile.FText.WithText(ftDialog.Get("floating_text_value").Value).
-			WithColor(data.SelectedTextColor).
-			WithShadow(data.SelectedShadowColor).
-			WithTimer(timer)
-		if !ftDialog.Get("floating_text_shadow_check").Checked {
-			theTile.FText.RemoveShadow()
-		}
-		theTile.FText.Prox = ftDialog.Get("floating_text_show_check").Checked
-		theTile.FText.Bob = ftDialog.Get("floating_text_bob_check").Checked
+		data.CreateFloatingText(theTile, theTile.TextData)
 
 		ui.CloseDialog(constants.DialogFloatingText)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-		PushUndoArray(true)
 	}
 }
 
@@ -180,7 +182,6 @@ func ConfirmCrackTileOptions() {
 		ui.CloseDialog(constants.DialogCrackedTiles)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-		PushUndoArray(true)
 	}
 }
 
@@ -247,7 +248,6 @@ func ConfirmBombOptions() {
 		ui.CloseDialog(constants.DialogBomb)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-		PushUndoArray(true)
 	}
 }
 
@@ -314,7 +314,6 @@ func ConfirmJetpackOptions() {
 		ui.CloseDialog(constants.DialogJetpack)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-		PushUndoArray(true)
 	}
 }
 
@@ -381,7 +380,6 @@ func ConfirmDisguiseOptions() {
 		ui.CloseDialog(constants.DialogDisguise)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-		PushUndoArray(true)
 	}
 }
 
@@ -409,6 +407,8 @@ func ChangeNumberInput(in *ui.Element, change int) {
 func updateColorCheckbox(x *ui.Element, col pixel.RGBA) {
 	key := x.Key[:strings.LastIndex(x.Key, "_")]
 	switch key {
+	case "white_check":
+		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorWhite))
 	case "red_check":
 		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorRed))
 	case "orange_check":
@@ -423,6 +423,8 @@ func updateColorCheckbox(x *ui.Element, col pixel.RGBA) {
 		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorPurple))
 	case "pink_check":
 		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorPink))
+	case "black_check":
+		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorBlack))
 	case "yellow_check":
 		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorYellow))
 	case "gold_check":

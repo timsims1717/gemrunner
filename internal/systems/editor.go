@@ -77,6 +77,7 @@ func ChangeWorldToNext() {
 		}
 		ChangeWorldTo(data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
+		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	}
 }
 
@@ -86,7 +87,6 @@ func ChangeWorldTo(world int) {
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor = pixel.ToRGBA(constants.WorldSecondary[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor = pixel.ToRGBA(constants.WorldDoodad[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[world]
-	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
 }
@@ -189,7 +189,8 @@ func PuzzleEditSystem() {
 					}
 				}
 				if rClick.JustReleased() || click.JustReleased() {
-					PushUndoArray(true)
+					data.CurrPuzzleSet.CurrPuzzle.Update = true
+					data.CurrPuzzleSet.CurrPuzzle.Changed = true
 				}
 				if legal {
 					CreateHighlight(coords)
@@ -213,7 +214,8 @@ func PuzzleEditSystem() {
 						for _, c := range line {
 							SetBlock(c, data.Editor.CurrBlock)
 						}
-						PushUndoArray(true)
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						if legal {
 							CreateHighlight(coords)
 						}
@@ -233,7 +235,8 @@ func PuzzleEditSystem() {
 						for _, c := range line {
 							DeleteBlock(c)
 						}
-						PushUndoArray(true)
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						if legal {
 							CreateHighlight(coords)
 						}
@@ -263,7 +266,8 @@ func PuzzleEditSystem() {
 						for _, c := range square {
 							SetBlock(c, data.Editor.CurrBlock)
 						}
-						PushUndoArray(true)
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						if legal {
 							CreateHighlight(coords)
 						}
@@ -283,7 +287,8 @@ func PuzzleEditSystem() {
 						for _, c := range square {
 							DeleteBlock(c)
 						}
-						PushUndoArray(true)
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						if legal {
 							CreateHighlight(coords)
 						}
@@ -316,7 +321,8 @@ func PuzzleEditSystem() {
 					}
 				}
 				if rClick.JustReleased() || click.JustReleased() {
-					PushUndoArray(true)
+					data.CurrPuzzleSet.CurrPuzzle.Update = true
+					data.CurrPuzzleSet.CurrPuzzle.Changed = true
 				}
 				if legal {
 					CreateHighlight(coords)
@@ -375,8 +381,9 @@ func PuzzleEditSystem() {
 									}
 								}
 								switch tile.Block {
-								case data.BlockFly:
-									PushUndoArray(true)
+								case data.BlockFly, data.BlockPhase:
+									data.CurrPuzzleSet.CurrPuzzle.Update = true
+									data.CurrPuzzleSet.CurrPuzzle.Changed = true
 								case data.BlockCracked, data.BlockLadderCracked:
 									ui.OpenDialogInStack(constants.DialogCrackedTiles)
 								case data.BlockBomb, data.BlockBombLit:
@@ -386,8 +393,6 @@ func PuzzleEditSystem() {
 								case data.BlockDisguise:
 									ui.OpenDialogInStack(constants.DialogDisguise)
 								}
-								data.CurrPuzzleSet.CurrPuzzle.Update = true
-								data.CurrPuzzleSet.CurrPuzzle.Changed = true
 								break
 							}
 						}
@@ -403,7 +408,8 @@ func PuzzleEditSystem() {
 							tile.Metadata.Flipped = !tile.Metadata.Flipped
 							tile.Object.Flip = tile.Metadata.Flipped
 							tile.Metadata.Changed = true
-							PushUndoArray(true)
+							data.CurrPuzzleSet.CurrPuzzle.Update = true
+							data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						case data.BlockCracked, data.BlockLadderCracked:
 							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 							ui.OpenDialogInStack(constants.DialogCrackedTiles)
@@ -426,9 +432,9 @@ func PuzzleEditSystem() {
 								tile.Metadata.Phase++
 								tile.Metadata.Phase = tile.Metadata.Phase % 8
 							}
+							data.CurrPuzzleSet.CurrPuzzle.Update = true
+							data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						}
-						data.CurrPuzzleSet.CurrPuzzle.Changed = true
-						data.CurrPuzzleSet.CurrPuzzle.Update = true
 					}
 				}
 			case data.ModeWire:
@@ -456,8 +462,8 @@ func PuzzleEditSystem() {
 								}
 							}
 						}
-						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					} else if click.Pressed() {
 						if click.JustPressed() && legal {
 							data.Editor.LastCoords = coords
@@ -498,13 +504,13 @@ func PuzzleEditSystem() {
 						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
 						data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 						ui.OpenDialogInStack(constants.DialogFloatingText)
-						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					} else if rClick.JustReleased() { // remove text
 						//tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
 
-						data.CurrPuzzleSet.CurrPuzzle.Changed = true
-						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						//data.CurrPuzzleSet.CurrPuzzle.Update = true
+						//data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					}
 				}
 			case data.ModeSelect:
@@ -603,7 +609,8 @@ func PuzzleEditSystem() {
 		case data.ModeDelete:
 			data.CurrSelect = nil
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
-			PushUndoArray(true)
+			data.CurrPuzzleSet.CurrPuzzle.Update = true
+			data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		case data.ModeUndo:
 			if len(data.CurrPuzzleSet.CurrPuzzle.UndoStack) > 0 {
 				PushRedoStack()
@@ -701,9 +708,6 @@ func PuzzleEditSystem() {
 	if data.Editor.LastMode >= data.EndModeList {
 		data.Editor.LastMode = data.ModeBrush
 	}
-	if data.CurrPuzzleSet.CurrPuzzle.Changed {
-		data.CurrPuzzleSet.Changed = true
-	}
 }
 
 func EditorPanelButtons() {
@@ -746,34 +750,38 @@ func CreateHighlight(coords world.Coords) {
 func Fill(a world.Coords, delete bool) {
 	if CoordsLegal(a) {
 		orig := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[a.Y][a.X]
-		var v []world.Coords
-		var r []world.Coords
-		var q []world.Coords
-		v = append(v, a)
-		r = append(r, a)
-		q = append(q, a)
-		for len(q) > 0 {
-			top := q[0]
-			q = q[1:]
-			for _, n := range top.Neighbors() {
-				if (n.X == top.X || n.Y == top.Y) && CoordsLegal(n) && !world.CoordsIn(n, v) {
-					v = append(v, n)
-					tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[n.Y][n.X]
-					if tile.Block == orig.Block {
-						r = append(r, n)
-						q = append(q, n)
+		if (delete && orig.Block != data.BlockEmpty) ||
+			orig.Block != data.Editor.CurrBlock {
+			var v []world.Coords
+			var r []world.Coords
+			var q []world.Coords
+			v = append(v, a)
+			r = append(r, a)
+			q = append(q, a)
+			for len(q) > 0 {
+				top := q[0]
+				q = q[1:]
+				for _, n := range top.Neighbors() {
+					if (n.X == top.X || n.Y == top.Y) && CoordsLegal(n) && !world.CoordsIn(n, v) {
+						v = append(v, n)
+						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[n.Y][n.X]
+						if tile.Block == orig.Block {
+							r = append(r, n)
+							q = append(q, n)
+						}
 					}
 				}
 			}
-		}
-		for _, c := range r {
-			if delete {
-				DeleteBlock(c)
-			} else {
-				SetBlock(c, data.Editor.CurrBlock)
+			for _, c := range r {
+				if delete {
+					DeleteBlock(c)
+				} else {
+					SetBlock(c, data.Editor.CurrBlock)
+				}
 			}
+			data.CurrPuzzleSet.CurrPuzzle.Update = true
+			data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		}
-		PushUndoArray(true)
 	}
 }
 
@@ -826,7 +834,6 @@ func CreateSelection(a, b world.Coords) {
 		}
 	}
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
-	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 }
 
 func CreateClip() bool {
@@ -893,13 +900,11 @@ func PlaceSelection() {
 			c.Y += data.CurrSelect.Offset.Y
 			if CoordsLegal(c) {
 				tile.CopyInto(data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y))
-				data.CurrPuzzleSet.CurrPuzzle.Update = true
 				UpdateLinkedTiles(data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y))
 			}
 		}
 	}
 	data.CurrSelect = nil
-	PushUndoArray(true)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 }
@@ -966,9 +971,8 @@ func FlipHorizontal() bool {
 }
 
 func PushUndoArray(resetRedo bool) {
-	data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed = false
 	if data.CurrPuzzleSet.CurrPuzzle.LastChange != nil {
-		if len(data.CurrPuzzleSet.CurrPuzzle.UndoStack) > 50 {
+		if len(data.CurrPuzzleSet.CurrPuzzle.UndoStack) > constants.UndoStackSize {
 			data.CurrPuzzleSet.CurrPuzzle.UndoStack = data.CurrPuzzleSet.CurrPuzzle.UndoStack[1:]
 		}
 		data.CurrPuzzleSet.CurrPuzzle.UndoStack = append(data.CurrPuzzleSet.CurrPuzzle.UndoStack, data.CurrPuzzleSet.CurrPuzzle.LastChange)
@@ -1012,6 +1016,15 @@ func PopRedoStack() {
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.RedoStack = data.CurrPuzzleSet.CurrPuzzle.RedoStack[:len(data.CurrPuzzleSet.CurrPuzzle.RedoStack)-1]
 		data.CurrPuzzleSet.CurrPuzzle.LastChange = puz
+	}
+}
+
+func UndoStackSystem() {
+	if data.CurrPuzzleSet.CurrPuzzle.Changed {
+		PushUndoArray(true)
+		data.CurrPuzzleSet.CurrPuzzle.Changed = false
+		data.CurrPuzzleSet.NeedToSave = true
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed = false
 	}
 }
 

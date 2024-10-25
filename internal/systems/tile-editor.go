@@ -109,7 +109,6 @@ func SetBlock(coords world.Coords, block data.Block) {
 			}
 			data.CurrPuzzleSet.CurrPuzzle.Update = true
 			tile.Update = true
-			data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		}
 	} else {
 		fmt.Println("error: attempted to change tile when no puzzle is loaded")
@@ -133,7 +132,6 @@ func DeleteBlock(coords world.Coords) {
 				}
 				data.CurrPuzzleSet.CurrPuzzle.Update = true
 				tile.Update = true
-				data.CurrPuzzleSet.CurrPuzzle.Changed = true
 				RemoveLinkedTiles(tile)
 				tile.Metadata = data.DefaultMetadata()
 			}

@@ -93,12 +93,12 @@ func OnOpenPuzzleDialog() {
 
 func OpenOpenPuzzleDialog() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
+		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.NeedToSave {
 			ui.SetCloseSpcFn(constants.DialogChangeName, func() {
 				ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 			})
 			ui.OpenDialogInStack(constants.DialogChangeName)
-		} else if data.CurrPuzzleSet.Changed {
+		} else if data.CurrPuzzleSet.NeedToSave {
 			if SavePuzzleSet() {
 				ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 			} else {
@@ -129,12 +129,12 @@ func OnOpenPuzzle() {
 
 func NewPuzzle() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
+		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.NeedToSave {
 			ui.SetCloseSpcFn(constants.DialogChangeName, func() {
 				NewPuzzleSet()
 			})
 			ui.OpenDialogInStack(constants.DialogChangeName)
-		} else if data.CurrPuzzleSet.Changed {
+		} else if data.CurrPuzzleSet.NeedToSave {
 			if SavePuzzleSet() {
 				NewPuzzleSet()
 			} else {
@@ -151,12 +151,12 @@ func NewPuzzle() {
 
 func ExitEditor() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
+		if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.NeedToSave {
 			ui.SetCloseSpcFn(constants.DialogChangeName, func() {
 				state.SwitchState(constants.MainMenuKey)
 			})
 			ui.OpenDialogInStack(constants.DialogChangeName)
-		} else if data.CurrPuzzleSet.Changed {
+		} else if data.CurrPuzzleSet.NeedToSave {
 			if SavePuzzleSet() {
 				state.SwitchState(constants.MainMenuKey)
 			} else {
@@ -177,12 +177,12 @@ func TestPuzzle() {
 	hasPlayers := data.CurrPuzzleSet.CurrPuzzle.HasPlayers()
 	if hasPlayers {
 		if data.Editor != nil && data.CurrPuzzleSet != nil {
-			if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.Changed {
+			if data.CurrPuzzleSet.Metadata.Filename == "" && data.CurrPuzzleSet.NeedToSave {
 				ui.SetCloseSpcFn(constants.DialogChangeName, func() {
 					state.PushState(constants.TestStateKey)
 				})
 				ui.OpenDialogInStack(constants.DialogChangeName)
-			} else if data.CurrPuzzleSet.Changed {
+			} else if data.CurrPuzzleSet.NeedToSave {
 				if SavePuzzleSet() {
 					state.PushState(constants.TestStateKey)
 				} else {
@@ -204,7 +204,7 @@ func OnSavePuzzleSet() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
 		if data.CurrPuzzleSet.Metadata.Filename == "" {
 			ui.OpenDialogInStack(constants.DialogChangeName)
-		} else if data.CurrPuzzleSet.Changed {
+		} else if data.CurrPuzzleSet.NeedToSave {
 			if !SavePuzzleSet() {
 				ui.OpenDialogInStack(constants.DialogUnableToSave)
 			}

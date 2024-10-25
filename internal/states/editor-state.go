@@ -13,7 +13,6 @@ import (
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/state"
-	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -66,9 +65,11 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
 	debug.AddIntCoords("Puzzle Coords", x, y)
 	debug.AddIntCoords("Last Coords", data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-	debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Name))
-	debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename))
-	debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack))
+	//debug.AddText(fmt.Sprintf("Puzzle Name: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Name))
+	//debug.AddText(fmt.Sprintf("Puzzle Filename: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename))
+	//debug.AddText(fmt.Sprintf("Puzzle Music Track: %s", data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack))
+	debug.AddText(fmt.Sprintf("Undo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.UndoStack)))
+	debug.AddText(fmt.Sprintf("Redo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.RedoStack)))
 	debug.AddTruthText("Puzzle Completed", data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed)
 	t := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(x, y)
 	if t != nil {
@@ -80,11 +81,11 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		}
 	}
 
-	if data.DebugInput.Get("camUp").Pressed() {
-		data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT
-	} else if data.DebugInput.Get("camDown").Pressed() {
-		data.Editor.BlockSelect.PortPos.Y -= 100. * timing.DT
-	}
+	//if data.DebugInput.Get("camUp").Pressed() {
+	//	data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT
+	//} else if data.DebugInput.Get("camDown").Pressed() {
+	//	data.Editor.BlockSelect.PortPos.Y -= 100. * timing.DT
+	//}
 	//if data.DebugInput.Get("camRight").Pressed() {
 	//	data.PuzzleView.PortSize.X += 1. * timing.DT
 	//} else if data.DebugInput.Get("camLeft").Pressed() {
@@ -96,9 +97,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//	data.PuzzleView.ZoomIn(-1.)
 	//}
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		load.ReloadDialog(constants.DialogFloatingText)
-		systems.CustomizeEditorDialog(constants.DialogFloatingText)
-		systems.UpdateDialogView(ui.Dialogs[constants.DialogFloatingText])
+		dKey := constants.DialogFloatingText
+		load.ReloadDialog(dKey)
+		systems.CustomizeEditorDialog(dKey)
+		systems.UpdateDialogView(ui.Dialogs[dKey])
 	}
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		systems.ChangeWorldToNext()
@@ -119,11 +121,12 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	} else {
 		// todo: add draw selection here?
 	}
-	if data.CurrPuzzleSet.CurrPuzzle.Update {
+	if data.CurrPuzzleSet.CurrPuzzle.Update || data.CurrPuzzleSet.CurrPuzzle.Changed {
 		systems.TileSpriteSystem()
 		data.CurrPuzzleSet.CurrPuzzle.Update = false
 	}
 	systems.DialogSystem(win)
+	systems.UndoStackSystem()
 	// object systems
 	systems.AnimationSystem()
 	systems.ParentSystem()
