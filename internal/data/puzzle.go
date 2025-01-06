@@ -13,6 +13,7 @@ import (
 var (
 	PuzzleView         *viewport.ViewPort
 	PuzzleViewNoShader *viewport.ViewPort
+	WorldView          *viewport.ViewPort
 	BorderView         *viewport.ViewPort
 	IMDraw             *imdraw.IMDraw
 
@@ -23,7 +24,9 @@ var (
 	ClipSelect    *Selection
 	EditorDraw    bool
 
+	ColorShader  string
 	PuzzleShader string
+	WorldShader  string
 )
 
 type LevelSession struct {
@@ -81,6 +84,8 @@ type PuzzleSet struct {
 	Metadata PuzzleSetMetadata `json:"puzzleSetMetadata"`
 
 	CurrPuzzle *Puzzle `json:"-"`
+
+	Elapsed float32 `json:"-"`
 
 	PuzzleIndex int  `json:"-"`
 	NeedToSave  bool `json:"-"`

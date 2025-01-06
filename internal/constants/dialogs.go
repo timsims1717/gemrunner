@@ -41,6 +41,13 @@ const (
 )
 
 var DialogKeys = []string{
+	DialogPlayer1Inv,
+	DialogPlayer2Inv,
+	DialogPlayer3Inv,
+	DialogPlayer4Inv,
+
+	DialogPlayLocal,
+
 	DialogNoPlayersInPuzzle,
 
 	DialogJetpack,

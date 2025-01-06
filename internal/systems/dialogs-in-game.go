@@ -16,10 +16,10 @@ import (
 
 func InGameDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.PauseConstructor)
-	ui.NewDialog(load.Player1InvConstructor)
-	ui.NewDialog(load.Player2InvConstructor)
-	ui.NewDialog(load.Player3InvConstructor)
-	ui.NewDialog(load.Player4InvConstructor)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer1Inv])
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer2Inv])
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer3Inv])
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer4Inv])
 	ui.NewDialog(load.PuzzleTitleConstructor)
 	customizeInGameDialogs(win)
 }
@@ -142,6 +142,18 @@ func customizeInGameDialogs(win *pixelgl.Window) {
 			constants.DialogPuzzleTitle:
 			dialog.Border.Style = ui.ThinBorder
 			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
+			if dialog.Key != constants.DialogPuzzleTitle {
+				dialog.ViewPort.Canvas.SetUniform("uRedPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBluePrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
+			}
 		}
 	}
 }

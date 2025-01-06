@@ -65,20 +65,13 @@ func ConfirmAddPlayers() {
 	for _, e := range localPlay.Elements {
 		ele := e
 		switch ele.Key {
-		//case "play_custom_tab":
-		//	for _, ele2 := range ele.Elements {
-		//		if ele2.Key == "custom_tab_text_shadow" {
-		//			ele2.Text.Hidden = true
-		//		}
-		//	}
+		case "play_custom_tab":
+			ele.Get("custom_tab_text_shadow").Text.Show()
+			ele.Border.Style = ui.ThinBorderWhite
 		case "play_main_tab":
-			for _, ele2 := range ele.Elements {
-				if ele2.Key == "main_tab_text_shadow" {
-					ele2.Text.Hide()
-				}
-			}
+			ele.Get("main_tab_text_shadow").Text.Hide()
+			ele.Border.Style = ui.ThinBorderBlue
 		case "main_tab_display":
-
 		case "custom_tab_display":
 			for _, e1 := range ele.Elements {
 				ele1 := e1

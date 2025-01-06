@@ -410,7 +410,7 @@ func editorPanels() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
-	editorPanelLeft.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+	editorPanelLeft.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(0))
@@ -421,7 +421,7 @@ func editorPanels() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
-	editorPanelTop.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+	editorPanelTop.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 	blockSelect := ui.Dialogs[constants.DialogEditorBlockSelect]
 	blockSelect.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(0))
@@ -432,5 +432,5 @@ func editorPanels() {
 	blockSelect.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
-	blockSelect.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+	blockSelect.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 }

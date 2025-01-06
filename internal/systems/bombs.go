@@ -252,6 +252,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 			}
 		}
 	}
+	var blownCoords []world.Coords
 	for _, c := range coords {
 		key := "exp_end"
 		r := 0.
@@ -305,8 +306,8 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		tile := data.CurrLevel.Tiles.Get(c.X, c.Y)
 		if tile != nil {
 		outSwitch:
-			switch tile.Block {
-			case data.BlockTurf, data.BlockCracked, data.BlockFall:
+			switch {
+			default:
 				if util.Abs(c.X-x)+util.Abs(c.Y-y) > 1 {
 					if c.X == x {
 						if c.Y > y {
@@ -350,8 +351,11 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 						}
 					}
 				}
-				tile.Flags.Collapse = true
-				tile.Counter = constants.CollapseCounter
+				if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall {
+					tile.Flags.Collapse = true
+					tile.Counter = constants.CollapseCounter
+				}
+				blownCoords = append(blownCoords, tile.Coords)
 			}
 		}
 		// explosion
@@ -380,7 +384,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		if okCO && okC && ch.State != data.Dead {
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tile := data.CurrLevel.Tiles.Get(chX, chY)
-			if world.CoordsIn(world.NewCoords(chX, chY), coords) {
+			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
 				ch.Object.Pos.X = tile.Object.Pos.X
 				ch.Object.Pos.Y = tile.Object.Pos.Y
 				ch.Flags.Blow = true
@@ -397,7 +401,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		if okO && okB && !obj.Hidden && !b.Waiting && !b.Regen {
 			chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
 			tile := data.CurrLevel.Tiles.Get(chX, chY)
-			if world.CoordsIn(world.NewCoords(chX, chY), coords) {
+			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
 				obj.Pos.X = tile.Object.Pos.X
 				obj.Pos.Y = tile.Object.Pos.Y
 				LightBomb(b, tile)

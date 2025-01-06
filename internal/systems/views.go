@@ -31,6 +31,12 @@ func UpdateViews() {
 		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	}
+	if data.WorldView != nil {
+		data.WorldView.PortPos = viewport.MainCamera.PostCamPos
+		xWidth := constants.PuzzleWidth * world.TileSize * constants.PickedRatio
+		yHeight := constants.PuzzleHeight * world.TileSize * constants.PickedRatio
+		data.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
+	}
 	data.CursorObj.Sca = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	data.CursorObj.Offset = pixel.V(9, -9).Scaled(constants.PickedRatio)
 	for _, dialog := range ui.Dialogs {

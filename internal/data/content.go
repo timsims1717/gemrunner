@@ -44,6 +44,12 @@ type PuzzleMetadata struct {
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`
 	SecondaryColor pixel.RGBA `json:"secondaryColor"`
 	DoodadColor    pixel.RGBA `json:"doodadColor"`
+	ShaderMode     int        `json:"shader"`
+	ShaderSpeed    float32    `json:"-"`
+	ShaderY        float32    `json:"-"`
+	ShaderX        float32    `json:"-"`
+	ShaderCustom   float32    `json:"-"`
+	ParticleMode   int        `json:"particles"`
 	MusicTrack     string     `json:"musicTrack"`
 	HubLevel       bool       `json:"hubLevel"`
 	SecretLevel    bool       `json:"secretLevel"`

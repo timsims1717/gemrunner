@@ -1,12 +1,13 @@
 #version 330 core
 
 in vec2  vTexCoords;
+in vec4  vColor;
 out vec4 fragColor;
 
 uniform vec4 uTexBounds;
 uniform sampler2D uTexture;
 
-// custom uniforms
+// color uniforms
 uniform float uRedPrimary;
 uniform float uGreenPrimary;
 uniform float uBluePrimary;
@@ -19,6 +20,7 @@ uniform float uRedDoodad;
 uniform float uGreenDoodad;
 uniform float uBlueDoodad;
 
+// world uniforms
 uniform int uMode;
 uniform float uSpeed;
 uniform float uTime;
@@ -30,7 +32,7 @@ void main() {
     // get our current coordinates' color
     vec4 col = texture(uTexture, t);
 
-    // primary
+    // primary, secondary, tertiary
     if (col.r == 1. && col.b == 1. && col.g == 0.) {
         col = vec4(uRedPrimary, uGreenPrimary, uBluePrimary, col.a);
     } else if (col.r == 0. && col.b == 1. && col.g == 1.) {

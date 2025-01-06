@@ -66,7 +66,6 @@ func NextLevel() {
 	data.CurrPuzzleSet.Next()
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
 	PuzzleInit()
-	UpdatePuzzleShaders()
 	LevelInit()
 	UpdateViews()
 	data.EditorDraw = false

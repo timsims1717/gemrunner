@@ -557,7 +557,3 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 		}))
 	})
 }
-
-func DisguiseAction(p int, ch *data.Dynamic, entity *ecs.Entity, disguise *data.Disguise) {
-
-}

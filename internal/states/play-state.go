@@ -119,12 +119,14 @@ func (s *playState) Update(win *pixelgl.Window) {
 
 	}
 	// object systems
+	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
+	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
 
 	myecs.UpdateManager()
@@ -132,6 +134,10 @@ func (s *playState) Update(win *pixelgl.Window) {
 }
 
 func (s *playState) Draw(win *pixelgl.Window) {
+	drawPlayArea(win)
+}
+
+func drawPlayArea(win *pixelgl.Window) {
 	// draw border
 	data.BorderView.Canvas.Clear(constants.ColorBlack)
 	systems.BorderSystem(1)
@@ -139,21 +145,25 @@ func (s *playState) Draw(win *pixelgl.Window) {
 	img.Clear()
 	data.BorderView.Draw(win)
 	// draw puzzle
+	data.WorldView.Canvas.Clear(pixel.RGBA{})
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
 	img.Clear()
-	data.PuzzleView.Draw(win)
+	//data.PuzzleView.Draw(win)
+	data.PuzzleView.Draw(data.WorldView.Canvas)
 	// draw collapse/regen
 	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenLayer)
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
-	data.PuzzleView.Draw(win)
+	//data.PuzzleView.Draw(win)
+	data.PuzzleView.Draw(data.WorldView.Canvas)
 	// draw effects
 	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
-	data.PuzzleView.Draw(win)
+	//data.PuzzleView.Draw(win)
+	data.PuzzleView.Draw(data.WorldView.Canvas)
 	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
 	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
@@ -161,6 +171,8 @@ func (s *playState) Draw(win *pixelgl.Window) {
 	if debug.ShowDebug {
 		debug.DrawLines(data.PuzzleViewNoShader.Canvas)
 	}
+	//data.PuzzleViewNoShader.Draw(data.WorldView.Canvas)
+	data.WorldView.Draw(win)
 	data.PuzzleViewNoShader.Draw(win)
 	// dialog draw system
 	systems.DialogDrawSystem(win)

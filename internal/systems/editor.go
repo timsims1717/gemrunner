@@ -91,6 +91,15 @@ func ChangeWorldTo(world int) {
 	UpdatePuzzleShaders()
 }
 
+func ChangeWorldShader(shaderMode int) {
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode = shaderMode
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed = constants.ShaderSpeeds[shaderMode]
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX = constants.ShaderXs[shaderMode]
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY = constants.ShaderYs[shaderMode]
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom = constants.ShaderCustom[shaderMode]
+	UpdateWorldShaders()
+}
+
 func UpdateEditorModeHotKey() {
 	oldMode := data.Editor.Mode
 	if data.MenuInput.Get("ctrl").Pressed() || data.MenuInput.Get("rCtrl").Pressed() {

@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
@@ -149,6 +150,28 @@ func LevelInit() {
 	}
 	CreateFakePlayer()
 	PuzzleViewInit()
+	for p := 0; p < data.CurrPuzzleSet.Metadata.NumPlayers; p++ {
+		var dlgKey string
+		switch p {
+		case 0:
+			dlgKey = constants.DialogPlayer1Inv
+		case 1:
+			dlgKey = constants.DialogPlayer2Inv
+		case 2:
+			dlgKey = constants.DialogPlayer3Inv
+		case 3:
+			dlgKey = constants.DialogPlayer4Inv
+		}
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.R))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.G))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.B))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.R))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.G))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.B))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.R))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.G))
+		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.B))
+	}
 }
 
 func LevelDispose() {

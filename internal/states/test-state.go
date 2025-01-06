@@ -8,14 +8,11 @@ import (
 	"gemrunner/internal/systems"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
-	"gemrunner/pkg/img"
-	"gemrunner/pkg/options"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
-	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 )
 
@@ -136,12 +133,14 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	}
 	// object systems
+	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
+	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
 
 	myecs.UpdateManager()
@@ -149,45 +148,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 }
 
 func (s *testState) Draw(win *pixelgl.Window) {
-	// draw border
-	data.BorderView.Canvas.Clear(constants.ColorBlack)
-	systems.BorderSystem(1)
-	img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
-	img.Clear()
-	data.BorderView.Draw(win)
-	// draw puzzle
-	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
-	img.Clear()
-	data.PuzzleView.Draw(win)
-	// draw collapse/regen
-	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
-	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenLayer)
-	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
-	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
-	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
-	data.PuzzleView.Draw(win)
-	// draw effects
-	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
-	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
-	data.PuzzleView.Draw(win)
-	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
-	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
-	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
-	// draw debug
-	if debug.ShowDebug {
-		debug.DrawLines(data.PuzzleViewNoShader.Canvas)
-	}
-	data.PuzzleViewNoShader.Draw(win)
-	// dialog draw system
-	systems.DialogDrawSystem(win)
-	systems.DrawLayerSystem(win, -10)
-	img.Clear()
-	systems.TemporarySystem()
-	//data.IMDraw.Clear()
-	if options.Updated {
-		systems.UpdateViews()
-	}
+	drawPlayArea(win)
 }
 
 func (s *testState) SetAbstract(aState *state.AbstractState) {

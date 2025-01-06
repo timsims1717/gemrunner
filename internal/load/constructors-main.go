@@ -11,7 +11,6 @@ var (
 	// main menu
 	MainMenuConstructor   *ui.DialogConstructor
 	AddPlayersConstructor *ui.DialogConstructor
-	PlayLocalConstructor  *ui.DialogConstructor
 	PuzzleListEntry       ui.ElementConstructor
 	PuzzleTitleItem       ui.ElementConstructor
 	PuzzleTitleShadowItem ui.ElementConstructor
@@ -194,132 +193,6 @@ func InitMainMenuConstructors() {
 				HelpText:    "Confirm",
 				Position:    pixel.V(112, -36),
 				ElementType: ui.ButtonElement,
-			},
-		},
-	}
-	PlayLocalConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogPlayLocal,
-		Width:  11,
-		Height: 12,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "play_main_tab",
-				Position:    pixel.V(-40, 79),
-				ElementType: ui.ContainerElement,
-				Width:       4 * world.TileSize,
-				Height:      2 * world.TileSize,
-				SubElements: []ui.ElementConstructor{
-					{
-						Key:         "main_tab_text_shadow",
-						Text:        "Main Story",
-						Color:       pixel.ToRGBA(constants.ColorBlue),
-						Position:    pixel.V(-31, 1),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-					{
-						Key:         "main_tab_text",
-						Text:        "Main Story",
-						Color:       pixel.ToRGBA(constants.ColorWhite),
-						Position:    pixel.V(-31, 0),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-				},
-			},
-			{
-				Key:         "play_custom_tab",
-				Position:    pixel.V(40, 79),
-				ElementType: ui.ContainerElement,
-				Width:       4 * world.TileSize,
-				Height:      2 * world.TileSize,
-				SubElements: []ui.ElementConstructor{
-					{
-						Key:         "custom_tab_text_shadow",
-						Text:        "Custom",
-						Color:       pixel.ToRGBA(constants.ColorBlue),
-						Position:    pixel.V(-18, 1),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-					{
-						Key:         "custom_tab_text",
-						Text:        "Custom",
-						Color:       pixel.ToRGBA(constants.ColorWhite),
-						Position:    pixel.V(-18, 0),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-				},
-			},
-			{
-				Key:         "cancel_play_local",
-				SprKey:      "cancel_btn_big",
-				SprKey2:     "cancel_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Cancel",
-				Position:    pixel.V(76, -84),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "main_tab_display",
-				Batch:       constants.UIBatch,
-				ElementType: ui.ContainerElement,
-				Width:       11 * world.TileSize,
-				Height:      12 * world.TileSize,
-			},
-			{
-				Key:         "custom_tab_display",
-				Batch:       constants.UIBatch,
-				ElementType: ui.ContainerElement,
-				Width:       11 * world.TileSize,
-				Height:      12 * world.TileSize,
-				SubElements: []ui.ElementConstructor{
-					{
-						Key:         "custom_puzzle_loading",
-						Batch:       constants.UIBatch,
-						ElementType: ui.ContainerElement,
-						Position:    pixel.V(0, -7),
-						Width:       10 * world.TileSize,
-						Height:      8 * world.TileSize,
-						SubElements: []ui.ElementConstructor{
-							{
-								Key:         "custom_loading_text",
-								Text:        "Loading...",
-								Color:       pixel.ToRGBA(constants.ColorWhite),
-								Position:    pixel.V(-28, 0),
-								ElementType: ui.TextElement,
-								Anchor:      pixel.Right,
-							},
-						},
-					},
-					{
-						Key:         "custom_puzzle_list",
-						Batch:       constants.UIBatch,
-						ElementType: ui.ScrollElement,
-						Position:    pixel.V(0, -7),
-						Width:       10 * world.TileSize,
-						Height:      8 * world.TileSize,
-					},
-					{
-						Key:         "custom_continue_game",
-						SprKey:      "play_continue_btn_big",
-						SprKey2:     "play_continue_btn_click_big",
-						Batch:       constants.UIBatch,
-						HelpText:    "Start where you left off",
-						Position:    pixel.V(36, -84),
-						ElementType: ui.ButtonElement,
-					},
-					{
-						Key:         "custom_new_game",
-						SprKey:      "play_btn_big",
-						SprKey2:     "play_btn_click_big",
-						Batch:       constants.UIBatch,
-						HelpText:    "Start at the Beginning",
-						Position:    pixel.V(56, -84),
-						ElementType: ui.ButtonElement,
-					},
-				},
 			},
 		},
 	}
@@ -773,4 +646,17 @@ func InitMainMenuConstructors() {
 			},
 		},
 	}
+	//f, err := os.Create("assets/ui/player4.json")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//bts, err := json.Marshal(Player4InvConstructor)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//_, err = f.Write(bts)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//f.Close()
 }

@@ -374,6 +374,7 @@ func ConfirmChangeWorld() {
 	}
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
+	UpdateWorldShaders()
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	ui.Dispose(constants.DialogChangeWorld)
@@ -396,7 +397,7 @@ func worldDialogShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
-					e2.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+					e2.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 				}
 			}
 		} else if e1.ElementType == ui.ContainerElement {
@@ -409,7 +410,7 @@ func worldDialogShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
-			e1.ViewPort.Canvas.SetFragmentShader(data.PuzzleShader)
+			e1.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 		}
 	}
 }

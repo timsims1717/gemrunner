@@ -16,7 +16,7 @@ import (
 func MainDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.MainMenuConstructor)
 	ui.NewDialog(load.AddPlayersConstructor)
-	ui.NewDialog(load.PlayLocalConstructor)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayLocal])
 	customizeMainDialogs(win)
 }
 

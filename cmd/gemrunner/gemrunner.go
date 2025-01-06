@@ -77,10 +77,15 @@ func run() {
 	//if err != nil {
 	//	panic(err)
 	//}
-	//data.PuzzleShader = sh
+	//data.ColorShader = sh
+	data.ColorShader = embed.ColorShader
 	data.PuzzleShader = embed.PuzzleShader
+	data.WorldShader = embed.WorldShader
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
+	debug.Release = constants.Release
+	debug.Version = constants.Version
+	debug.Build = constants.Build
 	debug.ShowText = false
 	debug.ShowDebug = false
 

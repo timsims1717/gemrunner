@@ -81,21 +81,23 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		}
 	}
 
-	//if data.DebugInput.Get("camUp").Pressed() {
-	//	data.Editor.BlockSelect.PortPos.Y += 100. * timing.DT
-	//} else if data.DebugInput.Get("camDown").Pressed() {
-	//	data.Editor.BlockSelect.PortPos.Y -= 100. * timing.DT
-	//}
-	//if data.DebugInput.Get("camRight").Pressed() {
-	//	data.PuzzleView.PortSize.X += 1. * timing.DT
-	//} else if data.DebugInput.Get("camLeft").Pressed() {
-	//	data.PuzzleView.PortSize.X -= 1. * timing.DT
-	//}
-	//if data.DebugInput.Get("debugSP").JustPressed() {
-	//	data.PuzzleView.ZoomIn(1.)
-	//} else if data.DebugInput.Get("debugSM").JustPressed() {
-	//	data.PuzzleView.ZoomIn(-1.)
-	//}
+	if data.DebugInput.Get("camUp").JustPressed() || data.DebugInput.Get("camUp").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY += 0.02
+	} else if data.DebugInput.Get("camDown").JustPressed() || data.DebugInput.Get("camDown").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY -= 0.02
+	}
+	if data.DebugInput.Get("camRight").JustPressed() || data.DebugInput.Get("camRight").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX += 0.0001
+	} else if data.DebugInput.Get("camLeft").JustPressed() || data.DebugInput.Get("camLeft").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX -= 0.0001
+	}
+	if data.DebugInput.Get("debugSP").JustPressed() || data.DebugInput.Get("debugSP").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom += 0.01
+	} else if data.DebugInput.Get("debugSM").JustPressed() || data.DebugInput.Get("debugSM").Repeated() {
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom -= 0.01
+	}
+	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
+	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
 		dKey := constants.DialogFloatingText
 		load.ReloadDialog(dKey)
@@ -103,7 +105,9 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.UpdateDialogView(ui.Dialogs[dKey])
 	}
 	if data.DebugInput.Get("switchWorld").JustPressed() {
-		systems.ChangeWorldToNext()
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode++
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode %= constants.ShaderEndOfList
+		systems.ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
 	}
 	reanimator.Update()
 
@@ -128,6 +132,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	systems.DialogSystem(win)
 	systems.UndoStackSystem()
 	// object systems
+	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
@@ -136,6 +141,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
+	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
 
 	if data.Editor.SelectVis && !ui.Dialogs[constants.DialogEditorBlockSelect].Open {
@@ -157,6 +163,7 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		img.Clear()
 		data.BorderView.Draw(win)
 		// draw puzzle
+		data.WorldView.Canvas.Clear(pixel.RGBA{})
 		data.PuzzleView.Canvas.Clear(constants.ColorBlack)
 		systems.DrawLayerSystem(data.PuzzleView.Canvas, 2) // normal tiles
 		img.Clear()
@@ -164,7 +171,8 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		img.Clear()
 		systems.DrawLayerSystem(data.PuzzleView.Canvas, 4) // ui
 		img.Clear()
-		data.PuzzleView.Draw(win)
+		//data.PuzzleView.Draw(win)
+		data.PuzzleView.Draw(data.WorldView.Canvas)
 		data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 		data.IMDraw.Draw(data.PuzzleViewNoShader.Canvas)
 		systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
@@ -174,6 +182,8 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		if debug.ShowDebug {
 			debug.DrawLines(data.PuzzleViewNoShader.Canvas)
 		}
+		//data.PuzzleViewNoShader.Draw(data.WorldView.Canvas)
+		data.WorldView.Draw(win)
 		data.PuzzleViewNoShader.Draw(win)
 		// dialog draw system
 		systems.DialogDrawSystem(win)
