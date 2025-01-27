@@ -24,6 +24,9 @@ func OpenDialog(key string) {
 		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
 		return
 	}
+	if dialog.Default != "" {
+		dialog.SetFocus(dialog.Get(dialog.Default), true)
+	}
 	dialog.Open = true
 	DialogsOpen = append(DialogsOpen, dialog)
 	if dialog.OnOpen != nil {
@@ -36,6 +39,9 @@ func OpenDialogInStack(key string) {
 	if !ok {
 		fmt.Printf("Warning: OpenDialog: %s not registered\n", key)
 		return
+	}
+	if dialog.Default != "" {
+		dialog.SetFocus(dialog.Get(dialog.Default), true)
 	}
 	dialog.Open = true
 	DialogStack = append(DialogStack, dialog)

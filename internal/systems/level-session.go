@@ -12,8 +12,9 @@ func LevelSessionInit() {
 	if data.CurrPuzzleSet == nil {
 		panic("no puzzle set loaded to start")
 	}
-	if data.CurrPuzzleSet.Metadata.NumPlayers < 1 {
-		data.CurrPuzzleSet.Metadata.NumPlayers = data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
+	numPlayers := data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
+	if data.CurrPuzzleSet.Metadata.NumPlayers < numPlayers {
+		data.CurrPuzzleSet.Metadata.NumPlayers = numPlayers
 	}
 	if data.CurrLevelSess == nil {
 		data.CurrLevelSess = &data.LevelSession{}

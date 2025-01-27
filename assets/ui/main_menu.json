@@ -1,0 +1,76 @@
+{
+  "key":"main_menu",
+  "width":28,
+  "height":16,
+  "elements":[
+    {
+      "key":"play_local_game_btn",
+      "spriteKey":"play_local",
+      "spriteKey2":"play_local_click",
+      "batchKey":"ui",
+      "helpText":"Play a local game with up to four players.",
+      "pos":{
+        "X":-144,
+        "Y":-64
+      },
+      "type":"button",
+      "right": "play_online_game_btn"
+    },
+    {
+      "key":"play_online_game_btn",
+      "spriteKey":"play_online",
+      "spriteKey2":"play_online_click",
+      "batchKey":"ui",
+      "helpText":"Play an online game with up to four players.",
+      "pos":{
+        "X":-72,
+        "Y":-64
+      },
+      "type":"button",
+      "left": "play_local_game_btn",
+      "right": "start_editor_btn"
+    },
+    {
+      "key":"start_editor_btn",
+      "spriteKey":"start_editor",
+      "spriteKey2":"start_editor_click",
+      "batchKey":"ui",
+      "helpText":"Create your own puzzles.",
+      "pos":{
+        "X":0,
+        "Y":-64
+      },
+      "type":"button",
+      "left": "play_online_game_btn",
+      "right": "start_options_btn"
+    },
+    {
+      "key":"start_options_btn",
+      "spriteKey":"start_options",
+      "spriteKey2":"start_options_click",
+      "batchKey":"ui",
+      "helpText":"Change the game options.",
+      "pos":{
+        "X":72,
+        "Y":-64
+      },
+      "type":"button",
+      "left": "start_editor_btn",
+      "right": "quit_btn"
+    },
+    {
+      "key":"quit_btn",
+      "spriteKey":"main_quit",
+      "spriteKey2":"main_quit_click",
+      "batchKey":"ui",
+      "helpText":"Quit the game.",
+      "pos":{
+        "X":144,
+        "Y":-64
+      },
+      "type":"button",
+      "left": "start_options_btn"
+    }
+  ],
+  "default": "play_local_game_btn"
+}

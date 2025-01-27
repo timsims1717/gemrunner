@@ -1,8 +1,6 @@
 package data
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/myecs"
@@ -12,109 +10,51 @@ import (
 	"github.com/bytearena/ecs"
 )
 
-type Block int
+type Tile struct {
+	Block        Block             `json:"tile"`
+	Metadata     TileMetadata      `json:"metadata"`
+	Flags        TileFlags         `json:"-"`
+	Coords       world.Coords      `json:"-"`
+	Object       *object.Object    `json:"-"`
+	Update       bool              `json:"-"`
+	Entity       *ecs.Entity       `json:"-"`
+	Mask         *ecs.Entity       `json:"-"`
+	Counter      int               `json:"-"`
+	Live         bool              `json:"-"`
+	AltBlock     int               `json:"alt"`
+	FloatingText *FloatingText     `json:"-"`
+	TextData     *FloatingTextData `json:"text,omitempty"`
+}
 
-const (
-	BlockTurf = iota
-	BlockBedrock
-	BlockFall
-	BlockCracked
-	BlockPhase
-	BlockSpike
-
-	BlockLadder
-	BlockLadderCracked
-	BlockLadderExit
-	BlockBar
-
-	BlockPlayer1
-	BlockPlayer2
-	BlockPlayer3
-	BlockPlayer4
-	BlockDemon
-	BlockDemonRegen
-	BlockFly
-	BlockFlyRegen
-
-	BlockGemBlue
-	BlockGemGreen
-	BlockGemPurple
-	BlockGemBrown
-	BlockGemYellow
-	BlockGemOrange
-	BlockGemGray
-	BlockGemCyan
-
-	BlockDoorBlue
-	BlockClosedBlue
-	BlockDoorGreen
-	BlockClosedGreen
-	BlockDoorPurple
-	BlockClosedPurple
-	BlockDoorBrown
-	BlockClosedBrown
-
-	BlockLockBlue
-	BlockKeyBlue
-	BlockLockGreen
-	BlockKeyGreen
-	BlockLockPurple
-	BlockKeyPurple
-	BlockLockBrown
-	BlockKeyBrown
-
-	BlockDoorYellow
-	BlockClosedYellow
-	BlockDoorOrange
-	BlockClosedOrange
-	BlockDoorGray
-	BlockClosedGray
-	BlockDoorCyan
-	BlockClosedCyan
-
-	BlockLockYellow
-	BlockKeyYellow
-	BlockLockOrange
-	BlockKeyOrange
-	BlockLockGray
-	BlockKeyGray
-	BlockLockCyan
-	BlockKeyCyan
-
-	BlockBox
-	BlockJetpack
-	BlockBomb
-	BlockBombLit
-	BlockDisguise
-
-	BlockReeds
-	BlockFlowers
-	BlockMoss
-	BlockGrass
-	BlockCattail
-	BlockCactus1
-	BlockCactus2
-	BlockVine
-
-	BlockNest
-	BlockSkull
-	BlockDots
-	BlockBoulder
-	BlockMush1
-	BlockMush2
-	BlockChain
-	BlockGear
-
-	BlockEmpty
-
-	BlockLadderTurf
-	BlockLadderCrackedTurf
-	BlockLadderExitTurf
-)
-
-func (b Block) String() string {
-	switch b {
-	case BlockTurf, BlockFall, BlockCracked,
+func (t *Tile) SpriteString() string {
+	colSuffixKey := constants.SprColorYellow
+	colSuffixTools := ""
+	switch t.Metadata.Color {
+	case NonPlayerYellow:
+		colSuffixKey = constants.SprColorYellow
+	case NonPlayerBrown:
+		colSuffixKey = constants.SprColorBrown
+	case NonPlayerGray:
+		colSuffixKey = constants.SprColorGray
+	case NonPlayerCyan:
+		colSuffixKey = constants.SprColorCyan
+	case NonPlayerRed:
+		colSuffixKey = constants.SprColorRed
+	case PlayerBlue:
+		colSuffixKey = constants.SprColorBlue
+		colSuffixTools = constants.SprColorBlue
+	case PlayerGreen:
+		colSuffixKey = constants.SprColorGreen
+		colSuffixTools = constants.SprColorGreen
+	case PlayerPurple:
+		colSuffixKey = constants.SprColorPurple
+		colSuffixTools = constants.SprColorPurple
+	case PlayerOrange:
+		colSuffixKey = constants.SprColorOrange
+		colSuffixTools = constants.SprColorOrange
+	}
+	switch t.Block {
+	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
@@ -138,14 +78,20 @@ func (b Block) String() string {
 		return constants.TileExitLadderM
 	case BlockBar:
 		return constants.TileBar
+	case BlockJumpBoots:
+		return constants.ItemJumpBoots + colSuffixTools
 	case BlockBox:
-		return constants.ItemBox
+		return constants.ItemBox + colSuffixTools
 	case BlockJetpack:
-		return constants.ItemJetpack
+		return constants.ItemJetpack + colSuffixTools
 	case BlockDisguise:
-		return constants.ItemDisguise
+		return constants.ItemDisguise + colSuffixTools
+	case BlockDrill:
+		return constants.ItemDrill + colSuffixTools
+	case BlockFlamethrower:
+		return constants.ItemFlamethrower + colSuffixTools
 	case BlockBomb:
-		return constants.ItemBomb
+		return constants.ItemBomb + colSuffixTools
 	case BlockBombLit:
 		return constants.ItemBombLit
 	case BlockPlayer1:
@@ -156,86 +102,16 @@ func (b Block) String() string {
 		return constants.CharPlayer3
 	case BlockPlayer4:
 		return constants.CharPlayer4
-	case BlockKeyBlue:
-		return constants.ItemKeyBlue
-	case BlockKeyGreen:
-		return constants.ItemKeyGreen
-	case BlockKeyPurple:
-		return constants.ItemKeyPurple
-	case BlockKeyBrown:
-		return constants.ItemKeyBrown
-	case BlockKeyYellow:
-		return constants.ItemKeyYellow
-	case BlockKeyOrange:
-		return constants.ItemKeyOrange
-	case BlockKeyGray:
-		return constants.ItemKeyGray
-	case BlockKeyCyan:
-		return constants.ItemKeyCyan
-	case BlockDoorBlue:
-		return constants.TileDoorBlue
-	case BlockDoorGreen:
-		return constants.TileDoorGreen
-	case BlockDoorPurple:
-		return constants.TileDoorPurple
-	case BlockDoorBrown:
-		return constants.TileDoorBrown
-	case BlockDoorYellow:
-		return constants.TileDoorYellow
-	case BlockDoorOrange:
-		return constants.TileDoorOrange
-	case BlockDoorGray:
-		return constants.TileDoorGray
-	case BlockDoorCyan:
-		return constants.TileDoorCyan
-	case BlockClosedBlue:
-		return constants.TileClosedBlue
-	case BlockClosedGreen:
-		return constants.TileClosedGreen
-	case BlockClosedPurple:
-		return constants.TileClosedPurple
-	case BlockClosedBrown:
-		return constants.TileClosedBrown
-	case BlockClosedYellow:
-		return constants.TileClosedYellow
-	case BlockClosedOrange:
-		return constants.TileClosedOrange
-	case BlockClosedGray:
-		return constants.TileClosedGray
-	case BlockClosedCyan:
-		return constants.TileClosedCyan
-	case BlockLockBlue:
-		return constants.TileLockBlue
-	case BlockLockGreen:
-		return constants.TileLockGreen
-	case BlockLockPurple:
-		return constants.TileLockPurple
-	case BlockLockBrown:
-		return constants.TileLockBrown
-	case BlockLockYellow:
-		return constants.TileLockYellow
-	case BlockLockOrange:
-		return constants.TileLockOrange
-	case BlockLockGray:
-		return constants.TileLockGray
-	case BlockLockCyan:
-		return constants.TileLockCyan
-	case BlockGemBlue:
-		return constants.ItemGemBlue
-	case BlockGemGreen:
-		return constants.ItemGemGreen
-	case BlockGemPurple:
-		return constants.ItemGemPurple
-	case BlockGemBrown:
-		return constants.ItemGemBrown
-	case BlockGemYellow:
-		return constants.ItemGemYellow
-	case BlockGemOrange:
-		return constants.ItemGemOrange
-	case BlockGemGray:
-		return constants.ItemGemGray
-	case BlockGemCyan:
-		return constants.ItemGemCyan
+	case BlockGem:
+		return constants.ItemGem + colSuffixKey
+	case BlockKey:
+		return constants.ItemKey + colSuffixKey
+	case BlockDoorHidden:
+		return constants.TileDoorHidden + colSuffixKey
+	case BlockDoorVisible:
+		return constants.TileDoorVisible + colSuffixKey
+	case BlockDoorLocked:
+		return constants.TileDoorLocked + colSuffixKey
 	case BlockDemon:
 		return constants.CharDemon
 	case BlockFly:
@@ -278,166 +154,6 @@ func (b Block) String() string {
 		return constants.DoodadGear
 	}
 	return constants.TileEmpty
-}
-
-var toID = map[string]Block{
-	constants.TileTurf:              BlockTurf,
-	constants.TileBedrock:           BlockBedrock,
-	constants.TileFall:              BlockFall,
-	constants.TileCracked:           BlockCracked,
-	constants.TilePhase:             BlockPhase,
-	constants.TileSpike:             BlockSpike,
-	constants.TileLadderMiddle:      BlockLadder,
-	constants.TileLadderCrackM:      BlockLadderCracked,
-	constants.TileExitLadderM:       BlockLadderExit,
-	constants.TileLadderTurf:        BlockLadderTurf,
-	constants.TileLadderCrackedTurf: BlockLadderCrackedTurf,
-	constants.TileLadderExitTurf:    BlockLadderExitTurf,
-	constants.TileBar:               BlockBar,
-	constants.ItemBox:               BlockBox,
-	constants.ItemJetpack:           BlockJetpack,
-	constants.ItemDisguise:          BlockDisguise,
-	constants.ItemBomb:              BlockBomb,
-	constants.ItemBombLit:           BlockBombLit,
-	constants.CharPlayer1:           BlockPlayer1,
-	constants.CharPlayer2:           BlockPlayer2,
-	constants.CharPlayer3:           BlockPlayer3,
-	constants.CharPlayer4:           BlockPlayer4,
-	constants.ItemKeyYellow:         BlockKeyYellow,
-	constants.ItemKeyOrange:         BlockKeyOrange,
-	constants.ItemKeyGray:           BlockKeyGray,
-	constants.ItemKeyCyan:           BlockKeyCyan,
-	constants.ItemKeyBlue:           BlockKeyBlue,
-	constants.ItemKeyGreen:          BlockKeyGreen,
-	constants.ItemKeyPurple:         BlockKeyPurple,
-	constants.ItemKeyBrown:          BlockKeyBrown,
-	constants.TileDoorYellow:        BlockDoorYellow,
-	constants.TileDoorOrange:        BlockDoorOrange,
-	constants.TileDoorGray:          BlockDoorGray,
-	constants.TileDoorCyan:          BlockDoorCyan,
-	constants.TileDoorBlue:          BlockDoorBlue,
-	constants.TileDoorGreen:         BlockDoorGreen,
-	constants.TileDoorPurple:        BlockDoorPurple,
-	constants.TileDoorBrown:         BlockDoorBrown,
-	constants.TileClosedYellow:      BlockClosedYellow,
-	constants.TileClosedOrange:      BlockClosedOrange,
-	constants.TileClosedGray:        BlockClosedGray,
-	constants.TileClosedCyan:        BlockClosedCyan,
-	constants.TileClosedBlue:        BlockClosedBlue,
-	constants.TileClosedGreen:       BlockClosedGreen,
-	constants.TileClosedPurple:      BlockClosedPurple,
-	constants.TileClosedBrown:       BlockClosedBrown,
-	constants.TileLockYellow:        BlockLockYellow,
-	constants.TileLockOrange:        BlockLockOrange,
-	constants.TileLockGray:          BlockLockGray,
-	constants.TileLockCyan:          BlockLockCyan,
-	constants.TileLockBlue:          BlockLockBlue,
-	constants.TileLockGreen:         BlockLockGreen,
-	constants.TileLockPurple:        BlockLockPurple,
-	constants.TileLockBrown:         BlockLockBrown,
-	constants.ItemGemYellow:         BlockGemYellow,
-	constants.ItemGemOrange:         BlockGemOrange,
-	constants.ItemGemGray:           BlockGemGray,
-	constants.ItemGemCyan:           BlockGemCyan,
-	constants.ItemGemBlue:           BlockGemBlue,
-	constants.ItemGemGreen:          BlockGemGreen,
-	constants.ItemGemPurple:         BlockGemPurple,
-	constants.ItemGemBrown:          BlockGemBrown,
-	constants.CharDemon:             BlockDemon,
-	constants.CharFly:               BlockFly,
-	constants.TileDemonRegen:        BlockDemonRegen,
-	constants.TileFlyRegen:          BlockFlyRegen,
-	constants.DoodadReeds:           BlockReeds,
-	constants.DoodadFlowers:         BlockFlowers,
-	constants.DoodadMoss:            BlockMoss,
-	constants.DoodadGrass:           BlockGrass,
-	constants.DoodadCattail:         BlockCattail,
-	constants.DoodadCactus1:         BlockCactus1,
-	constants.DoodadCactus2:         BlockCactus2,
-	constants.DoodadVine:            BlockVine,
-	constants.DoodadNest:            BlockNest,
-	constants.DoodadSkull:           BlockSkull,
-	constants.DoodadDots:            BlockDots,
-	constants.DoodadBoulder:         BlockBoulder,
-	constants.DoodadMush1:           BlockMush1,
-	constants.DoodadMush2:           BlockMush2,
-	constants.DoodadChain:           BlockChain,
-	constants.DoodadGear:            BlockGear,
-	constants.TileEmpty:             BlockEmpty,
-}
-
-func (b Block) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	switch b {
-	case BlockTurf:
-		buffer.WriteString(constants.TileTurf)
-	case BlockBedrock:
-		buffer.WriteString(constants.TileBedrock)
-	case BlockFall:
-		buffer.WriteString(constants.TileFall)
-	case BlockPhase:
-		buffer.WriteString(constants.TilePhase)
-	case BlockCracked:
-		buffer.WriteString(constants.TileCracked)
-	case BlockLadderTurf:
-		buffer.WriteString(constants.TileLadderTurf)
-	case BlockLadderCrackedTurf:
-		buffer.WriteString(constants.TileLadderCrackedTurf)
-	case BlockLadderExitTurf:
-		buffer.WriteString(constants.TileLadderExitTurf)
-	case BlockSpike:
-		buffer.WriteString(constants.TileSpike)
-	default:
-		buffer.WriteString(b.String())
-	}
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
-}
-
-func (b *Block) UnmarshalJSON(bts []byte) error {
-	var j string
-	err := json.Unmarshal(bts, &j)
-	if err != nil {
-		var ji int
-		err = json.Unmarshal(bts, &ji)
-		if err != nil {
-			var jb bool
-			err = json.Unmarshal(bts, &jb)
-			if err != nil {
-				return err
-			}
-			*b = toID[constants.TileLadderMiddle]
-		}
-		*b = Block(ji)
-	}
-	*b = toID[j]
-	return nil
-}
-
-//func (b *Block) UnmarshalJSON(bts []byte) error {
-//	var j string
-//	err := json.Unmarshal(bts, &j)
-//	if err != nil {
-//		return err
-//	}
-//	*b = toID[j]
-//	return nil
-//}
-
-type Tile struct {
-	Block        Block             `json:"tile"`
-	Metadata     TileMetadata      `json:"metadata"`
-	Flags        TileFlags         `json:"-"`
-	Coords       world.Coords      `json:"-"`
-	Object       *object.Object    `json:"-"`
-	Update       bool              `json:"-"`
-	Entity       *ecs.Entity       `json:"-"`
-	Mask         *ecs.Entity       `json:"-"`
-	Counter      int               `json:"-"`
-	Live         bool              `json:"-"`
-	AltBlock     int               `json:"alt"`
-	FloatingText *FloatingText     `json:"-"`
-	TextData     *FloatingTextData `json:"text,omitempty"`
 }
 
 func (t *Tile) Copy() *Tile {
@@ -490,6 +206,7 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
+			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
 			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
 }
@@ -502,6 +219,7 @@ func (t *Tile) IsNilOrSolid() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
+			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
 			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
 }
@@ -516,9 +234,11 @@ func (t *Tile) IsRunnable() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
+			t.Block == BlockClose ||
 			t.Block == BlockSpike))
 }
 
+// IsBlock used for tile connectivity
 func (t *Tile) IsBlock() bool {
 	return t == nil ||
 		((t.Block == BlockTurf ||
@@ -529,9 +249,10 @@ func (t *Tile) IsBlock() bool {
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockCracked ||
+			t.Block == BlockClose ||
 			t.Block == BlockSpike) &&
 			(t.Flags.Regen ||
-				!(t.Flags.Collapse && t.Counter > constants.CollapseCounter)))
+				!(t.Flags.Collapse && t.Counter > constants.CollapseCounter && !t.Flags.BareFangs)))
 }
 
 func (t *Tile) IsLadder() bool {
@@ -611,6 +332,7 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 type TileFlags struct {
 	Cracked     bool `json:"-"`
 	Collapse    bool `json:"-"`
+	BareFangs   bool `json:"-"`
 	Regen       bool `json:"-"`
 	PhaseChange bool `json:"-"`
 	LCracked    bool `json:"-"`
@@ -622,22 +344,25 @@ func DefaultFlags() TileFlags {
 }
 
 type TileMetadata struct {
-	Flipped     bool           `json:"flipped"`
-	EnemyCrack  bool           `json:"enemyCrack"`
-	Regenerate  bool           `json:"regenerate"`
-	RegenDelay  int            `json:"regenDelay"`
-	Timer       int            `json:"timer"`
-	BombCross   bool           `json:"bombCross"`
-	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles"`
-	Phase       int            `json:"phase"`
-	ShowCrack   bool           `json:"showCrack"`
-	Changed     bool           `json:"changed"`
+	Flipped     bool           `json:"flipped,omitempty"`
+	EnemyCrack  bool           `json:"enemyCrack,omitempty"`
+	Regenerate  bool           `json:"regenerate,omitempty"`
+	RegenDelay  int            `json:"regenDelay,omitempty"`
+	Timer       int            `json:"timer,omitempty"`
+	BombCross   bool           `json:"bombCross,omitempty"`
+	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles,omitempty"`
+	Phase       int            `json:"phase,omitempty"`
+	ShowCrack   bool           `json:"showCrack,omitempty"`
+	Changed     bool           `json:"-"`
+	ExitIndex   int            `json:"exitIndex,omitempty"`
+	Color       ItemColor      `json:"itemColor"`
 }
 
 func DefaultMetadata() TileMetadata {
 	return TileMetadata{
 		Regenerate: true,
 		Timer:      5,
+		ExitIndex:  -1,
 	}
 }
 
@@ -652,6 +377,8 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		LinkedTiles: nil,
 		Phase:       m.Phase,
 		ShowCrack:   m.ShowCrack,
+		ExitIndex:   m.ExitIndex,
+		Color:       m.Color,
 	}
 	for _, ln := range m.LinkedTiles {
 		cm.LinkedTiles = append(cm.LinkedTiles, ln)

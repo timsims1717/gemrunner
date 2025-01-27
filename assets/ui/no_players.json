@@ -23,7 +23,7 @@
       }
     },
     {
-      "key":"check_no_players",
+      "key":"confirm",
       "spriteKey":"check_btn_big",
       "spriteKey2":"check_btn_click_big",
       "batchKey":"ui",

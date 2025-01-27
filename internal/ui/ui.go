@@ -82,10 +82,10 @@ type ElementConstructor struct {
 	Color       pixel.RGBA           `json:"color,omitempty"`
 	Position    pixel.Vec            `json:"pos"`
 	CanFocus    bool                 `json:"canFocus,omitempty"`
-	Left        string               `json:"leftKey,omitempty"`
-	Right       string               `json:"rightKey,omitempty"`
-	Up          string               `json:"upKey,omitempty"`
-	Down        string               `json:"downKey,omitempty"`
+	Left        string               `json:"left,omitempty"`
+	Right       string               `json:"right,omitempty"`
+	Up          string               `json:"up,omitempty"`
+	Down        string               `json:"down,omitempty"`
 	ElementType ElementType          `json:"type"`
 	SubElements []ElementConstructor `json:"elements,omitempty"`
 	Anchor      pixel.Anchor         `json:"anchor,omitempty"`
@@ -103,6 +103,7 @@ type Element struct {
 	OnClick  func()
 	OnHold   func()
 	OnHover  func(bool)
+	OnFocus  func(bool)
 	Left     string
 	Right    string
 	Up       string
@@ -112,20 +113,18 @@ type Element struct {
 
 	Checked    bool
 	Value      string
-	Focused    bool
+	InFocus    bool
 	Text       *typeface.Text
 	CaretIndex int
 	CaretObj   *object.Object
 	InputType  InputType
 	MultiLine  bool
 
-	Border       *Border
-	BorderVP     *viewport.ViewPort
-	BorderObject *object.Object
-	BorderEntity *ecs.Entity
-	ViewPort     *viewport.ViewPort
-	Layer        int
-	Elements     []*Element
+	Border   *Border
+	ViewPort *viewport.ViewPort
+	Layer    int
+	Elements []*Element
+	Focused  string
 
 	Bar          *Element
 	ScrollUp     *Element
@@ -148,6 +147,11 @@ func (e *Element) Get(key string) *Element {
 	for _, e1 := range e.Elements {
 		if e1.Key == key {
 			return e1
+		}
+	}
+	for _, e2 := range e.Elements {
+		if se2 := e2.Get(key); se2 != nil {
+			return se2
 		}
 	}
 	return nil

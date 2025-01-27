@@ -8,8 +8,8 @@ require (
 	github.com/bytearena/ecs v1.0.0
 	github.com/faiface/pixel v0.10.0
 	github.com/pkg/errors v0.9.1
-	github.com/timsims1717/pixel-go-input v0.0.0-20240528203700-0f52dc92abe8
-	golang.org/x/image v0.16.0
+	github.com/timsims1717/pixel-go-input v0.0.0-20250107204717-a97c526e1087
+	golang.org/x/image v0.23.0
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 // indirect
 	github.com/go-gl/glfw v0.0.0-20221017161538-93cebf72946b // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a // indirect
-	github.com/go-gl/mathgl v1.1.0 // indirect
+	github.com/go-gl/mathgl v1.2.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gopxl/beep v1.4.1 // indirect
@@ -32,5 +32,5 @@ require (
 	github.com/jfreymuth/oggvorbis v1.0.5 // indirect
 	github.com/jfreymuth/vorbis v1.0.2 // indirect
 	golang.org/x/sys v0.12.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 )

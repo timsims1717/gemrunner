@@ -52,6 +52,9 @@ func LevelInit() {
 				case 5, 6, 7, 0:
 
 				}
+			case data.BlockClose:
+				tile.Flags.Collapse = true
+				tile.Counter = constants.CrackedCounter + 1
 			case data.BlockPlayer1, data.BlockPlayer2, data.BlockPlayer3, data.BlockPlayer4:
 				i := 0
 				if tile.Block == data.BlockPlayer2 {
@@ -61,80 +64,48 @@ func LevelInit() {
 				} else if tile.Block == data.BlockPlayer4 {
 					i = 3
 				}
-				tile.Block = data.BlockEmpty
 				PlayerCharacter(obj.Pos, i, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockDemon:
-				tile.Block = data.BlockEmpty
 				DemonCharacter(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockFly:
-				tile.Block = data.BlockEmpty
 				FlyCharacter(obj.Pos, tile)
-			case data.BlockGemYellow,
-				data.BlockGemOrange,
-				data.BlockGemGray,
-				data.BlockGemCyan,
-				data.BlockGemBlue,
-				data.BlockGemGreen,
-				data.BlockGemPurple,
-				data.BlockGemBrown:
-				key := tile.Block.String()
 				tile.Block = data.BlockEmpty
-				CreateGem(obj.Pos, key)
-			case data.BlockDoorYellow,
-				data.BlockDoorOrange,
-				data.BlockDoorGray,
-				data.BlockDoorCyan,
-				data.BlockDoorBlue,
-				data.BlockDoorGreen,
-				data.BlockDoorPurple,
-				data.BlockDoorBrown,
-				data.BlockClosedYellow,
-				data.BlockClosedOrange,
-				data.BlockClosedGray,
-				data.BlockClosedCyan,
-				data.BlockClosedBlue,
-				data.BlockClosedGreen,
-				data.BlockClosedPurple,
-				data.BlockClosedBrown,
-				data.BlockLockYellow,
-				data.BlockLockOrange,
-				data.BlockLockGray,
-				data.BlockLockCyan,
-				data.BlockLockBlue,
-				data.BlockLockGreen,
-				data.BlockLockPurple,
-				data.BlockLockBrown:
-				doorKey := tile.Block.String()
+			case data.BlockGem:
+				CreateGem(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
-				CreateDoor(obj.Pos, doorKey)
+			case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
+				CreateDoor(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
+			case data.BlockJumpBoots:
+				CreateJumpBoots(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockBox:
-				tile.Block = data.BlockEmpty
 				CreateBox(obj.Pos, tile)
-			case data.BlockKeyYellow,
-				data.BlockKeyOrange,
-				data.BlockKeyGray,
-				data.BlockKeyCyan,
-				data.BlockKeyBlue,
-				data.BlockKeyGreen,
-				data.BlockKeyPurple,
-				data.BlockKeyBrown:
-				keyKey := tile.Block.String()
 				tile.Block = data.BlockEmpty
-				CreateKey(obj.Pos, keyKey)
+			case data.BlockKey:
+				CreateKey(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockBomb:
-				key := tile.Block.String()
+				CreateBomb(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
-				CreateBomb(obj.Pos, key, tile.Metadata, tile.Coords)
 			case data.BlockBombLit:
-				key := tile.Block.String()
-				tile.Block = data.BlockEmpty
+				key := tile.Block.SpriteString()
 				CreateLitBomb(obj.Pos, key, tile.Metadata)
+				tile.Block = data.BlockEmpty
 			case data.BlockJetpack:
+				CreateJetpack(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
-				CreateJetpack(obj.Pos, tile.Metadata, tile.Coords)
 			case data.BlockDisguise:
+				CreateDisguise(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
-				CreateDisguise(obj.Pos, tile.Metadata, tile.Coords)
+			case data.BlockDrill:
+				CreateDrill(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
+			case data.BlockFlamethrower:
+				CreateFlamethrower(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockGear:
 				var a *reanimator.Anim
 				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {

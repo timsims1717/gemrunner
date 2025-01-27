@@ -38,7 +38,9 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
-			case data.Hit, data.Attack:
+			case data.Attack:
+				return "boom"
+			case data.Hit:
 				if ch.Flags.Crush {
 					return "crush"
 				} else if ch.Flags.Hit {

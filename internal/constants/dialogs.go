@@ -24,6 +24,7 @@ const (
 	DialogChangeWorld         = "change_world"
 	DialogAreYouSureDelete    = "are_you_sure_delete"
 	DialogPuzzleSettings      = "puzzle_settings"
+	DialogPuzzleSetSettings   = "puzzle_set_settings"
 	DialogCombineSets         = "combine_sets"
 	DialogRearrangePuzzleSet  = "rearrange_puzzle_set"
 
@@ -35,12 +36,15 @@ const (
 
 	DialogCrackedTiles = "cracked_tile_options"
 	DialogBomb         = "bomb_options"
-	DialogJetpack      = "jetpack_options"
+	DialogItemOptions  = "item_options"
 	DialogFloatingText = "floating_text"
-	DialogDisguise     = "disguise_options"
+	DialogDoors        = "door_options"
+	DialogPalette      = "palette_options"
 )
 
 var DialogKeys = []string{
+	DialogMainMenu,
+
 	DialogPlayer1Inv,
 	DialogPlayer2Inv,
 	DialogPlayer3Inv,
@@ -48,9 +52,15 @@ var DialogKeys = []string{
 
 	DialogPlayLocal,
 
+	DialogEditorPanelLeft,
+	DialogEditorOptionsRight,
+	DialogPuzzleSettings,
+	DialogPuzzleSetSettings,
+	DialogRearrangePuzzleSet,
 	DialogNoPlayersInPuzzle,
 
-	DialogJetpack,
+	DialogItemOptions,
 	DialogFloatingText,
-	DialogDisguise,
+	DialogDoors,
+	DialogPalette,
 }

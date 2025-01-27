@@ -20,9 +20,9 @@ func CustomizeWorldDialog() {
 	for _, e := range dialog.Elements {
 		ele := e
 		switch ele.Key {
-		case "confirm_change_world":
+		case "confirm":
 			ele.OnClick = ConfirmChangeWorld
-		case "cancel_change_world":
+		case "cancel":
 			ele.OnClick = DisposeDialog(constants.DialogChangeWorld)
 		case "custom_world_check":
 			ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {

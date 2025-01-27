@@ -1,3 +1,53 @@
+## 0.2.20250127
+
+### Game Features
+
+* Added the Jackhammer
+  * Dig down through bedrock
+* Added the Flamethrower
+  * Dig through up to two blocks in front of the player
+  * Kills enemies and players
+  * lights bombs
+  * Can change number of uses (0 means unlimited)
+* Added Closing Blocks
+  * When a player moves through the block, the block closes after a brief pause
+* Added Hideouts
+  * A player can hide in a hideout and can't be hurt or chased by enemies
+* Updated Demon pathfinding to use Lode Runner algorithm
+* Demons can now use bars
+* Changed Jumping to an item based ability (Jump Boots)
+* Changed Brown player to Orange
+* Added two shaders for world feel (Tab to cycle through them)
+  * Underwater
+  * Heat
+
+### Editor Features
+
+* Added a way to load Dialogs from JSON
+* Menuing with arrow keys added
+* Added Flamethrower options
+  * Combined Item options into one
+* Added palette tool
+  * Used to change the color of gems, keys, and doors
+  * Used to change which player can use/pickup gems, keys, tools, and doors
+  * Added player colors to all items
+* Added the timer value of items to the wrench display
+
+### Bug Fixes
+
+* Title dialog doesn't show when the title is empty
+* Title dialog goes away after testing a level
+* Bombs affected other bombs through bedrock
+* Inventory dialogs fixed
+* Cursor shows up when window isn't focused
+* Players don't drop off ladder if it is 1 above bottom of screen
+* Fly death animation missing when attacking player
+* Player's can no longer collect or pick up other player's gems/tools
+* Fixed the Floating Text Dialog
+  * Color selectors weren't working
+  * Leaving the input blank now removes the dialog
+  * Text wasn't showing when moving between puzzles after the first time
+
 ## 0.2.20241025
 
 ### Game Features
@@ -25,7 +75,7 @@
 * Added Combine Sets Dialog
 * Added a Puzzle Settings Dialog (incomplete)
 
-### Bugs
+### Bug Fixes
 
 * Selection and Undo/Redo didn't reflect Wire tool changes or Timer in Metadata
 * Enemies pushed each other too much, and also too little

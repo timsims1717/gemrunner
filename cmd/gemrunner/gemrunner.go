@@ -88,6 +88,7 @@ func run() {
 	debug.Build = constants.Build
 	debug.ShowText = false
 	debug.ShowDebug = false
+	debug.Verbose = true
 
 	object.ILock = true
 

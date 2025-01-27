@@ -32,19 +32,14 @@
   * When used, three second timer, then explode in same area as LR
 * Plus Bombs
   * When used, three second timer, then explode in a plus shape, 5 tiles wide and tall
-* Bear Trap
-  * When used, place down and set. Whenever another player or walking enemy steps there, kill them and disappear
 * Snare
   * When used, place down and set. Whenever another player of walking enemy steps there, trap them, if trapped character ever leaves, disappear
 * Light
   * Gives off extra light in dark levels 
   * When used, just sets it down
-* Anti Gravity Machine
-  * When placed, dynamic objects go up instead of down 
-  * No use action
 * Drill
   * When used, drill straight down through the floor
-* Bubble/Jetpack
+* Jetpack
   * When used, changes the player's method of travelling to flying
 
 # Puzzle Load Dialog Information

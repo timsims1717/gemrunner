@@ -99,7 +99,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
 	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		dKey := constants.DialogFloatingText
+		dKey := constants.DialogPalette
 		load.ReloadDialog(dKey)
 		systems.CustomizeEditorDialog(dKey)
 		systems.UpdateDialogView(ui.Dialogs[dKey])
@@ -158,8 +158,7 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	if data.CurrLevel == nil {
 		// draw border
 		data.BorderView.Canvas.Clear(constants.ColorBlack)
-		systems.BorderSystem(1)
-		img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
+		systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas)
 		img.Clear()
 		data.BorderView.Draw(win)
 		// draw puzzle

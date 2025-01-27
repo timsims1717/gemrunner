@@ -1,0 +1,205 @@
+{
+  "key":"door_options",
+  "width":14,
+  "height":12,
+  "elements":[
+    {
+      "key":"door_title",
+      "text":"Door Options",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-108,
+        "Y":84
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"cancel",
+      "spriteKey":"cancel_btn_big",
+      "spriteKey2":"cancel_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Cancel",
+      "pos":{
+        "X":100,
+        "Y":-60
+      },
+      "type":"button",
+      "left": "confirm",
+      "up": "rearrange_end"
+    },
+    {
+      "key":"confirm",
+      "spriteKey":"check_btn_big",
+      "spriteKey2":"check_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Confirm",
+      "pos":{
+        "X":80,
+        "Y":-60
+      },
+      "type":"button",
+      "right": "cancel",
+      "up": "rearrange_end",
+      "left": "rearrange_begin"
+    },
+    {
+      "key":"door_next",
+      "spriteKey":"next_tall",
+      "spriteKey2":"next_tall_click",
+      "batchKey":"ui",
+      "helpText":"Next Puzzle",
+      "pos":{
+        "X":97,
+        "Y":36
+      },
+      "type":"button",
+      "left": "door_prev",
+      "down": "door_end"
+    },
+    {
+      "key":"door_end",
+      "spriteKey":"rearrange_end",
+      "spriteKey2":"rearrange_end_click",
+      "batchKey":"ui",
+      "helpText":"Send Puzzle to End",
+      "pos":{
+        "X":97,
+        "Y":-28
+      },
+      "type":"button",
+      "up": "door_next",
+      "left": "door_begin",
+      "down": "confirm"
+    },
+    {
+      "key":"door_prev",
+      "spriteKey":"prev_tall",
+      "spriteKey2":"prev_tall_click",
+      "batchKey":"ui",
+      "helpText":"Previous Puzzle",
+      "pos":{
+        "X":-97,
+        "Y":36
+      },
+      "type":"button",
+      "right": "door_next",
+      "down": "door_begin"
+    },
+    {
+      "key":"door_begin",
+      "spriteKey":"rearrange_begin",
+      "spriteKey2":"rearrange_begin_click",
+      "batchKey":"ui",
+      "helpText":"Send Puzzle to Start",
+      "pos":{
+        "X":-97,
+        "Y":-28
+      },
+      "type":"button",
+      "up": "door_prev",
+      "right": "door_end",
+      "down": "confirm"
+    },
+    {
+      "key":"puzzle_set_view",
+      "width":176,
+      "height":96,
+      "helpText":"Puzzles",
+      "pos":{
+        "X":0,
+        "Y":4
+      },
+      "type":"container",
+      "elements":[
+        {
+          "key":"puzzle_num",
+          "text":"0001",
+          "color":{
+            "R":0.9607843137254902,
+            "G":0.9607843137254902,
+            "B":0.9607843137254902,
+            "A":1
+          },
+          "pos":{
+            "X":-11,
+            "Y":41
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"puzzle_name",
+          "text":"It's a name",
+          "color":{
+            "R":0.9607843137254902,
+            "G":0.9607843137254902,
+            "B":0.9607843137254902,
+            "A":1
+          },
+          "pos":{
+            "X":0,
+            "Y":-40
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"puzzle_center",
+          "width":112,
+          "height":64,
+          "pos":{
+            "X":0,
+            "Y":0
+          },
+          "type":"container"
+        },
+        {
+          "key":"puzzle_left",
+          "width":112,
+          "height":64,
+          "pos":{
+            "X":-128,
+            "Y":0
+          },
+          "type":"container"
+        },
+        {
+          "key":"puzzle_right",
+          "width":112,
+          "height":64,
+          "pos":{
+            "X":128,
+            "Y":0
+          },
+          "type":"container"
+        },
+        {
+          "key":"puzzle_float",
+          "width":112,
+          "height":64,
+          "pos":{
+            "X":-256,
+            "Y":0
+          },
+          "type":"container"
+        }
+      ]
+    }
+  ],
+  "default":"rearrange_next"
+}

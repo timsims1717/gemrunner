@@ -33,7 +33,8 @@ type Dialog struct {
 	OnClose      func()
 	OnCloseSpc   func()
 
-	Focused string
+	Focused *Element
+	Default string
 
 	Open   bool
 	Active bool
@@ -50,6 +51,7 @@ type DialogConstructor struct {
 	Pos      pixel.Vec            `json:"pos"`
 	Elements []ElementConstructor `json:"elements,omitempty"`
 	NoBorder bool                 `json:"noBorder,omitempty"`
+	Default  string               `json:"default"`
 }
 
 func NewDialog(dc *DialogConstructor) {
@@ -63,6 +65,7 @@ func NewDialog(dc *DialogConstructor) {
 		Pos:      dc.Pos,
 		ViewPort: vp,
 		NoBorder: dc.NoBorder,
+		Default:  dc.Default,
 	}
 
 	if !dc.NoBorder {
@@ -90,7 +93,10 @@ func NewDialog(dc *DialogConstructor) {
 
 	for _, element := range dc.Elements {
 		if element.Key == "" {
-			fmt.Println("WARNING: element constructor has no key")
+			fmt.Printf("WARNING: element constructor in dialog %s has no key\n", dc.Key)
+			continue
+		} else if dlg.Default == "" {
+			dlg.Default = element.Key
 		}
 		switch element.ElementType {
 		case ButtonElement:
@@ -129,55 +135,126 @@ func (d *Dialog) Get(key string) *Element {
 			return e
 		}
 	}
+	for _, e := range d.Elements {
+		if se := e.Get(key); se != nil {
+			return se
+		}
+	}
 	return nil
 }
 
 func (d *Dialog) SetFocus(e *Element, isFocused bool) {
-	if !isFocused {
-		e.Focused = false
-		return
+	eKey := ""
+	if e != nil {
+		e.InFocus = isFocused
+		if !isFocused {
+			d.Focused = nil
+		} else {
+			d.Focused = e
+			eKey = e.Key
+		}
 	}
 	for _, ele := range d.Elements {
-		ele.setFocus(e.Key)
+		ele.setFocus(eKey)
 	}
 }
 
 func (e *Element) setFocus(key string) {
-	if e.Key == key {
-		e.Focused = true
-	} else {
-		e.Focused = false
-	}
+	focused := e.Key == key
 	switch e.ElementType {
-	case ContainerElement:
-		for _, ele := range e.Elements {
-			ele.setFocus(key)
-		}
-	case ScrollElement:
-		for _, ele := range e.Elements {
-			ele.setFocus(key)
+	case ButtonElement, CheckboxElement:
+		if e.Border != nil {
+			e.Border.Hidden = !focused
 		}
 	}
+	for _, ele := range e.Elements {
+		ele.setFocus(key)
+	}
+	e.InFocus = focused
+	if e.OnFocus != nil {
+		e.OnFocus(focused)
+	}
+}
+
+func (d *Dialog) DefaultFocus() bool {
+	if d.Focused == nil {
+		if d.Default == "" {
+			return true
+		}
+		d.SetFocus(d.Get(d.Default), true)
+		return true
+	}
+	return false
 }
 
 func (d *Dialog) ActionFocus() {
+	if d.DefaultFocus() {
+		return
+	}
+	if d.Focused.OnClick != nil {
+		d.Focused.OnClick()
+		return
+	}
+	switch d.Focused.ElementType {
+	case CheckboxElement:
+		SetChecked(d.Focused, !d.Focused.Checked)
+	case ContainerElement:
 
+	case InputElement:
+
+	case MultiLineInputElement:
+
+	case ScrollElement:
+
+	}
 }
 
 func (d *Dialog) LeftFocus() {
-
+	if d.DefaultFocus() {
+		return
+	}
+	if d.Focused.Left == "" {
+		return
+	}
+	if e := d.Get(d.Focused.Left); e != nil {
+		d.SetFocus(e, true)
+	}
 }
 
 func (d *Dialog) RightFocus() {
-
+	if d.DefaultFocus() {
+		return
+	}
+	if d.Focused.Right == "" {
+		return
+	}
+	if e := d.Get(d.Focused.Right); e != nil {
+		d.SetFocus(e, true)
+	}
 }
 
 func (d *Dialog) UpFocus() {
-
+	if d.DefaultFocus() {
+		return
+	}
+	if d.Focused.Up == "" {
+		return
+	}
+	if e := d.Get(d.Focused.Up); e != nil {
+		d.SetFocus(e, true)
+	}
 }
 
 func (d *Dialog) DownFocus() {
-
+	if d.DefaultFocus() {
+		return
+	}
+	if d.Focused.Down == "" {
+		return
+	}
+	if e := d.Get(d.Focused.Down); e != nil {
+		d.SetFocus(e, true)
+	}
 }
 
 func Dispose(key string) {
@@ -199,6 +276,5 @@ func DisposeSubElements(elements []*Element) {
 	for _, e := range elements {
 		DisposeSubElements(e.Elements)
 		myecs.Manager.DisposeEntity(e.Entity)
-		myecs.Manager.DisposeEntity(e.BorderEntity)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/pkg/debug"
 	"github.com/pkg/errors"
 	"os"
 	"sync"
@@ -29,7 +30,9 @@ func LoadSaveGame(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	fmt.Printf("INFO: loaded session from %s\n", svgPath)
+	if debug.Verbose {
+		fmt.Printf("INFO: loaded session from %s\n", svgPath)
+	}
 	return nil
 }
 
@@ -57,5 +60,7 @@ func SaveSaveGame() {
 		fmt.Println("ERROR: could not save session:", err)
 		return
 	}
-	fmt.Printf("INFO: saved session to %s\n", svgPath)
+	if debug.Verbose {
+		fmt.Printf("INFO: saved session to %s\n", svgPath)
+	}
 }

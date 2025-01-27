@@ -8,6 +8,7 @@ import (
 var (
 	ShowDebug = false
 	ShowText  = false
+	Verbose   = false
 	winV      *pixel.Vec
 )
 

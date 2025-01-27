@@ -142,17 +142,19 @@ func OpenAddPlayers() {
 	ui.OpenDialogInStack(constants.DialogAddPlayers)
 }
 
-func PopulateCustomPuzzleList(ele *ui.Element) {
+func PopulateCustomPuzzleList(pzlList *ui.Element) {
 	localPlay := ui.Dialogs[constants.DialogPlayLocal]
-	ele.Object.Hidden = false
+	pzlList.Object.Hidden = false
 	totalElements := len(data.PuzzleSetSortedList) * 2
 	totalPuzzles := len(data.PuzzleSetSortedList)
+	includeTop := 0.
+	includeBot := 0.
 	for i := 0; i < totalPuzzles; i++ {
 		pzIndex := i
 		ctIndex := pzIndex * 2
 		favIndex := ctIndex + 1
 		y := float64(pzIndex)*-34 + 15
-		if len(ele.Elements) <= ctIndex {
+		if len(pzlList.Elements) <= ctIndex {
 			entry := ui.ElementConstructor{
 				Key:         fmt.Sprintf(load.PuzzleListEntry.Key, pzIndex),
 				Width:       load.PuzzleListEntry.Width,
@@ -210,33 +212,52 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 			}
 			entry.SubElements = append(entry.SubElements, ni)
 			fsi := ui.ElementConstructor{
-				Key:         load.FavoriteItem.Key,
+				Key:         fmt.Sprintf(load.FavoriteItem.Key, pzIndex),
 				SprKey:      load.FavoriteItem.SprKey,
 				SprKey2:     load.FavoriteItem.SprKey2,
 				Batch:       load.FavoriteItem.Batch,
 				Position:    pixel.V(load.FavoriteItem.Position.X, y),
 				ElementType: load.FavoriteItem.ElementType,
 			}
-			fav := ui.CreateCheckboxElement(fsi, localPlay, ele.ViewPort)
-			ct := ui.CreateContainer(entry, localPlay, ele.ViewPort)
-			ele.Elements = append(ele.Elements, ct)
-			ele.Elements = append(ele.Elements, fav)
+			entry.Left = fsi.Key
+			if pzIndex == 0 {
+				entry.Up = "play_custom_tab"
+				fsi.Up = "play_custom_tab"
+			} else {
+				entry.Up = fmt.Sprintf(load.PuzzleListEntry.Key, pzIndex-1)
+				fsi.Up = fmt.Sprintf(load.FavoriteItem.Key, pzIndex-1)
+			}
+			if pzIndex == len(data.PuzzleSetSortedList)-1 {
+				entry.Down = "cancel"
+				fsi.Down = "cancel"
+			} else {
+				entry.Down = fmt.Sprintf(load.PuzzleListEntry.Key, pzIndex+1)
+				fsi.Down = fmt.Sprintf(load.FavoriteItem.Key, pzIndex+1)
+			}
+			fsi.Right = entry.Key
+			fav := ui.CreateCheckboxElement(fsi, localPlay, pzlList.ViewPort)
+			ct := ui.CreateContainer(entry, localPlay, pzlList.ViewPort)
+			pzlList.Elements = append(pzlList.Elements, ct)
+			pzlList.Elements = append(pzlList.Elements, fav)
 		}
-		ct := ele.Elements[ctIndex]
-		fav := ele.Elements[favIndex]
+		ct := pzlList.Elements[ctIndex]
+		fav := pzlList.Elements[favIndex]
 		pz := data.PuzzleSetSortedList[pzIndex]
 		ui.SetChecked(fav, pz.Favorite)
-		fav.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ele.ViewPort, func(hvc *data.HoverClick) {
+		fav.OnClick = func() {
+			ui.SetChecked(fav, !fav.Checked)
+			if fav.Checked {
+				data.FavoritesList = append(data.FavoritesList, pz.UUID.String())
+			} else {
+				data.FavoritesList = util.RemoveStrUO(pz.UUID.String(), data.FavoritesList)
+			}
+			go content.SaveFavoritesFile()
+		}
+		fav.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, pzlList.ViewPort, func(hvc *data.HoverClick) {
 			if localPlay.Open && localPlay.Active {
 				click := hvc.Input.Get("click")
 				if hvc.Hover && click.JustPressed() {
-					ui.SetChecked(fav, !fav.Checked)
-					if fav.Checked {
-						data.FavoritesList = append(data.FavoritesList, pz.UUID.String())
-					} else {
-						data.FavoritesList = util.RemoveStrUO(pz.UUID.String(), data.FavoritesList)
-					}
-					go content.SaveFavoritesFile()
+					fav.OnClick()
 					click.Consume()
 				}
 			}
@@ -254,47 +275,60 @@ func PopulateCustomPuzzleList(ele *ui.Element) {
 				cEle.Text.SetText(fmt.Sprintf("%d %d", pz.NumPlayers, pz.NumPuzzles))
 			}
 		}
-		ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ele.ViewPort, func(hvc *data.HoverClick) {
-			if localPlay.Open && localPlay.Active {
-				click := hvc.Input.Get("click")
-				if hvc.Hover && click.JustPressed() {
-					if data.SelectedPuzzleIndex != pzIndex {
-						data.SelectedPuzzleIndex = pzIndex
-						for i2, ie := range ele.Elements {
-							ih := i2 / 2
-							if ie.ElementType == ui.ContainerElement {
-								for _, ce2 := range ie.Elements {
-									switch ce2.Key {
-									case "puzzle_title_shadow":
-										ce2.Text.Obj.Hidden = ih != data.SelectedPuzzleIndex
-									}
+		ct.OnClick = func() {
+			// todo: if there is a game to continue, switch to the continue button instead
+			localPlay.SetFocus(localPlay.Get("custom_new_game"), true)
+		}
+		ct.OnFocus = func(focused bool) {
+			if focused {
+				if data.SelectedPuzzleIndex != pzIndex {
+					data.SelectedPuzzleIndex = pzIndex
+					for i2, ie := range pzlList.Elements {
+						ih := i2 / 2
+						if ie.ElementType == ui.ContainerElement {
+							for _, ce2 := range ie.Elements {
+								switch ce2.Key {
+								case "puzzle_title_shadow":
+									ce2.Text.Obj.Hidden = ih != data.SelectedPuzzleIndex
 								}
 							}
 						}
-						click.Consume()
 					}
+				}
+				ui.MoveScrollToInclude(pzlList, y+ct.Object.Rect.H()*0.5, y-ct.Object.Rect.H()*0.5)
+			}
+		}
+		ct.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, pzlList.ViewPort, func(hvc *data.HoverClick) {
+			if localPlay.Open && localPlay.Active {
+				click := hvc.Input.Get("click")
+				if hvc.Hover && click.JustPressed() {
+					ct.OnFocus(true)
+					click.Consume()
 				}
 			}
 		}))
+		if pzIndex == data.SelectedPuzzleIndex {
+			includeTop = y + ct.Object.Rect.H()*0.5
+			includeBot = y - ct.Object.Rect.H()*0.5
+		}
 	}
-	if len(ele.Elements) > totalElements {
-		for i := len(ele.Elements) - 1; i >= totalElements; i-- {
-			e2 := ele.Elements[i]
+	if len(pzlList.Elements) > totalElements {
+		for i := len(pzlList.Elements) - 1; i >= totalElements; i-- {
+			e2 := pzlList.Elements[i]
 			if e2.ElementType == ui.ContainerElement {
 				for _, ctE := range e2.Elements {
 					myecs.Manager.DisposeEntity(ctE.Entity)
-					myecs.Manager.DisposeEntity(ctE.BorderEntity)
 				}
 			}
 			myecs.Manager.DisposeEntity(e2.Entity)
-			myecs.Manager.DisposeEntity(e2.BorderEntity)
 		}
 		if totalElements > 0 {
-			ele.Elements = ele.Elements[:totalElements]
+			pzlList.Elements = pzlList.Elements[:totalElements]
 		} else {
-			ele.Elements = []*ui.Element{}
+			pzlList.Elements = []*ui.Element{}
 		}
 	}
-	ui.UpdateScrollBounds(ele)
-	ui.MoveToScrollTop(ele)
+
+	ui.UpdateScrollBounds(pzlList)
+	ui.MoveScrollToInclude(pzlList, includeTop, includeBot)
 }

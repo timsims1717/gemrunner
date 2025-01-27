@@ -52,22 +52,22 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
 		ch.Control = controllers.NewPlayerInput(data.P1Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player1", true))
-		ch.Color = constants.StrColorBlue
+		ch.Color = data.PlayerBlue
 	case 1:
 		ch.Control = controllers.NewPlayerInput(data.P2Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player2", true))
-		ch.Color = constants.StrColorGreen
+		ch.Color = data.PlayerGreen
 	case 2:
 		ch.Control = controllers.NewPlayerInput(data.P3Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player3", true))
-		ch.Color = constants.StrColorPurple
+		ch.Color = data.PlayerPurple
 	case 3:
 		ch.Control = controllers.NewPlayerInput(data.P4Input, e)
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player4", true))
-		ch.Color = constants.StrColorBrown
+		ch.Color = data.PlayerOrange
 	}
 	data.CurrLevel.Players[p] = ch
 	data.CurrLevel.PControls[p] = ch.Control
@@ -107,6 +107,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if p < 0 ||
 		p >= constants.MaxPlayers ||
 		ch.Flags.Disguised ||
+		ch.State == data.Hiding ||
 		ch.State == data.Hit ||
 		ch.State == data.Dead {
 		return

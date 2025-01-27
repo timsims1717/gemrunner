@@ -98,7 +98,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 
 func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPos pixel.Vec) {
 	// for up, we just make sure they don't enter a solid tile from below
-	if ch.Flags.Thrown || ch.Flags.LongJump {
+	if ch.Flags.Thrown || ch.Flags.LongJump || ch.Flags.ItemAction == data.Drilling {
 		return
 	}
 	if chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {

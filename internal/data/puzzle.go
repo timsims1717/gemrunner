@@ -64,6 +64,7 @@ type Level struct {
 	Start     bool
 	Failed    bool
 	Complete  bool
+	ExitIndex int
 	DoorsOpen bool
 
 	FakePlayer        *Dynamic

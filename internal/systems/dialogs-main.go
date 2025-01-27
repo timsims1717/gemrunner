@@ -14,7 +14,7 @@ import (
 )
 
 func MainDialogs(win *pixelgl.Window) {
-	ui.NewDialog(load.MainMenuConstructor)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogMainMenu])
 	ui.NewDialog(load.AddPlayersConstructor)
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayLocal])
 	customizeMainDialogs(win)
@@ -34,6 +34,24 @@ func DisposeMainDialogs() {
 func customizeMainDialogs(win *pixelgl.Window) {
 	for key := range ui.Dialogs {
 		dialog := ui.Dialogs[key]
+		switch key {
+		case constants.DialogPlayLocal:
+			pzlList := dialog.Get("custom_puzzle_list")
+			pzlList.OnFocus = func(focused bool) {
+				if focused {
+					if len(pzlList.Elements) == 0 {
+						return
+					}
+					pzIndex := data.SelectedPuzzleIndex
+					ctIndex := pzIndex * 2
+					if len(pzlList.Elements) < ctIndex {
+						pzIndex = 0
+						ctIndex = 0
+					}
+					dialog.SetFocus(pzlList.Elements[ctIndex], true)
+				}
+			}
+		}
 		for _, e := range dialog.Elements {
 			ele := e
 			if ele.ElementType == ui.ButtonElement {
@@ -44,8 +62,11 @@ func customizeMainDialogs(win *pixelgl.Window) {
 					ele.OnClick = StartEditor
 				case "quit_btn":
 					ele.OnClick = QuitGame(win)
-				case "confirm_add_players":
-					ele.OnClick = ConfirmAddPlayers
+				case "confirm":
+					switch key {
+					case constants.DialogAddPlayers:
+						ele.OnClick = ConfirmAddPlayers
+					}
 				default:
 					switch dialog.Key {
 					default:
@@ -77,34 +98,37 @@ func customizeMainDialogs(win *pixelgl.Window) {
 							ce.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
 						}
 					}
+					ele.OnClick = func() {
+						for _, dle := range dialog.Elements {
+							switch dle.Key {
+							case "play_main_tab", "play_custom_tab":
+								if dle.ElementType == ui.ContainerElement {
+									if ele.Key == dle.Key {
+										dle.Border.Style = ui.ThinBorderWhite
+									} else {
+										dle.Border.Style = ui.ThinBorderBlue
+									}
+									for _, txt1 := range dle.Elements {
+										if (ele.Key == "play_main_tab" && txt1.Key == "main_tab_text_shadow") ||
+											(ele.Key == "play_custom_tab" && txt1.Key == "custom_tab_text_shadow") {
+											txt1.Text.Show()
+										} else if txt1.Key == "main_tab_text_shadow" || txt1.Key == "custom_tab_text_shadow" {
+											txt1.Text.Hide()
+										}
+									}
+								}
+							case "main_tab_display":
+								dle.Object.Hidden = ele.Key == "play_custom_tab"
+							case "custom_tab_display":
+								dle.Object.Hidden = ele.Key == "play_main_tab"
+							}
+						}
+					}
 					ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 						if dialog.Open && dialog.Active {
 							click := hvc.Input.Get("click")
 							if hvc.Hover && click.JustPressed() {
-								for _, dle := range dialog.Elements {
-									switch dle.Key {
-									case "play_main_tab", "play_custom_tab":
-										if dle.ElementType == ui.ContainerElement {
-											if ele.Key == dle.Key {
-												dle.Border.Style = ui.ThinBorderWhite
-											} else {
-												dle.Border.Style = ui.ThinBorderBlue
-											}
-											for _, txt1 := range dle.Elements {
-												if (ele.Key == "play_main_tab" && txt1.Key == "main_tab_text_shadow") ||
-													(ele.Key == "play_custom_tab" && txt1.Key == "custom_tab_text_shadow") {
-													txt1.Text.Show()
-												} else if txt1.Key == "main_tab_text_shadow" || txt1.Key == "custom_tab_text_shadow" {
-													txt1.Text.Hide()
-												}
-											}
-										}
-									case "main_tab_display":
-										dle.Object.Hidden = ele.Key == "play_custom_tab"
-									case "custom_tab_display":
-										dle.Object.Hidden = ele.Key == "play_main_tab"
-									}
-								}
+								ele.OnClick()
 								click.Consume()
 							}
 						}

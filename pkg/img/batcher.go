@@ -2,6 +2,7 @@ package img
 
 import (
 	"fmt"
+	"gemrunner/pkg/debug"
 	"github.com/gopxl/pixel"
 	"image/color"
 )
@@ -84,7 +85,7 @@ func (b *Batcher) Batch() *pixel.Batch {
 func (b *Batcher) DrawSprite(key string, mat pixel.Matrix) {
 	if spr, ok := b.Sprites[key]; ok {
 		spr.Draw(b.batch, mat)
-	} else {
+	} else if debug.Verbose {
 		fmt.Printf("couldn't draw sprite '%s' with batch %s\n", key, b.Key)
 	}
 }
@@ -92,7 +93,7 @@ func (b *Batcher) DrawSprite(key string, mat pixel.Matrix) {
 func (b *Batcher) DrawSpriteColor(key string, mat pixel.Matrix, mask color.Color) {
 	if spr, ok := b.Sprites[key]; ok {
 		spr.DrawColorMask(b.batch, mat, mask)
-	} else {
+	} else if debug.Verbose {
 		fmt.Printf("couldn't draw sprite '%s' with batch %s\n", key, b.Key)
 	}
 }

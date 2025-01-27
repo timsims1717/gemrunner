@@ -2,6 +2,7 @@ package sfx
 
 import (
 	"fmt"
+	"gemrunner/pkg/debug"
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/effects"
 	"github.com/gopxl/beep/speaker"
@@ -98,7 +99,9 @@ func (p *musicPlayer) loadTrackInner(set *MusicStream) error {
 		}
 		set.paused = false
 		set.interV = nil
-		fmt.Printf("playing track %s\n", set.next)
+		if debug.Verbose {
+			fmt.Printf("playing track %s\n", set.next)
+		}
 		set.curr = set.next
 		if set.mode != Repeat {
 			set.next = ""

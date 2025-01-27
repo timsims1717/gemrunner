@@ -29,10 +29,6 @@ func CharacterActionSystem() {
 				if ch.Flags.Frame {
 					ch.Flags.Frame = false
 					ch.Actions = data.NewAction()
-					if ch.Flags.JumpBuff > 0 {
-						ch.Actions.Jump = true
-						ch.Flags.JumpBuff--
-					}
 					if ch.Flags.PickUpBuff > 0 {
 						ch.Actions.PickUp = true
 						ch.Flags.PickUpBuff--
@@ -50,24 +46,20 @@ func CharacterActionSystem() {
 						ch.Flags.DigLeftBuff--
 					}
 				}
-				if actions.Direction != data.None {
+				if actions.Direction != data.NoDirection {
 					ch.Actions.Direction = actions.Direction
 				}
-				if actions.PrevDirection != data.None {
+				if actions.PrevDirection != data.NoDirection {
 					ch.Actions.PrevDirection = actions.PrevDirection
 				}
-				ch.Actions.Jump = ch.Actions.Jump || actions.Jump
 				ch.Actions.PickUp = ch.Actions.PickUp || actions.PickUp
 				ch.Actions.Action = ch.Actions.Action || actions.Action
 				ch.Actions.DigLeft = ch.Actions.DigLeft || actions.DigLeft
 				ch.Actions.DigRight = ch.Actions.DigRight || actions.DigRight
-				if actions.Jump {
-					ch.Flags.JumpBuff = constants.ButtonBuffer
-				}
 				if actions.PickUp {
 					ch.Flags.PickUpBuff = constants.ButtonBuffer
 				}
-				if actions.Action {
+				if actions.Action && ch.State != data.DoingAction {
 					ch.Flags.ActionBuff = constants.ButtonBuffer
 				}
 				if actions.DigLeft {
@@ -79,10 +71,7 @@ func CharacterActionSystem() {
 				if ch.Player > -1 {
 					debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
 					debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
-					j, p, a, l, r := "-", "-", "-", "-", "-"
-					if ch.Actions.Jump {
-						j = "J"
-					}
+					p, a, l, r := "-", "-", "-", "-"
 					if ch.Actions.PickUp {
 						p = "P"
 					}
@@ -95,7 +84,7 @@ func CharacterActionSystem() {
 					if ch.Actions.DigRight {
 						r = ">"
 					}
-					debug.AddText(fmt.Sprintf("%s|%s|%s|%s|%s", j, p, a, l, r))
+					debug.AddText(fmt.Sprintf("%s|%s|%s|%s", p, a, l, r))
 				}
 
 				if reanimator.FrameSwitch {
@@ -130,12 +119,12 @@ func CharacterActionSystem() {
 
 func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	ch.LastTile = tile
-	if tile != nil &&
-		ch.Actions.Jump { // jump time
-		if jump(ch, tile) {
-			return
-		}
-	}
+	//if tile != nil &&
+	//	ch.Actions.Jump { // jump time
+	//	if jump(ch, tile) {
+	//		return
+	//	}
+	//}
 	if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
 		ch.Object.Pos.X -= ch.Vars.WalkSpeed
 		ch.Object.Flip = true
@@ -145,46 +134,46 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	}
 }
 
-func jump(ch *data.Dynamic, tile *data.Tile) bool {
-	left := data.CurrLevel.Tiles.Get(tile.Coords.X-1, tile.Coords.Y)
-	right := data.CurrLevel.Tiles.Get(tile.Coords.X+1, tile.Coords.Y)
-	//if ch.Flags.Ceiling &&
-	//	((ch.Actions.Left() && left.IsSolid()) ||
-	//		(ch.Actions.Right() && right.IsSolid())) {
-	//	return false
-	//}
-	ch.Flags.JumpBuff = 0
-	// High Jump if:
-	//  there is no ceiling here
-	//  the character is not going left or right
-	//  or they are going left/right and there is a wall left/right
-	//  or they are going left/right and there is a wall up left or up right
-	// Otherwise, it's a long jump
-	if !ch.Flags.Ceiling &&
-		((!ch.Actions.Left() && !ch.Actions.Right()) ||
-			(ch.Actions.Left() && left.IsSolid()) ||
-			(ch.Actions.Right() && right.IsSolid())) {
-		ch.Flags.HighJump = true
-	} else if (ch.Actions.Left() && !left.IsSolid()) ||
-		(ch.Actions.Right() && !right.IsSolid()) {
-		ch.Flags.LongJump = true
-	} else {
-		return false
-	}
-	// for both kinds of jumps
-	ch.ACounter = 0
-	if ch.Actions.Left() {
-		ch.Flags.JumpL = true
-		ch.Object.Flip = true
-	} else if ch.Actions.Right() {
-		ch.Flags.JumpR = true
-		ch.Object.Flip = false
-	} else {
-		ch.Flags.JumpL = false
-		ch.Flags.JumpR = false
-	}
-	return true
-}
+//func jump(ch *data.Dynamic, tile *data.Tile) bool {
+//	left := data.CurrLevel.Tiles.Get(tile.Coords.X-1, tile.Coords.Y)
+//	right := data.CurrLevel.Tiles.Get(tile.Coords.X+1, tile.Coords.Y)
+//	//if ch.Flags.Ceiling &&
+//	//	((ch.Actions.Left() && left.IsSolid()) ||
+//	//		(ch.Actions.Right() && right.IsSolid())) {
+//	//	return false
+//	//}
+//	ch.Flags.JumpBuff = 0
+//	// High Jump if:
+//	//  there is no ceiling here
+//	//  the character is not going left or right
+//	//  or they are going left/right and there is a wall left/right
+//	//  or they are going left/right and there is a wall up left or up right
+//	// Otherwise, it's a long jump
+//	if !ch.Flags.Ceiling &&
+//		((!ch.Actions.Left() && !ch.Actions.Right()) ||
+//			(ch.Actions.Left() && left.IsSolid()) ||
+//			(ch.Actions.Right() && right.IsSolid())) {
+//		ch.Flags.HighJump = true
+//	} else if (ch.Actions.Left() && !left.IsSolid()) ||
+//		(ch.Actions.Right() && !right.IsSolid()) {
+//		ch.Flags.LongJump = true
+//	} else {
+//		return false
+//	}
+//	// for both kinds of jumps
+//	ch.ACounter = 0
+//	if ch.Actions.Left() {
+//		ch.Flags.JumpL = true
+//		ch.Object.Flip = true
+//	} else if ch.Actions.Right() {
+//		ch.Flags.JumpR = true
+//		ch.Object.Flip = false
+//	} else {
+//		ch.Flags.JumpL = false
+//		ch.Flags.JumpR = false
+//	}
+//	return true
+//}
 
 func onLadder(ch *data.Dynamic, tile, below *data.Tile) {
 	ch.LastTile = tile
@@ -327,17 +316,17 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 func flying(ch *data.Dynamic, tile *data.Tile) {
 	if ch.Actions.Direction == data.Left { // fly left
 		ch.Object.Pos.X -= ch.Vars.WalkSpeed
-		ch.Object.Pos.Y = tile.Object.Pos.Y
+		//ch.Object.Pos.Y = tile.Object.Pos.Y
 		ch.Object.Flip = true
 	} else if ch.Actions.Direction == data.Right { // fly right
 		ch.Object.Pos.X += ch.Vars.WalkSpeed
-		ch.Object.Pos.Y = tile.Object.Pos.Y
+		//ch.Object.Pos.Y = tile.Object.Pos.Y
 		ch.Object.Flip = false
 	} else if ch.Actions.Direction == data.Up { // fly up
 		ch.Object.Pos.Y += ch.Vars.WalkSpeed
-		ch.Object.Pos.X = tile.Object.Pos.X
+		//ch.Object.Pos.X = tile.Object.Pos.X
 	} else if ch.Actions.Direction == data.Down { // fly down
 		ch.Object.Pos.Y -= ch.Vars.WalkSpeed
-		ch.Object.Pos.X = tile.Object.Pos.X
+		//ch.Object.Pos.X = tile.Object.Pos.X
 	}
 }

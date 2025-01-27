@@ -1184,6 +1184,134 @@
       "w": 16
     },
     {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 608,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 624,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 640,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 656,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 672,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 688,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 704,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 720,
+      "y": 16,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 608,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 624,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 640,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 656,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 672,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 688,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 704,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_mask",
+      "anim": true,
+      "x": 720,
+      "y": 32,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "phase_1_mask",
       "anim": true,
       "x": 480,
@@ -1227,6 +1355,86 @@
       "key": "phase_1_mask",
       "anim": true,
       "x": 560,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bare_fangs_mask",
+      "anim": true,
+      "x": 576,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bare_fangs_mask",
+      "anim": true,
+      "x": 592,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bare_fangs_mask",
+      "anim": true,
+      "x": 608,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 624,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 640,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 656,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 672,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 688,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 704,
+      "y": 0,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs_mask",
+      "anim": true,
+      "x": 720,
       "y": 0,
       "h": 16,
       "w": 16
@@ -1427,6 +1635,13 @@
     {
       "key": "cracked",
       "x": 528,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "close_fangs",
+      "x": 544,
       "y": 80,
       "h": 16,
       "w": 16
@@ -1647,6 +1862,13 @@
     },
 
     {
+      "key": "jump_boots",
+      "x": 560,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "bomb",
       "x": 560,
       "y": 256,
@@ -1805,6 +2027,97 @@
       "w": 16
     },
 
+    {
+      "key": "flamethrower",
+      "anim": true,
+      "x": 464,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower",
+      "anim": true,
+      "x": 480,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 640,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 656,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 672,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 688,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 704,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 720,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_regen",
+      "anim": true,
+      "x": 736,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+
+
+    {
+      "key": "drill",
+      "anim": true,
+      "x": 496,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "hideout",
+      "anim": true,
+      "x": 544,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
     {
       "key": "jetpack",
       "anim": true,
@@ -1980,7 +2293,7 @@
 
 
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 384,
       "y": 192,
@@ -1988,7 +2301,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 400,
       "y": 192,
@@ -1996,7 +2309,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 416,
       "y": 192,
@@ -2004,7 +2317,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 432,
       "y": 192,
@@ -2012,7 +2325,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 384,
       "y": 176,
@@ -2020,7 +2333,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 400,
       "y": 176,
@@ -2028,7 +2341,7 @@
       "w": 16
     },
     {
-      "key": "door_yellow_open",
+      "key": "door_visible_yellow",
       "anim": true,
       "x": 416,
       "y": 176,
@@ -2036,14 +2349,14 @@
       "w": 16
     },
     {
-      "key": "door_yellow",
+      "key": "door_hidden_yellow",
       "x": 432,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_yellow",
+      "key": "door_locked_yellow",
       "x": 384,
       "y": 144,
       "h": 16,
@@ -2057,7 +2370,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 384,
       "y": 160,
@@ -2065,7 +2378,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 400,
       "y": 160,
@@ -2073,7 +2386,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 416,
       "y": 160,
@@ -2081,7 +2394,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 432,
       "y": 160 ,
@@ -2089,7 +2402,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 384,
       "y": 144,
@@ -2097,7 +2410,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 400,
       "y": 144,
@@ -2105,7 +2418,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 416,
       "y": 144,
@@ -2113,7 +2426,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 432,
       "y": 144,
@@ -2121,7 +2434,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 384,
       "y": 128,
@@ -2129,7 +2442,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 400,
       "y": 128,
@@ -2137,7 +2450,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow_open",
+      "key": "door_unlock_yellow",
       "anim": true,
       "x": 416,
       "y": 128,
@@ -2145,7 +2458,7 @@
       "w": 16
     },
     {
-      "key": "unlock_yellow",
+      "key": "door_unlocked_yellow",
       "x": 432,
       "y": 128,
       "h": 16,
@@ -2155,7 +2468,7 @@
 
 
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 448,
       "y": 192,
@@ -2163,7 +2476,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 464,
       "y": 192,
@@ -2171,7 +2484,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 480,
       "y": 192,
@@ -2179,7 +2492,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 496,
       "y": 192,
@@ -2187,7 +2500,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 448,
       "y": 176,
@@ -2195,7 +2508,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 464,
       "y": 176,
@@ -2203,7 +2516,7 @@
       "w": 16
     },
     {
-      "key": "door_orange_open",
+      "key": "door_visible_brown",
       "anim": true,
       "x": 480,
       "y": 176,
@@ -2211,28 +2524,28 @@
       "w": 16
     },
     {
-      "key": "door_orange",
+      "key": "door_hidden_brown",
       "x": 496,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_orange",
+      "key": "door_locked_brown",
       "x": 448,
       "y": 144,
       "h": 16,
       "w": 16
     },
     {
-      "key": "key_orange",
+      "key": "key_brown",
       "x": 448,
       "y": 224,
       "h": 16,
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 448,
       "y": 160,
@@ -2240,7 +2553,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 464,
       "y": 160,
@@ -2248,7 +2561,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 480,
       "y": 160,
@@ -2256,7 +2569,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 496,
       "y": 160 ,
@@ -2264,7 +2577,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 448,
       "y": 144,
@@ -2272,7 +2585,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 464,
       "y": 144,
@@ -2280,7 +2593,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 480,
       "y": 144,
@@ -2288,7 +2601,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 496,
       "y": 144,
@@ -2296,7 +2609,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 448,
       "y": 128,
@@ -2304,7 +2617,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 464,
       "y": 128,
@@ -2312,7 +2625,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange_open",
+      "key": "door_unlock_brown",
       "anim": true,
       "x": 480,
       "y": 128,
@@ -2320,7 +2633,7 @@
       "w": 16
     },
     {
-      "key": "unlock_orange",
+      "key": "door_unlocked_brown",
       "x": 496,
       "y": 128,
       "h": 16,
@@ -2330,7 +2643,7 @@
 
 
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 512,
       "y": 192,
@@ -2338,7 +2651,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 528,
       "y": 192,
@@ -2346,7 +2659,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 544,
       "y": 192,
@@ -2354,7 +2667,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 560,
       "y": 192,
@@ -2362,7 +2675,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 512,
       "y": 176,
@@ -2370,7 +2683,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 528,
       "y": 176,
@@ -2378,7 +2691,7 @@
       "w": 16
     },
     {
-      "key": "door_gray_open",
+      "key": "door_visible_gray",
       "anim": true,
       "x": 544,
       "y": 176,
@@ -2386,14 +2699,14 @@
       "w": 16
     },
     {
-      "key": "door_gray",
+      "key": "door_hidden_gray",
       "x": 560,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_gray",
+      "key": "door_locked_gray",
       "x": 512,
       "y": 144,
       "h": 16,
@@ -2407,7 +2720,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 512,
       "y": 160,
@@ -2415,7 +2728,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 528,
       "y": 160,
@@ -2423,7 +2736,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 544,
       "y": 160,
@@ -2431,7 +2744,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 560,
       "y": 160 ,
@@ -2439,7 +2752,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 512,
       "y": 144,
@@ -2447,7 +2760,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 528,
       "y": 144,
@@ -2455,7 +2768,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 544,
       "y": 144,
@@ -2463,7 +2776,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 560,
       "y": 144,
@@ -2471,7 +2784,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 512,
       "y": 128,
@@ -2479,7 +2792,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 528,
       "y": 128,
@@ -2487,7 +2800,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray_open",
+      "key": "door_unlock_gray",
       "anim": true,
       "x": 544,
       "y": 128,
@@ -2495,7 +2808,7 @@
       "w": 16
     },
     {
-      "key": "unlock_gray",
+      "key": "door_unlocked_gray",
       "x": 560,
       "y": 128,
       "h": 16,
@@ -2505,7 +2818,7 @@
 
 
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 576,
       "y": 192,
@@ -2513,7 +2826,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 592,
       "y": 192,
@@ -2521,7 +2834,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 608,
       "y": 192,
@@ -2529,7 +2842,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 624,
       "y": 192,
@@ -2537,7 +2850,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 576,
       "y": 176,
@@ -2545,7 +2858,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 592,
       "y": 176,
@@ -2553,7 +2866,7 @@
       "w": 16
     },
     {
-      "key": "door_cyan_open",
+      "key": "door_visible_cyan",
       "anim": true,
       "x": 608,
       "y": 176,
@@ -2561,14 +2874,14 @@
       "w": 16
     },
     {
-      "key": "door_cyan",
+      "key": "door_hidden_cyan",
       "x": 624,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_cyan",
+      "key": "door_locked_cyan",
       "x": 576,
       "y": 144,
       "h": 16,
@@ -2582,7 +2895,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 576,
       "y": 160,
@@ -2590,7 +2903,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 592,
       "y": 160,
@@ -2598,7 +2911,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 608,
       "y": 160,
@@ -2606,7 +2919,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 624,
       "y": 160,
@@ -2614,7 +2927,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 576,
       "y": 144,
@@ -2622,7 +2935,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 592,
       "y": 144,
@@ -2630,7 +2943,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 608,
       "y": 144,
@@ -2638,7 +2951,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 624,
       "y": 144,
@@ -2646,7 +2959,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 576,
       "y": 128,
@@ -2654,7 +2967,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 592,
       "y": 128,
@@ -2662,7 +2975,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan_open",
+      "key": "door_unlock_cyan",
       "anim": true,
       "x": 608,
       "y": 128,
@@ -2670,7 +2983,7 @@
       "w": 16
     },
     {
-      "key": "unlock_cyan",
+      "key": "door_unlocked_cyan",
       "x": 624,
       "y": 128,
       "h": 16,
@@ -2680,7 +2993,7 @@
 
 
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 0,
       "y": 192,
@@ -2688,7 +3001,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 16,
       "y": 192,
@@ -2696,7 +3009,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 32,
       "y": 192,
@@ -2704,7 +3017,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 48,
       "y": 192,
@@ -2712,7 +3025,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 0,
       "y": 176,
@@ -2720,7 +3033,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 16,
       "y": 176,
@@ -2728,7 +3041,7 @@
       "w": 16
     },
     {
-      "key": "door_blue_open",
+      "key": "door_visible_blue",
       "anim": true,
       "x": 32,
       "y": 176,
@@ -2736,14 +3049,14 @@
       "w": 16
     },
     {
-      "key": "door_blue",
+      "key": "door_hidden_blue",
       "x": 48,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_blue",
+      "key": "door_locked_blue",
       "x": 0,
       "y": 144,
       "h": 16,
@@ -2757,7 +3070,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 0,
       "y": 160,
@@ -2765,7 +3078,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 16,
       "y": 160,
@@ -2773,7 +3086,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 32,
       "y": 160,
@@ -2781,7 +3094,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 48,
       "y": 160,
@@ -2789,7 +3102,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 0,
       "y": 144,
@@ -2797,7 +3110,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 16,
       "y": 144,
@@ -2805,7 +3118,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 32,
       "y": 144,
@@ -2813,7 +3126,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 48,
       "y": 144,
@@ -2821,7 +3134,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 0,
       "y": 128,
@@ -2829,7 +3142,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 16,
       "y": 128,
@@ -2837,7 +3150,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue_open",
+      "key": "door_unlock_blue",
       "anim": true,
       "x": 32,
       "y": 128,
@@ -2845,7 +3158,7 @@
       "w": 16
     },
     {
-      "key": "unlock_blue",
+      "key": "door_unlocked_blue",
       "x": 48,
       "y": 128,
       "h": 16,
@@ -2855,7 +3168,7 @@
 
 
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 96,
       "y": 192,
@@ -2863,7 +3176,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 112,
       "y": 192,
@@ -2871,7 +3184,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 128,
       "y": 192,
@@ -2879,7 +3192,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 144,
       "y": 192,
@@ -2887,7 +3200,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 96,
       "y": 176,
@@ -2895,7 +3208,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 112,
       "y": 176,
@@ -2903,7 +3216,7 @@
       "w": 16
     },
     {
-      "key": "door_green_open",
+      "key": "door_visible_green",
       "anim": true,
       "x": 128,
       "y": 176,
@@ -2911,14 +3224,14 @@
       "w": 16
     },
     {
-      "key": "door_green",
+      "key": "door_hidden_green",
       "x": 144,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_green",
+      "key": "door_locked_green",
       "x": 96,
       "y": 144,
       "h": 16,
@@ -2932,7 +3245,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 160,
@@ -2940,7 +3253,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 144,
       "y": 160,
@@ -2948,7 +3261,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 160,
@@ -2956,7 +3269,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 144,
       "y": 160,
@@ -2964,7 +3277,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 144,
@@ -2972,7 +3285,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 144,
       "y": 144,
@@ -2980,7 +3293,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 144,
@@ -2988,7 +3301,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 144,
       "y": 144,
@@ -2996,7 +3309,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 128,
@@ -3004,7 +3317,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 144,
       "y": 128,
@@ -3012,7 +3325,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green_open",
+      "key": "door_unlock_green",
       "anim": true,
       "x": 128,
       "y": 128,
@@ -3020,7 +3333,7 @@
       "w": 16
     },
     {
-      "key": "unlock_green",
+      "key": "door_unlocked_green",
       "x": 144,
       "y": 128,
       "h": 16,
@@ -3030,7 +3343,7 @@
 
 
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 192,
       "y": 192,
@@ -3038,7 +3351,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 208,
       "y": 192,
@@ -3046,7 +3359,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 224,
       "y": 192,
@@ -3054,7 +3367,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 240,
       "y": 192,
@@ -3062,7 +3375,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 192,
       "y": 176,
@@ -3070,7 +3383,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 208,
       "y": 176,
@@ -3078,7 +3391,7 @@
       "w": 16
     },
     {
-      "key": "door_purple_open",
+      "key": "door_visible_purple",
       "anim": true,
       "x": 224,
       "y": 176,
@@ -3086,14 +3399,14 @@
       "w": 16
     },
     {
-      "key": "door_purple",
+      "key": "door_hidden_purple",
       "x": 240,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_purple",
+      "key": "door_locked_purple",
       "x": 192,
       "y": 144,
       "h": 16,
@@ -3107,7 +3420,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 192,
       "y": 160,
@@ -3115,7 +3428,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 208,
       "y": 160,
@@ -3123,7 +3436,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 224,
       "y": 160,
@@ -3131,7 +3444,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 240,
       "y": 160,
@@ -3139,7 +3452,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 192,
       "y": 144,
@@ -3147,7 +3460,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 208,
       "y": 144,
@@ -3155,7 +3468,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 224,
       "y": 144,
@@ -3163,7 +3476,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 240,
       "y": 144,
@@ -3171,7 +3484,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 192,
       "y": 128,
@@ -3179,7 +3492,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 208,
       "y": 128,
@@ -3187,7 +3500,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple_open",
+      "key": "door_unlock_purple",
       "anim": true,
       "x": 224,
       "y": 128,
@@ -3195,7 +3508,7 @@
       "w": 16
     },
     {
-      "key": "unlock_purple",
+      "key": "door_unlocked_purple",
       "x": 240,
       "y": 128,
       "h": 16,
@@ -3205,7 +3518,7 @@
 
 
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 288,
       "y": 192,
@@ -3213,7 +3526,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 304,
       "y": 192,
@@ -3221,7 +3534,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 320,
       "y": 192,
@@ -3229,7 +3542,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 336,
       "y": 192,
@@ -3237,7 +3550,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 288,
       "y": 176,
@@ -3245,7 +3558,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 304,
       "y": 176,
@@ -3253,7 +3566,7 @@
       "w": 16
     },
     {
-      "key": "door_brown_open",
+      "key": "door_visible_orange",
       "anim": true,
       "x": 320,
       "y": 176,
@@ -3261,28 +3574,28 @@
       "w": 16
     },
     {
-      "key": "door_brown",
+      "key": "door_hidden_orange",
       "x": 336,
       "y": 176,
       "h": 16,
       "w": 16
     },
     {
-      "key": "lock_brown",
+      "key": "door_locked_orange",
       "x": 288,
       "y": 144,
       "h": 16,
       "w": 16
     },
     {
-      "key": "key_brown",
+      "key": "key_orange",
       "x": 352,
       "y": 208,
       "h": 16,
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 288,
       "y": 160,
@@ -3290,7 +3603,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 304,
       "y": 160,
@@ -3298,7 +3611,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 320,
       "y": 160,
@@ -3306,7 +3619,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 336,
       "y": 160 ,
@@ -3314,7 +3627,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 288,
       "y": 144,
@@ -3322,7 +3635,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 304,
       "y": 144,
@@ -3330,7 +3643,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 320,
       "y": 144,
@@ -3338,7 +3651,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 336,
       "y": 144,
@@ -3346,7 +3659,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 288,
       "y": 128,
@@ -3354,7 +3667,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 304,
       "y": 128,
@@ -3362,7 +3675,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown_open",
+      "key": "door_unlock_orange",
       "anim": true,
       "x": 320,
       "y": 128,
@@ -3370,7 +3683,7 @@
       "w": 16
     },
     {
-      "key": "unlock_brown",
+      "key": "door_unlocked_orange",
       "x": 336,
       "y": 128,
       "h": 16,
@@ -3457,7 +3770,7 @@
       "w": 16
     },
     {
-      "key": "gem_brown",
+      "key": "gem_orange",
       "x": 288,
       "y": 208,
       "h": 16,
@@ -3471,7 +3784,7 @@
       "w": 16
     },
     {
-      "key": "gem_orange",
+      "key": "gem_brown",
       "x": 448,
       "y": 208,
       "h": 16,
@@ -4228,6 +4541,118 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "player1_drill_start",
+      "anim": true,
+      "x": 0,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_drill_start",
+      "anim": true,
+      "x": 16,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_drill_start",
+      "anim": true,
+      "x": 32,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_drill_start",
+      "anim": true,
+      "x": 48,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_drill",
+      "anim": true,
+      "x": 64,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_drill",
+      "anim": true,
+      "x": 80,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hiding",
+      "anim": true,
+      "x": 0,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hiding",
+      "anim": true,
+      "x": 16,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_hiding",
+      "anim": true,
+      "x": 32,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_in_hiding",
+      "anim": true,
+      "x": 48,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_flamethrower",
+      "anim": true,
+      "x": 0,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_flamethrower",
+      "anim": true,
+      "x": 16,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_flamethrower",
+      "anim": true,
+      "x": 32,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player1_flamethrower",
+      "anim": true,
+      "x": 48,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
 
 
 
@@ -4820,6 +5245,118 @@
       "anim": true,
       "x": 176,
       "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill_start",
+      "anim": true,
+      "x": 96,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill_start",
+      "anim": true,
+      "x": 112,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill_start",
+      "anim": true,
+      "x": 128,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill_start",
+      "anim": true,
+      "x": 144,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill",
+      "anim": true,
+      "x": 160,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_drill",
+      "anim": true,
+      "x": 176,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hiding",
+      "anim": true,
+      "x": 96,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hiding",
+      "anim": true,
+      "x": 112,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_hiding",
+      "anim": true,
+      "x": 128,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_in_hiding",
+      "anim": true,
+      "x": 144,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_flamethrower",
+      "anim": true,
+      "x": 96,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_flamethrower",
+      "anim": true,
+      "x": 112,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_flamethrower",
+      "anim": true,
+      "x": 128,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player2_flamethrower",
+      "anim": true,
+      "x": 144,
+      "y": 448,
       "h": 16,
       "w": 16
     },
@@ -5419,6 +5956,118 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "player3_drill_start",
+      "anim": true,
+      "x": 192,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_drill_start",
+      "anim": true,
+      "x": 208,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_drill_start",
+      "anim": true,
+      "x": 224,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_drill_start",
+      "anim": true,
+      "x": 240,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_drill",
+      "anim": true,
+      "x": 256,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_drill",
+      "anim": true,
+      "x": 272,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hiding",
+      "anim": true,
+      "x": 192,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hiding",
+      "anim": true,
+      "x": 208,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_hiding",
+      "anim": true,
+      "x": 224,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_in_hiding",
+      "anim": true,
+      "x": 240,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_flamethrower",
+      "anim": true,
+      "x": 192,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_flamethrower",
+      "anim": true,
+      "x": 208,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_flamethrower",
+      "anim": true,
+      "x": 224,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player3_flamethrower",
+      "anim": true,
+      "x": 240,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
 
 
 
@@ -6015,6 +6664,118 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "player4_drill_start",
+      "anim": true,
+      "x": 288,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_drill_start",
+      "anim": true,
+      "x": 304,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_drill_start",
+      "anim": true,
+      "x": 320,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_drill_start",
+      "anim": true,
+      "x": 336,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_drill",
+      "anim": true,
+      "x": 352,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_drill",
+      "anim": true,
+      "x": 368,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hiding",
+      "anim": true,
+      "x": 288,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hiding",
+      "anim": true,
+      "x": 304,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_hiding",
+      "anim": true,
+      "x": 320,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_in_hiding",
+      "anim": true,
+      "x": 336,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_flamethrower",
+      "anim": true,
+      "x": 288,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_flamethrower",
+      "anim": true,
+      "x": 304,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_flamethrower",
+      "anim": true,
+      "x": 320,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "player4_flamethrower",
+      "anim": true,
+      "x": 336,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
 
 
 
@@ -6304,6 +7065,102 @@
       "anim": true,
       "x": 496,
       "y": 336,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 384,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 400,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 416,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 432,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 448,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 464,
+      "y": 320,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 384,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 400,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 416,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 432,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 448,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_bar",
+      "anim": true,
+      "x": 464,
+      "y": 304,
       "h": 16,
       "w": 16
     },
@@ -6762,6 +7619,64 @@
       "w": 16
     },
     {
+      "key": "box_blue",
+      "x": 80,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bomb_blue",
+      "x": 64,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_blue",
+      "x": 80,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_blue",
+      "anim": true,
+      "x": 64,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_blue",
+      "anim": true,
+      "x": 80,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jump_boots_blue",
+      "x": 64,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_blue",
+      "x": 80,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jetpack_blue",
+      "x": 0,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "gem_green_shimmer",
       "anim": true,
       "x": 112,
@@ -6782,6 +7697,64 @@
       "anim": true,
       "x": 144,
       "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "box_green",
+      "x": 176,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bomb_green",
+      "x": 160,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_green",
+      "x": 176,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_green",
+      "anim": true,
+      "x": 160,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_green",
+      "anim": true,
+      "x": 176,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jump_boots_green",
+      "x": 160,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_green",
+      "x": 176,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jetpack_green",
+      "x": 96,
+      "y": 112,
       "h": 16,
       "w": 16
     },
@@ -6810,7 +7783,65 @@
       "w": 16
     },
     {
-      "key": "gem_brown_shimmer",
+      "key": "box_purple",
+      "x": 272,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bomb_purple",
+      "x": 256,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_purple",
+      "x": 272,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_purple",
+      "anim": true,
+      "x": 256,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_purple",
+      "anim": true,
+      "x": 272,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jump_boots_purple",
+      "x": 256,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_purple",
+      "x": 272,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jetpack_purple",
+      "x": 192,
+      "y": 112,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gem_orange_shimmer",
       "anim": true,
       "x": 304,
       "y": 208,
@@ -6818,7 +7849,7 @@
       "w": 16
     },
     {
-      "key": "gem_brown_shimmer",
+      "key": "gem_orange_shimmer",
       "anim": true,
       "x": 320,
       "y": 208,
@@ -6826,10 +7857,68 @@
       "w": 16
     },
     {
-      "key": "gem_brown_shimmer",
+      "key": "gem_orange_shimmer",
       "anim": true,
       "x": 336,
       "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "box_orange",
+      "x": 368,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bomb_orange",
+      "x": 352,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "drill_orange",
+      "x": 368,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_orange",
+      "anim": true,
+      "x": 352,
+      "y": 176,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flamethrower_orange",
+      "anim": true,
+      "x": 368,
+      "h": 16,
+      "y": 176,
+      "w": 16
+    },
+    {
+      "key": "jump_boots_orange",
+      "x": 352,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_orange",
+      "x": 368,
+      "y": 160,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "jetpack_orange",
+      "x": 288,
+      "y": 112,
       "h": 16,
       "w": 16
     },
@@ -6858,7 +7947,7 @@
       "w": 16
     },
     {
-      "key": "gem_orange_shimmer",
+      "key": "gem_brown_shimmer",
       "anim": true,
       "x": 464,
       "y": 208,
@@ -6866,7 +7955,7 @@
       "w": 16
     },
     {
-      "key": "gem_orange_shimmer",
+      "key": "gem_brown_shimmer",
       "anim": true,
       "x": 480,
       "y": 208,
@@ -6874,7 +7963,7 @@
       "w": 16
     },
     {
-      "key": "gem_orange_shimmer",
+      "key": "gem_brown_shimmer",
       "anim": true,
       "x": 496,
       "y": 208,
@@ -7330,6 +8419,158 @@
       "anim": true,
       "x": 736,
       "y": 384,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 640,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 640,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 656,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 672,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 688,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 704,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 720,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 736,
+      "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 656,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 672,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 688,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 704,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 720,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 736,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_l",
+      "anim": true,
+      "x": 656,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 672,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 688,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 704,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "flames_r",
+      "anim": true,
+      "x": 720,
+      "y": 432,
       "h": 16,
       "w": 16
     },
@@ -7974,6 +9215,102 @@
       "anim": true,
       "x": 832,
       "y": 400,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill_start",
+      "anim": true,
+      "x": 752,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill_start",
+      "anim": true,
+      "x": 768,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill_start",
+      "anim": true,
+      "x": 784,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill_start",
+      "anim": true,
+      "x": 800,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill",
+      "anim": true,
+      "x": 816,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_drill",
+      "anim": true,
+      "x": 832,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_hiding",
+      "anim": true,
+      "x": 752,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_in_hiding",
+      "anim": true,
+      "x": 752,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_flamethrower",
+      "anim": true,
+      "x": 752,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_flamethrower",
+      "anim": true,
+      "x": 768,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_flamethrower",
+      "anim": true,
+      "x": 784,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "disguise_flamethrower",
+      "anim": true,
+      "x": 800,
+      "y": 448,
       "h": 16,
       "w": 16
     }

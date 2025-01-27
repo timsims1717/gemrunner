@@ -24,9 +24,7 @@ func CharacterStateSystem() {
 				oldState := ch.State
 				switch ch.State {
 				case data.Grounded:
-					if ch.Flags.HighJump || ch.Flags.LongJump {
-						ch.State = data.Jumping
-					} else if tile != nil && tile.Block == data.BlockBar {
+					if tile != nil && tile.Block == data.BlockBar {
 						ch.State = data.OnBar
 					} else if tile != nil && tile.IsLadder() { // a ladder is here
 						if ch.Actions.Direction == data.Up { // climbed the ladder
@@ -40,6 +38,9 @@ func CharacterStateSystem() {
 						} else if !ch.Flags.Floor {
 							ch.State = data.OnLadder
 						}
+					} else if tile != nil && tile.Block == data.BlockHideout && ch.Actions.Direction == data.Up {
+						ch.State = data.DoingAction
+						ch.Flags.ItemAction = data.Hiding
 					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 						ch.State = data.OnLadder
 					} else if !ch.Flags.Floor && below != nil && !below.IsLadder() {
@@ -98,8 +99,12 @@ func CharacterStateSystem() {
 						} else if ch.Actions.Direction == data.Right { // run to the right
 							ch.State = data.Grounded
 							ch.Object.Flip = false
-						} else if ch.Flags.Floor && ch.Actions.Direction == data.Down {
-							ch.State = data.Grounded
+						} else if ch.Actions.Direction == data.Down {
+							if !tile.IsLadder() {
+								ch.State = data.Falling
+							} else if ch.Flags.Floor {
+								ch.State = data.Grounded
+							}
 						}
 					} else if !tile.IsLadder() {
 						ch.State = data.Falling
@@ -177,6 +182,21 @@ func CharacterStateSystem() {
 					}
 				case data.DoingAction:
 					if ch.Flags.ItemAction == data.NoItemAction {
+						if ch.Options.Flying || ch.Flags.Flying {
+							ch.Flags.Flying = true
+							ch.State = data.Flying
+						} else if ch.Flags.Floor || below.IsRunnable() {
+							ch.State = data.Grounded
+						} else if tile != nil && tile.IsLadder() {
+							ch.State = data.OnLadder
+						} else if tile != nil && tile.Block == data.BlockBar {
+							ch.State = data.OnBar
+						} else {
+							ch.State = data.Falling
+						}
+					}
+				case data.Hiding:
+					if tile.Block != data.BlockHideout || ch.Actions.Direction == data.Down {
 						if ch.Options.Flying || ch.Flags.Flying {
 							ch.Flags.Flying = true
 							ch.State = data.Flying
@@ -274,13 +294,11 @@ func CharacterStateSystem() {
 					if ch.Actions.PickUp {
 						PickUpOrDropItem(ch, ch.Player)
 					}
-					if ch.State != data.Leaping {
-						if ch.Actions.DigLeft && Dig(ch, true) {
-						} else if ch.Actions.DigRight && Dig(ch, false) {
-						} else if ch.Actions.DigLeft && Place(ch, true) {
-						} else if ch.Actions.DigRight && Place(ch, false) {
-						} else if ch.Actions.Action && DoAction(ch) {
-						}
+					if ch.Actions.DigLeft && Dig(ch, true) {
+					} else if ch.Actions.DigRight && Dig(ch, false) {
+					} else if ch.Actions.DigLeft && Place(ch, true) {
+					} else if ch.Actions.DigRight && Place(ch, false) {
+					} else if ch.Actions.Action && DoAction(ch) {
 					}
 				} else if ch.State == data.Dead {
 					DropItem(ch)
@@ -288,12 +306,12 @@ func CharacterStateSystem() {
 				if oldState != ch.State { // a state change happened
 					ch.ACounter = 0
 					ch.Control.ClearPrev()
-					ch.Actions.PrevDirection = data.None
+					ch.Actions.PrevDirection = data.NoDirection
 					ch.Object.Pos.Y = tile.Object.Pos.Y
 					if (oldState == data.Grounded &&
 						(ch.State == data.OnLadder ||
 							ch.State == data.Falling ||
-							ch.State == data.Jumping)) ||
+							ch.Flags.ItemAction == data.Hiding)) ||
 						(oldState == data.Falling &&
 							(ch.State == data.Grounded ||
 								ch.State == data.OnLadder ||

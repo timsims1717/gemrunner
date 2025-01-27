@@ -61,6 +61,15 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 
 	donDisguise := reanimator.NewBatchAnimation("don_disguise", batch, fmt.Sprintf("%s_don", sprPre), reanimator.Tran)
 
+	drillStart := reanimator.NewBatchAnimation("drill_start", batch, fmt.Sprintf("%s_drill_start", sprPre), reanimator.Tran)
+	drilling := reanimator.NewBatchAnimation("drill", batch, fmt.Sprintf("%s_drill", sprPre), reanimator.Loop)
+
+	flameframes := []int{0, 1, 2, 3, 3, 2, 1, 0}
+	flamethrower := reanimator.NewBatchAnimationCustom("flamethrower", batch, fmt.Sprintf("%s_flamethrower", sprPre), flameframes, reanimator.Loop)
+
+	hiding := reanimator.NewBatchAnimation("hiding", batch, fmt.Sprintf("%s_hiding", sprPre), reanimator.Tran)
+	inHiding := reanimator.NewBatchSprite("in_hiding", batch, fmt.Sprintf("%s_in_hiding", sprPre), reanimator.Hold)
+
 	fullHit := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5}
 	hit := reanimator.NewBatchAnimationCustom("hit", batch, fmt.Sprintf("%s_hit", sprPre), fullHit, reanimator.Tran)
 
@@ -112,6 +121,19 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Flags.ItemAction = data.NoItemAction
 			// set the player to disguised
 			ch.Flags.Disguised = true
+		})
+		drillStart.SetEndTrigger(func() {
+			ch.Flags.CheckAction = true
+		})
+		//drilling.SetTriggerAll(func() {
+		//	ch.Object.Pos.Y -= 1.
+		//})
+		drilling.SetTrigger(1, func() {
+			ch.Object.Pos.Y -= 2.
+		})
+		hiding.SetEndTrigger(func() {
+			ch.State = data.InHiding
+			ch.Flags.ItemAction = data.NoItemAction
 		})
 		jetpack.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 			switch pre {
@@ -173,6 +195,11 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(jetpackUp).
 		AddAnimation(jetpackDown).
 		AddAnimation(donDisguise).
+		AddAnimation(drillStart).
+		AddAnimation(drilling).
+		AddAnimation(flamethrower).
+		AddAnimation(hiding).
+		AddAnimation(inHiding).
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(blow).
@@ -217,9 +244,19 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "throw"
 				case data.DonDisguise:
 					return "don_disguise"
+				case data.DrillStart:
+					return "drill_start"
+				case data.Drilling:
+					return "drill"
+				case data.Hiding:
+					return "hiding"
+				case data.FireFlamethrower:
+					return "flamethrower"
 				default:
 					return "idle"
 				}
+			case data.InHiding:
+				return "in_hiding"
 			case data.Grounded:
 				if ch.Actions.Left() || ch.Actions.Right() {
 					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||

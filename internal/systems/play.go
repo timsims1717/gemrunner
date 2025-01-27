@@ -28,10 +28,18 @@ func PlaySystem() {
 	}
 	if data.CurrLevel.Complete {
 		UpdateScore()
-		if data.CurrPuzzleSet.PuzzleIndex == len(data.CurrPuzzleSet.Puzzles)-1 {
-			SetComplete()
+		if data.CurrLevel.ExitIndex == -1 {
+			if data.CurrPuzzleSet.PuzzleIndex == len(data.CurrPuzzleSet.Puzzles)-1 {
+				SetComplete()
+			} else {
+				NextLevel()
+			}
 		} else {
-			NextLevel()
+			if data.CurrLevel.ExitIndex > len(data.CurrPuzzleSet.Puzzles)-1 {
+				SetComplete()
+			} else {
+				GoToLevel(data.CurrLevel.ExitIndex)
+			}
 		}
 	}
 	if data.MenuInput.Get("escape").JustPressed() ||
@@ -51,6 +59,21 @@ func PlaySystem() {
 func Restart() {
 	LevelDispose()
 	ClearTemp()
+	LevelInit()
+	UpdateViews()
+	data.EditorDraw = false
+	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.Reset()
+	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
+	go content.SaveSaveGame()
+}
+
+func GoToLevel(i int) {
+	LevelDispose()
+	ClearTemp()
+	data.CurrPuzzleSet.SetTo(i)
+	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
+	PuzzleInit()
 	LevelInit()
 	UpdateViews()
 	data.EditorDraw = false

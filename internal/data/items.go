@@ -22,57 +22,120 @@ type PickUp struct {
 	Cycle     [constants.MaxPlayers]int
 	Priority  int
 	Inventory int
+	Color     ItemColor
 }
 
-func NewPickUp(name string, p int) *PickUp {
+func NewPickUp(name string, p int, color ItemColor) *PickUp {
 	return &PickUp{
 		Name:      name,
 		Priority:  p,
 		Inventory: -1,
+		Color:     color,
 	}
 }
 
-type Key struct {
-	Object *object.Object
-	Entity *ecs.Entity
-	Sprite *img.Sprite
-	PickUp *PickUp
-	Action *Interact
-	Color  string
+type BasicItem struct {
+	Object   *object.Object
+	Entity   *ecs.Entity
+	Sprite   *img.Sprite
+	Anim     *reanimator.Tree
+	PickUp   *PickUp
+	Action   *Interact
+	Color    ItemColor
+	Metadata TileMetadata
+	Origin   world.Coords
+	Using    bool
+	Regen    bool
+	Waiting  bool
+	Counter  int
 }
 
 type Door struct {
-	Object   *object.Object
-	Entity   *ecs.Entity
-	Color    string
+	BasicItem
 	DoorType DoorType
 	Unlock   bool
+}
+
+type ItemColor int
+
+const (
+	ColorDefault = iota
+	NonPlayerYellow
+	NonPlayerBrown
+	NonPlayerGray
+	NonPlayerCyan
+	NonPlayerRed
+	PlayerBlue
+	PlayerGreen
+	PlayerPurple
+	PlayerOrange
+)
+
+func (ic ItemColor) String() string {
+	switch ic {
+	case ColorDefault:
+		return "default"
+	case NonPlayerYellow:
+		return "yellow"
+	case NonPlayerBrown:
+		return "brown"
+	case NonPlayerGray:
+		return "gray"
+	case NonPlayerCyan:
+		return "cyan"
+	case PlayerBlue:
+		return "blue"
+	case PlayerGreen:
+		return "green"
+	case PlayerPurple:
+		return "purple"
+	case PlayerOrange:
+		return "orange"
+	case NonPlayerRed:
+		return "red"
+	}
+	return ""
+}
+
+func (ic ItemColor) SpriteString() string {
+	switch ic {
+	case NonPlayerYellow:
+		return "_yellow"
+	case NonPlayerBrown:
+		return "_brown"
+	case NonPlayerGray:
+		return "_gray"
+	case NonPlayerCyan:
+		return "_cyan"
+	case PlayerBlue:
+		return "_blue"
+	case PlayerGreen:
+		return "_green"
+	case PlayerPurple:
+		return "_purple"
+	case PlayerOrange:
+		return "_orange"
+	case NonPlayerRed:
+		return "_red"
+	default:
+		return "_yellow"
+	}
 }
 
 type DoorType int
 
 const (
-	Opened = iota
-	Closed
+	Hidden = iota
+	Visible
 	Locked
 	Unlocked
 )
 
 type Bomb struct {
-	Object   *object.Object
-	Entity   *ecs.Entity
-	Draws    []interface{}
-	Anim     *reanimator.Tree
-	SymSpr   *img.Sprite
-	PickUp   *PickUp
-	Action   *Interact
-	Name     string
-	Metadata TileMetadata
-	Origin   world.Coords
-	LitKey   string
-	Regen    bool
-	Waiting  bool
-	Color    string
+	BasicItem
+	Draws  []interface{}
+	SymSpr *img.Sprite
+	LitKey string
 }
 
 type Jetpack struct {

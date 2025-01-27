@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/util"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -224,7 +225,9 @@ func SavePuzzleSetToFile() error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	fmt.Printf("INFO: saved puzzle set to %s\n", pzlPath)
+	if debug.Verbose {
+		fmt.Printf("INFO: saved puzzle set to %s\n", pzlPath)
+	}
 	return nil
 }
 
@@ -243,7 +246,9 @@ func OpenPuzzleSetFile(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
+	if debug.Verbose {
+		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
+	}
 	return nil
 }
 
@@ -262,7 +267,9 @@ func OpenPuzzleSetFileRt(filename string) (*data.PuzzleSet, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, errMsg)
 	}
-	fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
+	if debug.Verbose {
+		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
+	}
 	return rtPzlSet, nil
 }
 
@@ -287,6 +294,8 @@ func OpenPuzzleFile(filename string) error {
 	}
 	data.CurrPuzzleSet.Metadata.Name = data.CurrPuzzleSet.CurrPuzzle.Metadata.Name
 	data.CurrPuzzleSet.Metadata.Filename = data.CurrPuzzleSet.CurrPuzzle.Metadata.Filename
-	fmt.Printf("INFO: loaded puzzle from %s\n", filename)
+	if debug.Verbose {
+		fmt.Printf("INFO: loaded puzzle from %s\n", filename)
+	}
 	return nil
 }

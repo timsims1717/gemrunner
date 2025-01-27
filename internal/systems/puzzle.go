@@ -114,6 +114,7 @@ func PuzzleDispose() {
 		if ft, ok := result.Components[myecs.Text].(*data.FloatingText); ok {
 			myecs.Manager.DisposeEntity(ft.Entity)
 			myecs.Manager.DisposeEntity(ft.ShEntity)
+			data.RemoveFloatingText(ft.Tile)
 		}
 	}
 	for _, result := range myecs.Manager.Query(myecs.IsTile) {

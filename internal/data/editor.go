@@ -19,13 +19,15 @@ type editor struct {
 	LastMode  EditorMode
 	NoInput   bool
 
-	Hover       bool
-	Consume     string
-	SelectVis   bool
-	SelectTimer *timing.Timer
-	SelectQuick bool
-	LastCoords  world.Coords
-	PosTop      bool
+	Hover        bool
+	Consume      string
+	SelectVis    bool
+	SelectTimer  *timing.Timer
+	SelectQuick  bool
+	LastCoords   world.Coords
+	PosTop       bool
+	ModeChanged  bool
+	PaletteColor ItemColor
 
 	BlockSelect *viewport.ViewPort
 }
@@ -66,6 +68,7 @@ const (
 	ModeFlipHorizontal
 	ModeWrench
 	ModeWire
+	ModePalette
 	ModeText
 	ModeUndo
 	ModeRedo
@@ -107,6 +110,8 @@ func (m EditorMode) String() string {
 		return "Wrench"
 	case ModeWire:
 		return "Wire"
+	case ModePalette:
+		return "Palette"
 	case ModeText:
 		return "Text"
 	case ModeUndo:
@@ -157,6 +162,8 @@ func ModeFromSprString(s string) EditorMode {
 		return ModeWrench
 	case "wire":
 		return ModeWire
+	case "palette":
+		return ModePalette
 	case "text":
 		return ModeText
 	case "undo":
@@ -172,17 +179,17 @@ var BlockList = []Block{
 	BlockBedrock,
 	BlockFall,
 	BlockCracked,
+	BlockClose,
 	BlockPhase,
 	BlockSpike,
-	BlockEmpty,
 	BlockEmpty,
 
 	BlockLadder,
 	BlockLadderCracked,
 	BlockLadderExit,
 	BlockBar,
-	BlockEmpty,
-	BlockEmpty,
+	BlockHideout,
+	BlockBombLit,
 	BlockEmpty,
 	BlockEmpty,
 
@@ -195,58 +202,22 @@ var BlockList = []Block{
 	BlockFly,
 	BlockFlyRegen,
 
-	BlockGemBlue,
-	BlockGemGreen,
-	BlockGemPurple,
-	BlockGemBrown,
-	BlockGemYellow,
-	BlockGemOrange,
-	BlockGemGray,
-	BlockGemCyan,
+	BlockGem,
+	BlockDoorHidden,
+	BlockDoorVisible,
+	BlockDoorLocked,
+	BlockKey,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
 
-	BlockDoorBlue,
-	BlockClosedBlue,
-	BlockDoorGreen,
-	BlockClosedGreen,
-	BlockDoorPurple,
-	BlockClosedPurple,
-	BlockDoorBrown,
-	BlockClosedBrown,
-
-	BlockLockBlue,
-	BlockKeyBlue,
-	BlockLockGreen,
-	BlockKeyGreen,
-	BlockLockPurple,
-	BlockKeyPurple,
-	BlockLockBrown,
-	BlockKeyBrown,
-
-	BlockDoorYellow,
-	BlockClosedYellow,
-	BlockDoorOrange,
-	BlockClosedOrange,
-	BlockDoorGray,
-	BlockClosedGray,
-	BlockDoorCyan,
-	BlockClosedCyan,
-
-	BlockLockYellow,
-	BlockKeyYellow,
-	BlockLockOrange,
-	BlockKeyOrange,
-	BlockLockGray,
-	BlockKeyGray,
-	BlockLockCyan,
-	BlockKeyCyan,
-
+	BlockJumpBoots,
 	BlockBox,
 	BlockBomb,
-	BlockBombLit,
 	BlockJetpack,
 	BlockDisguise,
-	BlockEmpty,
-	BlockEmpty,
+	BlockDrill,
+	BlockFlamethrower,
 	BlockEmpty,
 
 	BlockReeds,

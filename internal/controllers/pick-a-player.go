@@ -53,6 +53,7 @@ func PickClosestPlayerYFirst(ch *data.Dynamic) *data.Dynamic {
 	for i, p := range data.CurrLevel.Players {
 		if p == nil ||
 			p.Flags.Disguised ||
+			p.State == data.Hiding ||
 			p.State == data.Hit ||
 			p.State == data.Dead ||
 			p.State == data.Waiting {

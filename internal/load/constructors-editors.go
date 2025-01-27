@@ -2,7 +2,6 @@ package load
 
 import (
 	"gemrunner/internal/constants"
-	"gemrunner/internal/data"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
@@ -12,7 +11,6 @@ var (
 	// editor options dialogs
 	OpenPuzzleConstructor          *ui.DialogConstructor
 	ChangeNameConstructor          *ui.DialogConstructor
-	PuzzleSettingsConstructor      *ui.DialogConstructor
 	AreYouSureDeleteConstructor    *ui.DialogConstructor
 	UnableToSaveConstructor        *ui.DialogConstructor
 	UnableToSaveConfirmConstructor *ui.DialogConstructor
@@ -23,7 +21,6 @@ var (
 	DoodadTileItem                 ui.ElementConstructor
 	WorldTxtItem                   ui.ElementConstructor
 	CombineSetsConstructor         *ui.DialogConstructor
-	RearrangePuzzleSetConstructor  *ui.DialogConstructor
 	// editor mode dialogs
 	CrackedTileOptionsConstructor *ui.DialogConstructor
 	BombOptionsConstructor        *ui.DialogConstructor
@@ -45,7 +42,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "cancel_open_puzzle",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -54,7 +51,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "open_puzzle",
+				Key:         "confirm",
 				SprKey:      "open_btn_big",
 				SprKey2:     "open_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -87,7 +84,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "cancel_puzzle_name",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -96,7 +93,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "check_puzzle_name",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -126,157 +123,6 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	PuzzleSettingsConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogPuzzleSettings,
-		Width:  12,
-		Height: 8,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "puzzle_settings_title",
-				Text:        "Puzzle Settings",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-92, 56),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "cancel_puzzle_settings",
-				SprKey:      "cancel_btn_big",
-				SprKey2:     "cancel_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Cancel",
-				Position:    pixel.V(84, -52),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "confirm_puzzle_settings",
-				SprKey:      "check_btn_big",
-				SprKey2:     "check_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Confirm",
-				Position:    pixel.V(64, -52),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "puzzle_name_label",
-				Text:        "Name",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, 38),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_name",
-				Text:        "Untitled",
-				SprKey:      constants.TextCaret,
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Enter the name of the puzzle here.",
-				Batch:       constants.UIBatch,
-				ElementType: ui.InputElement,
-				Position:    pixel.V(27, 38),
-				Width:       8 * world.TileSize,
-				Height:      world.TileSize,
-			},
-			{
-				Key:         "puzzle_author_label",
-				Text:        "Author",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(-88, 20),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_author",
-				Text:        "No Name",
-				SprKey:      constants.TextCaret,
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Enter the name of the puzzle's author here.",
-				Batch:       constants.UIBatch,
-				ElementType: ui.InputElement,
-				Position:    pixel.V(27, 20),
-				Width:       8 * world.TileSize,
-				Height:      world.TileSize,
-			},
-			{
-				Key:         "puzzle_hub_label",
-				Text:        "Hub Level",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Hub levels can be returned to as checkpoints.",
-				Position:    pixel.V(-88, 2),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_hub_check",
-				SprKey:      "checkbox_false",
-				SprKey2:     "checkbox_true",
-				Batch:       constants.UIBatch,
-				HelpText:    "Hub levels can be returned to as checkpoints.",
-				Position:    pixel.V(84, 2),
-				ElementType: ui.CheckboxElement,
-			},
-			{
-				Key:         "puzzle_secret_label",
-				Text:        "Secret Level",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Secret levels can't be picked when starting a puzzle set.",
-				Position:    pixel.V(-88, 2),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_secret_check",
-				SprKey:      "checkbox_false",
-				SprKey2:     "checkbox_true",
-				Batch:       constants.UIBatch,
-				HelpText:    "Secret levels can't be picked when starting a puzzle set.",
-				Position:    pixel.V(84, 2),
-				ElementType: ui.CheckboxElement,
-			},
-			{
-				Key:         "puzzle_darkness_label",
-				Text:        "Darkness",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				HelpText:    "Turn on darkness for this level.",
-				Position:    pixel.V(-88, -16),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_darkness_check",
-				SprKey:      "checkbox_false",
-				SprKey2:     "checkbox_true",
-				Batch:       constants.UIBatch,
-				HelpText:    "Turn on darkness for this level.",
-				Position:    pixel.V(84, -16),
-				ElementType: ui.CheckboxElement,
-			},
-		},
-	}
-	//NoPlayersInPuzzleConstructor = &ui.DialogConstructor{
-	//	Key:    constants.DialogNoPlayersInPuzzle,
-	//	Width:  8,
-	//	Height: 3,
-	//	Elements: []ui.ElementConstructor{
-	//		{
-	//			Key:         "no_players_msg",
-	//			Text:        "You don't have any\nplayers in your\npuzzle.",
-	//			Color:       pixel.ToRGBA(constants.ColorWhite),
-	//			Position:    pixel.V(-56, 16),
-	//			ElementType: ui.TextElement,
-	//			Anchor:      pixel.Right,
-	//		},
-	//		{
-	//			Key:         "check_no_players",
-	//			SprKey:      "check_btn_big",
-	//			SprKey2:     "check_btn_click_big",
-	//			Batch:       constants.UIBatch,
-	//			HelpText:    "Confirm",
-	//			Position:    pixel.V(52, -12),
-	//			ElementType: ui.ButtonElement,
-	//		},
-	//	},
-	//}
 	AreYouSureDeleteConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogAreYouSureDelete,
 		Width:  8,
@@ -291,7 +137,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "confirm_delete",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -300,7 +146,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "cancel_delete",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -324,7 +170,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "confirm_unable_to_save",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -348,7 +194,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "confirm_unable_to_save",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -357,7 +203,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "cancel_unable_to_save",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1102,7 +948,7 @@ func InitEditorConstructors() {
 				ElementType: ui.CheckboxElement,
 			},
 			{
-				Key:         "cancel_change_world",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1111,7 +957,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "confirm_change_world",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1177,7 +1023,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "cancel_combine_puzzle",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1186,7 +1032,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "confirm_combine_puzzle",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1205,165 +1051,6 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	RearrangePuzzleSetConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogRearrangePuzzleSet,
-		Width:  14,
-		Height: 9,
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "rearrange_title",
-				Text:        "Rearrange Puzzle Set",
-				Position:    pixel.V(-108, 64),
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "cancel_rearrange_puzzle",
-				SprKey:      "cancel_btn_big",
-				SprKey2:     "cancel_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Cancel",
-				Position:    pixel.V(100, -60),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "confirm_rearrange_puzzle",
-				SprKey:      "check_btn_big",
-				SprKey2:     "check_btn_click_big",
-				Batch:       constants.UIBatch,
-				HelpText:    "Confirm",
-				Position:    pixel.V(80, -60),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_next",
-				SprKey:      "next_tall",
-				SprKey2:     "next_tall_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Next Puzzle",
-				Position:    pixel.V(97, 36),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_swap_next",
-				SprKey:      "rearrange_next",
-				SprKey2:     "rearrange_next_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Swap with Next Puzzle",
-				Position:    pixel.V(97, 4),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_end",
-				SprKey:      "rearrange_end",
-				SprKey2:     "rearrange_end_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Send Puzzle to End",
-				Position:    pixel.V(97, -28),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_prev",
-				SprKey:      "prev_tall",
-				SprKey2:     "prev_tall_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Previous Puzzle",
-				Position:    pixel.V(-97, 36),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_swap_prev",
-				SprKey:      "rearrange_prev",
-				SprKey2:     "rearrange_prev_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Swap with Previous Puzzle",
-				Position:    pixel.V(-97, 4),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_begin",
-				SprKey:      "rearrange_begin",
-				SprKey2:     "rearrange_begin_click",
-				Batch:       constants.UIBatch,
-				HelpText:    "Send Puzzle to Start",
-				Position:    pixel.V(-97, -28),
-				ElementType: ui.ButtonElement,
-			},
-			{
-				Key:         "rearrange_puzzle_view",
-				HelpText:    "Puzzles",
-				ElementType: ui.ContainerElement,
-				Position:    pixel.V(0, 4),
-				Width:       11 * world.TileSize,
-				Height:      6 * world.TileSize,
-				SubElements: []ui.ElementConstructor{
-					{
-						Key:         "rearrange_puzzle_num",
-						Text:        "0001",
-						Position:    pixel.V(-11, 41),
-						Color:       pixel.ToRGBA(constants.ColorWhite),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-					{
-						Key:         "rearrange_puzzle_name",
-						Text:        "It's a name",
-						Position:    pixel.V(0, -40),
-						Color:       pixel.ToRGBA(constants.ColorWhite),
-						ElementType: ui.TextElement,
-						Anchor:      pixel.Right,
-					},
-					{
-						Key:         "puzzle_center",
-						ElementType: ui.ContainerElement,
-						Position:    pixel.V(0, 0),
-						Width:       7 * world.TileSize,
-						Height:      4 * world.TileSize,
-					},
-					{
-						Key:         "puzzle_left",
-						ElementType: ui.ContainerElement,
-						Position:    pixel.V(data.RearrangeLeftX, 0),
-						Width:       7 * world.TileSize,
-						Height:      4 * world.TileSize,
-					},
-					{
-						Key:         "puzzle_right",
-						ElementType: ui.ContainerElement,
-						Position:    pixel.V(data.RearrangeRightX, 0),
-						Width:       7 * world.TileSize,
-						Height:      4 * world.TileSize,
-					},
-					{
-						Key:         "puzzle_float",
-						ElementType: ui.ContainerElement,
-						Position:    pixel.V(data.RearrangeFloatX, 0),
-						Width:       7 * world.TileSize,
-						Height:      4 * world.TileSize,
-					},
-				},
-			},
-			//{
-			//	Key:         "rearrange_loading",
-			//	HelpText:    "Loading",
-			//	ElementType: ui.ContainerElement,
-			//	Position:    pixel.V(0, 4),
-			//	Width:       11 * world.TileSize,
-			//	Height:      6 * world.TileSize,
-			//	SubElements: []ui.ElementConstructor{
-			//		{
-			//			Key:         "rearrange_loading_text",
-			//			Text:        "Loading...",
-			//			Position:    pixel.V(-22, 2),
-			//			Color:       pixel.ToRGBA(constants.ColorWhite),
-			//			ElementType: ui.TextElement,
-			//          Anchor:      pixel.Right,
-			//		},
-			//	},
-			//},
-		},
-	}
 	// Wrench
 	CrackedTileOptionsConstructor = &ui.DialogConstructor{
 		Key:    constants.DialogCrackedTiles,
@@ -1379,7 +1066,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "cancel_cracked_tile",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1388,7 +1075,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "check_cracked_tile",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1463,7 +1150,7 @@ func InitEditorConstructors() {
 				Anchor:      pixel.Right,
 			},
 			{
-				Key:         "cancel_bomb_options",
+				Key:         "cancel",
 				SprKey:      "cancel_btn_big",
 				SprKey2:     "cancel_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1472,7 +1159,7 @@ func InitEditorConstructors() {
 				ElementType: ui.ButtonElement,
 			},
 			{
-				Key:         "confirm_bomb_options",
+				Key:         "confirm",
 				SprKey:      "check_btn_big",
 				SprKey2:     "check_btn_click_big",
 				Batch:       constants.UIBatch,
@@ -1552,11 +1239,11 @@ func InitEditorConstructors() {
 			},
 		},
 	}
-	//f, err := os.Create("assets/ui/no_players.json")
+	//f, err := os.Create("assets/ui/rearrange_puzzle_set.json")
 	//if err != nil {
 	//	panic(err)
 	//}
-	//bts, err := json.Marshal(NoPlayersInPuzzleConstructor)
+	//bts, err := json.Marshal(RearrangePuzzleSetConstructor)
 	//if err != nil {
 	//	panic(err)
 	//}

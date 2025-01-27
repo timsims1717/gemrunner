@@ -184,6 +184,17 @@ func (ft *FloatingText) Init(tile *Tile) {
 	ft.Tile = tile
 }
 
+func RemoveFloatingText(tile *Tile) {
+	if tile == nil {
+		return
+	}
+	if tile.FloatingText != nil {
+		myecs.Manager.DisposeEntity(tile.FloatingText.Entity)
+		myecs.Manager.DisposeEntity(tile.FloatingText.ShEntity)
+		tile.FloatingText = nil
+	}
+}
+
 func CreateFloatingText(tile *Tile, ftd *FloatingTextData) {
 	if ftd == nil {
 		if tile.FloatingText != nil {

@@ -62,6 +62,11 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.LeapTo = false
 		ch.ACounter = 0
 	})
+	bar := reanimator.NewBatchAnimation("bar", batch, "demon_bar", reanimator.Loop)
+	bar.SetTriggerAll(func() {
+		bar.Freeze = !ch.Flags.Climbed
+		ch.Flags.Climbed = false
+	})
 	fullAttack := []int{0, 1, 2, 3, 4, 5, 4, 5, 4, 5}
 	attack := reanimator.NewBatchAnimationCustom("attack", batch, "demon_attack", fullAttack, reanimator.Tran)
 	attack.SetEndTrigger(func() {
@@ -91,6 +96,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(leapOn).
 		AddAnimation(leapOff).
 		AddAnimation(leapTo).
+		AddAnimation(bar).
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(attack).
@@ -128,6 +134,8 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 				} else {
 					return "slide"
 				}
+			case data.OnBar:
+				return "bar"
 			case data.Jumping:
 				return "jump"
 			case data.Falling:

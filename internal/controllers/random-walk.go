@@ -17,7 +17,7 @@ type RandomWalk struct {
 func NewRandomWalk(dyn *data.Dynamic, e *ecs.Entity) *RandomWalk {
 	return &RandomWalk{
 		Ch:        dyn,
-		Direction: data.None,
+		Direction: data.NoDirection,
 		Entity:    e,
 	}
 }
@@ -41,7 +41,7 @@ func (rw *RandomWalk) GetActions() data.Actions {
 		change = true
 	} else if rw.Ch.Flags.Floor && rw.Direction == data.Down {
 		change = true
-	} else if rw.Direction == data.None {
+	} else if rw.Direction == data.NoDirection {
 		change = true
 	}
 	if change {

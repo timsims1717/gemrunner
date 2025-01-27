@@ -2,6 +2,7 @@
   "key":"play_local",
   "width":11,
   "height":12,
+  "default": "play_custom_tab",
   "elements":[
     {
       "key":"play_main_tab",
@@ -12,6 +13,7 @@
         "Y":79
       },
       "type":"container",
+      "right": "play_custom_tab",
       "elements":[
         {
           "key":"main_tab_text_shadow",
@@ -62,6 +64,8 @@
         "Y":79
       },
       "type":"container",
+      "left": "play_main_tab",
+      "down": "custom_puzzle_list",
       "elements":[
         {
           "key":"custom_tab_text_shadow",
@@ -104,7 +108,7 @@
       ]
     },
     {
-      "key":"cancel_play_local",
+      "key":"cancel",
       "spriteKey":"cancel_btn_big",
       "spriteKey2":"cancel_btn_click_big",
       "batchKey":"ui",

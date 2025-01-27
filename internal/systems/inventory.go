@@ -48,7 +48,8 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 		pu, okP := result.Components[myecs.PickUp].(*data.PickUp)
 		if okO && okP && !obj.Hidden &&
 			obj.ID != ch.Object.ID &&
-			pu.Inventory == -1 {
+			pu.Inventory == -1 &&
+			(pu.Color == ch.Color || pu.Color < data.PlayerBlue) {
 			x, y := world.WorldToMap(obj.Pos.X+obj.Offset.X, obj.Pos.Y+obj.Offset.Y)
 			pickUpCoords := world.Coords{X: x, Y: y}
 			if chCoords == pickUpCoords &&
@@ -129,6 +130,7 @@ func DoAction(ch *data.Dynamic) bool {
 		ch.Inventory != nil && ch.Inventory.HasComponent(myecs.Action) {
 		if fnA, ok := ch.Inventory.GetComponentData(myecs.Action); ok {
 			if colFn, okC := fnA.(*data.Interact); okC {
+				ch.Flags.CheckAction = false
 				colFn.Fn(ch.Player, ch, ch.Inventory)
 				ch.Flags.ActionBuff = 0
 				return true

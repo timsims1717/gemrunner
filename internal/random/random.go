@@ -2,6 +2,7 @@ package random
 
 import (
 	"fmt"
+	"gemrunner/pkg/debug"
 	"math/rand"
 	"time"
 )
@@ -24,7 +25,9 @@ func init() {
 }
 
 func PrintSeed(seed int64, s string) {
-	fmt.Printf("%s Seed: %d\n", s, seed)
+	if debug.Verbose {
+		fmt.Printf("%s Seed: %d\n", s, seed)
+	}
 }
 
 func RandGlobalSeed() {

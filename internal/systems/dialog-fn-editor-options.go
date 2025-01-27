@@ -102,7 +102,7 @@ func OpenOpenPuzzleDialog() {
 			if SavePuzzleSet() {
 				ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 			} else {
-				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
+				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm", func() {
 					ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 				})
 				ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
@@ -138,7 +138,7 @@ func NewPuzzle() {
 			if SavePuzzleSet() {
 				NewPuzzleSet()
 			} else {
-				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
+				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm", func() {
 					NewPuzzleSet()
 				})
 				ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
@@ -160,7 +160,7 @@ func ExitEditor() {
 			if SavePuzzleSet() {
 				state.SwitchState(constants.MainMenuKey)
 			} else {
-				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
+				ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm", func() {
 					state.SwitchState(constants.MainMenuKey)
 				})
 				ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
@@ -186,7 +186,7 @@ func TestPuzzle() {
 				if SavePuzzleSet() {
 					state.PushState(constants.TestStateKey)
 				} else {
-					ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm_unable_to_save", func() {
+					ui.SetTempOnClick(constants.DialogUnableToSaveConfirm, "confirm", func() {
 						state.PushState(constants.TestStateKey)
 					})
 					ui.OpenDialogInStack(constants.DialogUnableToSaveConfirm)
@@ -316,6 +316,58 @@ func ConfirmPuzzleSettings() {
 	}
 }
 
+// puzzle set settings
+
+func OpenPuzzleSetSettingsDialog() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		for _, ele := range ui.Dialogs[constants.DialogPuzzleSetSettings].Elements {
+			switch ele.Key {
+			case "puzzle_set_name":
+				if data.CurrPuzzleSet.Metadata.Name != "" {
+					if ele.Value != data.CurrPuzzleSet.Metadata.Name {
+						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Name)
+					}
+				} else {
+					ui.ChangeText(ele, "Untitled")
+				}
+			case "puzzle_set_author":
+				if data.CurrPuzzleSet.Metadata.Author != "" {
+					if ele.Value != data.CurrPuzzleSet.Metadata.Author {
+						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Author)
+					}
+				} else {
+					ui.ChangeText(ele, constants.Username)
+				}
+			case "sequential_check":
+				ui.SetChecked(ele, !data.CurrPuzzleSet.Metadata.Adventure)
+			case "adventure_check":
+				ui.SetChecked(ele, data.CurrPuzzleSet.Metadata.Adventure)
+			}
+		}
+		ui.OpenDialogInStack(constants.DialogPuzzleSetSettings)
+	}
+}
+
+func ConfirmPuzzleSetSettings() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		for _, ele := range ui.Dialogs[constants.DialogPuzzleSetSettings].Elements {
+			switch ele.Key {
+			case "puzzle_set_name":
+				data.CurrPuzzleSet.Metadata.Name = ele.Value
+			case "puzzle_set_author":
+				data.CurrPuzzleSet.Metadata.Author = ele.Value
+			case "adventure_check":
+				data.CurrPuzzleSet.Metadata.Adventure = ele.Checked
+			}
+		}
+		ui.CloseDialog(constants.DialogPuzzleSetSettings)
+		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+		//if !SavePuzzleSet() {
+		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
+		//}
+	}
+}
+
 // combine puzzles
 
 func OpenCombineSetsDialog() {
@@ -409,4 +461,70 @@ func ConfirmDelete() {
 		DeletePuzzle()
 	}
 	ui.CloseDialog(constants.DialogAreYouSureDelete)
+}
+
+// rearrange puzzles
+
+func OpenRearrangePuzzlesDialog() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		ui.NewDialog(ui.DialogConstructors[constants.DialogRearrangePuzzleSet])
+		rearrangePzl := ui.Dialogs[constants.DialogRearrangePuzzleSet]
+		for _, ele := range rearrangePzl.Elements {
+			switch ele.Key {
+			case "confirm":
+				ele.OnClick = ConfirmRearrangedPuzzles
+			case "rearrange_next":
+				ele.OnHold = PuzzleSetViewNextPuzzle(rearrangePzl)
+				ele.OnClick = PuzzleSetViewNextPuzzle(rearrangePzl)
+			case "rearrange_prev":
+				ele.OnHold = PuzzleSetViewPrevPuzzle(rearrangePzl)
+				ele.OnClick = PuzzleSetViewPrevPuzzle(rearrangePzl)
+			case "rearrange_swap_next":
+				ele.OnHold = PuzzleSetViewSwapNext(rearrangePzl)
+				ele.OnClick = PuzzleSetViewSwapNext(rearrangePzl)
+			case "rearrange_swap_prev":
+				ele.OnHold = PuzzleSetViewSwapPrev(rearrangePzl)
+				ele.OnClick = PuzzleSetViewSwapPrev(rearrangePzl)
+			case "rearrange_end":
+				ele.OnHold = PuzzleSetViewSwapEnd(rearrangePzl)
+				ele.OnClick = PuzzleSetViewSwapEnd(rearrangePzl)
+			case "rearrange_begin":
+				ele.OnHold = PuzzleSetViewSwapToBegin(rearrangePzl)
+				ele.OnClick = PuzzleSetViewSwapToBegin(rearrangePzl)
+			case "cancel":
+				ele.OnClick = DisposeDialog(constants.DialogRearrangePuzzleSet)
+			}
+		}
+		UpdateDialogView(rearrangePzl)
+		data.PuzzleSetViewAllowEnd = false
+		data.PuzzleSetViewIsMoving = false
+		data.PuzzleSetViewIndex = data.CurrPuzzleSet.PuzzleIndex
+		data.PuzzleSetViewPuzzles = make([]int, len(data.CurrPuzzleSet.Puzzles))
+		for i := range data.PuzzleSetViewPuzzles {
+			data.PuzzleSetViewPuzzles[i] = i
+		}
+		pzlView := rearrangePzl.Get("puzzle_set_view")
+		CreatePuzzlePreview(pzlView.Get("puzzle_center"), data.PuzzleSetViewIndex)
+		CreatePuzzlePreview(pzlView.Get("puzzle_left"), data.PuzzleSetViewIndex-1)
+		CreatePuzzlePreview(pzlView.Get("puzzle_right"), data.PuzzleSetViewIndex+1)
+		ResetPuzzleSetView(rearrangePzl)
+		PuzzleSetViewNameAndNum(rearrangePzl, data.PuzzleSetViewIndex)
+		ui.OpenDialogInStack(constants.DialogRearrangePuzzleSet)
+	}
+}
+
+func ConfirmRearrangedPuzzles() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+		// rearrange puzzle set
+		var newPuzzles []*data.Puzzle
+		for _, i := range data.PuzzleSetViewPuzzles {
+			newPuzzles = append(newPuzzles, data.CurrPuzzleSet.Puzzles[i])
+		}
+		data.CurrPuzzleSet.Puzzles = newPuzzles
+		// go to currently selected puzzle
+		data.CurrPuzzleSet.SetTo(data.PuzzleSetViewIndex)
+		PuzzleInit()
+
+		ui.Dispose(constants.DialogRearrangePuzzleSet)
+	}
 }

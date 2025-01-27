@@ -16,18 +16,18 @@ import (
 	"math"
 )
 
-func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin world.Coords) {
-	obj := object.New().WithID(key)
+func CreateBomb(pos pixel.Vec, tile *data.Tile) {
+	obj := object.New().WithID(tile.SpriteString())
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 14
 	e := myecs.Manager.NewEntity()
-	theBomb := &data.Bomb{
-		Object:   obj,
-		Entity:   e,
-		Metadata: metadata,
-		Origin:   origin,
-	}
+	theBomb := &data.Bomb{}
+	theBomb.Object = obj
+	theBomb.Entity = e
+	theBomb.Metadata = tile.Metadata
+	theBomb.Origin = tile.Coords
+	theBomb.Color = tile.Metadata.Color
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "bomb_regen_anim", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
@@ -51,7 +51,7 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin wo
 	})
 	theBomb.Anim = reanimator.New(reanimator.NewSwitch().
 		AddAnimation(regenA).
-		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], "bomb", reanimator.Hold)).
+		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], tile.SpriteString(), reanimator.Hold)).
 		AddNull("none").
 		SetChooseFn(func() string {
 			if theBomb.Waiting {
@@ -65,23 +65,22 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, origin wo
 	theBomb.Draws = append(theBomb.Draws, theBomb.Anim)
 	name := "Bomb"
 	litKey := constants.ItemBombLit
-	if metadata.BombCross && metadata.Regenerate {
+	if tile.Metadata.BombCross && tile.Metadata.Regenerate {
 		theBomb.SymSpr = img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
 		name = "Bomb Cross"
 		litKey = constants.ItemBombLitCross
-	} else if metadata.BombCross {
+	} else if tile.Metadata.BombCross {
 		theBomb.SymSpr = img.NewSprite(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
 		name = "Bomb Cross"
 		litKey = constants.ItemBombLitCross
-	} else if metadata.Regenerate {
+	} else if tile.Metadata.Regenerate {
 		theBomb.SymSpr = img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2))
 	}
 	if theBomb.SymSpr != nil {
 		theBomb.Draws = append(theBomb.Draws, theBomb.SymSpr)
 	}
-	theBomb.Name = name
 	theBomb.LitKey = litKey
-	theBomb.PickUp = data.NewPickUp(name, 5)
+	theBomb.PickUp = data.NewPickUp(name, 5, tile.Metadata.Color)
 	theBomb.Action = BombAction(theBomb)
 
 	e.AddComponent(myecs.Object, obj)
@@ -351,7 +350,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 						}
 					}
 				}
-				if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall {
+				if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockClose {
 					tile.Flags.Collapse = true
 					tile.Counter = constants.CollapseCounter
 				}
@@ -383,8 +382,8 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 		if okCO && okC && ch.State != data.Dead {
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tile := data.CurrLevel.Tiles.Get(chX, chY)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
+				tile := data.CurrLevel.Tiles.Get(chX, chY)
 				ch.Object.Pos.X = tile.Object.Pos.X
 				ch.Object.Pos.Y = tile.Object.Pos.Y
 				ch.Flags.Blow = true
@@ -394,14 +393,14 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 			}
 		}
 	}
-	// Light other bombs
+	// light other bombs
 	for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
 		obj, okO := resultB.Components[myecs.Object].(*object.Object)
 		b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
 		if okO && okB && !obj.Hidden && !b.Waiting && !b.Regen {
 			chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
-			tile := data.CurrLevel.Tiles.Get(chX, chY)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
+				tile := data.CurrLevel.Tiles.Get(chX, chY)
 				obj.Pos.X = tile.Object.Pos.X
 				obj.Pos.Y = tile.Object.Pos.Y
 				LightBomb(b, tile)

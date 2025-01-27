@@ -29,7 +29,7 @@ type Dynamic struct {
 	MoveType MoveType
 	Player   int
 	Enemy    int
-	Color    string
+	Color    ItemColor
 	Layer    int
 
 	SFX *uuid.UUID
@@ -63,7 +63,7 @@ const (
 	Right
 	Up
 	Down
-	None
+	NoDirection
 )
 
 func (d Direction) String() string {
@@ -77,14 +77,13 @@ func (d Direction) String() string {
 	case Down:
 		return "Down"
 	default:
-		return "None"
+		return "NoDirection"
 	}
 }
 
 type Actions struct {
 	Direction     Direction
 	PrevDirection Direction
-	Jump          bool
 	PickUp        bool
 	Action        bool
 	DigLeft       bool
@@ -93,8 +92,8 @@ type Actions struct {
 
 func NewAction() Actions {
 	return Actions{
-		Direction:     None,
-		PrevDirection: None,
+		Direction:     NoDirection,
+		PrevDirection: NoDirection,
 	}
 }
 
@@ -115,7 +114,7 @@ func (a Actions) Right() bool {
 }
 
 func (a Actions) Any() bool {
-	return a.Direction != None || a.Jump || a.PickUp || a.Action || a.DigLeft || a.DigRight
+	return a.Direction != NoDirection || a.PickUp || a.Action || a.DigLeft || a.DigRight
 }
 
 type Vars struct {
@@ -144,6 +143,7 @@ const (
 	Jumping
 	Leaping
 	Flying
+	InHiding
 	DoingAction
 	Attack
 	Hit
@@ -161,6 +161,10 @@ const (
 	MagicPlace
 	ThrowBox
 	DonDisguise
+	DrillStart
+	Drilling
+	Hiding
+	FireFlamethrower
 )
 
 func (s CharacterState) String() string {
@@ -179,6 +183,8 @@ func (s CharacterState) String() string {
 		return "Leaping"
 	case Flying:
 		return "Flying"
+	case InHiding:
+		return "InHiding"
 	case DoingAction:
 		return "DoingAction"
 	case Attack:
@@ -189,6 +195,8 @@ func (s CharacterState) String() string {
 		return "Dying"
 	case Dead:
 		return "Dead"
+	case Waiting:
+		return "Waiting"
 	}
 	return "Unknown"
 }
@@ -208,6 +216,7 @@ type Flags struct {
 	LeapOn       bool
 	LeapOff      bool
 	LeapTo       bool
+	CanActLeap   bool
 	Breath       bool
 	HighJump     bool
 	LongJump     bool
@@ -221,8 +230,8 @@ type Flags struct {
 	Regen        bool
 	Flying       bool
 	Disguised    bool
+	CheckAction  bool
 	Frame        bool
-	JumpBuff     int
 	PickUpBuff   int
 	ActionBuff   int
 	DigLeftBuff  int

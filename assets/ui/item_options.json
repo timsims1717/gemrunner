@@ -1,11 +1,11 @@
 {
-  "key":"disguise_options",
+  "key":"item_options",
   "width":8,
   "height":6,
   "elements":[
     {
-      "key":"disguise_options_title",
-      "text":"Disguise Options",
+      "key":"item_options_title",
+      "text":"Item Options",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -23,7 +23,7 @@
       }
     },
     {
-      "key":"cancel_disguise_options",
+      "key":"cancel",
       "spriteKey":"cancel_btn_big",
       "spriteKey2":"cancel_btn_click_big",
       "batchKey":"ui",
@@ -35,7 +35,7 @@
       "type":"button"
     },
     {
-      "key":"confirm_disguise_options",
+      "key":"confirm",
       "spriteKey":"check_btn_big",
       "spriteKey2":"check_btn_click_big",
       "batchKey":"ui",
@@ -47,8 +47,8 @@
       "type":"button"
     },
     {
-      "key":"disguise_timer",
-      "text":"Disguise Time",
+      "key":"item_timer",
+      "text":"Uses",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -66,13 +66,13 @@
       }
     },
     {
-      "key":"disguise_timer_input",
+      "key":"item_timer_input",
       "width":16,
       "height":16,
       "spriteKey":"text_caret",
       "batchKey":"ui",
       "text":"5",
-      "helpText":"The amount of time this disguise lasts.",
+      "helpText":"The number of times the item can be used.",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -86,7 +86,7 @@
       "type":"input"
     },
     {
-      "key":"disguise_timer_minus",
+      "key":"item_timer_minus",
       "spriteKey":"minus_btn",
       "spriteKey2":"minus_btn_click",
       "batchKey":"ui",
@@ -97,7 +97,7 @@
       "type":"button"
     },
     {
-      "key":"disguise_timer_plus",
+      "key":"item_timer_plus",
       "spriteKey":"plus_btn",
       "spriteKey2":"plus_btn_click",
       "batchKey":"ui",
@@ -108,7 +108,7 @@
       "type":"button"
     },
     {
-      "key":"disguise_regenerate",
+      "key":"item_regenerate",
       "text":"Regenerates",
       "color":{
         "R":0.9607843137254902,
@@ -127,11 +127,11 @@
       }
     },
     {
-      "key":"disguise_regenerate_check",
+      "key":"item_regenerate_check",
       "spriteKey":"checkbox_false",
       "spriteKey2":"checkbox_true",
       "batchKey":"ui",
-      "helpText":"Whether the Disguise regenerates after use.",
+      "helpText":"Whether the item regenerates after running out of uses.",
       "pos":{
         "X":52,
         "Y":4
@@ -139,7 +139,7 @@
       "type":"checkbox"
     },
     {
-      "key":"disguise_regenerate_delay",
+      "key":"item_regenerate_delay",
       "text":"Regeneration\nDelay",
       "color":{
         "R":0.9607843137254902,
@@ -158,13 +158,13 @@
       }
     },
     {
-      "key":"disguise_regenerate_delay_input",
+      "key":"item_regenerate_delay_input",
       "width":16,
       "height":16,
       "spriteKey":"text_caret",
       "batchKey":"ui",
       "text":"0",
-      "helpText":"The delay of the disguise's regeneration.",
+      "helpText":"The delay of the item's regeneration.",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -178,7 +178,7 @@
       "type":"input"
     },
     {
-      "key":"disguise_regenerate_delay_minus",
+      "key":"item_regenerate_delay_minus",
       "spriteKey":"minus_btn",
       "spriteKey2":"minus_btn_click",
       "batchKey":"ui",
@@ -189,7 +189,7 @@
       "type":"button"
     },
     {
-      "key":"disguise_regenerate_delay_plus",
+      "key":"item_regenerate_delay_plus",
       "spriteKey":"plus_btn",
       "spriteKey2":"plus_btn_click",
       "batchKey":"ui",

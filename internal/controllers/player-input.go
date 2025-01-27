@@ -23,7 +23,7 @@ type PlayerInput struct {
 }
 
 func (pi *PlayerInput) ClearPrev() {
-	pi.LastActions.PrevDirection = data.None
+	pi.LastActions.PrevDirection = data.NoDirection
 }
 
 func (pi *PlayerInput) GetActions() data.Actions {
@@ -35,14 +35,13 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	right := pi.Input.Get(pi.RightKey)
 	up := pi.Input.Get(pi.UpKey)
 	down := pi.Input.Get(pi.DownKey)
-	jump := pi.Input.Get(pi.JumpKey)
 	pickUp := pi.Input.Get(pi.PickUpKey)
 	action := pi.Input.Get(pi.ActionKey)
 	digLeft := pi.Input.Get(pi.DigLeftKey)
 	digRight := pi.Input.Get(pi.DigRightKey)
 	if !left.Pressed() && !right.Pressed() && !up.Pressed() && !down.Pressed() {
-		actions.Direction = data.None
-		actions.PrevDirection = data.None
+		actions.Direction = data.NoDirection
+		actions.PrevDirection = data.NoDirection
 	} else {
 		if left.JustPressed() {
 			actions.PrevDirection = actions.Direction
@@ -63,7 +62,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 				(!down.Pressed() && actions.Direction == data.Down) {
 				actions.Direction = actions.PrevDirection
 			}
-			if actions.Direction == data.None {
+			if actions.Direction == data.NoDirection {
 				if up.Pressed() {
 					actions.Direction = data.Up
 				} else if down.Pressed() {
@@ -75,10 +74,6 @@ func (pi *PlayerInput) GetActions() data.Actions {
 				}
 			}
 		}
-	}
-	if jump.JustPressed() {
-		actions.Jump = true
-		jump.Consume()
 	}
 	if pickUp.JustPressed() {
 		actions.PickUp = true

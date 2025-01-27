@@ -140,8 +140,7 @@ func (s *playState) Draw(win *pixelgl.Window) {
 func drawPlayArea(win *pixelgl.Window) {
 	// draw border
 	data.BorderView.Canvas.Clear(constants.ColorBlack)
-	systems.BorderSystem(1)
-	img.Batchers[constants.UIBatch].Draw(data.BorderView.Canvas)
+	systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas)
 	img.Clear()
 	data.BorderView.Draw(win)
 	// draw puzzle

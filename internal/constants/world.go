@@ -145,9 +145,9 @@ var (
 	}
 
 	Player1Color = ColorBlue
-	Player2Color = ColorOrange
+	Player2Color = ColorGreen
 	Player3Color = ColorPurple
-	Player4Color = ColorGold
+	Player4Color = ColorOrange
 
 	WorldNames = map[int]string{
 		WorldMoss:      "Moss",

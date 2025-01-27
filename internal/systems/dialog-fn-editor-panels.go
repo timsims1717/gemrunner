@@ -7,9 +7,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/world"
-	"github.com/gopxl/pixel"
 	"strconv"
-	"strings"
 )
 
 // editor panel mode buttons
@@ -19,6 +17,11 @@ func EditorMode(mode data.EditorMode, btn *ui.Element, dialog *ui.Dialog) func()
 		data.Editor.SelectVis = false
 		if data.Editor.Mode != mode {
 			data.Editor.LastMode = data.Editor.Mode
+			data.Editor.ModeChanged = true
+			data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
+		} else if mode == data.ModePalette {
+			data.Editor.LastMode = data.ModeBrush
+			data.Editor.ModeChanged = true
 			data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
 		}
 		data.Editor.Mode = mode
@@ -29,98 +32,6 @@ func EditorMode(mode data.EditorMode, btn *ui.Element, dialog *ui.Dialog) func()
 		}
 		btn.Entity.AddComponent(myecs.Drawable, btn.Sprite2)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
-	}
-}
-
-// floating text
-
-func OnOpenFloatingText() {
-	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
-		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
-			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogFloatingText)
-			return
-		}
-		theTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
-		ftDialog := ui.Dialogs[constants.DialogFloatingText]
-		if theTile.FloatingText == nil {
-			data.SelectedTextColor = pixel.ToRGBA(constants.ColorWhite)
-			data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBlue)
-			ui.ChangeText(ftDialog.Get("floating_text_value"), "")
-			for _, ele := range ftDialog.Elements {
-				if strings.Contains(ele.Key, "_check_color") {
-					ui.SetChecked(ele, false)
-				} else if strings.Contains(ele.Key, "_check_shadow") {
-					ui.SetChecked(ele, false)
-				}
-			}
-			ui.SetChecked(ftDialog.Get("white_check_color"), true)
-			ui.SetChecked(ftDialog.Get("blue_check_shadow"), true)
-			ui.SetChecked(ftDialog.Get("floating_text_shadow_check"), true)
-			ui.SetChecked(ftDialog.Get("floating_text_show_check"), false)
-			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), true)
-			ui.ChangeText(ftDialog.Get("floating_text_time_input"), "0")
-			// add alignment here
-		} else {
-			data.SelectedTextColor = theTile.FloatingText.Color
-			data.SelectedShadowColor = theTile.FloatingText.ShadowCol
-			ui.ChangeText(ftDialog.Get("floating_text_value"), theTile.FloatingText.Raw)
-			for _, ele := range ftDialog.Elements {
-				if strings.Contains(ele.Key, "_check_color") {
-					updateColorCheckbox(ele, theTile.FloatingText.Color)
-				} else if strings.Contains(ele.Key, "_check_shadow") {
-					updateColorCheckbox(ele, theTile.FloatingText.ShadowCol)
-				}
-			}
-			ui.SetChecked(ftDialog.Get("floating_text_shadow_check"), theTile.FloatingText.HasShadow)
-			ui.SetChecked(ftDialog.Get("floating_text_show_check"), theTile.FloatingText.Prox)
-			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), theTile.FloatingText.Bob)
-			timerInput := ftDialog.Get("floating_text_time_input")
-			timerInput.InputType = ui.Numeric
-			ui.ChangeText(timerInput, strconv.Itoa(theTile.FloatingText.Timer))
-			// add alignment here
-		}
-	}
-}
-
-func ConfirmFloatingText() {
-	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
-		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
-			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogFloatingText)
-			return
-		}
-		theTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
-		ftDialog := ui.Dialogs[constants.DialogFloatingText]
-
-		timer, err := strconv.Atoi(ftDialog.Get("floating_text_time_input").Value)
-		if err != nil {
-			fmt.Println("WARNING: time input not an int:", err)
-			timer = 0
-		}
-
-		if theTile.TextData == nil {
-			theTile.TextData = &data.FloatingTextData{}
-		}
-		theTile.TextData.Raw = ftDialog.Get("floating_text_value").Value
-		theTile.TextData.Color = data.SelectedTextColor
-		theTile.TextData.ShadowCol = data.SelectedShadowColor
-		theTile.TextData.Timer = timer
-		theTile.TextData.HasShadow = ftDialog.Get("floating_text_shadow_check").Checked
-		theTile.TextData.Prox = ftDialog.Get("floating_text_show_check").Checked
-		theTile.TextData.Bob = ftDialog.Get("floating_text_bob_check").Checked
-
-		if theTile.FloatingText == nil {
-			theTile.FloatingText = data.NewFloatingText().
-				WithTile(theTile).
-				WithPos(theTile.Object.Pos)
-		}
-
-		data.CreateFloatingText(theTile, theTile.TextData)
-
-		ui.CloseDialog(constants.DialogFloatingText)
-		data.CurrPuzzleSet.CurrPuzzle.Update = true
-		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	}
 }
 
@@ -251,24 +162,74 @@ func ConfirmBombOptions() {
 	}
 }
 
-// Jetpack Options
+// Item Options
 
-func OnOpenJetpackOptions() {
+func customizeItemOptions() {
+	itemDlg := ui.Dialogs[constants.DialogItemOptions]
+	itemDlg.OnOpen = OnOpenItemOptions
+	for _, e := range itemDlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmItemOptions
+		case "item_regenerate_delay_minus":
+			ele.OnClick = func() {
+				ChangeNumberInput(itemDlg.Get("item_regenerate_delay_input"), -1)
+			}
+		case "item_regenerate_delay_plus":
+			ele.OnClick = func() {
+				ChangeNumberInput(itemDlg.Get("item_regenerate_delay_input"), 1)
+			}
+		case "item_timer_minus":
+			ele.OnClick = func() {
+				ChangeNumberInput(itemDlg.Get("item_timer_input"), -1)
+			}
+		case "item_timer_plus":
+			ele.OnClick = func() {
+				ChangeNumberInput(itemDlg.Get("item_timer_input"), 1)
+			}
+		case "cancel":
+			ele.OnClick = CloseDialog(constants.DialogItemOptions)
+		}
+	}
+}
+
+func OnOpenItemOptions() {
 	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
 		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
 			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogJetpack)
+			ui.CloseDialog(constants.DialogItemOptions)
 			return
 		}
 		firstTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
-		for _, ele := range ui.Dialogs[constants.DialogJetpack].Elements {
+		for _, ele := range ui.Dialogs[constants.DialogItemOptions].Elements {
 			switch ele.Key {
-			case "jetpack_regenerate_check":
+			case "item_options_title":
+				name := "Item"
+				switch firstTile.Block {
+				case data.BlockJetpack:
+					name = "Jetpack"
+				case data.BlockFlamethrower:
+					name = "Flamethrower"
+				case data.BlockDisguise:
+					name = "Disguise"
+				case data.BlockBomb:
+					name = "Bomb"
+				}
+				ele.Text.SetText(fmt.Sprintf("%s Options", name))
+			case "item_timer":
+				switch firstTile.Block {
+				case data.BlockFlamethrower:
+					ele.Text.SetText("Uses")
+				default:
+					ele.Text.SetText("Timer")
+				}
+			case "item_regenerate_check":
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
-			case "jetpack_regenerate_delay_input":
+			case "item_regenerate_delay_input":
 				ele.InputType = ui.Numeric
 				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
-			case "jetpack_timer_input":
+			case "item_timer_input":
 				ele.InputType = ui.Numeric
 				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
 			}
@@ -276,30 +237,30 @@ func OnOpenJetpackOptions() {
 	}
 }
 
-func ConfirmJetpackOptions() {
+func ConfirmItemOptions() {
 	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
 		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
 			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogJetpack)
+			ui.CloseDialog(constants.DialogItemOptions)
 			return
 		}
 		var regen bool
 		var delay, timer int
-		for _, ele := range ui.Dialogs[constants.DialogJetpack].Elements {
+		for _, ele := range ui.Dialogs[constants.DialogItemOptions].Elements {
 			switch ele.Key {
-			case "jetpack_regenerate_check":
+			case "item_regenerate_check":
 				regen = ele.Checked
-			case "jetpack_regenerate_delay_input":
+			case "item_regenerate_delay_input":
 				di, err := strconv.Atoi(ele.Text.Raw)
 				if err != nil {
 					fmt.Println("WARNING: regen delay not an int:", err)
 					di = 0
 				}
 				delay = di
-			case "jetpack_timer_input":
+			case "item_timer_input":
 				di, err := strconv.Atoi(ele.Text.Raw)
 				if err != nil {
-					fmt.Println("WARNING: timer not an int:", err)
+					fmt.Println("WARNING: uses not an int:", err)
 					di = 0
 				}
 				timer = di
@@ -311,73 +272,7 @@ func ConfirmJetpackOptions() {
 			tile.Metadata.RegenDelay = delay
 			tile.Metadata.Changed = true
 		}
-		ui.CloseDialog(constants.DialogJetpack)
-		data.CurrPuzzleSet.CurrPuzzle.Update = true
-		data.CurrPuzzleSet.CurrPuzzle.Changed = true
-	}
-}
-
-// Disguise Options
-
-func OnOpenDisguiseOptions() {
-	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
-		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
-			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogDisguise)
-			return
-		}
-		firstTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
-		for _, ele := range ui.Dialogs[constants.DialogDisguise].Elements {
-			switch ele.Key {
-			case "disguise_regenerate_check":
-				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
-			case "disguise_regenerate_delay_input":
-				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
-			case "disguise_timer_input":
-				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
-			}
-		}
-	}
-}
-
-func ConfirmDisguiseOptions() {
-	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
-		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
-			fmt.Println("WARNING: no tiles selected by wrench")
-			ui.CloseDialog(constants.DialogDisguise)
-			return
-		}
-		var regen bool
-		var delay, timer int
-		for _, ele := range ui.Dialogs[constants.DialogDisguise].Elements {
-			switch ele.Key {
-			case "disguise_regenerate_check":
-				regen = ele.Checked
-			case "disguise_regenerate_delay_input":
-				di, err := strconv.Atoi(ele.Text.Raw)
-				if err != nil {
-					fmt.Println("WARNING: regen delay not an int:", err)
-					di = 0
-				}
-				delay = di
-			case "disguise_timer_input":
-				di, err := strconv.Atoi(ele.Text.Raw)
-				if err != nil {
-					fmt.Println("WARNING: timer not an int:", err)
-					di = 0
-				}
-				timer = di
-			}
-		}
-		for _, tile := range data.CurrPuzzleSet.CurrPuzzle.WrenchTiles {
-			tile.Metadata.Regenerate = regen
-			tile.Metadata.Timer = timer
-			tile.Metadata.RegenDelay = delay
-			tile.Metadata.Changed = true
-		}
-		ui.CloseDialog(constants.DialogDisguise)
+		ui.CloseDialog(constants.DialogItemOptions)
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	}
@@ -387,7 +282,7 @@ func ConfirmDisguiseOptions() {
 
 func ChangeNumberInput(in *ui.Element, change int) {
 	if in == nil {
-		fmt.Printf("WARNING: input element %s is nil\n", in.Key)
+		fmt.Printf("WARNING: input element is nil\n")
 		return
 	}
 	di, err := strconv.Atoi(in.Text.Raw)
@@ -402,42 +297,4 @@ func ChangeNumberInput(in *ui.Element, change int) {
 		di = 99
 	}
 	ui.ChangeText(in, fmt.Sprintf("%d", di))
-}
-
-func updateColorCheckbox(x *ui.Element, col pixel.RGBA) {
-	key := x.Key[:strings.LastIndex(x.Key, "_")]
-	switch key {
-	case "white_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorWhite))
-	case "red_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorRed))
-	case "orange_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorOrange))
-	case "green_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorGreen))
-	case "cyan_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorCyan))
-	case "blue_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorBlue))
-	case "purple_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorPurple))
-	case "pink_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorPink))
-	case "black_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorBlack))
-	case "yellow_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorYellow))
-	case "gold_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorGold))
-	case "brown_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorBrown))
-	case "tan_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorTan))
-	case "light_gray_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorLightGray))
-	case "gray_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorGray))
-	case "burnt_check":
-		ui.SetChecked(x, col == pixel.ToRGBA(constants.ColorBurnt))
-	}
 }

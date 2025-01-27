@@ -17,6 +17,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					tile.Metadata = data.DefaultMetadata()
 					RemoveLinkedTiles(tile)
 				}
+				tile.Metadata.Color = data.Editor.PaletteColor
 				switch block {
 				case data.BlockTurf:
 					if tile.IsLadder() {

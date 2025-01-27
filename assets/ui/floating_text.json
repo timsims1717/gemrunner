@@ -27,48 +27,28 @@
       }
     },
     {
-      "key":"cancel_floating_text",
+      "key":"cancel",
       "spriteKey":"cancel_btn_big",
       "spriteKey2":"cancel_btn_click_big",
       "batchKey":"ui",
       "helpText":"Cancel",
-      "color":{
-        "R":0,
-        "G":0,
-        "B":0,
-        "A":0
-      },
       "pos":{
         "X":92,
         "Y":-100
       },
-      "type":"button",
-      "anchor":{
-        "X":0,
-        "Y":0
-      }
+      "type":"button"
     },
     {
-      "key":"confirm_floating_text",
+      "key":"confirm",
       "spriteKey":"check_btn_big",
       "spriteKey2":"check_btn_click_big",
       "batchKey":"ui",
       "helpText":"Confirm",
-      "color":{
-        "R":0,
-        "G":0,
-        "B":0,
-        "A":0
-      },
       "pos":{
         "X":72,
         "Y":-100
       },
-      "type":"button",
-      "anchor":{
-        "X":0,
-        "Y":0
-      }
+      "type":"button"
     },
     {
       "key":"floating_text_value_label",
@@ -106,11 +86,7 @@
         "X":16,
         "Y":78
       },
-      "type":"multiline",
-      "anchor":{
-        "X":0,
-        "Y":0
-      }
+      "type":"multiline"
     },
     {
       "key":"floating_text_color_label",

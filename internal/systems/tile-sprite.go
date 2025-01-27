@@ -47,7 +47,7 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
 	case data.BlockTurf, data.BlockBedrock,
-		data.BlockFall, data.BlockCracked, data.BlockPhase,
+		data.BlockFall, data.BlockCracked, data.BlockClose, data.BlockPhase,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf:
 		if data.EditorDraw {
 			sprs = GetBlockSpritesEditor(tile)
@@ -56,12 +56,15 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 		}
 	case data.BlockSpike:
 		sprs = append(sprs, img.NewSprite(GetSpikeSprite(tile), constants.TileBatch))
+	case data.BlockHideout:
+		sprs = append(sprs, img.NewSprite(GetHideoutSprite(tile), constants.TileBatch))
+		sprs = append(sprs, img.NewSprite(constants.TileHideout, constants.TileBatch))
 	case data.BlockDemonRegen, data.BlockFlyRegen:
 		if !tile.Live {
-			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
+			sprs = append(sprs, img.NewSprite(tile.SpriteString(), constants.TileBatch))
 		}
 	case data.BlockBomb:
-		sprs = append(sprs, img.NewSprite(constants.ItemBomb, constants.TileBatch))
+		sprs = append(sprs, img.NewSprite(tile.SpriteString(), constants.TileBatch))
 		if tile.Metadata.Regenerate && tile.Metadata.BombCross {
 			sprs = append(sprs, img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		} else if tile.Metadata.BombCross {
@@ -79,7 +82,7 @@ func GetTileSprites(tile *data.Tile) []*img.Sprite {
 			sprs = append(sprs, img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		}
 	default:
-		sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
+		sprs = append(sprs, img.NewSprite(tile.SpriteString(), constants.TileBatch))
 	}
 	var lStr string
 	if tile.Live {
@@ -103,6 +106,8 @@ func GetBlockSpritesEditor(tile *data.Tile) []*img.Sprite {
 		sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
 	} else if tile.Block == data.BlockCracked {
 		sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
+	} else if tile.Block == data.BlockClose {
+		sprs = append(sprs, img.NewSprite(constants.TileClose, constants.TileBatch))
 	} else if tile.Block == data.BlockPhase {
 		sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
 	}
@@ -111,7 +116,8 @@ func GetBlockSpritesEditor(tile *data.Tile) []*img.Sprite {
 
 func GetBlockSprites(tile *data.Tile) []*img.Sprite {
 	var sprs []*img.Sprite
-	if tile.Flags.Collapse && tile.Counter > constants.CollapseCounter {
+	if tile.Flags.Collapse &&
+		(!tile.Flags.BareFangs && tile.Counter > constants.CollapseCounter) {
 		return sprs
 	}
 	spr := img.NewSprite(GetBlockSprite(tile), constants.TileBatch)
@@ -130,9 +136,22 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 		switch tile.Block {
 		case data.BlockPhase:
 			sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, tile.Metadata.Phase), constants.UIBatch))
+		case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
+			exitIndex := tile.Metadata.ExitIndex + 1
+			if tile.Metadata.ExitIndex == -1 {
+				exitIndex = data.CurrPuzzleSet.PuzzleIndex + 2
+			}
+			if exitIndex < 10 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, exitIndex), constants.UIBatch))
+			} else if exitIndex < 100 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, exitIndex/10), constants.UIBatch).WithOffset(pixel.V(-3, 0)))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, exitIndex%10), constants.UIBatch).WithOffset(pixel.V(3, 0)))
+			} else if exitIndex < 1000 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, exitIndex/100), constants.UIBatch).WithOffset(pixel.V(-6, 0)))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, exitIndex%100/10), constants.UIBatch))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, exitIndex%10), constants.UIBatch).WithOffset(pixel.V(6, 0)))
+			}
 		case data.BlockFly, data.BlockDemon,
-			data.BlockJetpack,
-			data.BlockDisguise,
 			data.BlockCracked,
 			data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			for i := 0; i < 4; i++ {
@@ -174,6 +193,23 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 					offset.Y = -4
 				}
 			}
+		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower:
+			yOffset := 0.
+			if tile.Metadata.Regenerate {
+				sprs = append(sprs, img.NewSprite("tile_ui_regen", constants.UIBatch).WithOffset(pixel.V(-4, 4)))
+				yOffset = -4
+			}
+			timer := tile.Metadata.Timer
+			if timer < 10 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+			} else if timer < 100 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
+			} else if timer < 1000 {
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer/100), constants.UIBatch).WithOffset(pixel.V(-6, yOffset)))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer%100/10), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(6, yOffset)))
+			}
 		}
 	}
 	return sprs
@@ -198,20 +234,20 @@ func GetBlockSprite(tile *data.Tile) string {
 	} else {
 		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
-	if b.IsBlock() {
+	if b.IsBlock() || b.Block == data.BlockHideout {
 		bottom = false
 	}
 	var sKey string
 	if top && bottom {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottomTop)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottomTop)
 	} else if top {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileTop)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileTop)
 	} else if bottom {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottom)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottom)
 	} else if tile.AltBlock == 1 && tile.Block == data.BlockTurf {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileAlt)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileAlt)
 	} else {
-		sKey = tile.Block.String()
+		sKey = tile.SpriteString()
 	}
 	return sKey
 }
@@ -225,14 +261,35 @@ func GetSpikeSprite(tile *data.Tile) string {
 	} else {
 		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
-	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) {
+	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) || b.Block == data.BlockHideout {
 		bottom = false
 	}
 	var sKey string
 	if bottom {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottom)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottom)
 	} else {
-		sKey = tile.Block.String()
+		sKey = tile.SpriteString()
+	}
+	return sKey
+}
+
+func GetHideoutSprite(tile *data.Tile) string {
+	// check position to get correct sprite
+	top := true
+	var a *data.Tile
+	if tile.Live {
+		a = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+	} else {
+		a = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+	}
+	if a == nil || a.IsBlock() || a.Block == data.BlockHideout {
+		top = false
+	}
+	var sKey string
+	if top {
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileTop)
+	} else {
+		sKey = tile.SpriteString()
 	}
 	return sKey
 }
@@ -381,7 +438,7 @@ func GetTileSpritesSelection(tile *data.Tile) []*img.Sprite {
 				sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
 			}
 		default:
-			sprs = append(sprs, img.NewSprite(tile.Block.String(), constants.TileBatch))
+			sprs = append(sprs, img.NewSprite(tile.SpriteString(), constants.TileBatch))
 		}
 		lStr := GetLadderSpriteSelection(tile)
 		if lStr != "" {
@@ -412,13 +469,13 @@ func GetSpriteSelection(tile *data.Tile) string {
 	}
 	var sKey string
 	if top && bottom {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottomTop)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottomTop)
 	} else if top {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileTop)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileTop)
 	} else if bottom {
-		sKey = fmt.Sprintf("%s%s", tile.Block.String(), constants.TileBottom)
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottom)
 	} else {
-		sKey = tile.Block.String()
+		sKey = tile.SpriteString()
 	}
 	return sKey
 }

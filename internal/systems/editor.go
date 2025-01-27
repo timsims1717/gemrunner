@@ -1,10 +1,12 @@
 package systems
 
 import (
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/util"
@@ -132,6 +134,9 @@ func UpdateEditorModeHotKey() {
 			if hotkey != nil && hotkey.JustPressed() {
 				hotkey.Consume()
 				data.Editor.Mode = data.EditorMode(i)
+				if data.EditorMode(i) == data.ModePalette {
+					data.Editor.LastMode = data.ModeBrush
+				}
 			}
 		}
 	}
@@ -140,6 +145,7 @@ func UpdateEditorModeHotKey() {
 	}
 	if oldMode != data.Editor.Mode {
 		data.Editor.LastMode = oldMode
+		data.Editor.ModeChanged = true
 		data.Editor.LastCoords = world.Coords{X: -1, Y: -1}
 		data.Editor.SelectVis = false
 		data.CurrPuzzleSet.CurrPuzzle.Update = true
@@ -349,6 +355,7 @@ func PuzzleEditSystem() {
 						} else {
 							data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.Editor.Mode
 						}
+						data.Editor.ModeChanged = true
 					}
 					CreateHighlight(coords)
 				}
@@ -373,7 +380,8 @@ func PuzzleEditSystem() {
 												t.Metadata.Changed = true
 											case data.BlockCracked, data.BlockLadderCracked,
 												data.BlockBomb, data.BlockBombLit,
-												data.BlockJetpack, data.BlockDisguise:
+												data.BlockJetpack, data.BlockDisguise,
+												data.BlockFlamethrower:
 												data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = append(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles, t)
 											case data.BlockPhase:
 												if rClick.JustReleased() {
@@ -397,52 +405,52 @@ func PuzzleEditSystem() {
 									ui.OpenDialogInStack(constants.DialogCrackedTiles)
 								case data.BlockBomb, data.BlockBombLit:
 									ui.OpenDialogInStack(constants.DialogBomb)
-								case data.BlockJetpack:
-									ui.OpenDialogInStack(constants.DialogJetpack)
-								case data.BlockDisguise:
-									ui.OpenDialogInStack(constants.DialogDisguise)
+								case data.BlockJetpack, data.BlockDisguise,
+									data.BlockFlamethrower:
+									ui.OpenDialogInStack(constants.DialogItemOptions)
 								}
 								break
 							}
-						}
-						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
-						switch tile.Block {
-						case data.BlockTurf:
-							if tile.AltBlock == 0 {
-								tile.AltBlock = 1
-							} else {
-								tile.AltBlock = 0
-							}
-						case data.BlockFly:
-							tile.Metadata.Flipped = !tile.Metadata.Flipped
-							tile.Object.Flip = tile.Metadata.Flipped
-							tile.Metadata.Changed = true
-							data.CurrPuzzleSet.CurrPuzzle.Update = true
-							data.CurrPuzzleSet.CurrPuzzle.Changed = true
-						case data.BlockCracked, data.BlockLadderCracked:
-							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							ui.OpenDialogInStack(constants.DialogCrackedTiles)
-						case data.BlockBomb, data.BlockBombLit:
-							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							ui.OpenDialogInStack(constants.DialogBomb)
-						case data.BlockJetpack:
-							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							ui.OpenDialogInStack(constants.DialogJetpack)
-						case data.BlockDisguise:
-							data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
-							ui.OpenDialogInStack(constants.DialogDisguise)
-						case data.BlockPhase:
-							if rClick.JustReleased() {
-								tile.Metadata.Phase--
-								if tile.Metadata.Phase < 0 {
-									tile.Metadata.Phase = 7
+						} else {
+							tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+							switch tile.Block {
+							case data.BlockTurf:
+								if tile.AltBlock == 0 {
+									tile.AltBlock = 1
+								} else {
+									tile.AltBlock = 0
 								}
-							} else if click.JustReleased() {
-								tile.Metadata.Phase++
-								tile.Metadata.Phase = tile.Metadata.Phase % 8
+							case data.BlockFly:
+								tile.Metadata.Flipped = !tile.Metadata.Flipped
+								tile.Object.Flip = tile.Metadata.Flipped
+								tile.Metadata.Changed = true
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Changed = true
+							case data.BlockCracked, data.BlockLadderCracked:
+								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+								ui.OpenDialogInStack(constants.DialogCrackedTiles)
+							case data.BlockBomb, data.BlockBombLit:
+								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+								ui.OpenDialogInStack(constants.DialogBomb)
+							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower:
+								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+								ui.OpenDialogInStack(constants.DialogItemOptions)
+							case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
+								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
+								OpenDoorOptionsDialog()
+							case data.BlockPhase:
+								if rClick.JustReleased() {
+									tile.Metadata.Phase--
+									if tile.Metadata.Phase < 0 {
+										tile.Metadata.Phase = 7
+									}
+								} else if click.JustReleased() {
+									tile.Metadata.Phase++
+									tile.Metadata.Phase = tile.Metadata.Phase % 8
+								}
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Changed = true
 							}
-							data.CurrPuzzleSet.CurrPuzzle.Update = true
-							data.CurrPuzzleSet.CurrPuzzle.Changed = true
 						}
 					}
 				}
@@ -516,10 +524,48 @@ func PuzzleEditSystem() {
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
 						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					} else if rClick.JustReleased() { // remove text
-						//tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
-
-						//data.CurrPuzzleSet.CurrPuzzle.Update = true
-						//data.CurrPuzzleSet.CurrPuzzle.Changed = true
+						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						data.RemoveFloatingText(tile)
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
+					}
+				}
+			case data.ModePalette:
+				if data.Editor.ModeChanged {
+					// open palette dialog
+					ui.OpenDialogInStack(constants.DialogPalette)
+				} else {
+					if rClick.JustPressed() || click.JustPressed() && !lastLegal {
+						data.Editor.LastCoords = coords
+						lastLegal = CoordsLegal(data.Editor.LastCoords)
+					}
+					line := world.Line(data.Editor.LastCoords, coords)
+					if rClick.Pressed() {
+						for _, c := range line {
+							if CoordsLegal(c) {
+								tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y)
+								tile.Metadata.Color = data.ColorDefault
+								tile.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+							}
+						}
+					} else if click.Pressed() {
+						for _, c := range line {
+							if CoordsLegal(c) {
+								tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y)
+								tile.Metadata.Color = data.Editor.PaletteColor
+								tile.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+							}
+						}
+					}
+					if rClick.JustReleased() || click.JustReleased() {
+						data.CurrPuzzleSet.CurrPuzzle.Update = true
+						data.CurrPuzzleSet.CurrPuzzle.Changed = true
+					}
+					if legal {
+						CreateHighlight(coords)
+						data.Editor.LastCoords = coords
 					}
 				}
 			case data.ModeSelect:
@@ -535,6 +581,7 @@ func PuzzleEditSystem() {
 					} else if click.JustReleased() {
 						CreateSelection(data.Editor.LastCoords, GetClosestLegal(coords))
 						data.Editor.Mode = data.ModeMove
+						data.Editor.ModeChanged = true
 					} else if !click.Pressed() && !rClick.Pressed() {
 						data.Editor.NoInput = false
 						if legal {
@@ -555,6 +602,7 @@ func PuzzleEditSystem() {
 					if click.Pressed() {
 						if rClick.JustPressed() {
 							data.Editor.Mode = data.ModeSelect
+							data.Editor.ModeChanged = true
 							data.Editor.NoInput = true
 							data.CurrSelect.Offset = data.CurrSelect.Origin
 							break
@@ -564,6 +612,7 @@ func PuzzleEditSystem() {
 							inTest.Y -= data.CurrSelect.Offset.Y
 							if !CoordsLegalSelection(inTest) {
 								data.Editor.Mode = data.ModeSelect
+								data.Editor.ModeChanged = true
 								break
 							}
 							data.Editor.LastCoords = coords
@@ -588,6 +637,7 @@ func PuzzleEditSystem() {
 						data.CurrSelect.Origin = data.CurrSelect.Offset
 					} else if rClick.JustPressed() {
 						data.Editor.Mode = data.ModeBrush
+						data.Editor.ModeChanged = true
 						data.Editor.NoInput = true
 						data.CurrSelect.Offset = data.CurrSelect.Origin
 						break
@@ -602,11 +652,13 @@ func PuzzleEditSystem() {
 			} else {
 				data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
 			}
+			data.Editor.ModeChanged = true
 		case data.ModeCut:
 			if CreateClip() {
 				data.CurrSelect = nil
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
+			data.Editor.ModeChanged = true
 		case data.ModePaste:
 			// place the current clip
 			PlaceSelection()
@@ -615,23 +667,27 @@ func PuzzleEditSystem() {
 			} else {
 				data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
 			}
+			data.Editor.ModeChanged = true
 		case data.ModeDelete:
 			data.CurrSelect = nil
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
 			data.CurrPuzzleSet.CurrPuzzle.Update = true
 			data.CurrPuzzleSet.CurrPuzzle.Changed = true
+			data.Editor.ModeChanged = true
 		case data.ModeUndo:
 			if len(data.CurrPuzzleSet.CurrPuzzle.UndoStack) > 0 {
 				PushRedoStack()
 				PopUndoArray()
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
+			data.Editor.ModeChanged = true
 		case data.ModeRedo:
 			if len(data.CurrPuzzleSet.CurrPuzzle.RedoStack) > 0 {
 				PushUndoArray(false)
 				PopRedoStack()
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
+			data.Editor.ModeChanged = true
 		case data.ModeFlipVertical:
 			if data.CurrSelect != nil {
 				FlipVertical()
@@ -639,6 +695,7 @@ func PuzzleEditSystem() {
 			} else {
 				data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
 			}
+			data.Editor.ModeChanged = true
 		case data.ModeFlipHorizontal:
 			if data.CurrSelect != nil {
 				FlipHorizontal()
@@ -646,18 +703,21 @@ func PuzzleEditSystem() {
 			} else {
 				data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
 			}
+			data.Editor.ModeChanged = true
 		case data.ModeSave:
 			PlaceSelection()
 			if !SavePuzzleSet() {
 				ui.OpenDialogInStack(constants.DialogUnableToSave)
 			}
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
+			data.Editor.ModeChanged = true
 		case data.ModeOpen:
 			//if err := LoadPuzzle(); err != nil {
 			//	fmt.Println("Error:", err)
 			//}
 			ui.OpenDialogInStack(constants.DialogOpenPuzzle)
 			data.Editor.Mode, data.Editor.LastMode = data.Editor.LastMode, data.ModeBrush
+			data.Editor.ModeChanged = true
 		}
 	}
 	if data.Editor.Mode == data.ModeMove || data.Editor.Mode == data.ModeWrench {
@@ -692,6 +752,7 @@ func PuzzleEditSystem() {
 			}
 		} else if data.Editor.Mode == data.ModeMove {
 			data.Editor.Mode = data.ModeSelect
+			data.Editor.ModeChanged = true
 		}
 	} else {
 		// place the current selection
@@ -713,10 +774,15 @@ func PuzzleEditSystem() {
 	}
 	if data.Editor.Mode >= data.EndModeList {
 		data.Editor.Mode = data.ModeBrush
+		data.Editor.ModeChanged = true
 	}
 	if data.Editor.LastMode >= data.EndModeList {
 		data.Editor.LastMode = data.ModeBrush
 	}
+	if debug.Verbose && data.Editor.ModeChanged {
+		fmt.Printf("mode changed to %s\n", data.Editor.Mode.String())
+	}
+	data.Editor.ModeChanged = false
 }
 
 func EditorPanelButtons() {

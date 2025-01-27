@@ -73,6 +73,8 @@ const (
 	WaitToSwitch    = 3
 	ButtonBuffer    = 3
 	CrackedCounter  = 16
+	DrillCounter    = -8
+	FlamethrowerCnt = 8
 	RegenCounter    = 128
 	RegenACounter   = 7
 	CollapseCounter = 7

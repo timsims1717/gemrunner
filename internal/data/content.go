@@ -15,6 +15,7 @@ var (
 	CustomPuzzleListLoaded bool
 	FavoritesList          []string
 	SelectedPuzzleIndex    int
+
 	CustomWorldSelected    bool
 	CustomSelectedBefore   bool
 	SelectedWorldIndex     int
@@ -23,12 +24,14 @@ var (
 	SelectedDoodadColor    pixel.RGBA
 	SelectedTextColor      pixel.RGBA
 	SelectedShadowColor    pixel.RGBA
-	RearrangePuzzleMove    bool
-	RearrangePuzzleIndex   int
-	RearrangePuzzles       []int
-	RearrangeLeftX         = constants.TileSize * -8
-	RearrangeRightX        = constants.TileSize * 8
-	RearrangeFloatX        = constants.TileSize * -16
+
+	PuzzleSetViewIsMoving bool
+	PuzzleSetViewIndex    int
+	PuzzleSetViewPuzzles  []int
+	PuzzleSetViewAllowEnd bool
+	RearrangeLeftX        = constants.TileSize * -8
+	RearrangeRightX       = constants.TileSize * 8
+	RearrangeFloatX       = constants.TileSize * -16
 
 	Players       []Player
 	MenuInputUsed = pxginput.KeyboardMouse
