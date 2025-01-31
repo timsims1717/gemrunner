@@ -39,13 +39,13 @@ func (s *playState) Unload(win *pixelgl.Window) {
 }
 
 func (s *playState) Load(win *pixelgl.Window) {
+	data.EditorDraw = false
 	ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
 	systems.InGameDialogs(win)
 	systems.LevelSessionInit()
 	systems.LevelInit()
 	systems.UpdateViews()
-	data.EditorDraw = false
 	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
@@ -119,10 +119,10 @@ func (s *playState) Update(win *pixelgl.Window) {
 
 	}
 	// object systems
-	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
+	systems.ShaderSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()

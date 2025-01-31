@@ -25,6 +25,7 @@ type testState struct {
 }
 
 func (s *testState) Unload(win *pixelgl.Window) {
+	data.EditorDraw = true
 	if data.Editor != nil {
 		if data.Editor.PosTop {
 			ui.OpenDialog(constants.DialogEditorPanelTop)
@@ -42,12 +43,16 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	systems.LevelSessionDispose()
 	systems.LevelDispose()
 	systems.ClearTemp()
-	data.EditorDraw = true
+	systems.PuzzleViewInit()
+	systems.UpdateEditorShaders()
+	systems.UpdatePuzzleShaders()
+	systems.ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
 
 func (s *testState) Load(win *pixelgl.Window) {
+	data.EditorDraw = false
 	if data.Editor != nil {
 		if data.Editor.PosTop {
 			ui.CloseDialog(constants.DialogEditorPanelTop)
@@ -60,7 +65,6 @@ func (s *testState) Load(win *pixelgl.Window) {
 	systems.LevelSessionInit()
 	systems.LevelInit()
 	systems.UpdateViews()
-	data.EditorDraw = false
 	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
@@ -133,10 +137,10 @@ func (s *testState) Update(win *pixelgl.Window) {
 
 	}
 	// object systems
-	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
+	systems.ShaderSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()

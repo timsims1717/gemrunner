@@ -274,3 +274,12 @@ func InitMainBorder() {
 			AddComponent(myecs.Border, ui.PuzzleBorder)
 	}
 }
+
+func SetMainBorder(w, h int) {
+	if ui.PuzzleBorder != nil {
+		ui.PuzzleBorderObject.Pos.X = world.TileSize * 0.5 * float64(w)
+		ui.PuzzleBorderObject.Pos.Y = world.TileSize * 0.5 * float64(h)
+		ui.PuzzleBorder.Width = w
+		ui.PuzzleBorder.Height = h
+	}
+}

@@ -21,7 +21,7 @@ func DynamicSystem() {
 				if !result.Entity.HasComponent(myecs.Parent) {
 					currPos := d.Object.Pos
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
-					currTile := data.CurrLevel.Tiles.Get(x, y)
+					currTile := data.CurrLevel.Get(x, y)
 					if !d.Flags.Floor {
 						if d.Flags.Thrown {
 							thrown(d, currTile)
@@ -36,7 +36,7 @@ func DynamicSystem() {
 				} else {
 					currPos := d.Object.Pos.Add(d.Object.Offset)
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
-					tile := data.CurrLevel.Tiles.Get(x, y)
+					tile := data.CurrLevel.Get(x, y)
 					d.LastTile = tile
 				}
 			}

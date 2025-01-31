@@ -281,6 +281,10 @@ func ConfirmItemOptions() {
 // Other
 
 func ChangeNumberInput(in *ui.Element, change int) {
+	ChangeNumberInputWithLimits(in, change, 0, 99)
+}
+
+func ChangeNumberInputWithLimits(in *ui.Element, change, min, max int) {
 	if in == nil {
 		fmt.Printf("WARNING: input element is nil\n")
 		return
@@ -291,10 +295,10 @@ func ChangeNumberInput(in *ui.Element, change int) {
 		di = 0
 	}
 	di += change
-	if di < 0 {
-		di = 0
-	} else if di > 99 {
-		di = 99
+	if di < min {
+		di = min
+	} else if di > max {
+		di = max
 	}
 	ui.ChangeText(in, fmt.Sprintf("%d", di))
 }

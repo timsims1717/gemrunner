@@ -46,8 +46,8 @@ func (rw *RandomWalk) GetActions() data.Actions {
 	}
 	if change {
 		x, y := world.WorldToMap(rw.Ch.Object.Pos.X, rw.Ch.Object.Pos.Y)
-		currTile := data.CurrLevel.Tiles.Get(x, y)
-		belowTile := data.CurrLevel.Tiles.Get(x, y-1)
+		currTile := data.CurrLevel.Get(x, y)
+		belowTile := data.CurrLevel.Get(x, y-1)
 		l := !rw.Ch.Flags.LeftWall
 		r := !rw.Ch.Flags.RightWall
 		u := !rw.Ch.Flags.Ceiling && currTile.IsLadder()

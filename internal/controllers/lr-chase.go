@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
@@ -53,8 +52,8 @@ func (lr *LRChase) GetActions() data.Actions {
 		sx := x
 		for {
 			var nextTile, belowTile *data.Tile
-			nextTile = data.CurrLevel.Tiles.Get(sx, y)
-			belowTile = data.CurrLevel.Tiles.Get(sx, y-1)
+			nextTile = data.CurrLevel.Get(sx, y)
+			belowTile = data.CurrLevel.Get(sx, y-1)
 			if nextTile == nil {
 				// failed to find
 				fmt.Println("WARNING: LRChase searched off the map")
@@ -73,7 +72,7 @@ func (lr *LRChase) GetActions() data.Actions {
 				break
 			}
 		}
-		//belowTile := data.CurrLevel.Tiles.Get(x, y-1)
+		//belowTile := data.CurrLevel.Get(x, y-1)
 		//if lr.Ch.State == data.OnLadder &&
 		//	(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
 		//		(lr.Target.State != data.OnLadder &&
@@ -114,11 +113,11 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 
 	// scan to the left
 	for sx > 0 {
-		nextTile := data.CurrLevel.Tiles.Get(sx-1, sy)
+		nextTile := data.CurrLevel.Get(sx-1, sy)
 		if nextTile == nil || nextTile.IsSolid() {
 			break
 		}
-		belowTile := data.CurrLevel.Tiles.Get(sx-1, sy-1)
+		belowTile := data.CurrLevel.Get(sx-1, sy-1)
 		if nextTile.IsLadder() || nextTile.Block == data.BlockBar ||
 			!belowTile.IsEmpty() {
 			sx--
@@ -131,12 +130,12 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 
 	sx = startX
 	// scan to the right
-	for sx < constants.PuzzleWidth-1 {
-		nextTile := data.CurrLevel.Tiles.Get(sx+1, sy)
+	for sx < data.CurrLevel.Metadata.Width-1 {
+		nextTile := data.CurrLevel.Get(sx+1, sy)
 		if nextTile == nil || nextTile.IsSolid() {
 			break
 		}
-		belowTile := data.CurrLevel.Tiles.Get(sx+1, sy-1)
+		belowTile := data.CurrLevel.Get(sx+1, sy-1)
 		if nextTile.IsLadder() || nextTile.Block == data.BlockBar ||
 			!belowTile.IsEmpty() {
 			sx++
@@ -149,7 +148,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 
 	// scan the current x up and down as the best option
 	sx = startX
-	belowTile := data.CurrLevel.Tiles.Get(sx, sy-1)
+	belowTile := data.CurrLevel.Get(sx, sy-1)
 	if sy > 0 && !belowTile.IsSolid() { // can move down
 		currScore := lr.scanDown(sx, startX, sy)
 		if currScore < bestScore {
@@ -157,7 +156,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 			actions.Direction = data.Down
 		}
 	}
-	nextTile := data.CurrLevel.Tiles.Get(sx, sy)
+	nextTile := data.CurrLevel.Get(sx, sy)
 	if nextTile.IsLadder() { // can move up a ladder
 		currScore := lr.scanUp(sx, startX, sy)
 		if currScore < bestScore {
@@ -178,7 +177,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 				break
 			}
 		}
-		belowTile = data.CurrLevel.Tiles.Get(sx, sy-1)
+		belowTile = data.CurrLevel.Get(sx, sy-1)
 		if sy > 0 && !belowTile.IsSolid() { // can move down
 			currScore := lr.scanDown(sx, startX, sy)
 			if currScore < bestScore {
@@ -186,7 +185,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 				actions.Direction = currDir
 			}
 		}
-		nextTile = data.CurrLevel.Tiles.Get(sx, sy)
+		nextTile = data.CurrLevel.Get(sx, sy)
 		if nextTile.IsLadder() { // can move up a ladder
 			currScore := lr.scanUp(sx, startX, sy)
 			if currScore < bestScore {
@@ -206,19 +205,19 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 func (lr *LRChase) scanDown(x, startX, startY int) int {
 	y := startY
 	_, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
-	for y > 0 && !data.CurrLevel.Tiles.Get(x, y-1).IsSolid() { // can move down
+	for y > 0 && !data.CurrLevel.Get(x, y-1).IsSolid() { // can move down
 		if x > 0 { // not at left edge, check left side
-			nextBelow := data.CurrLevel.Tiles.Get(x-1, y-1)
-			nextTile := data.CurrLevel.Tiles.Get(x-1, y)
+			nextBelow := data.CurrLevel.Get(x-1, y-1)
+			nextTile := data.CurrLevel.Get(x-1, y)
 			if y <= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
 				nextTile.Block == data.BlockBar) { // can move left and below or level with runner
 				break
 			}
 		}
-		if x < constants.PuzzleWidth-1 { // not at right edge, check right side
-			nextBelow := data.CurrLevel.Tiles.Get(x+1, y-1)
-			nextTile := data.CurrLevel.Tiles.Get(x+1, y)
+		if x < data.CurrLevel.Metadata.Width-1 { // not at right edge, check right side
+			nextBelow := data.CurrLevel.Get(x+1, y-1)
+			nextTile := data.CurrLevel.Get(x+1, y)
 			if y <= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
 				nextTile.Block == data.BlockBar) { // can move right and below or level with runner
@@ -241,20 +240,20 @@ func (lr *LRChase) scanDown(x, startX, startY int) int {
 func (lr *LRChase) scanUp(x, startX, startY int) int {
 	y := startY
 	_, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
-	for y < constants.PuzzleHeight-1 && data.CurrLevel.Tiles.Get(x, y).IsLadder() { // while can go up
+	for y < data.CurrLevel.Metadata.Height-1 && data.CurrLevel.Get(x, y).IsLadder() { // while can go up
 		y++
 		if x > 0 { // not at left edge, check left side
-			nextBelow := data.CurrLevel.Tiles.Get(x-1, y-1)
-			nextTile := data.CurrLevel.Tiles.Get(x-1, y)
+			nextBelow := data.CurrLevel.Get(x-1, y-1)
+			nextTile := data.CurrLevel.Get(x-1, y)
 			if y >= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
 				nextTile.Block == data.BlockBar) { // can move left and above or level with runner
 				break
 			}
 		}
-		if x < constants.PuzzleWidth-1 { // not at right edge, check right side
-			nextBelow := data.CurrLevel.Tiles.Get(x+1, y-1)
-			nextTile := data.CurrLevel.Tiles.Get(x+1, y)
+		if x < data.CurrLevel.Metadata.Width-1 { // not at right edge, check right side
+			nextBelow := data.CurrLevel.Get(x+1, y-1)
+			nextTile := data.CurrLevel.Get(x+1, y)
 			if y >= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
 				nextTile.Block == data.BlockBar) { // can move right and above or level with runner
@@ -295,8 +294,8 @@ func (lr *LRChase) scanUp(x, startX, startY int) int {
 //		sx := x
 //		for {
 //			var nextTile, belowTile *data.Tile
-//			nextTile = data.CurrLevel.Tiles.Get(sx, y)
-//			belowTile = data.CurrLevel.Tiles.Get(sx, y-1)
+//			nextTile = data.CurrLevel.Get(sx, y)
+//			belowTile = data.CurrLevel.Get(sx, y-1)
 //			if nextTile == nil {
 //				// failed to find
 //				fmt.Println("WARNING: LRChase searched off the map")
@@ -315,7 +314,7 @@ func (lr *LRChase) scanUp(x, startX, startY int) int {
 //				break
 //			}
 //		}
-//		belowTile := data.CurrLevel.Tiles.Get(x, y-1)
+//		belowTile := data.CurrLevel.Get(x, y-1)
 //		if lr.Ch.State == data.OnLadder &&
 //			(math.Abs(lr.Target.Object.Pos.Y-lr.Ch.Object.Pos.Y) > 1. ||
 //				(lr.Target.State != data.OnLadder &&
@@ -353,7 +352,7 @@ func (lr *LRChase) scanUp(x, startX, startY int) int {
 //		for i < constants.PuzzleWidth {
 //			dx := x + ix
 //			if dx > -1 && dx < constants.PuzzleWidth {
-//				path, _, found := astar.Path(data.CurrLevel.Tiles.Get(x, y), data.CurrLevel.Tiles.Get(dx, dy))
+//				path, _, found := astar.Path(data.CurrLevel.Get(x, y), data.CurrLevel.Get(dx, dy))
 //				if len(path) > 1 && found {
 //					bPath = path
 //					next = path[len(path)-2].(*data.Tile).Coords

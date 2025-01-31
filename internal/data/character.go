@@ -220,6 +220,7 @@ type Flags struct {
 	Breath       bool
 	HighJump     bool
 	LongJump     bool
+	Landing      bool
 	JumpR        bool
 	JumpL        bool
 	Thrown       bool

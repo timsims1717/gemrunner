@@ -19,8 +19,8 @@ func CharacterStateSystem() {
 			if reanimator.FrameSwitch {
 				currPos := ch.Object.Pos.Add(ch.Object.Offset)
 				x, y := world.WorldToMap(currPos.X, currPos.Y)
-				tile := data.CurrLevel.Tiles.Get(x, y)
-				below := data.CurrLevel.Tiles.Get(x, y-1)
+				tile := data.CurrLevel.Get(x, y)
+				below := data.CurrLevel.Get(x, y-1)
 				oldState := ch.State
 				switch ch.State {
 				case data.Grounded:
@@ -61,7 +61,7 @@ func CharacterStateSystem() {
 							!ch.Flags.LeftWall { // leaping to the left
 							ch.State = data.Leaping
 							ch.Object.Flip = true
-							left := data.CurrLevel.Tiles.Get(x-1, y)
+							left := data.CurrLevel.Get(x-1, y)
 							ch.NextTile = left
 							if left != nil && left.IsLadder() { // to another ladder
 								ch.Flags.LeapTo = true
@@ -72,7 +72,7 @@ func CharacterStateSystem() {
 							!ch.Flags.RightWall { // leaping to the right
 							ch.State = data.Leaping
 							ch.Object.Flip = false
-							right := data.CurrLevel.Tiles.Get(x+1, y)
+							right := data.CurrLevel.Get(x+1, y)
 							ch.NextTile = right
 							if right != nil && right.IsLadder() { // to another ladder
 								ch.Flags.LeapTo = true
@@ -134,6 +134,9 @@ func CharacterStateSystem() {
 				case data.Falling:
 					if ch.Flags.Floor {
 						ch.State = data.Grounded
+						if ch.LastTile.Coords.Y > tile.Coords.Y+2 {
+							ch.Flags.Landing = true
+						}
 					} else if tile != nil && tile.IsLadder() {
 						ch.State = data.OnLadder
 						ch.Object.Pos.X = tile.Object.Pos.X
@@ -271,7 +274,7 @@ func CharacterStateSystem() {
 						ch.Options.Regen &&
 						len(ch.Options.LinkedTiles) > 0 {
 						c := ch.Options.LinkedTiles[0]
-						t := data.CurrLevel.Tiles.Get(c.X, c.Y)
+						t := data.CurrLevel.Get(c.X, c.Y)
 						if t != nil {
 							tile = t
 							ch.Object.SetPos(t.Object.Pos)

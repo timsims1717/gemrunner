@@ -10,6 +10,15 @@ import (
 )
 
 func UpdateViews() {
+	width := float64(constants.PuzzleWidth)
+	height := float64(constants.PuzzleHeight)
+	if data.CurrLevel != nil {
+		width = float64(data.CurrLevel.Metadata.Width)
+		height = float64(data.CurrLevel.Metadata.Height)
+	} else if data.CurrPuzzleSet != nil {
+		width = float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width)
+		height = float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Height)
+	}
 	wRatio := viewport.MainCamera.Rect.W() / (constants.PuzzleWidth * world.TileSize)
 	hRatio := viewport.MainCamera.Rect.H() / (constants.PuzzleHeight * world.TileSize)
 	maxRatio := wRatio
@@ -24,17 +33,24 @@ func UpdateViews() {
 	}
 
 	if data.PuzzleView != nil {
+		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
+		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
 		data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
 		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
-		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
 		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+
+		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(width+1), world.TileSize*(height+1)))
+		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
 		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	}
 	if data.WorldView != nil {
 		data.WorldView.PortPos = viewport.MainCamera.PostCamPos
-		xWidth := constants.PuzzleWidth * world.TileSize * constants.PickedRatio
-		yHeight := constants.PuzzleHeight * world.TileSize * constants.PickedRatio
+		xWidth := width * world.TileSize * constants.PickedRatio
+		yHeight := height * world.TileSize * constants.PickedRatio
 		data.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
 	}
 	data.CursorObj.Sca = pixel.V(constants.PickedRatio, constants.PickedRatio)
@@ -55,6 +71,7 @@ func UpdateViews() {
 			//data.Editor.BlockSelect.PortPos.Y -= (panel.ViewPort.Canvas.Bounds().H()*0.5 - constants.BlockSelectHeight*world.TileSize*0.5 - world.HalfSize) * data.Editor.BlockSelect.PortSize.Y
 		}
 	}
+	SetMainBorder(int(width), int(height))
 	//viewport.MainCamera.CamPos.Y -= world.TileSize * 2
 }
 

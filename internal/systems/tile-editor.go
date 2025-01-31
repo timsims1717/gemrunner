@@ -2,16 +2,15 @@ package systems
 
 import (
 	"fmt"
-	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/world"
 )
 
 func SetBlock(coords world.Coords, block data.Block) {
 	if data.CurrPuzzleSet.CurrPuzzle != nil {
-		if CoordsLegal(coords) {
+		if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(coords) {
 			// add to puzzle
-			tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+			tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 			if !tile.Update {
 				if tile.Block != block {
 					tile.Metadata = data.DefaultMetadata()
@@ -118,8 +117,8 @@ func SetBlock(coords world.Coords, block data.Block) {
 
 func DeleteBlock(coords world.Coords) {
 	if data.CurrPuzzleSet.CurrPuzzle != nil {
-		if CoordsLegal(coords) {
-			tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+		if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(coords) {
+			tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 			if !tile.Update {
 				if tile.IsLadder() {
 					switch tile.Block {
@@ -153,7 +152,7 @@ func LinkTiles(tileA, tileB *data.Tile) {
 
 func RemoveLinkedTiles(tile *data.Tile) {
 	for _, ltc := range tile.Metadata.LinkedTiles {
-		lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
+		lt := data.CurrPuzzleSet.CurrPuzzle.Get(ltc.X, ltc.Y)
 		for i, t := range lt.Metadata.LinkedTiles {
 			if t == tile.Coords {
 				if len(lt.Metadata.LinkedTiles) < 2 {
@@ -171,32 +170,11 @@ func RemoveLinkedTiles(tile *data.Tile) {
 // UpdateLinkedTiles should be called if a selection gets placed.
 func UpdateLinkedTiles(tile *data.Tile) {
 	for _, ltc := range tile.Metadata.LinkedTiles {
-		lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(ltc.X, ltc.Y)
+		lt := data.CurrPuzzleSet.CurrPuzzle.Get(ltc.X, ltc.Y)
 		if !world.CoordsIn(tile.Coords, lt.Metadata.LinkedTiles) {
 			lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, tile.Coords)
 		}
 	}
-}
-
-func CoordsLegal(coords world.Coords) bool {
-	return coords.X >= 0 && coords.Y >= 0 && coords.X < constants.PuzzleWidth && coords.Y < constants.PuzzleHeight
-}
-
-func GetClosestLegal(coords world.Coords) world.Coords {
-	if CoordsLegal(coords) {
-		return coords
-	}
-	if coords.X < 0 {
-		coords.X = 0
-	} else if coords.X >= constants.PuzzleWidth {
-		coords.X = constants.PuzzleWidth - 1
-	}
-	if coords.Y < 0 {
-		coords.Y = 0
-	} else if coords.Y >= constants.PuzzleHeight {
-		coords.Y = constants.PuzzleHeight - 1
-	}
-	return coords
 }
 
 func CoordsLegalSelection(coords world.Coords) bool {

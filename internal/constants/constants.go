@@ -18,9 +18,13 @@ const (
 	Favorites = ".favorites"
 
 	// World Constants
-	TileSize     = 16.
-	PuzzleWidth  = 28
-	PuzzleHeight = 16
+	TileSize        = 16.
+	PuzzleWidth     = 28
+	PuzzleHeight    = 16
+	PuzzleMaxWidth  = 28
+	PuzzleMaxHeight = 16
+	PuzzleMinWidth  = 6
+	PuzzleMinHeight = 6
 
 	// Editor Constants
 	BlockSelectWidth  = 8.

@@ -90,8 +90,8 @@ func CharacterActionSystem() {
 				if reanimator.FrameSwitch {
 					currPos := ch.Object.Pos.Add(ch.Object.Offset)
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
-					tile := data.CurrLevel.Tiles.Get(x, y)
-					below := data.CurrLevel.Tiles.Get(x, y-1)
+					tile := data.CurrLevel.Get(x, y)
+					below := data.CurrLevel.Get(x, y-1)
 					ch.ACounter++
 					switch ch.State {
 					case data.Grounded:

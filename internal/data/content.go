@@ -42,6 +42,8 @@ type PuzzleMetadata struct {
 	Name           string     `json:"title"`
 	Author         string     `json:"author"`
 	Filename       string     `json:"filename"`
+	Width          int        `json:"width"`
+	Height         int        `json:"height"`
 	WorldSprite    string     `json:"sprite"`
 	WorldNumber    int        `json:"world"`
 	PrimaryColor   pixel.RGBA `json:"primaryColor"`

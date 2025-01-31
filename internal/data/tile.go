@@ -288,13 +288,13 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	}
 	var neighbors []astar.Pather
 	// Down
-	d := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y-1)
+	d := CurrLevel.Get(t.Coords.X, t.Coords.Y-1)
 	if !PlayerAbove && d != nil && (d.IsEmpty() || d.IsLadder()) {
 		neighbors = append(neighbors, d)
 	}
 	notFalling := d.IsSolid() || d.IsLadder() || t.IsLadder()
 	// Left
-	l := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y)
+	l := CurrLevel.Get(t.Coords.X-1, t.Coords.Y)
 	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
 	//if notFalling && l != nil && !l.IsSolid() &&
 	//	(l.Ladder || lb == nil || lb.IsSolid()) {
@@ -304,7 +304,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 		neighbors = append(neighbors, l)
 	}
 	// Right
-	r := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y)
+	r := CurrLevel.Get(t.Coords.X+1, t.Coords.Y)
 	//rb := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y-1)
 	//if notFalling && r != nil && !r.IsSolid() &&
 	//	(r.Ladder || rb == nil || rb.IsSolid()) {
@@ -314,7 +314,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 		neighbors = append(neighbors, r)
 	}
 	// Up
-	u := CurrLevel.Tiles.Get(t.Coords.X, t.Coords.Y+1)
+	u := CurrLevel.Get(t.Coords.X, t.Coords.Y+1)
 	if PlayerAbove && notFalling && !u.IsSolid() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}

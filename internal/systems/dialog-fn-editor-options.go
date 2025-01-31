@@ -11,6 +11,7 @@ import (
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
+	"strconv"
 )
 
 // open puzzle dialog
@@ -254,6 +255,36 @@ func ChangeName() {
 
 // puzzle settings dialog
 
+func customizePuzzleSettings() {
+	puzzleSettingsDlg := ui.Dialogs[constants.DialogPuzzleSettings]
+	puzzleSettingsDlg.OnOpen = OpenPuzzleSettingsDialog
+	for _, e := range puzzleSettingsDlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmPuzzleSettings
+		case "puzzle_width_minus":
+			ele.OnClick = func() {
+				ChangeNumberInputWithLimits(puzzleSettingsDlg.Get("puzzle_width_input"), -1, constants.PuzzleMinWidth, constants.PuzzleMaxWidth)
+			}
+		case "puzzle_width_plus":
+			ele.OnClick = func() {
+				ChangeNumberInputWithLimits(puzzleSettingsDlg.Get("puzzle_width_input"), 1, constants.PuzzleMinWidth, constants.PuzzleMaxWidth)
+			}
+		case "puzzle_height_minus":
+			ele.OnClick = func() {
+				ChangeNumberInputWithLimits(puzzleSettingsDlg.Get("puzzle_height_input"), -1, constants.PuzzleMinHeight, constants.PuzzleMaxHeight)
+			}
+		case "puzzle_height_plus":
+			ele.OnClick = func() {
+				ChangeNumberInputWithLimits(puzzleSettingsDlg.Get("puzzle_height_input"), 1, constants.PuzzleMinHeight, constants.PuzzleMaxHeight)
+			}
+		case "cancel":
+			ele.OnClick = CloseDialog(constants.DialogPuzzleSettings)
+		}
+	}
+}
+
 func OpenPuzzleSettingsDialog() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
 		for _, ele := range ui.Dialogs[constants.DialogPuzzleSettings].Elements {
@@ -286,9 +317,14 @@ func OpenPuzzleSettingsDialog() {
 				ele.Object.Hidden = data.CurrPuzzleSet.Metadata.Adventure
 			case "puzzle_darkness_check":
 				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness)
+			case "puzzle_width_input":
+				ele.InputType = ui.Numeric
+				ui.ChangeText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Width))
+			case "puzzle_height_input":
+				ele.InputType = ui.Numeric
+				ui.ChangeText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Height))
 			}
 		}
-		ui.OpenDialogInStack(constants.DialogPuzzleSettings)
 	}
 }
 
@@ -306,10 +342,25 @@ func ConfirmPuzzleSettings() {
 				data.CurrPuzzleSet.CurrPuzzle.Metadata.SecretLevel = ele.Checked
 			case "puzzle_darkness_check":
 				data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness = ele.Checked
+			case "puzzle_width_input":
+				wi, err := strconv.Atoi(ele.Text.Raw)
+				if err != nil {
+					fmt.Println("WARNING: width is not an int:", err)
+					wi = constants.PuzzleWidth
+				}
+				data.CurrPuzzleSet.CurrPuzzle.SetWidth(wi)
+			case "puzzle_height_input":
+				hi, err := strconv.Atoi(ele.Text.Raw)
+				if err != nil {
+					fmt.Println("WARNING: height is not an int:", err)
+					hi = constants.PuzzleHeight
+				}
+				data.CurrPuzzleSet.CurrPuzzle.SetHeight(hi)
 			}
 		}
 		ui.CloseDialog(constants.DialogPuzzleSettings)
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+		UpdateViews()
 		//if !SavePuzzleSet() {
 		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
 		//}

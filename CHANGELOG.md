@@ -1,3 +1,23 @@
+## 0.2.20250228
+
+### Game Features
+
+* Implemented darkness
+  * Only a small portion of the screen around the player is visible
+  * Toggled in Puzzle Settings
+* Added a superhero landing when falling
+  * It can be interrupted
+
+### Editor Features
+
+* Added changing the puzzle size
+  * Width limit: 6-28
+  * Height limit: 6-16
+
+### Bug Fixes
+
+* Moving up ladders while flying no longer causes choppy movement
+
 ## 0.2.20250127
 
 ### Game Features

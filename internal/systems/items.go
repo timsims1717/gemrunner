@@ -189,8 +189,8 @@ func Jump() *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if ch.State == data.Grounded {
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			left := data.CurrLevel.Tiles.Get(x-1, y)
-			right := data.CurrLevel.Tiles.Get(x+1, y)
+			left := data.CurrLevel.Get(x-1, y)
+			right := data.CurrLevel.Get(x+1, y)
 			// High Jump if:
 			//  there is no ceiling here
 			//  the character is not going left or right
@@ -208,7 +208,7 @@ func Jump() *data.Interact {
 			} else {
 				return
 			}
-			tile := data.CurrLevel.Tiles.Get(x, y)
+			tile := data.CurrLevel.Get(x, y)
 			ch.LastTile = tile
 			ch.State = data.Jumping
 			ch.Object.Pos.X = tile.Object.Pos.X
@@ -270,7 +270,7 @@ func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if c, okC := entity.GetComponentData(myecs.Dynamic); okC {
 			box := c.(*data.Dynamic)
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			chT := data.CurrLevel.Tiles.Get(chX, chY)
+			chT := data.CurrLevel.Get(chX, chY)
 			box.Object.Pos.X = chT.Object.Pos.X
 			box.Object.Pos.Y = chT.Object.Pos.Y + 1
 			box.LastTile = chT
@@ -418,9 +418,9 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 						// update timer visuals
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 						var txPos pixel.Vec
-						tile := data.CurrLevel.Tiles.Get(x, y+1)
+						tile := data.CurrLevel.Get(x, y+1)
 						if tile == nil {
-							tile = data.CurrLevel.Tiles.Get(x, y-1)
+							tile = data.CurrLevel.Get(x, y-1)
 							txPos = ch.Object.Pos.Add(pixel.V(0, -world.TileSize))
 						} else {
 							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
@@ -565,9 +565,9 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 						// update timer visuals
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 						var txPos pixel.Vec
-						tile := data.CurrLevel.Tiles.Get(x, y+1)
+						tile := data.CurrLevel.Get(x, y+1)
 						if tile == nil {
-							tile = data.CurrLevel.Tiles.Get(x, y-1)
+							tile = data.CurrLevel.Get(x, y-1)
 							txPos = ch.Object.Pos.Add(pixel.V(0, -world.TileSize))
 						} else {
 							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
@@ -643,8 +643,8 @@ func UseDrill(drill *data.BasicItem) *data.Interact {
 		if ch.State == data.Grounded {
 			// check if on correct ground
 			xa, ya := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tileA := data.CurrLevel.Tiles.Get(xa, ya)
-			drillTileA := data.CurrLevel.Tiles.Get(xa, ya-1)
+			tileA := data.CurrLevel.Get(xa, ya)
+			drillTileA := data.CurrLevel.Get(xa, ya-1)
 			if drillTileA != nil && drillTileA.Block == data.BlockBedrock {
 				// set action
 				ch.State = data.DoingAction
@@ -657,8 +657,8 @@ func UseDrill(drill *data.BasicItem) *data.Interact {
 						ch.Flags.CheckAction = false
 						if ch.Flags.ItemAction == data.DrillStart || (ch.Flags.ItemAction == data.Drilling && ch.Actions.Action) {
 							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-							tile := data.CurrLevel.Tiles.Get(x, y)
-							drillTile := data.CurrLevel.Tiles.Get(x, y-1)
+							tile := data.CurrLevel.Get(x, y)
+							drillTile := data.CurrLevel.Get(x, y-1)
 							if drillTile != nil && drillTile.Block == data.BlockBedrock {
 								ch.Flags.ItemAction = data.Drilling
 								ch.Object.SetPos(tile.Object.Pos.Add(pixel.V(0., 1.)))
@@ -738,11 +738,11 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 			x3 = x - 2
 			flip = true
 		}
-		tile := data.CurrLevel.Tiles.Get(x, y)
+		tile := data.CurrLevel.Get(x, y)
 		if ch.State == data.Leaping && !tile.IsLadder() && tile.Block != data.BlockBar {
 			return // can't do it if leaping off ladders or bar
 		}
-		firstTile := data.CurrLevel.Tiles.Get(x2, y)
+		firstTile := data.CurrLevel.Get(x2, y)
 		if firstTile != nil && firstTile.Block != data.BlockBedrock {
 			// change the player's state to flamethrower action
 			ch.State = data.DoingAction
@@ -753,7 +753,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 			flamethrower.Counter = 0
 			numUses++
 			// create flame animations
-			secondTile := data.CurrLevel.Tiles.Get(x3, y)
+			secondTile := data.CurrLevel.Get(x3, y)
 			firstFlame := "flames_l"
 			secondFlame := "flames_r"
 			obj1 := object.New()
@@ -816,7 +816,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 									chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
 									ch2Coords := world.NewCoords(chX, chY)
 									if ch2Coords == firstTile.Coords || (secondTile != nil && ch2Coords == secondTile.Coords) {
-										tile2 := data.CurrLevel.Tiles.Get(chX, chY)
+										tile2 := data.CurrLevel.Get(chX, chY)
 										ch2.Object.Pos.X = tile2.Object.Pos.X
 										ch2.Object.Pos.Y = tile2.Object.Pos.Y
 										ch2.Flags.Blow = true
@@ -835,7 +835,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 										chX, chY := world.WorldToMap(objB.Pos.X, objB.Pos.Y)
 										bCoords := world.NewCoords(chX, chY)
 										if bCoords == firstTile.Coords || (secondTile != nil && bCoords == secondTile.Coords) {
-											tileB := data.CurrLevel.Tiles.Get(chX, chY)
+											tileB := data.CurrLevel.Get(chX, chY)
 											objB.Pos.X = tileB.Object.Pos.X
 											objB.Pos.Y = tileB.Object.Pos.Y
 											LightBomb(b, tileB)

@@ -8,6 +8,14 @@ uniform sampler2D uTexture;
 uniform vec4 uTexBounds;
 
 // custom uniforms
+uniform int uDarkness;
+uniform float uDarknessDist;
+uniform float uDarknessWidth;
+uniform float uDarknessGrad;
+uniform vec2 uPlayer1Loc;
+uniform vec2 uPlayer2Loc;
+uniform vec2 uPlayer3Loc;
+uniform vec2 uPlayer4Loc;
 uniform int uMode;
 uniform float uSpeed;
 uniform float uTime;
@@ -49,6 +57,51 @@ void main() {
         vec2 dist_tex_coord = t.st + dst_offset;
         col = texture(uTexture, dist_tex_coord).rgba;
         break;
+    }
+    if (uDarkness == 1) {
+        float ar = (uTexBounds.z / uTexBounds.w) * uDarknessWidth;
+        vec2 ot = vTexCoords / uTexBounds.zw;
+        ot.x -= 0.5;
+        ot.x *= ar;
+        vec4 shadowCol = vec4(0., 0., 0., 1.);
+        float g = 1;
+        for (int i = 0; i < 4; i++) {
+            vec2 pLoc;
+            switch (i) {
+            case 0:
+                pLoc = uPlayer1Loc;
+                break;
+            case 1:
+                pLoc = uPlayer2Loc;
+                break;
+            case 2:
+                pLoc = uPlayer3Loc;
+                break;
+            case 3:
+                pLoc = uPlayer4Loc;
+                break;
+            }
+            if (pLoc.x < 0 || pLoc.y < 0 || pLoc.x > 1 || pLoc.y > 1) {
+                continue;
+            }
+            pLoc.x -= 0.5;
+            pLoc.x *= ar;
+            float dist = abs(distance(pLoc, ot));
+            float dg = 1;
+            if (dist < uDarknessDist) {
+                dg = 0;
+            } else if (dist > uDarknessDist + uDarknessGrad) {
+                dg = 1;
+            } else {
+                float d = uDarknessDist + uDarknessGrad - dist;
+                dg = 1-d/uDarknessGrad;
+            }
+            if (dg < g) {
+                g = dg;
+            }
+            g = clamp(g, 0, 1);
+        }
+        col = mix(col, shadowCol, g);
     }
     fragColor = col;
 }

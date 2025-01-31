@@ -44,7 +44,7 @@ func TileSystem() {
 								ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 								if okCO && okC && ch.State != data.Dead {
 									x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-									chTile := data.CurrLevel.Tiles.Get(x, y)
+									chTile := data.CurrLevel.Get(x, y)
 									if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 										(chTile.Coords.Y == tile.Coords.Y) {
 										ch.Object.Pos.X = tile.Object.Pos.X
@@ -71,7 +71,7 @@ func TileSystem() {
 					ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 					if okCO && okC && ch.State == data.Grounded {
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-						chTile := data.CurrLevel.Tiles.Get(x, y)
+						chTile := data.CurrLevel.Get(x, y)
 						if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 							(chTile.Coords.Y == tile.Coords.Y+1 || chTile.Coords.Y == tile.Coords.Y) {
 							ch.Object.Pos.X = tile.Object.Pos.X
@@ -94,7 +94,7 @@ func TileSystem() {
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
 									tile.Metadata.EnemyCrack) {
 								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-								chTile := data.CurrLevel.Tiles.Get(x, y)
+								chTile := data.CurrLevel.Get(x, y)
 								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 									chTile.Coords.Y == tile.Coords.Y {
 									tile.Counter = 0
@@ -117,7 +117,7 @@ func TileSystem() {
 								ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 								if okCO && okC && ch.State != data.Dead {
 									x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-									chTile := data.CurrLevel.Tiles.Get(x, y)
+									chTile := data.CurrLevel.Get(x, y)
 									if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 										(chTile.Coords.Y == tile.Coords.Y) {
 										ch.Object.Pos.X = tile.Object.Pos.X
@@ -173,7 +173,7 @@ func TileSystem() {
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
 									tile.Metadata.EnemyCrack) {
 								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-								chTile := data.CurrLevel.Tiles.Get(x, y)
+								chTile := data.CurrLevel.Get(x, y)
 								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 									chTile.Coords.Y == tile.Coords.Y+1 {
 									tile.Counter = 0
@@ -221,7 +221,7 @@ func TileSystem() {
 							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 							if okCO && okC && ch.State != data.Dead {
 								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-								chTile := data.CurrLevel.Tiles.Get(x, y)
+								chTile := data.CurrLevel.Get(x, y)
 								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 									(chTile.Coords.Y == tile.Coords.Y) {
 									ch.Object.Pos.X = tile.Object.Pos.X
@@ -275,7 +275,7 @@ func TileSystem() {
 						ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
 						if okCO && okC {
 							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-							chTile := data.CurrLevel.Tiles.Get(x, y)
+							chTile := data.CurrLevel.Get(x, y)
 							if chTile != nil && chTile.Coords.X == tile.Coords.X &&
 								chTile.Coords.Y == tile.Coords.Y &&
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||

@@ -77,6 +77,8 @@ func CustomizeEditorDialog(key string) {
 		customizePaletteOptions()
 	case constants.DialogItemOptions:
 		customizeItemOptions()
+	case constants.DialogPuzzleSettings:
+		customizePuzzleSettings()
 	default:
 		dialog := ui.Dialogs[key]
 		b := 0
@@ -92,8 +94,6 @@ func CustomizeEditorDialog(key string) {
 					switch key {
 					case constants.DialogCombineSets:
 						ele.OnClick = OnCombinePuzzleSet
-					case constants.DialogPuzzleSettings:
-						ele.OnClick = ConfirmPuzzleSettings
 					case constants.DialogPuzzleSetSettings:
 						ele.OnClick = ConfirmPuzzleSetSettings
 					case constants.DialogBomb:
@@ -130,7 +130,7 @@ func CustomizeEditorDialog(key string) {
 				case "test_btn":
 					ele.OnClick = TestPuzzle
 				case "puzzle_settings_btn":
-					ele.OnClick = OpenPuzzleSettingsDialog
+					ele.OnClick = OpenDialog(constants.DialogPuzzleSettings)
 				case "puzzle_set_settings_btn":
 					ele.OnClick = OpenPuzzleSetSettingsDialog
 				case "bomb_regenerate_delay_minus":
@@ -140,38 +140,6 @@ func CustomizeEditorDialog(key string) {
 				case "bomb_regenerate_delay_plus":
 					ele.OnClick = func() {
 						ChangeNumberInput(dialog.Get("bomb_regenerate_delay_input"), 1)
-					}
-				case "jetpack_regenerate_delay_minus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("jetpack_regenerate_delay_input"), -1)
-					}
-				case "jetpack_regenerate_delay_plus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("jetpack_regenerate_delay_input"), 1)
-					}
-				case "jetpack_timer_minus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("jetpack_timer_input"), -1)
-					}
-				case "jetpack_timer_plus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("jetpack_timer_input"), 1)
-					}
-				case "disguise_regenerate_delay_minus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("disguise_regenerate_delay_input"), -1)
-					}
-				case "disguise_regenerate_delay_plus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("disguise_regenerate_delay_input"), 1)
-					}
-				case "disguise_timer_minus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("disguise_timer_input"), -1)
-					}
-				case "disguise_timer_plus":
-					ele.OnClick = func() {
-						ChangeNumberInput(dialog.Get("disguise_timer_input"), 1)
 					}
 				case "add_btn":
 					ele.OnClick = AddPuzzle

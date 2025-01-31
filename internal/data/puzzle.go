@@ -2,9 +2,12 @@ package data
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
+	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/imdraw"
 	"time"
@@ -61,6 +64,7 @@ type Level struct {
 	Enemies   []*Dynamic
 	Players   [constants.MaxPlayers]*Dynamic
 	PControls [constants.MaxPlayers]Controller
+	PLoc      [constants.MaxPlayers]*mgl32.Vec2
 	Start     bool
 	Failed    bool
 	Complete  bool
@@ -109,22 +113,131 @@ type Puzzle struct {
 }
 
 type Tiles struct {
-	T [constants.PuzzleHeight][constants.PuzzleWidth]*Tile
+	T [][]*Tile
 }
 
-func (t *Tiles) Get(x, y int) *Tile {
-	if x < 0 || y < 0 || x >= constants.PuzzleWidth || y >= constants.PuzzleHeight {
+func (l *Level) Get(x, y int) *Tile {
+	if x < 0 || y < 0 || x >= l.Metadata.Width || y >= l.Metadata.Height {
 		return nil
 	}
-	return t.T[y][x]
+	return l.Tiles.T[y][x]
 }
 
-func NewTiles() *Tiles {
-	t := [constants.PuzzleHeight][constants.PuzzleWidth]*Tile{}
-	for _, row := range t {
-		for _, tile := range row {
-			tile = &Tile{}
+func (p *Puzzle) Get(x, y int) *Tile {
+	if x < 0 || y < 0 || x >= p.Metadata.Width || y >= p.Metadata.Height {
+		return nil
+	}
+	return p.Tiles.T[y][x]
+}
+
+func (p *Puzzle) CoordsLegal(coords world.Coords) bool {
+	return coords.X >= 0 && coords.Y >= 0 && coords.X < p.Metadata.Width && coords.Y < p.Metadata.Height
+}
+
+func (p *Puzzle) GetClosestLegal(coords world.Coords) world.Coords {
+	if p.CoordsLegal(coords) {
+		return coords
+	}
+	if coords.X < 0 {
+		coords.X = 0
+	} else if coords.X >= p.Metadata.Width {
+		coords.X = p.Metadata.Width - 1
+	}
+	if coords.Y < 0 {
+		coords.Y = 0
+	} else if coords.Y >= p.Metadata.Height {
+		coords.Y = p.Metadata.Height - 1
+	}
+	return coords
+}
+
+func (p *Puzzle) SetWidth(w int) {
+	if w < 6 {
+		w = 6
+	} else if w > constants.PuzzleMaxWidth {
+		w = constants.PuzzleMaxWidth
+	}
+	if p.Metadata.Width == w {
+		return
+	} else if p.Metadata.Width < w { // add width
+		for y, row := range p.Tiles.T {
+			for x := len(row); x < w; x++ {
+				tile := &Tile{}
+				tile.Coords = world.NewCoords(x, y)
+				obj := object.New()
+				obj.Pos = world.MapToWorld(tile.Coords)
+				obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+				obj.Layer = 2
+				e := myecs.Manager.NewEntity().
+					AddComponent(myecs.Object, obj).
+					AddComponent(myecs.Tile, tile)
+				tile.Object = obj
+				tile.Entity = e
+				tile.ToEmpty()
+				tile.Update = true
+				row = append(row, tile)
+			}
+		}
+	} else { // remove width
+		for _, row := range p.Tiles.T {
+			for x := p.Metadata.Width - 1; x >= w; x-- {
+				myecs.Manager.DisposeEntity(row[x].Entity)
+				row = row[:x]
+			}
+		}
+	}
+	p.Metadata.Width = w
+	p.Update = true
+}
+
+func (p *Puzzle) SetHeight(h int) {
+	if h < 6 {
+		h = 6
+	} else if h > constants.PuzzleMaxHeight {
+		h = constants.PuzzleMaxHeight
+	}
+	if p.Metadata.Height == h {
+		return
+	} else if p.Metadata.Height < h { // add height
+		for y := p.Metadata.Height; y < h; y++ {
+			p.Tiles.T = append(p.Tiles.T, []*Tile{})
+			for x := 0; x < p.Metadata.Width; x++ {
+				tile := &Tile{}
+				tile.Coords = world.NewCoords(x, y)
+				obj := object.New()
+				obj.Pos = world.MapToWorld(tile.Coords)
+				obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+				obj.Layer = 2
+				e := myecs.Manager.NewEntity().
+					AddComponent(myecs.Object, obj).
+					AddComponent(myecs.Tile, tile)
+				tile.Object = obj
+				tile.Entity = e
+				tile.ToEmpty()
+				tile.Update = true
+				p.Tiles.T[y] = append(p.Tiles.T[y], tile)
+			}
+		}
+	} else { // remove height
+		for y := p.Metadata.Height - 1; y >= h; y-- {
+			for _, tile := range p.Tiles.T[y] {
+				myecs.Manager.DisposeEntity(tile.Entity)
+			}
+		}
+		p.Tiles.T = p.Tiles.T[:h]
+	}
+	p.Metadata.Height = h
+	p.Update = true
+}
+
+func NewTiles(w, h int) *Tiles {
+	var t [][]*Tile
+	for y := 0; y < h; y++ {
+		t = append(t, []*Tile{})
+		for x := 0; x < w; x++ {
+			tile := &Tile{}
 			tile.ToEmpty()
+			t[y] = append(t[y], tile)
 		}
 	}
 	return &Tiles{
@@ -240,6 +353,8 @@ func CreateBlankPuzzle() *Puzzle {
 	SelectedWorldIndex = 0
 	worldNum := constants.WorldMoss
 	md := PuzzleMetadata{
+		Width:          constants.PuzzleWidth,
+		Height:         constants.PuzzleHeight,
 		WorldSprite:    constants.WorldSprites[worldNum],
 		WorldNumber:    worldNum,
 		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
@@ -248,11 +363,11 @@ func CreateBlankPuzzle() *Puzzle {
 		MusicTrack:     constants.WorldMusic[worldNum],
 	}
 	puz := &Puzzle{
-		Tiles:    NewTiles(),
+		Tiles:    NewTiles(md.Width, md.Height),
 		Metadata: md,
 	}
-	for y := 0; y < constants.PuzzleHeight; y++ {
-		for x := 0; x < constants.PuzzleWidth; x++ {
+	for y := 0; y < md.Height; y++ {
+		for x := 0; x < md.Width; x++ {
 			c := world.Coords{X: x, Y: y}
 			alt := 0
 			if random.Effects.Intn(80) == 0 {
@@ -269,9 +384,9 @@ func CreateBlankPuzzle() *Puzzle {
 }
 
 func (p *Puzzle) CopyTiles() *Tiles {
-	tiles := NewTiles()
-	for y := 0; y < constants.PuzzleHeight; y++ {
-		for x := 0; x < constants.PuzzleWidth; x++ {
+	tiles := NewTiles(p.Metadata.Width, p.Metadata.Height)
+	for y := 0; y < p.Metadata.Height; y++ {
+		for x := 0; x < p.Metadata.Width; x++ {
 			tiles.T[y][x] = p.Tiles.T[y][x].Copy()
 		}
 	}

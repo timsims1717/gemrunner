@@ -221,18 +221,18 @@ func GetBlockSprite(tile *data.Tile) string {
 	bottom := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a.IsBlock() {
 		top = false
 	}
 	var b *data.Tile
 	if tile.Live {
-		b = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b.IsBlock() || b.Block == data.BlockHideout {
 		bottom = false
@@ -257,9 +257,9 @@ func GetSpikeSprite(tile *data.Tile) string {
 	bottom := true
 	var b *data.Tile
 	if tile.Live {
-		b = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) || b.Block == data.BlockHideout {
 		bottom = false
@@ -278,9 +278,9 @@ func GetHideoutSprite(tile *data.Tile) string {
 	top := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a == nil || a.IsBlock() || a.Block == data.BlockHideout {
 		top = false
@@ -295,8 +295,8 @@ func GetHideoutSprite(tile *data.Tile) string {
 }
 
 func GetLadderSpriteLive(tile *data.Tile) string {
-	belowTile := data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
-	aboveTile := data.CurrLevel.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+	belowTile := data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if !tile.Flags.LCollapse &&
 		(tile.Block == data.BlockLadder ||
@@ -365,8 +365,8 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 }
 
 func GetLadderSpriteEditor(tile *data.Tile) string {
-	belowTile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y-1)
-	aboveTile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(tile.Coords.X, tile.Coords.Y+1)
+	belowTile := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 		if tile.IsBlock() &&

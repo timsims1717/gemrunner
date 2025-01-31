@@ -111,7 +111,7 @@ func DropItem(ch *data.Dynamic) bool {
 	// set the object's new position
 	if o, okO := ch.Inventory.GetComponentData(myecs.Object); okO {
 		obj := o.(*object.Object)
-		tile := data.CurrLevel.Tiles.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
+		tile := data.CurrLevel.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
 		obj.Hidden = false
 		obj.Pos = tile.Object.Pos
 		obj.PostPos = tile.Object.Pos
@@ -159,14 +159,14 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 			ch.State == data.Flying {
 			var sideTile, digTile *data.Tile
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tile := data.CurrLevel.Tiles.Get(x, y)
+			tile := data.CurrLevel.Get(x, y)
 			if tile != nil {
 				if isLeft {
-					sideTile = data.CurrLevel.Tiles.Get(x-1, y)
-					digTile = data.CurrLevel.Tiles.Get(x-1, y-1)
+					sideTile = data.CurrLevel.Get(x-1, y)
+					digTile = data.CurrLevel.Get(x-1, y-1)
 				} else {
-					sideTile = data.CurrLevel.Tiles.Get(x+1, y)
-					digTile = data.CurrLevel.Tiles.Get(x+1, y-1)
+					sideTile = data.CurrLevel.Get(x+1, y)
+					digTile = data.CurrLevel.Get(x+1, y-1)
 				}
 				if sideTile != nil && digTile != nil {
 					if !sideTile.IsLadder() && !sideTile.IsSolid() && digTile.CanDig() {
@@ -232,14 +232,14 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 			ch.State == data.Flying {
 			var sideTile, digTile *data.Tile
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tile := data.CurrLevel.Tiles.Get(x, y)
+			tile := data.CurrLevel.Get(x, y)
 			if tile != nil {
 				if isLeft {
-					sideTile = data.CurrLevel.Tiles.Get(x-1, y)
-					digTile = data.CurrLevel.Tiles.Get(x-1, y-1)
+					sideTile = data.CurrLevel.Get(x-1, y)
+					digTile = data.CurrLevel.Get(x-1, y-1)
 				} else {
-					sideTile = data.CurrLevel.Tiles.Get(x+1, y)
-					digTile = data.CurrLevel.Tiles.Get(x+1, y-1)
+					sideTile = data.CurrLevel.Get(x+1, y)
+					digTile = data.CurrLevel.Get(x+1, y-1)
 				}
 				oldTile := ch.StoredBlocks[0]
 				if oldTile != nil && sideTile != nil && digTile != nil {

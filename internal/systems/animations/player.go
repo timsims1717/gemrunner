@@ -15,7 +15,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	idle := reanimator.NewBatchSprite("idle", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Hold)
 	breath := reanimator.NewBatchAnimation("breath", batch, fmt.Sprintf("%s_idle", sprPre), reanimator.Tran)
 
-	regenFrames := []int{0, 1, 2, 3, 4, 5, 6, 6, 7}
+	regenFrames := []int{0, 1, 2, 3, 4, 5, 5, 6, 6, 6, 7}
 	regen := reanimator.NewBatchAnimationCustom("regen", batch, fmt.Sprintf("%s_regen", sprPre), regenFrames, reanimator.Tran)
 
 	wall := reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
@@ -30,6 +30,10 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 
 	fall := reanimator.NewBatchSprite("fall", batch, fmt.Sprintf("%s_fall", sprPre), reanimator.Hold)
 	jump := reanimator.NewBatchSprite("jump", batch, fmt.Sprintf("%s_jump", sprPre), reanimator.Hold)
+
+	landingFrames := []int{5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 7}
+	landing := reanimator.NewBatchAnimationCustom("landing", batch, fmt.Sprintf("%s_regen", sprPre), landingFrames, reanimator.Tran)
+
 	leapOnI := []int{1, 2}
 	leapOffI := []int{2, 0, 1, 2}
 	leapToI := []int{2, 0, 1, 2, 2}
@@ -101,6 +105,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		})
 		dig.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
+		})
+		landing.SetEndTrigger(func() {
+			ch.Flags.Landing = false
 		})
 		leapOn.SetEndTrigger(func() {
 			ch.Flags.LeapOn = false
@@ -183,6 +190,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(wall).
 		AddAnimation(fall).
 		AddAnimation(jump).
+		AddAnimation(landing).
 		AddAnimation(dig).
 		AddAnimation(climb).
 		AddAnimation(slide).
@@ -259,6 +267,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 				return "in_hiding"
 			case data.Grounded:
 				if ch.Actions.Left() || ch.Actions.Right() {
+					ch.Flags.Landing = false
 					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||
 						(ch.Actions.Right() && (ch.Flags.RightWall || ch.Flags.EnemyR)) {
 						return "wall"
@@ -266,7 +275,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 						return "run"
 					}
 				} else {
-					if ch.Flags.Breath {
+					if ch.Flags.Landing {
+						return "landing"
+					} else if ch.Flags.Breath {
 						return "breath"
 					} else {
 						if !ch.Flags.Breath && random.Effects.Intn(constants.IdleFrequency*timing.FPS) == 0 {

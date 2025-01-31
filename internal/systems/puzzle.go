@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
 )
@@ -17,6 +18,16 @@ import (
 func PuzzleInit() {
 	PuzzleDispose()
 	if data.CurrPuzzleSet.CurrPuzzle != nil {
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.Width < 6 {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.Width = constants.PuzzleWidth
+		} else if data.CurrPuzzleSet.CurrPuzzle.Metadata.Width > constants.PuzzleMaxWidth {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.Width = constants.PuzzleMaxWidth
+		}
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.Height < 6 {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.Height = constants.PuzzleHeight
+		} else if data.CurrPuzzleSet.CurrPuzzle.Metadata.Height > constants.PuzzleMaxHeight {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.Height = constants.PuzzleMaxHeight
+		}
 		for y, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
 			for x, tile := range row {
 				tile.Coords = world.NewCoords(x, y)
@@ -63,9 +74,12 @@ func PuzzleInit() {
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
 	ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
+	UpdateViews()
 }
 
 func PuzzleViewInit() {
+	w, h := float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width), float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Height)
+	SetMainBorder(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width, data.CurrPuzzleSet.CurrPuzzle.Metadata.Height)
 	wRatio := viewport.MainCamera.Rect.W() / (constants.PuzzleWidth * world.TileSize)
 	hRatio := viewport.MainCamera.Rect.H() / (constants.PuzzleHeight * world.TileSize)
 	maxRatio := wRatio
@@ -80,27 +94,27 @@ func PuzzleViewInit() {
 	}
 	if data.PuzzleView == nil {
 		data.PuzzleView = viewport.New(nil)
-		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
-		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
+		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
+		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
 		data.PuzzleView.PortPos = viewport.MainCamera.CamPos
 		UpdatePuzzleShaders()
 		data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
 	}
 	if data.PuzzleViewNoShader == nil {
 		data.PuzzleViewNoShader = viewport.New(nil)
-		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*constants.PuzzleWidth, world.TileSize*constants.PuzzleHeight))
-		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
+		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
+		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
 		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.CamPos
 	}
 	if data.BorderView == nil {
 		data.BorderView = viewport.New(nil)
-		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(constants.PuzzleWidth+1), world.TileSize*(constants.PuzzleHeight+1)))
-		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*(constants.PuzzleWidth), world.TileSize*0.5*(constants.PuzzleHeight))
+		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(w+1), world.TileSize*(h+1)))
+		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
 	}
 	if data.WorldView == nil {
 		data.WorldView = viewport.New(nil)
-		xWidth := constants.PuzzleWidth * world.TileSize * constants.PickedRatio
-		yHeight := constants.PuzzleHeight * world.TileSize * constants.PickedRatio
+		xWidth := w * world.TileSize * constants.PickedRatio
+		yHeight := h * world.TileSize * constants.PickedRatio
 		data.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
 		data.WorldView.CamPos = viewport.MainCamera.CamPos
 		data.WorldView.PortPos = viewport.MainCamera.CamPos
@@ -150,16 +164,25 @@ func UpdateWorldShaders() {
 	data.WorldView.Canvas.SetUniform("uYVar", &data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY)
 	data.WorldView.Canvas.SetUniform("uCustom", &data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom)
 	darkness := int32(0)
-	if data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness {
+	if data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness && !data.EditorDraw {
 		darkness = 1
 	}
 	data.WorldView.Canvas.SetUniform("uDarkness", darkness)
+	data.WorldView.Canvas.SetUniform("uDarknessWidth", constants.DarknessWidth)
+	data.WorldView.Canvas.SetUniform("uDarknessDist", constants.DarknessDist)
+	data.WorldView.Canvas.SetUniform("uDarknessGrad", constants.DarknessGrad)
+	for p := 0; p < constants.MaxPlayers; p++ {
+		if data.CurrLevel != nil {
+			data.WorldView.Canvas.SetUniform(fmt.Sprintf("uPlayer%dLoc", p+1), data.CurrLevel.PLoc[p])
+		} else {
+			data.WorldView.Canvas.SetUniform(fmt.Sprintf("uPlayer%dLoc", p+1), &mgl32.Vec2{})
+		}
+	}
 }
 
 func NewPuzzleSet() {
 	PuzzleDispose()
 	data.CurrPuzzleSet = data.CreatePuzzleSet()
-	data.CurrPuzzleSet.SetToFirst()
 	PuzzleInit()
 }
 

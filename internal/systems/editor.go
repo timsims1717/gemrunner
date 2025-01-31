@@ -167,8 +167,8 @@ func PuzzleEditSystem() {
 	if coords.X < -1000 || coords.X > 1000 || coords.Y < -1000 || coords.Y > 1000 {
 		return
 	}
-	legal := CoordsLegal(coords)
-	lastLegal := CoordsLegal(data.Editor.LastCoords)
+	legal := data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(coords)
+	lastLegal := data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(data.Editor.LastCoords)
 	rClick := data.MenuInput.Get("rightClick")
 	click := data.MenuInput.Get("click")
 	inInside := data.Editor.BlockSelect.PointInside(data.Editor.BlockSelect.ProjectWorld(data.MenuInput.World))
@@ -191,7 +191,7 @@ func PuzzleEditSystem() {
 			case data.ModeBrush:
 				if rClick.JustPressed() || click.JustPressed() && !lastLegal {
 					data.Editor.LastCoords = coords
-					lastLegal = CoordsLegal(data.Editor.LastCoords)
+					lastLegal = data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(data.Editor.LastCoords)
 				}
 				line := world.Line(data.Editor.LastCoords, coords)
 				if rClick.Pressed() {
@@ -327,7 +327,7 @@ func PuzzleEditSystem() {
 			case data.ModeErase:
 				if rClick.JustPressed() || click.JustPressed() || !lastLegal {
 					data.Editor.LastCoords = coords
-					lastLegal = CoordsLegal(data.Editor.LastCoords)
+					lastLegal = data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(data.Editor.LastCoords)
 				}
 				line := world.Line(data.Editor.LastCoords, coords)
 				if rClick.Pressed() || click.Pressed() {
@@ -412,7 +412,7 @@ func PuzzleEditSystem() {
 								break
 							}
 						} else {
-							tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+							tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 							switch tile.Block {
 							case data.BlockTurf:
 								if tile.AltBlock == 0 {
@@ -457,7 +457,7 @@ func PuzzleEditSystem() {
 			case data.ModeWire:
 				if legal {
 					if rClick.JustReleased() || click.JustReleased() {
-						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 						switch tile.Block {
 						case data.BlockDemon, data.BlockDemonRegen,
 							data.BlockFly, data.BlockFlyRegen:
@@ -465,7 +465,7 @@ func PuzzleEditSystem() {
 								RemoveLinkedTiles(tile)
 								tile.Metadata.Changed = true
 							} else if click.JustReleased() {
-								lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
+								lt := data.CurrPuzzleSet.CurrPuzzle.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
 								if lt != nil && lt.Block != tile.Block &&
 									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
 										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
@@ -488,7 +488,7 @@ func PuzzleEditSystem() {
 							data.Editor.NoInput = true
 							break
 						}
-						lt := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
+						lt := data.CurrPuzzleSet.CurrPuzzle.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
 						if lt != nil {
 							switch lt.Block {
 							case data.BlockDemon, data.BlockDemonRegen,
@@ -499,7 +499,7 @@ func PuzzleEditSystem() {
 							}
 							data.IMDraw.EndShape = imdraw.RoundEndShape
 							if legal {
-								tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+								tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 								if lt.Block != tile.Block &&
 									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
 										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
@@ -518,13 +518,13 @@ func PuzzleEditSystem() {
 			case data.ModeText:
 				if legal {
 					if click.JustReleased() { // open the text tool dialog
-						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 						data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 						ui.OpenDialogInStack(constants.DialogFloatingText)
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
 						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					} else if rClick.JustReleased() { // remove text
-						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(coords.X, coords.Y)
+						tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 						data.RemoveFloatingText(tile)
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
 						data.CurrPuzzleSet.CurrPuzzle.Changed = true
@@ -537,13 +537,13 @@ func PuzzleEditSystem() {
 				} else {
 					if rClick.JustPressed() || click.JustPressed() && !lastLegal {
 						data.Editor.LastCoords = coords
-						lastLegal = CoordsLegal(data.Editor.LastCoords)
+						lastLegal = data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(data.Editor.LastCoords)
 					}
 					line := world.Line(data.Editor.LastCoords, coords)
 					if rClick.Pressed() {
 						for _, c := range line {
-							if CoordsLegal(c) {
-								tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y)
+							if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(c) {
+								tile := data.CurrPuzzleSet.CurrPuzzle.Get(c.X, c.Y)
 								tile.Metadata.Color = data.ColorDefault
 								tile.Update = true
 								data.CurrPuzzleSet.CurrPuzzle.Update = true
@@ -551,8 +551,8 @@ func PuzzleEditSystem() {
 						}
 					} else if click.Pressed() {
 						for _, c := range line {
-							if CoordsLegal(c) {
-								tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y)
+							if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(c) {
+								tile := data.CurrPuzzleSet.CurrPuzzle.Get(c.X, c.Y)
 								tile.Metadata.Color = data.Editor.PaletteColor
 								tile.Update = true
 								data.CurrPuzzleSet.CurrPuzzle.Update = true
@@ -577,9 +577,9 @@ func PuzzleEditSystem() {
 							data.Editor.NoInput = true
 							break
 						}
-						CreateSquareSelect(data.Editor.LastCoords, GetClosestLegal(coords))
+						CreateSquareSelect(data.Editor.LastCoords, data.CurrPuzzleSet.CurrPuzzle.GetClosestLegal(coords))
 					} else if click.JustReleased() {
-						CreateSelection(data.Editor.LastCoords, GetClosestLegal(coords))
+						CreateSelection(data.Editor.LastCoords, data.CurrPuzzleSet.CurrPuzzle.GetClosestLegal(coords))
 						data.Editor.Mode = data.ModeMove
 						data.Editor.ModeChanged = true
 					} else if !click.Pressed() && !rClick.Pressed() {
@@ -745,7 +745,7 @@ func PuzzleEditSystem() {
 							AddComponent(myecs.Temp, myecs.ClearFlag(true))
 					}
 					// don't draw anything below
-					if CoordsLegal(c) {
+					if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(c) {
 						data.CurrPuzzleSet.CurrPuzzle.Tiles.T[c.Y][c.X].Object.Hidden = true
 					}
 				}
@@ -808,7 +808,7 @@ func EditorPanelButtons() {
 }
 
 func CreateHighlight(coords world.Coords) {
-	if CoordsLegal(coords) {
+	if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(coords) {
 		obj := object.New()
 		obj.Layer = 4
 		obj.Pos = world.MapToWorld(coords)
@@ -823,7 +823,7 @@ func CreateHighlight(coords world.Coords) {
 
 // Fill uses a BFS algorithm to fill the space.
 func Fill(a world.Coords, delete bool) {
-	if CoordsLegal(a) {
+	if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(a) {
 		orig := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[a.Y][a.X]
 		if (delete && orig.Block != data.BlockEmpty) ||
 			orig.Block != data.Editor.CurrBlock {
@@ -837,7 +837,7 @@ func Fill(a world.Coords, delete bool) {
 				top := q[0]
 				q = q[1:]
 				for _, n := range top.Neighbors() {
-					if (n.X == top.X || n.Y == top.Y) && CoordsLegal(n) && !world.CoordsIn(n, v) {
+					if (n.X == top.X || n.Y == top.Y) && data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(n) && !world.CoordsIn(n, v) {
 						v = append(v, n)
 						tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[n.Y][n.X]
 						if tile.Block == orig.Block {
@@ -918,7 +918,7 @@ func CreateClip() bool {
 	data.ClipSelect = new(data.Selection)
 	data.ClipSelect.Width = data.CurrSelect.Width
 	data.ClipSelect.Height = data.CurrSelect.Height
-	data.ClipSelect.Offset = world.Coords{X: 0, Y: constants.PuzzleHeight - data.CurrSelect.Height}
+	data.ClipSelect.Offset = world.Coords{X: 0, Y: data.CurrPuzzleSet.CurrPuzzle.Metadata.Height - data.CurrSelect.Height}
 	data.ClipSelect.Origin = data.CurrSelect.Offset
 	for dy, row := range data.CurrSelect.Tiles {
 		data.ClipSelect.Tiles = append(data.ClipSelect.Tiles, []*data.Tile{})
@@ -973,9 +973,9 @@ func PlaceSelection() {
 			c := tile.Coords
 			c.X += data.CurrSelect.Offset.X
 			c.Y += data.CurrSelect.Offset.Y
-			if CoordsLegal(c) {
-				tile.CopyInto(data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y))
-				UpdateLinkedTiles(data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(c.X, c.Y))
+			if data.CurrPuzzleSet.CurrPuzzle.CoordsLegal(c) {
+				tile.CopyInto(data.CurrPuzzleSet.CurrPuzzle.Get(c.X, c.Y))
+				UpdateLinkedTiles(data.CurrPuzzleSet.CurrPuzzle.Get(c.X, c.Y))
 			}
 		}
 	}
@@ -991,7 +991,7 @@ func PlaceClip() bool {
 	data.CurrSelect = new(data.Selection)
 	data.CurrSelect.Width = data.ClipSelect.Width
 	data.CurrSelect.Height = data.ClipSelect.Height
-	data.CurrSelect.Offset = world.Coords{X: 0, Y: constants.PuzzleHeight - data.ClipSelect.Height}
+	data.CurrSelect.Offset = world.Coords{X: 0, Y: data.CurrPuzzleSet.CurrPuzzle.Metadata.Height - data.ClipSelect.Height}
 	data.CurrSelect.Origin = data.CurrSelect.Offset
 	for dy, row := range data.ClipSelect.Tiles {
 		data.CurrSelect.Tiles = append(data.CurrSelect.Tiles, []*data.Tile{})

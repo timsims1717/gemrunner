@@ -8,6 +8,12 @@ const (
 	ShaderEndOfList
 )
 
+const (
+	DarknessDist  = float32(0.18)
+	DarknessWidth = float32(0.85)
+	DarknessGrad  = float32(0.05)
+)
+
 var (
 	ShaderSpeeds = map[int]float32{
 		ShaderWatery: 1.,

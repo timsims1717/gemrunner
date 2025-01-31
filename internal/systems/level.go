@@ -13,6 +13,7 @@ import (
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopxl/pixel"
 )
 
@@ -21,6 +22,7 @@ func LevelInit() {
 		panic("no puzzle loaded to start level")
 	}
 	LevelDispose()
+	PuzzleViewInit()
 	data.CurrLevel = &data.Level{}
 	data.CurrLevel.Tiles = data.CurrPuzzleSet.CurrPuzzle.CopyTiles()
 	data.CurrLevel.Metadata = data.CurrPuzzleSet.CurrPuzzle.Metadata
@@ -120,29 +122,39 @@ func LevelInit() {
 		}
 	}
 	CreateFakePlayer()
-	PuzzleViewInit()
-	for p := 0; p < data.CurrPuzzleSet.Metadata.NumPlayers; p++ {
-		var dlgKey string
-		switch p {
-		case 0:
-			dlgKey = constants.DialogPlayer1Inv
-		case 1:
-			dlgKey = constants.DialogPlayer2Inv
-		case 2:
-			dlgKey = constants.DialogPlayer3Inv
-		case 3:
-			dlgKey = constants.DialogPlayer4Inv
+	for p := 0; p < constants.MaxPlayers; p++ {
+		if p < data.CurrPuzzleSet.Metadata.NumPlayers {
+			var dlgKey string
+			switch p {
+			case 0:
+				dlgKey = constants.DialogPlayer1Inv
+			case 1:
+				dlgKey = constants.DialogPlayer2Inv
+			case 2:
+				dlgKey = constants.DialogPlayer3Inv
+			case 3:
+				dlgKey = constants.DialogPlayer4Inv
+			}
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.B))
+			data.CurrLevel.PLoc[p] = &mgl32.Vec2{}
+			data.CurrLevel.PLoc[p][0] = float32(data.CurrLevel.Players[p].Object.Pos.X)
+			data.CurrLevel.PLoc[p][1] = float32(data.CurrLevel.Players[p].Object.Pos.Y)
+		} else {
+			data.CurrLevel.PLoc[p] = &mgl32.Vec2{}
+			data.CurrLevel.PLoc[p][0] = -1
+			data.CurrLevel.PLoc[p][1] = -1
 		}
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.R))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.G))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.B))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.R))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.G))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.B))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.R))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.G))
-		ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.B))
 	}
+	UpdatePuzzleShaders()
+	ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
 }
 
 func LevelDispose() {
@@ -178,9 +190,9 @@ func CreateFakePlayer() {
 	}
 	tile := GetRandomRegenTile()
 	if tile == nil {
-		x := random.Level.Intn(constants.PuzzleWidth)
-		y := random.Level.Intn(constants.PuzzleHeight)
-		tile = data.CurrLevel.Tiles.Get(x, y)
+		x := random.Level.Intn(data.CurrLevel.Metadata.Width)
+		y := random.Level.Intn(data.CurrLevel.Metadata.Height)
+		tile = data.CurrLevel.Get(x, y)
 	}
 	ch := data.NewDynamic(tile)
 	ch.Layer = 0
@@ -222,7 +234,7 @@ func GetBestRegenTile(tiles []*data.Tile) *data.Tile {
 func GetRandomRegenTileFromList(coords []world.Coords) *data.Tile {
 	var tiles []*data.Tile
 	for _, c := range coords {
-		tile := data.CurrLevel.Tiles.Get(c.X, c.Y)
+		tile := data.CurrLevel.Get(c.X, c.Y)
 		if !SomethingOnTile(tile) {
 			tiles = append(tiles, tile)
 		}

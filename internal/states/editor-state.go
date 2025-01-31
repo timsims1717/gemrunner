@@ -37,6 +37,7 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 }
 
 func (s *editorState) Load(win *pixelgl.Window) {
+	data.EditorDraw = true
 	ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
 	systems.EditorDialogs(win)
@@ -48,7 +49,6 @@ func (s *editorState) Load(win *pixelgl.Window) {
 	systems.EditorInit()
 	systems.PuzzleInit()
 	systems.UpdateViews()
-	data.EditorDraw = true
 	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
 	systems.PushUndoArray(true)
@@ -71,7 +71,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Undo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.UndoStack)))
 	debug.AddText(fmt.Sprintf("Redo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.RedoStack)))
 	debug.AddTruthText("Puzzle Completed", data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed)
-	t := data.CurrPuzzleSet.CurrPuzzle.Tiles.Get(x, y)
+	t := data.CurrPuzzleSet.CurrPuzzle.Get(x, y)
 	if t != nil {
 		sprs := systems.GetTileSprites(t)
 		if len(sprs) == 1 {
@@ -92,14 +92,18 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX -= 0.0001
 	}
 	if data.DebugInput.Get("debugSP").JustPressed() || data.DebugInput.Get("debugSP").Repeated() {
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom += 0.01
+		//data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom += 0.01
+		data.CurrPuzzleSet.CurrPuzzle.SetWidth(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width + 1)
+		systems.UpdateViews()
 	} else if data.DebugInput.Get("debugSM").JustPressed() || data.DebugInput.Get("debugSM").Repeated() {
-		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom -= 0.01
+		//data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom -= 0.01
+		data.CurrPuzzleSet.CurrPuzzle.SetWidth(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width - 1)
+		systems.UpdateViews()
 	}
 	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
 	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		dKey := constants.DialogPalette
+		dKey := constants.DialogPuzzleSettings
 		load.ReloadDialog(dKey)
 		systems.CustomizeEditorDialog(dKey)
 		systems.UpdateDialogView(ui.Dialogs[dKey])

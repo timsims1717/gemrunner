@@ -19,11 +19,11 @@ func CollisionSystem() {
 			chPos := ch.Object.Pos
 			pPos := ch.Object.LastPos
 			px, py := world.WorldToMap(pPos.X, pPos.Y)
-			pTile := data.CurrLevel.Tiles.Get(px, py)
-			pLeft := data.CurrLevel.Tiles.Get(px-1, py)
-			pRight := data.CurrLevel.Tiles.Get(px+1, py)
-			pUp := data.CurrLevel.Tiles.Get(px, py+1)
-			pDown := data.CurrLevel.Tiles.Get(px, py-1)
+			pTile := data.CurrLevel.Get(px, py)
+			pLeft := data.CurrLevel.Get(px-1, py)
+			pRight := data.CurrLevel.Get(px+1, py)
+			pUp := data.CurrLevel.Get(px, py+1)
+			pDown := data.CurrLevel.Get(px, py-1)
 			var enemyL, enemyR, enemyU, enemyD bool
 			enemyL, enemyR, enemyU, enemyD = enemyCollision(ch, px, py)
 			if pTile == nil {
@@ -37,11 +37,11 @@ func CollisionSystem() {
 				if x != px || y != py { // check again if they changed tiles
 					setCollisionFlags(ch)
 					enemyL, enemyR, enemyU, enemyD = enemyCollision(ch, x, y)
-					tile := data.CurrLevel.Tiles.Get(x, y)
-					left := data.CurrLevel.Tiles.Get(x-1, y)
-					right := data.CurrLevel.Tiles.Get(x+1, y)
-					up := data.CurrLevel.Tiles.Get(x, y+1)
-					down := data.CurrLevel.Tiles.Get(x, y-1)
+					tile := data.CurrLevel.Get(x, y)
+					left := data.CurrLevel.Get(x-1, y)
+					right := data.CurrLevel.Get(x+1, y)
+					up := data.CurrLevel.Get(x, y+1)
+					down := data.CurrLevel.Get(x, y-1)
 					wallCollisions(ch, tile, left, right, enemyL, enemyR, chPos)
 					ceilingCollisions(ch, tile, up, enemyU, chPos)
 					floorCollisions(ch, tile, down, enemyD, chPos)
@@ -130,7 +130,7 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 				ch.Flags.Floor = true
 			}
 		} else if ((down.IsSolid() ||
-			(down.IsLadder() && (ch.State != data.OnLadder && ch.State != data.Leaping)) ||
+			(down.IsLadder() && (ch.State != data.Flying && ch.State != data.OnLadder && ch.State != data.Leaping)) ||
 			standOnBelow) &&
 			touchingFloor) ||
 			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {

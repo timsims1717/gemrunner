@@ -1,11 +1,7 @@
 {
   "key":"puzzle_settings",
   "width":12,
-  "height":8,
-  "pos":{
-    "X":0,
-    "Y":0
-  },
+  "height":10,
   "elements":[
     {
       "key":"puzzle_settings_title",
@@ -18,7 +14,7 @@
       },
       "pos":{
         "X":-92,
-        "Y":56
+        "Y":72
       },
       "type":"text",
       "anchor":{
@@ -34,7 +30,7 @@
       "helpText":"Cancel",
       "pos":{
         "X":84,
-        "Y":-52
+        "Y":-68
       },
       "type":"button"
     },
@@ -46,7 +42,7 @@
       "helpText":"Confirm",
       "pos":{
         "X":64,
-        "Y":-52
+        "Y":-68
       },
       "type":"button"
     },
@@ -61,7 +57,7 @@
       },
       "pos":{
         "X":-88,
-        "Y":38
+        "Y":54
       },
       "type":"text",
       "anchor":{
@@ -85,7 +81,7 @@
       },
       "pos":{
         "X":27,
-        "Y":38
+        "Y":54
       },
       "type":"input"
     },
@@ -100,7 +96,7 @@
       },
       "pos":{
         "X":-88,
-        "Y":20
+        "Y":36
       },
       "type":"text",
       "anchor":{
@@ -124,7 +120,7 @@
       },
       "pos":{
         "X":27,
-        "Y":20
+        "Y":36
       },
       "type":"input"
     },
@@ -140,7 +136,7 @@
       },
       "pos":{
         "X":-88,
-        "Y":2
+        "Y":18
       },
       "type":"text",
       "anchor":{
@@ -156,7 +152,7 @@
       "helpText":"Hub levels can be returned to as checkpoints.",
       "pos":{
         "X":84,
-        "Y":2
+        "Y":18
       },
       "type":"checkbox"
     },
@@ -172,7 +168,7 @@
       },
       "pos":{
         "X":-88,
-        "Y":2
+        "Y":18
       },
       "type":"text",
       "anchor":{
@@ -188,7 +184,7 @@
       "helpText":"Secret levels can't be picked when starting a puzzle set.",
       "pos":{
         "X":84,
-        "Y":2
+        "Y":18
       },
       "type":"checkbox"
     },
@@ -204,7 +200,7 @@
       },
       "pos":{
         "X":-88,
-        "Y":-16
+        "Y":0
       },
       "type":"text",
       "anchor":{
@@ -220,9 +216,133 @@
       "helpText":"Turn on darkness for this level.",
       "pos":{
         "X":84,
-        "Y":-16
+        "Y":0
       },
       "type":"checkbox"
+    },
+    {
+      "key":"puzzle_width_label",
+      "text":"Width",
+      "helpText":"The width of the level (in tiles).",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-88,
+        "Y":-18
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"puzzle_width_input",
+      "width":16,
+      "height":16,
+      "spriteKey":"text_caret",
+      "batchKey":"ui",
+      "text":"0",
+      "helpText":"The width of the level (in tiles).",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":72,
+        "Y":-18
+      },
+      "type":"input"
+    },
+    {
+      "key":"puzzle_width_minus",
+      "spriteKey":"minus_btn",
+      "spriteKey2":"minus_btn_click",
+      "batchKey":"ui",
+      "pos":{
+        "X":58,
+        "Y":-18
+      },
+      "type":"button"
+    },
+    {
+      "key":"puzzle_width_plus",
+      "spriteKey":"plus_btn",
+      "spriteKey2":"plus_btn_click",
+      "batchKey":"ui",
+      "pos":{
+        "X":86,
+        "Y":-18
+      },
+      "type":"button"
+    },
+    {
+      "key":"puzzle_height_label",
+      "text":"Height",
+      "helpText":"The height of the level (in tiles).",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-88,
+        "Y":-36
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"puzzle_height_input",
+      "width":16,
+      "height":16,
+      "spriteKey":"text_caret",
+      "batchKey":"ui",
+      "text":"0",
+      "helpText":"The height of the level (in tiles).",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":72,
+        "Y":-36
+      },
+      "type":"input"
+    },
+    {
+      "key":"puzzle_height_minus",
+      "spriteKey":"minus_btn",
+      "spriteKey2":"minus_btn_click",
+      "batchKey":"ui",
+      "pos":{
+        "X":58,
+        "Y":-36
+      },
+      "type":"button"
+    },
+    {
+      "key":"puzzle_height_plus",
+      "spriteKey":"plus_btn",
+      "spriteKey2":"plus_btn_click",
+      "batchKey":"ui",
+      "pos":{
+        "X":86,
+        "Y":-36
+      },
+      "type":"button"
     }
   ],
   "default":"puzzle_name"
