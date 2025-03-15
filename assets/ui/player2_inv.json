@@ -94,7 +94,48 @@
         "X":40,
         "Y":0
       },
-      "type":"container"
+      "type":"container",
+      "elements": [
+        {
+          "key":"player_inv_regen",
+          "spriteKey":"tile_ui_regen",
+          "batchKey":"ui",
+          "pos":{
+            "X":-4,
+            "Y":4
+          },
+          "type":"sprite"
+        },
+        {
+          "key":"player_inv_timer",
+          "text":"5",
+          "color":{
+            "R":0.9607843137254902,
+            "G":0.9607843137254902,
+            "B":0.9607843137254902,
+            "A":1
+          },
+          "pos":{
+            "X":7,
+            "Y":-5
+          },
+          "type":"text",
+          "anchor":{
+            "X":1.0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"player_inv_infinity",
+          "spriteKey":"tile_ui_infinity",
+          "batchKey":"ui",
+          "pos":{
+            "X":4,
+            "Y":-4
+          },
+          "type":"sprite"
+        }
+      ]
     },
     {
       "key":"player_inv_item",

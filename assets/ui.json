@@ -1230,6 +1230,13 @@
       "w": 8,
       "h": 8
     },
+    {
+      "key": "tile_ui_infinity",
+      "x": 160,
+      "y": 72,
+      "w": 8,
+      "h": 8
+    },
 
     {
       "key": "player1_gem",

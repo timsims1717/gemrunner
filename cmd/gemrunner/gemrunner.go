@@ -30,7 +30,7 @@ func run() {
 	constants.WinHeight = 1080
 	options.RegisterResolution(pixel.V(1920, 1080))
 	cfg := pixelgl.WindowConfig{
-		Title:  "Gem Runner",
+		Title:  constants.Title,
 		Bounds: pixel.R(0, 0, constants.WinWidth, constants.WinHeight),
 		VSync:  true,
 	}
@@ -129,11 +129,9 @@ func run() {
 		if data.DebugInput.Get("fuzzy").JustPressed() {
 			options.BilinearFilter = !options.BilinearFilter
 		}
-		if data.DebugInput.Get("debugText").JustPressed() {
-			debug.ShowText = !debug.ShowText
-		}
 		if data.DebugInput.Get("debug").JustPressed() {
 			debug.ShowDebug = !debug.ShowDebug
+			debug.ShowText = !debug.ShowText
 		}
 
 		state.Update(win)

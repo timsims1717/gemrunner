@@ -53,6 +53,9 @@ const (
 	TileBar         = "bar"
 	TileHideout     = "hideout"
 	TileEmpty       = "empty"
+
+	TileTransporter     = "transporter"
+	TileTransporterExit = "transporter_exit"
 )
 
 // Characters

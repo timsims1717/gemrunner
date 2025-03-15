@@ -13,7 +13,7 @@ type Dynamic struct {
 	Object       *object.Object
 	Anims        *reanimator.TreeSet
 	Entity       *ecs.Entity
-	Inventory    *ecs.Entity
+	Inventory    *BasicItem
 	StoredBlocks []*Tile
 	Control      Controller
 
@@ -54,67 +54,6 @@ func NewDynamic(tile *Tile) *Dynamic {
 		AnInt:    -1,
 		LastTile: tile,
 	}
-}
-
-type Direction int
-
-const (
-	Left = iota
-	Right
-	Up
-	Down
-	NoDirection
-)
-
-func (d Direction) String() string {
-	switch d {
-	case Left:
-		return "Left"
-	case Right:
-		return "Right"
-	case Up:
-		return "Up"
-	case Down:
-		return "Down"
-	default:
-		return "NoDirection"
-	}
-}
-
-type Actions struct {
-	Direction     Direction
-	PrevDirection Direction
-	PickUp        bool
-	Action        bool
-	DigLeft       bool
-	DigRight      bool
-}
-
-func NewAction() Actions {
-	return Actions{
-		Direction:     NoDirection,
-		PrevDirection: NoDirection,
-	}
-}
-
-func (a Actions) Up() bool {
-	return a.Direction == Up || (a.PrevDirection == Up && a.Direction != Down)
-}
-
-func (a Actions) Down() bool {
-	return a.Direction == Down || (a.PrevDirection == Down && a.Direction != Up)
-}
-
-func (a Actions) Left() bool {
-	return a.Direction == Left || (a.PrevDirection == Left && a.Direction != Right)
-}
-
-func (a Actions) Right() bool {
-	return a.Direction == Right || (a.PrevDirection == Right && a.Direction != Left)
-}
-
-func (a Actions) Any() bool {
-	return a.Direction != NoDirection || a.PickUp || a.Action || a.DigLeft || a.DigRight
 }
 
 type Vars struct {
@@ -165,6 +104,8 @@ const (
 	Drilling
 	Hiding
 	FireFlamethrower
+	TransportIn
+	TransportExit
 )
 
 func (s CharacterState) String() string {
@@ -229,6 +170,7 @@ type Flags struct {
 	Blow         bool
 	Attack       bool
 	Regen        bool
+	Transport    bool
 	Flying       bool
 	Disguised    bool
 	CheckAction  bool
@@ -246,12 +188,6 @@ type CharacterOptions struct {
 	Flying      bool
 	LinkedTiles []world.Coords
 	StoredCount int
-}
-
-type Controller interface {
-	GetActions() Actions
-	ClearPrev()
-	GetEntity() *ecs.Entity
 }
 
 type MoveType int

@@ -9,6 +9,7 @@ import (
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"github.com/gopxl/pixel/imdraw"
 	"time"
 )
@@ -27,13 +28,18 @@ func InGameSystem() {
 	} else {
 		data.CurrLevel.FrameChange = false
 	}
+	wereDoorsOpen := data.CurrLevel.DoorsOpen
 	data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
+	if !wereDoorsOpen && data.CurrLevel.DoorsOpen {
+		sfx.SoundPlayer.PlaySound(constants.SFXDoorsOpen, 0.)
+	}
 	if data.CurrLevel.FakePlayer != nil && debug.ShowDebug {
 		debug.AddLine(constants.ColorRed, imdraw.RoundEndShape, data.CurrLevel.FakePlayer.Object.Pos, data.CurrLevel.FakePlayer.Object.Pos, 3.)
 	}
 	PlayerMetaInput()
-	UpdateScoreUI()
+	UpdatePlayerInv()
 	ControlEnemiesSystem()
+	RecordingSystem()
 }
 
 func PlayerMetaInput() {
@@ -92,7 +98,7 @@ func FormatTimePlayed() string {
 	return fmt.Sprintf("%d:%02d:%02d", h, m, s)
 }
 
-func UpdateScoreUI() {
+func UpdatePlayerInv() {
 	for i, p := range data.CurrLevel.Players {
 		if p != nil {
 			dgKey := constants.DialogPlayer1Inv
@@ -118,7 +124,7 @@ func UpdateScoreUI() {
 						ele.Object.Hidden = true
 						ele.Sprite.Key = ""
 					} else {
-						if draw, ok := p.Inventory.GetComponentData(myecs.Drawable); ok {
+						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
 							if a, okA := draw.(*reanimator.Tree); okA {
 								ele.Object.Hidden = false
 								ele.Sprite.Key = a.Default
@@ -141,7 +147,7 @@ func UpdateScoreUI() {
 						ele.Object.Hidden = true
 						ele.Sprite.Key = ""
 					} else {
-						if draw, ok := p.Inventory.GetComponentData(myecs.Drawable); ok {
+						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
 							if sa, okSA := draw.([]interface{}); okSA && len(sa) > 1 {
 								if saSpr, ok2 := sa[1].(*img.Sprite); ok2 {
 									ele.Object.Hidden = false
@@ -151,8 +157,58 @@ func UpdateScoreUI() {
 							}
 						}
 					}
+				case "player_inv_cnt":
+					for _, ele2 := range ele.Elements {
+						switch ele2.Key {
+						case "player_inv_regen":
+							if p.Inventory != nil {
+								ele2.Object.Hidden = !p.Inventory.Metadata.Regenerate
+							} else {
+								ele2.Object.Hidden = true
+							}
+						case "player_inv_timer":
+							if p.Inventory != nil {
+								if p.Inventory.Metadata.Timer == -1 {
+									ele2.Object.Hidden = true
+								} else if p.Inventory.Metadata.Timer == 0 {
+									// draw infinity symbol
+									ele2.Object.Hidden = true
+								} else {
+									ele2.Text.SetText(fmt.Sprintf("%d", p.Inventory.Metadata.Timer-p.Inventory.Uses))
+									ele2.Object.Hidden = false
+								}
+							} else {
+								ele2.Object.Hidden = true
+							}
+						case "player_inv_infinity":
+							if p.Inventory != nil {
+								ele2.Object.Hidden = p.Inventory.Metadata.Timer != 0
+							} else {
+								ele2.Object.Hidden = true
+							}
+						}
+					}
 				}
 			}
+		}
+	}
+}
+
+func RecordingSystem() {
+	if data.CurrLevel.Recording {
+		if (data.CurrLevel.ReplayFrame.P1Actions != nil &&
+			data.CurrLevel.ReplayFrame.P1Actions.Any()) ||
+			(data.CurrLevel.ReplayFrame.P2Actions != nil &&
+				data.CurrLevel.ReplayFrame.P2Actions.Any()) ||
+			(data.CurrLevel.ReplayFrame.P3Actions != nil &&
+				data.CurrLevel.ReplayFrame.P3Actions.Any()) ||
+			(data.CurrLevel.ReplayFrame.P4Actions != nil &&
+				data.CurrLevel.ReplayFrame.P4Actions.Any()) {
+			if data.CurrLevel.FrameNumber > 0 {
+				data.CurrLevel.ReplayFrame.Frame = data.CurrLevel.FrameNumber - 1
+				data.CurrLevel.LevelReplay.Frames = append(data.CurrLevel.LevelReplay.Frames, data.CurrLevel.ReplayFrame)
+			}
+			data.CurrLevel.ReplayFrame = data.ReplayFrame{}
 		}
 	}
 }

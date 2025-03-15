@@ -70,9 +70,11 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 8, 8))
 	obj.Layer = 9
-	door := &data.Door{}
-	door.Object = obj
-	door.Color = tile.Metadata.Color
+	door := &data.Door{
+		Item: &data.BasicItem{},
+	}
+	door.Item.Object = obj
+	door.Item.Color = tile.Metadata.Color
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -87,26 +89,26 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 		e.AddComponent(myecs.Drawable, img.NewSprite(tile.SpriteString(), constants.TileBatch))
 	}
 	var interaction *data.Interact
-	switch door.Color {
+	switch door.Item.Color {
 	case data.PlayerBlue, data.PlayerGreen, data.PlayerPurple, data.PlayerOrange:
-		interaction = EnterPlayerDoor(door.Color, tile.Metadata.ExitIndex)
+		interaction = EnterPlayerDoor(door.Item.Color, tile.Metadata.ExitIndex)
 	default:
 		interaction = EnterDoor(tile.Metadata.ExitIndex)
 	}
-	door.Entity = e
+	door.Item.Entity = e
 	var anim *reanimator.Anim
 	if door.DoorType == data.Locked {
-		anim = reanimator.NewBatchAnimation("unlock", img.Batchers[constants.TileBatch], fmt.Sprintf("door_unlock%s", door.Color.SpriteString()), reanimator.Tran)
+		anim = reanimator.NewBatchAnimation("unlock", img.Batchers[constants.TileBatch], fmt.Sprintf("door_unlock%s", door.Item.Color.SpriteString()), reanimator.Tran)
 		anim.SetEndTrigger(func() {
 			e.RemoveComponent(myecs.Animated)
-			e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_unlocked%s", door.Color.SpriteString()), constants.TileBatch))
+			e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_unlocked%s", door.Item.Color.SpriteString()), constants.TileBatch))
 			e.AddComponent(myecs.OnTouch, interaction)
 		})
 	} else {
-		anim = reanimator.NewBatchAnimation("open", img.Batchers[constants.TileBatch], fmt.Sprintf("door_visible%s", door.Color.SpriteString()), reanimator.Tran)
+		anim = reanimator.NewBatchAnimation("open", img.Batchers[constants.TileBatch], fmt.Sprintf("door_visible%s", door.Item.Color.SpriteString()), reanimator.Tran)
 		anim.SetEndTrigger(func() {
 			e.RemoveComponent(myecs.Animated)
-			e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_hidden%s", door.Color.SpriteString()), constants.TileBatch))
+			e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_hidden%s", door.Item.Color.SpriteString()), constants.TileBatch))
 			e.AddComponent(myecs.OnTouch, interaction)
 		})
 	}
@@ -122,7 +124,7 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 			}
 		case data.Locked:
 			if door.Unlock {
-				e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_unlock%s", door.Color.SpriteString()), constants.TileBatch))
+				e.AddComponent(myecs.Drawable, img.NewSprite(fmt.Sprintf("door_unlock%s", door.Item.Color.SpriteString()), constants.TileBatch))
 				door.DoorType = data.Unlocked
 			}
 		case data.Unlocked:
@@ -169,13 +171,15 @@ func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	jumpBoots := &data.BasicItem{
+		Name:     "Jump Boots",
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp("Drill", 5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
 		Entity:   e,
 		Metadata: tile.Metadata,
 		Origin:   tile.Coords,
 	}
+	jumpBoots.Metadata.Timer = -1
 	jumpBoots.Action = Jump()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -183,6 +187,7 @@ func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.PickUp, jumpBoots.PickUp)
 	e.AddComponent(myecs.Action, jumpBoots.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, jumpBoots)
 }
 
 func Jump() *data.Interact {
@@ -213,6 +218,7 @@ func Jump() *data.Interact {
 			ch.State = data.Jumping
 			ch.Object.Pos.X = tile.Object.Pos.X
 			ch.Object.Pos.Y = tile.Object.Pos.Y
+			sfx.SoundPlayer.PlaySound(constants.SFXJump, 0.)
 			// for both kinds of jumps
 			ch.ACounter = 0
 			if ch.Actions.Left() {
@@ -237,20 +243,31 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	s := obj.Pos.Y
 	smash := &s
 	e := myecs.Manager.NewEntity()
-	e.AddComponent(myecs.Object, obj)
+	box := &data.BasicItem{
+		Name:     "Box",
+		Object:   obj,
+		Sprite:   img.NewSprite(key, constants.TileBatch),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		Entity:   e,
+		Metadata: tile.Metadata,
+		Origin:   tile.Coords,
+	}
+	box.Metadata.Timer = -1
+	e.AddComponent(myecs.Object, box.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
+	e.AddComponent(myecs.Drawable, box.Sprite)
 	e.AddComponent(myecs.StandOn, struct{}{})
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
-	e.AddComponent(myecs.PickUp, data.NewPickUp("Box", 10, tile.Metadata.Color))
+	e.AddComponent(myecs.PickUp, box.PickUp)
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, struct{}{})
-	box := data.NewDynamic(tile)
-	box.Object = obj
-	box.Entity = e
-	box.Flags.NoLadders = true
-	e.AddComponent(myecs.Dynamic, box)
+	e.AddComponent(myecs.Item, box)
+	dyn := data.NewDynamic(tile)
+	dyn.Object = obj
+	dyn.Entity = e
+	dyn.Flags.NoLadders = true
+	e.AddComponent(myecs.Dynamic, dyn)
 }
 
 func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
@@ -311,12 +328,14 @@ func CreateKey(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 14
 	color := tile.Metadata.Color
 	theKey := &data.BasicItem{
+		Name:   fmt.Sprintf("Key (%s)", color),
 		Object: obj,
 		Sprite: img.NewSprite(key, constants.TileBatch),
-		PickUp: data.NewPickUp(fmt.Sprintf("Key (%s)", color), 5, tile.Metadata.Color),
+		PickUp: data.NewPickUp(5, tile.Metadata.Color),
 		Action: KeyAction(color),
 		Color:  color,
 	}
+	theKey.Metadata.Timer = -1
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -324,6 +343,7 @@ func CreateKey(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.PickUp, theKey.PickUp)
 	e.AddComponent(myecs.Action, theKey.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, theKey)
 }
 
 func KeyAction(color data.ItemColor) *data.Interact {
@@ -345,7 +365,7 @@ func KeyUnlock(chPos pixel.Vec, color data.ItemColor) bool {
 			if x == chX && y == chY &&
 				!d.Unlock &&
 				d.DoorType == data.Locked &&
-				d.Color == color {
+				d.Item.Color == color {
 				d.Unlock = true
 				sfx.SoundPlayer.PlaySound(constants.SFXKey, 0)
 				return true
@@ -361,9 +381,10 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
-	jetpack := &data.Jetpack{
+	jetpack := &data.BasicItem{
+		Name:     "Jetpack",
 		Object:   obj,
-		PickUp:   data.NewPickUp("Jetpack", 5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
 		Entity:   e,
 		Metadata: tile.Metadata,
 		Origin:   tile.Coords,
@@ -394,9 +415,10 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.PickUp, jetpack.PickUp)
 	e.AddComponent(myecs.Action, jetpack.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, jetpack)
 }
 
-func JetpackAction(jetpack *data.Jetpack) *data.Interact {
+func JetpackAction(jetpack *data.BasicItem) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		DropItem(ch)
 		// change the player's state to flying
@@ -405,6 +427,7 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 		// set the jetpack vars
 		jetpack.Using = true
 		jetpack.Counter = 0
+		id := sfx.SoundPlayer.PlaySound(constants.SFXJetpackStart, -2.)
 		// remove the pickup component
 		jetpack.Entity.RemoveComponent(myecs.PickUp)
 		// set the same animation frame for the player as the jetpack
@@ -441,6 +464,10 @@ func JetpackAction(jetpack *data.Jetpack) *data.Interact {
 							WithShadow(pixel.ToRGBA(pColor)).
 							WithText(fmt.Sprintf("%d", timer)).
 							WithTimer(1)
+					}
+					if jetpack.Counter+1 <= jetpack.Metadata.Timer*2 {
+						sfx.SoundPlayer.KillSound(id)
+						id = sfx.SoundPlayer.PlaySound(constants.SFXJetpackEnd, -2.)
 					}
 					jetpack.Counter++
 					if jetpack.Counter > jetpack.Metadata.Timer*2 {
@@ -479,13 +506,16 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	disguise := &data.Disguise{
-		Object:   obj,
-		PickUp:   data.NewPickUp("Jetpack", 5, tile.Metadata.Color),
-		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Item: &data.BasicItem{
+			Name:     "Disguise",
+			Object:   obj,
+			PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+			Entity:   e,
+			Metadata: tile.Metadata,
+			Origin:   tile.Coords,
+		},
 	}
-	disguise.Action = DonDisguise(disguise)
+	disguise.Item.Action = DonDisguise(disguise)
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "disguise_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
@@ -499,29 +529,29 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 	})
 	regenA.SetEndTrigger(func() {
 		obj.Pos.Y = pos.Y
-		disguise.Regen = false
+		disguise.Item.Regen = false
 	})
 	doff := reanimator.NewBatchAnimation("doff", img.Batchers[constants.TileBatch], "disguise_doff", reanimator.Tran)
 	doff.SetEndTrigger(func() {
-		if disguise.Metadata.Regenerate {
-			disguise.Counter = 0
-			disguise.Waiting = true
+		if disguise.Item.Metadata.Regenerate {
+			disguise.Item.Counter = 0
+			disguise.Item.Waiting = true
 			disguise.Doff = false
 		} else {
-			myecs.Manager.DisposeEntity(disguise.Entity)
+			myecs.Manager.DisposeEntity(disguise.Item.Entity)
 		}
 	})
-	disguise.Anim = reanimator.New(reanimator.NewSwitch().
+	disguise.Item.Anim = reanimator.New(reanimator.NewSwitch().
 		AddAnimation(regenA).
 		AddAnimation(reanimator.NewBatchSprite("disguise", img.Batchers[constants.TileBatch], key, reanimator.Hold)).
 		AddAnimation(doff).
 		AddNull("none").
 		SetChooseFn(func() string {
-			if disguise.Waiting || disguise.Using {
+			if disguise.Item.Waiting || disguise.Item.Using {
 				return "none"
 			} else if disguise.Doff {
 				return "doff"
-			} else if disguise.Regen {
+			} else if disguise.Item.Regen {
 				return "regen"
 			} else {
 				return "disguise"
@@ -529,11 +559,12 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 		}), "disguise")
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	e.AddComponent(myecs.Drawable, disguise.Anim)
-	e.AddComponent(myecs.Animated, disguise.Anim)
-	e.AddComponent(myecs.PickUp, disguise.PickUp)
-	e.AddComponent(myecs.Action, disguise.Action)
+	e.AddComponent(myecs.Drawable, disguise.Item.Anim)
+	e.AddComponent(myecs.Animated, disguise.Item.Anim)
+	e.AddComponent(myecs.PickUp, disguise.Item.PickUp)
+	e.AddComponent(myecs.Action, disguise.Item.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, disguise.Item)
 }
 
 func DonDisguise(disguise *data.Disguise) *data.Interact {
@@ -543,25 +574,25 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 		}
 		DropItem(ch)
 		// remove the pickup component
-		disguise.Entity.RemoveComponent(myecs.PickUp)
+		disguise.Item.Entity.RemoveComponent(myecs.PickUp)
 		// set action
 		ch.State = data.DoingAction
 		ch.Flags.ItemAction = data.DonDisguise
 		// set the disguise vars
-		disguise.Using = true
-		disguise.Counter = 0
+		disguise.Item.Using = true
+		disguise.Item.Counter = 0
 		entity.AddComponent(myecs.Update, data.NewFn(func() {
-			if disguise.Using {
+			if disguise.Item.Using {
 				if ch.State == data.Dead || (ch.State == data.DoingAction && ch.Flags.ItemAction == data.Hiding) {
-					if disguise.Metadata.Regenerate {
+					if disguise.Item.Metadata.Regenerate {
 						ch.Flags.Disguised = false
-						disguise.Using = false
+						disguise.Item.Using = false
 						disguise.Doff = true
-						disguise.Counter = 0
-						disguise.Object.Pos = ch.Object.Pos
+						disguise.Item.Counter = 0
+						disguise.Item.Object.Pos = ch.Object.Pos
 					}
 				} else if data.CurrLevel.FrameChange {
-					if disguise.Counter%2 == 0 {
+					if disguise.Item.Counter%2 == 0 {
 						// update timer visuals
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 						var txPos pixel.Vec
@@ -572,7 +603,7 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 						} else {
 							txPos = ch.Object.Pos.Add(pixel.V(0, world.TileSize))
 						}
-						timer := disguise.Metadata.Timer - disguise.Counter/2
+						timer := disguise.Item.Metadata.Timer - disguise.Item.Counter/2
 						pColor := constants.Player1Color
 						switch p {
 						case 1:
@@ -589,26 +620,26 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 							WithText(fmt.Sprintf("%d", timer)).
 							WithTimer(1)
 					}
-					disguise.Counter++
-					if disguise.Counter > disguise.Metadata.Timer*2 {
+					disguise.Item.Counter++
+					if disguise.Item.Counter > disguise.Item.Metadata.Timer*2 {
 						ch.Flags.Disguised = false
-						disguise.Using = false
+						disguise.Item.Using = false
 						disguise.Doff = true
-						disguise.Counter = 0
-						disguise.Object.Pos = ch.Object.Pos
+						disguise.Item.Counter = 0
+						disguise.Item.Object.Pos = ch.Object.Pos
 					}
 				}
-			} else if disguise.Waiting {
+			} else if disguise.Item.Waiting {
 				if reanimator.FrameSwitch {
-					disguise.Counter++
+					disguise.Item.Counter++
 				}
-				delay := constants.ItemRegen * (disguise.Metadata.RegenDelay + 2)
-				if disguise.Counter > delay && data.CurrLevel.FrameChange {
-					disguise.Object.Pos = world.MapToWorld(disguise.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
-					disguise.Regen = true
-					disguise.Waiting = false
-					disguise.Entity.RemoveComponent(myecs.Update)
-					disguise.Entity.AddComponent(myecs.PickUp, disguise.PickUp)
+				delay := constants.ItemRegen * (disguise.Item.Metadata.RegenDelay + 2)
+				if disguise.Item.Counter > delay && data.CurrLevel.FrameChange {
+					disguise.Item.Object.Pos = world.MapToWorld(disguise.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					disguise.Item.Regen = true
+					disguise.Item.Waiting = false
+					disguise.Item.Entity.RemoveComponent(myecs.Update)
+					disguise.Item.Entity.AddComponent(myecs.PickUp, disguise.Item.PickUp)
 				}
 			}
 		}))
@@ -622,13 +653,15 @@ func CreateDrill(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	drill := &data.BasicItem{
+		Name:     "Drill",
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp("Drill", 5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
 		Entity:   e,
 		Metadata: tile.Metadata,
 		Origin:   tile.Coords,
 	}
+	drill.Metadata.Timer = -1
 	drill.Action = UseDrill(drill)
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -636,6 +669,7 @@ func CreateDrill(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.PickUp, drill.PickUp)
 	e.AddComponent(myecs.Action, drill.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, drill)
 }
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
@@ -688,8 +722,9 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	flamethrower := &data.BasicItem{
+		Name:     "Flamethrower",
 		Object:   obj,
-		PickUp:   data.NewPickUp("Flamethrower", 5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
 		Entity:   e,
 		Metadata: tile.Metadata,
 		Origin:   tile.Coords,
@@ -720,10 +755,11 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.PickUp, flamethrower.PickUp)
 	e.AddComponent(myecs.Action, flamethrower.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, flamethrower)
 }
 
 func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
-	numUses := 0
+	flamethrower.Uses = 0
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if ch.State == data.Falling || ch.State == data.Jumping || ch.State == data.OnBar {
 			return
@@ -732,10 +768,12 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 		x2 := x + 1
 		x3 := x + 2
+		x4 := x + 3
 		flip := false
 		if ch.Object.Flip {
 			x2 = x - 1
 			x3 = x - 2
+			x4 = x - 3
 			flip = true
 		}
 		tile := data.CurrLevel.Get(x, y)
@@ -751,11 +789,13 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 			// set the flamethrower vars
 			flamethrower.Using = true
 			flamethrower.Counter = 0
-			numUses++
+			flamethrower.Uses++
 			// create flame animations
 			secondTile := data.CurrLevel.Get(x3, y)
+			thirdTile := data.CurrLevel.Get(x4, y)
 			firstFlame := "flames_l"
-			secondFlame := "flames_r"
+			secondFlame := "flames_m"
+			thirdFlame := "flames_r"
 			obj1 := object.New()
 			obj1.Layer = 34
 			obj1.Pos = firstTile.Object.Pos
@@ -787,7 +827,26 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 				e2.AddComponent(myecs.Drawable, anim2)
 				e2.AddComponent(myecs.Animated, anim2)
 				e2.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				if thirdTile != nil {
+					obj3 := object.New()
+					obj3.Layer = 34
+					obj3.Pos = thirdTile.Object.Pos
+					obj3.SetRect(pixel.R(0, 0, 16, 16))
+					obj3.Flip = flip
+					e3 := myecs.Manager.NewEntity()
+					a3 := reanimator.NewBatchAnimation(thirdFlame, img.Batchers[constants.TileBatch], thirdFlame, reanimator.Tran)
+					a3.SetEndTrigger(func() {
+						myecs.Manager.DisposeEntity(e3)
+					})
+					anim3 := reanimator.NewSimple(a3)
+					e3.AddComponent(myecs.Object, obj3)
+					e3.AddComponent(myecs.Drawable, anim3)
+					e3.AddComponent(myecs.Animated, anim3)
+					e3.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				}
 			}
+			// flamethrower sound
+			sfx.SoundPlayer.PlaySound(constants.SFXFlamethrower, 0.)
 			entity.AddComponent(myecs.Update, data.NewFn(func() {
 				if flamethrower.Using {
 					if reanimator.FrameSwitch {
@@ -796,9 +855,9 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 							flamethrower.Using = false
 							flamethrower.Counter = 0
 							ch.Flags.ItemAction = data.NoItemAction
-							if flamethrower.Metadata.Timer > 0 && numUses >= flamethrower.Metadata.Timer {
+							if flamethrower.Metadata.Timer > 0 && flamethrower.Uses >= flamethrower.Metadata.Timer {
 								DropItem(ch)
-								numUses = 0
+								flamethrower.Uses = 0
 								if flamethrower.Metadata.Regenerate {
 									// remove the pickup component
 									flamethrower.Entity.RemoveComponent(myecs.PickUp)
@@ -815,7 +874,9 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 								if okCO && okC && ch2.State != data.Dead {
 									chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
 									ch2Coords := world.NewCoords(chX, chY)
-									if ch2Coords == firstTile.Coords || (secondTile != nil && ch2Coords == secondTile.Coords) {
+									if ch2Coords == firstTile.Coords ||
+										(secondTile != nil && ch2Coords == secondTile.Coords) ||
+										(thirdTile != nil && ch2Coords == thirdTile.Coords) {
 										tile2 := data.CurrLevel.Get(chX, chY)
 										ch2.Object.Pos.X = tile2.Object.Pos.X
 										ch2.Object.Pos.Y = tile2.Object.Pos.Y
@@ -826,15 +887,17 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 									}
 								}
 							}
-							if flamethrower.Counter == 1 {
+							if flamethrower.Counter == 2 {
 								// light bombs
 								for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
 									objB, okO := resultB.Components[myecs.Object].(*object.Object)
 									b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
-									if okO && okB && !objB.Hidden && !b.Waiting && !b.Regen {
+									if okO && okB && !objB.Hidden && !b.Item.Waiting && !b.Item.Regen {
 										chX, chY := world.WorldToMap(objB.Pos.X, objB.Pos.Y)
 										bCoords := world.NewCoords(chX, chY)
-										if bCoords == firstTile.Coords || (secondTile != nil && bCoords == secondTile.Coords) {
+										if bCoords == firstTile.Coords ||
+											(secondTile != nil && bCoords == secondTile.Coords) ||
+											(thirdTile != nil && bCoords == thirdTile.Coords) {
 											tileB := data.CurrLevel.Get(chX, chY)
 											objB.Pos.X = tileB.Object.Pos.X
 											objB.Pos.Y = tileB.Object.Pos.Y
@@ -843,13 +906,29 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 									}
 								}
 								// destroy turf
-								if firstTile.Block == data.BlockTurf || firstTile.Block == data.BlockCracked || firstTile.Block == data.BlockFall || firstTile.Block == data.BlockClose {
+								if firstTile.Block == data.BlockTurf ||
+									firstTile.Block == data.BlockCracked ||
+									firstTile.Block == data.BlockFall ||
+									firstTile.Block == data.BlockClose {
 									firstTile.Flags.Collapse = true
 									firstTile.Counter = constants.CollapseCounter
 								}
-								if secondTile != nil && (secondTile.Block == data.BlockTurf || secondTile.Block == data.BlockCracked || secondTile.Block == data.BlockFall || secondTile.Block == data.BlockClose) {
+								if secondTile != nil &&
+									(secondTile.Block == data.BlockTurf ||
+										secondTile.Block == data.BlockCracked ||
+										secondTile.Block == data.BlockFall ||
+										secondTile.Block == data.BlockClose) {
 									secondTile.Flags.Collapse = true
 									secondTile.Counter = constants.CollapseCounter
+								}
+								if thirdTile != nil &&
+									secondTile.Block != data.BlockBedrock &&
+									(thirdTile.Block == data.BlockTurf ||
+										thirdTile.Block == data.BlockCracked ||
+										thirdTile.Block == data.BlockFall ||
+										thirdTile.Block == data.BlockClose) {
+									thirdTile.Flags.Collapse = true
+									thirdTile.Counter = constants.CollapseCounter
 								}
 							}
 						}
@@ -870,4 +949,150 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 			}))
 		}
 	})
+}
+
+func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
+	obj := object.New().WithID(tile.SpriteString())
+	obj.Pos = pos
+	obj.SetRect(pixel.R(0, 0, 8, 8))
+	obj.Layer = 9
+	e := myecs.Manager.NewEntity()
+	trans := &data.Transporter{
+		Item: &data.BasicItem{
+			Name:     "Transporter",
+			Object:   obj,
+			Sprite:   img.NewSprite(tile.SpriteString(), constants.TileBatch),
+			Entity:   e,
+			Color:    tile.Metadata.Color,
+			Metadata: tile.Metadata,
+			Origin:   tile.Coords,
+		},
+	}
+
+	if len(tile.Metadata.LinkedTiles) > 0 {
+		trans.Dest = data.CurrLevel.Get(tile.Metadata.LinkedTiles[0].X, tile.Metadata.LinkedTiles[0].Y)
+	}
+	if trans.Dest.Block != data.BlockTransporterExit {
+		trans.Dest = nil
+	}
+	trans.BarO = object.New()
+	trans.BarO.Pos = pos
+	trans.BarO.Layer = 16
+	trans.BarUp = false
+	barDown := reanimator.NewBatchAnimationCustom("bar_down", img.Batchers[constants.TileBatch], "transporter_bar", []int{0, 1, 2, 3, 4, 5, 6}, reanimator.Hold)
+	barUp := reanimator.NewBatchAnimationCustom("bar_up", img.Batchers[constants.TileBatch], "transporter_bar", []int{6, 5, 4, 3, 2, 1}, reanimator.Tran)
+	barUp.SetEndTrigger(func() {
+		trans.Item.Using = false
+		trans.BarUp = false
+	})
+	sw := reanimator.NewSwitch().
+		AddNull("none").
+		AddAnimation(barDown).
+		AddAnimation(barUp).
+		SetChooseFn(func() string {
+			if trans.Item.Using {
+				if trans.BarUp {
+					return "bar_up"
+				} else {
+					return "bar_down"
+				}
+			}
+			trans.BarUp = false
+			return "none"
+		})
+	trans.BarT = reanimator.New(sw, "none")
+	trans.BarE = myecs.Manager.NewEntity()
+	trans.BarE.AddComponent(myecs.Object, trans.BarO)
+	trans.BarE.AddComponent(myecs.Drawable, trans.BarT)
+	trans.BarE.AddComponent(myecs.Animated, trans.BarT)
+	trans.BarE.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Drawable, trans.Item.Sprite)
+	if trans.Dest != nil {
+		trans.Item.Action = EnterTransporter(trans)
+		e.AddComponent(myecs.OnTouch, trans.Item.Action)
+	}
+	e.AddComponent(myecs.LvlElement, struct{}{})
+}
+
+func EnterTransporter(trans *data.Transporter) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+		if ch.Layer == 0 {
+			return
+		}
+		// return if being used
+		if trans.Item.Using {
+			return
+		}
+		// return if player doesn't match the color of transporter
+		switch trans.Item.Color {
+		case data.NonPlayerRed:
+			if p >= 0 && p < constants.MaxPlayers {
+				return
+			}
+		case data.PlayerBlue, data.PlayerGreen, data.PlayerPurple, data.PlayerOrange:
+			if ch.Color != trans.Item.Color && p >= 0 && p < constants.MaxPlayers {
+				return
+			}
+		}
+		// return if no linked tiles or if linked tile is empty
+		if trans.Dest == nil || trans.Dest.Block != data.BlockTransporterExit {
+			return
+		}
+		trans.Item.Using = true
+		trans.BarUp = false
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.TransportIn
+		ch.Flags.Transport = false
+		ch.Object.Pos = trans.Item.Object.Pos
+		ch.Object.Layer = 15
+		sfx.SoundPlayer.PlaySound(constants.SFXTransIn, -2.)
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if ch.State == data.Dead {
+				trans.Item.Using = false
+				entity.RemoveComponent(myecs.Update)
+				ch.Object.Layer = ch.Layer
+				return
+			}
+			if ch.Flags.ItemAction == data.TransportIn &&
+				ch.Flags.Transport && !trans.Dest.Flags.Using {
+				// teleport the player
+				sfx.SoundPlayer.PlaySound(constants.SFXTransOut, -1.)
+				ch.Flags.ItemAction = data.TransportExit
+				ch.Flags.Transport = false
+				ch.Object.Pos = trans.Dest.Object.Pos
+				ch.Object.PostPos = ch.Object.Pos
+				trans.Dest.Flags.Using = true
+				trans.BarUp = true
+				entity.RemoveComponent(myecs.Update)
+			}
+		}))
+	})
+}
+
+func CreateTransporterExit(pos pixel.Vec, tile *data.Tile) {
+	zap := reanimator.NewBatchAnimationCustom("zap", img.Batchers[constants.TileBatch], "transporter_exit_zap", []int{0, 1, 0, 1, 0, 1, 0, 1}, reanimator.Tran)
+	zap.SetEndTrigger(func() {
+		tile.Flags.Using = false
+	})
+	sw := reanimator.NewSwitch().
+		AddNull("none").
+		AddAnimation(zap).
+		SetChooseFn(func() string {
+			if tile.Flags.Using {
+				return "zap"
+			}
+			return "none"
+		})
+	tree := reanimator.New(sw, "none")
+	e := myecs.Manager.NewEntity()
+	obj := object.New()
+	obj.Pos = pos
+	obj.Layer = 16
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Drawable, tree)
+	e.AddComponent(myecs.Animated, tree)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 }

@@ -22,12 +22,15 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 14
 	e := myecs.Manager.NewEntity()
-	theBomb := &data.Bomb{}
-	theBomb.Object = obj
-	theBomb.Entity = e
-	theBomb.Metadata = tile.Metadata
-	theBomb.Origin = tile.Coords
-	theBomb.Color = tile.Metadata.Color
+	theBomb := &data.Bomb{
+		Item: &data.BasicItem{},
+	}
+	theBomb.Item.Object = obj
+	theBomb.Item.Entity = e
+	theBomb.Item.Metadata = tile.Metadata
+	theBomb.Item.Metadata.Timer = -1
+	theBomb.Item.Origin = tile.Coords
+	theBomb.Item.Color = tile.Metadata.Color
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "bomb_regen_anim", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
@@ -46,23 +49,23 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 	})
 	regenA.SetEndTrigger(func() {
 		obj.Pos.Y = pos.Y
-		theBomb.Regen = false
+		theBomb.Item.Regen = false
 		theBomb.SymSpr.ToggleHidden(false)
 	})
-	theBomb.Anim = reanimator.New(reanimator.NewSwitch().
+	theBomb.Item.Anim = reanimator.New(reanimator.NewSwitch().
 		AddAnimation(regenA).
 		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], tile.SpriteString(), reanimator.Hold)).
 		AddNull("none").
 		SetChooseFn(func() string {
-			if theBomb.Waiting {
+			if theBomb.Item.Waiting {
 				return "none"
-			} else if theBomb.Regen {
+			} else if theBomb.Item.Regen {
 				return "regen"
 			} else {
 				return "bomb"
 			}
 		}), "bomb")
-	theBomb.Draws = append(theBomb.Draws, theBomb.Anim)
+	theBomb.Draws = append(theBomb.Draws, theBomb.Item.Anim)
 	name := "Bomb"
 	litKey := constants.ItemBombLit
 	if tile.Metadata.BombCross && tile.Metadata.Regenerate {
@@ -79,18 +82,20 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 	if theBomb.SymSpr != nil {
 		theBomb.Draws = append(theBomb.Draws, theBomb.SymSpr)
 	}
+	theBomb.Item.Name = name
 	theBomb.LitKey = litKey
-	theBomb.PickUp = data.NewPickUp(name, 5, tile.Metadata.Color)
-	theBomb.Action = BombAction(theBomb)
+	theBomb.Item.PickUp = data.NewPickUp(5, tile.Metadata.Color)
+	theBomb.Item.Action = BombAction(theBomb)
 
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, theBomb.Draws)
-	e.AddComponent(myecs.Animated, theBomb.Anim)
-	e.AddComponent(myecs.PickUp, theBomb.PickUp)
-	e.AddComponent(myecs.Action, theBomb.Action)
+	e.AddComponent(myecs.Animated, theBomb.Item.Anim)
+	e.AddComponent(myecs.PickUp, theBomb.Item.PickUp)
+	e.AddComponent(myecs.Action, theBomb.Item.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Bomb, theBomb)
+	e.AddComponent(myecs.Item, theBomb.Item)
 }
 
 func BombAction(theBomb *data.Bomb) *data.Interact {
@@ -107,26 +112,26 @@ func BombAction(theBomb *data.Bomb) *data.Interact {
 }
 
 func LightBomb(theBomb *data.Bomb, tile *data.Tile) {
-	if theBomb.Metadata.Regenerate {
+	if theBomb.Item.Metadata.Regenerate {
 		theBomb.SymSpr.ToggleHidden(true)
 		counter := 0
-		theBomb.Waiting = true
-		theBomb.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+		theBomb.Item.Waiting = true
+		theBomb.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
 			if reanimator.FrameSwitch {
 				counter++
 			}
-			delay := constants.BombFuse + (constants.ItemRegen * (theBomb.Metadata.RegenDelay + 2))
+			delay := constants.BombFuse + (constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2))
 			if counter > delay && data.CurrLevel.FrameChange {
-				theBomb.Object.Pos = world.MapToWorld(theBomb.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
-				theBomb.Regen = true
-				theBomb.Waiting = false
-				theBomb.Entity.RemoveComponent(myecs.Update)
+				theBomb.Item.Object.Pos = world.MapToWorld(theBomb.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+				theBomb.Item.Regen = true
+				theBomb.Item.Waiting = false
+				theBomb.Item.Entity.RemoveComponent(myecs.Update)
 			}
 		}))
 	} else {
-		myecs.Manager.DisposeEntity(theBomb.Entity)
+		myecs.Manager.DisposeEntity(theBomb.Item.Entity)
 	}
-	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, data.TileMetadata{BombCross: theBomb.Metadata.BombCross})
+	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, data.TileMetadata{BombCross: theBomb.Item.Metadata.BombCross})
 }
 
 func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
@@ -380,7 +385,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 		_, okCO := resultC.Components[myecs.Object].(*object.Object)
 		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-		if okCO && okC && ch.State != data.Dead {
+		if okCO && okC && ch.State != data.Dead && ch.Flags.ItemAction != data.TransportIn {
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
 				tile := data.CurrLevel.Get(chX, chY)
@@ -397,7 +402,7 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 	for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
 		obj, okO := resultB.Components[myecs.Object].(*object.Object)
 		b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
-		if okO && okB && !obj.Hidden && !b.Waiting && !b.Regen {
+		if okO && okB && !obj.Hidden && !b.Item.Waiting && !b.Item.Regen {
 			chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
 				tile := data.CurrLevel.Get(chX, chY)

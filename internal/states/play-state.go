@@ -44,7 +44,7 @@ func (s *playState) Load(win *pixelgl.Window) {
 	ui.ClearDialogStack()
 	systems.InGameDialogs(win)
 	systems.LevelSessionInit()
-	systems.LevelInit()
+	systems.LevelInit(true)
 	systems.UpdateViews()
 	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
@@ -76,13 +76,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 			if player.Inventory == nil {
 				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))
 			} else {
-				item := "unknown"
-				cd, ok1 := player.Inventory.GetComponentData(myecs.PickUp)
-				if ok1 {
-					if pd, ok := cd.(*data.PickUp); ok {
-						item = pd.Name
-					}
-				}
+				item := player.Inventory.Name
 				debug.AddText(fmt.Sprintf("Player %d Inv: %s", i+1, item))
 			}
 			//debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))
@@ -95,7 +89,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 	reanimator.Update()
 
 	// function systems
-	systems.PlaySystem()
+	systems.PlayPauseSystem()
 	systems.FunctionSystem()
 	systems.InterpolationSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
@@ -104,6 +98,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 	if !ui.DialogStackOpen {
 		// custom systems
 		systems.InGameSystem()
+		systems.PlaySystem()
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
 		systems.CollisionSystem()
@@ -148,7 +143,6 @@ func drawPlayArea(win *pixelgl.Window) {
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
 	img.Clear()
-	//data.PuzzleView.Draw(win)
 	data.PuzzleView.Draw(data.WorldView.Canvas)
 	// draw collapse/regen
 	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
@@ -156,12 +150,10 @@ func drawPlayArea(win *pixelgl.Window) {
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
 	data.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
-	//data.PuzzleView.Draw(win)
 	data.PuzzleView.Draw(data.WorldView.Canvas)
 	// draw effects
 	data.PuzzleView.Canvas.Clear(pixel.RGBA{})
 	systems.DrawBatchSystem(data.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
-	//data.PuzzleView.Draw(win)
 	data.PuzzleView.Draw(data.WorldView.Canvas)
 	data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
 	systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)

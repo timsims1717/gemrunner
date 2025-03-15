@@ -200,7 +200,9 @@ func GetWrenchSprites(tile *data.Tile) []*img.Sprite {
 				yOffset = -4
 			}
 			timer := tile.Metadata.Timer
-			if timer < 10 {
+			if timer == 0 {
+				sprs = append(sprs, img.NewSprite(constants.UIInfinity, constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+			} else if timer < 10 {
 				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
 			} else if timer < 100 {
 				sprs = append(sprs, img.NewSprite(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))

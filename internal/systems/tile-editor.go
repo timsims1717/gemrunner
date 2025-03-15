@@ -103,10 +103,26 @@ func SetBlock(coords world.Coords, block data.Block) {
 						}
 					}
 					tile.Block = block
+				case data.BlockTransporter:
+					if exit, ok := data.Editor.LastTiles[data.BlockTransporterExit]; ok {
+						LinkTiles(tile, exit)
+					}
+					tile.Block = block
+				case data.BlockTransporterExit:
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockTransporter &&
+								len(t.Metadata.LinkedTiles) == 0 {
+								LinkTiles(tile, t)
+							}
+						}
+					}
+					tile.Block = block
 				default:
 					tile.Block = block
 				}
 			}
+			data.Editor.LastTiles[tile.Block] = tile
 			data.CurrPuzzleSet.CurrPuzzle.Update = true
 			tile.Update = true
 		}
@@ -142,6 +158,12 @@ func DeleteBlock(coords world.Coords) {
 }
 
 func LinkTiles(tileA, tileB *data.Tile) {
+	if tileA.Block == data.BlockTransporter {
+		RemoveLinkedTiles(tileA)
+	}
+	if tileB.Block == data.BlockTransporter {
+		RemoveLinkedTiles(tileB)
+	}
 	if !world.CoordsIn(tileB.Coords, tileA.Metadata.LinkedTiles) {
 		tileA.Metadata.LinkedTiles = append(tileA.Metadata.LinkedTiles, tileB.Coords)
 	}

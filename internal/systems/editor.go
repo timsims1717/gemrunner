@@ -458,19 +458,28 @@ func PuzzleEditSystem() {
 				if legal {
 					if rClick.JustReleased() || click.JustReleased() {
 						tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
-						switch tile.Block {
-						case data.BlockDemon, data.BlockDemonRegen,
-							data.BlockFly, data.BlockFlyRegen:
-							if rClick.JustReleased() {
-								RemoveLinkedTiles(tile)
-								tile.Metadata.Changed = true
-							} else if click.JustReleased() {
-								lt := data.CurrPuzzleSet.CurrPuzzle.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
-								if lt != nil && lt.Block != tile.Block &&
-									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
-										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
-										(lt.Block == data.BlockFly && tile.Block == data.BlockFlyRegen) ||
-										(tile.Block == data.BlockFly && lt.Block == data.BlockFlyRegen)) {
+						if rClick.JustReleased() {
+							RemoveLinkedTiles(tile)
+							tile.Metadata.Changed = true
+						} else if click.JustReleased() {
+							lt := data.CurrPuzzleSet.CurrPuzzle.Get(data.Editor.LastCoords.X, data.Editor.LastCoords.Y)
+							if lt != nil {
+								match := false
+								switch tile.Block {
+								case data.BlockDemon:
+									match = lt.Block == data.BlockDemonRegen
+								case data.BlockDemonRegen:
+									match = lt.Block == data.BlockDemon
+								case data.BlockFly:
+									match = lt.Block == data.BlockFlyRegen
+								case data.BlockFlyRegen:
+									match = lt.Block == data.BlockFly
+								case data.BlockTransporter:
+									match = lt.Block == data.BlockTransporterExit
+								case data.BlockTransporterExit:
+									match = lt.Block == data.BlockTransporter
+								}
+								if match {
 									LinkTiles(tile, lt)
 									//lt.Metadata.LinkedTiles = append(lt.Metadata.LinkedTiles, coords)
 									//tile.Metadata.LinkedTiles = append(tile.Metadata.LinkedTiles, data.Editor.LastCoords)
@@ -482,7 +491,7 @@ func PuzzleEditSystem() {
 						data.CurrPuzzleSet.CurrPuzzle.Update = true
 						data.CurrPuzzleSet.CurrPuzzle.Changed = true
 					} else if click.Pressed() {
-						if click.JustPressed() && legal {
+						if click.JustPressed() {
 							data.Editor.LastCoords = coords
 						} else if rClick.JustPressed() {
 							data.Editor.NoInput = true
@@ -494,21 +503,32 @@ func PuzzleEditSystem() {
 							case data.BlockDemon, data.BlockDemonRegen,
 								data.BlockFly, data.BlockFlyRegen:
 								data.IMDraw.Color = constants.ColorOrange
+							case data.BlockTransporter, data.BlockTransporterExit:
+								data.IMDraw.Color = constants.ColorCyan
 							default:
 								break modeLabel
 							}
 							data.IMDraw.EndShape = imdraw.RoundEndShape
-							if legal {
-								tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
-								if lt.Block != tile.Block &&
-									((lt.Block == data.BlockDemon && tile.Block == data.BlockDemonRegen) ||
-										(tile.Block == data.BlockDemon && lt.Block == data.BlockDemonRegen) ||
-										(lt.Block == data.BlockFly && tile.Block == data.BlockFlyRegen) ||
-										(tile.Block == data.BlockFly && lt.Block == data.BlockFlyRegen)) {
-									data.IMDraw.Push(lt.Object.Pos, tile.Object.Pos)
-									data.IMDraw.Line(2)
-									break modeLabel
-								}
+							tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
+							match := false
+							switch tile.Block {
+							case data.BlockDemon:
+								match = lt.Block == data.BlockDemonRegen
+							case data.BlockDemonRegen:
+								match = lt.Block == data.BlockDemon
+							case data.BlockFly:
+								match = lt.Block == data.BlockFlyRegen
+							case data.BlockFlyRegen:
+								match = lt.Block == data.BlockFly
+							case data.BlockTransporter:
+								match = lt.Block == data.BlockTransporterExit
+							case data.BlockTransporterExit:
+								match = lt.Block == data.BlockTransporter
+							}
+							if match {
+								data.IMDraw.Push(lt.Object.Pos, tile.Object.Pos)
+								data.IMDraw.Line(2)
+								break modeLabel
 							}
 							data.IMDraw.Push(lt.Object.Pos, projPos)
 							data.IMDraw.Line(2)
@@ -763,8 +783,15 @@ func PuzzleEditSystem() {
 		tile := data.CurrPuzzleSet.CurrPuzzle.Tiles.T[coords.Y][coords.X]
 		switch tile.Block {
 		case data.BlockDemon, data.BlockDemonRegen,
-			data.BlockFly, data.BlockFlyRegen:
-			data.IMDraw.Color = constants.ColorOrange
+			data.BlockFly, data.BlockFlyRegen,
+			data.BlockTransporter, data.BlockTransporterExit:
+			switch tile.Block {
+			case data.BlockDemon, data.BlockDemonRegen,
+				data.BlockFly, data.BlockFlyRegen:
+				data.IMDraw.Color = constants.ColorOrange
+			case data.BlockTransporter, data.BlockTransporterExit:
+				data.IMDraw.Color = constants.ColorCyan
+			}
 			data.IMDraw.EndShape = imdraw.RoundEndShape
 			for _, rt := range tile.Metadata.LinkedTiles {
 				data.IMDraw.Push(tile.Object.Pos, world.MapToWorld(rt).Add(pixel.V(world.HalfSize, world.HalfSize)))

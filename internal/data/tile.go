@@ -29,6 +29,7 @@ type Tile struct {
 func (t *Tile) SpriteString() string {
 	colSuffixKey := constants.SprColorYellow
 	colSuffixTools := ""
+	colSuffixTrans := ""
 	switch t.Metadata.Color {
 	case NonPlayerYellow:
 		colSuffixKey = constants.SprColorYellow
@@ -40,18 +41,23 @@ func (t *Tile) SpriteString() string {
 		colSuffixKey = constants.SprColorCyan
 	case NonPlayerRed:
 		colSuffixKey = constants.SprColorRed
+		colSuffixTrans = constants.SprColorRed
 	case PlayerBlue:
 		colSuffixKey = constants.SprColorBlue
 		colSuffixTools = constants.SprColorBlue
+		colSuffixTrans = constants.SprColorBlue
 	case PlayerGreen:
 		colSuffixKey = constants.SprColorGreen
 		colSuffixTools = constants.SprColorGreen
+		colSuffixTrans = constants.SprColorGreen
 	case PlayerPurple:
 		colSuffixKey = constants.SprColorPurple
 		colSuffixTools = constants.SprColorPurple
+		colSuffixTrans = constants.SprColorPurple
 	case PlayerOrange:
 		colSuffixKey = constants.SprColorOrange
 		colSuffixTools = constants.SprColorOrange
+		colSuffixTrans = constants.SprColorOrange
 	}
 	switch t.Block {
 	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout,
@@ -78,6 +84,10 @@ func (t *Tile) SpriteString() string {
 		return constants.TileExitLadderM
 	case BlockBar:
 		return constants.TileBar
+	case BlockTransporterExit:
+		return constants.TileTransporterExit
+	case BlockTransporter:
+		return constants.TileTransporter + colSuffixTrans
 	case BlockJumpBoots:
 		return constants.ItemJumpBoots + colSuffixTools
 	case BlockBox:
@@ -337,6 +347,7 @@ type TileFlags struct {
 	PhaseChange bool `json:"-"`
 	LCracked    bool `json:"-"`
 	LCollapse   bool `json:"-"`
+	Using       bool `json:"-"`
 }
 
 func DefaultFlags() TileFlags {

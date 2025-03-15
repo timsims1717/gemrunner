@@ -1,12 +1,24 @@
-## 0.2.20250228
+## 0.3.20250331
 
 ### Game Features
 
-* Implemented darkness
-  * Only a small portion of the screen around the player is visible
+* Added darkness
+  * Only a small portion of the screen around a player is visible
   * Toggled in Puzzle Settings
 * Added a superhero landing when falling
   * It can be interrupted
+* Added information to the Inventory dialogs
+  * Regen?
+  * Number of Uses/Timer
+* Sound Effects added for:
+  * Flamethrower
+  * Jetpack
+  * Jumping
+* Added Replays and Recording
+  * Press F5 to record and save a level replay while playing the level
+* Added Transporters
+  * Entrances for all, each player, and just enemies
+  * Exits
 
 ### Editor Features
 

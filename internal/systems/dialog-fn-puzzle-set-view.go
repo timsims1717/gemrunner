@@ -612,7 +612,8 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 				key = constants.PreviewBomb
 			case data.BlockJetpack, data.BlockDisguise,
 				data.BlockDrill, data.BlockFlamethrower,
-				data.BlockJumpBoots, data.BlockBox:
+				data.BlockJumpBoots, data.BlockBox,
+				data.BlockTransporter, data.BlockTransporterExit:
 				key = constants.PreviewTool
 			}
 			if key != "" {

@@ -84,6 +84,15 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.Crush = false
 		ch.Flags.Blow = false
 	})
+	transIn := reanimator.NewBatchAnimation("trans_in", batch, "demon_trans_in", reanimator.Hold)
+	transExit := reanimator.NewBatchAnimation("trans_exit", batch, "demon_trans_out", reanimator.Tran)
+	transIn.SetEndTrigger(func() {
+		ch.Flags.Transport = true
+	})
+	transExit.SetEndTrigger(func() {
+		ch.Flags.ItemAction = data.NoItemAction
+		ch.Object.Layer = ch.Layer
+	})
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
 		AddAnimation(idle).
@@ -100,6 +109,8 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(attack).
+		AddAnimation(transIn).
+		AddAnimation(transExit).
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
@@ -114,6 +125,31 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 					return "hit"
 				} else {
 					return "none"
+				}
+			case data.DoingAction:
+				switch ch.Flags.ItemAction {
+				//case data.MagicDig:
+				//	return "dig"
+				//case data.MagicPlace:
+				//	return "dig"
+				//case data.ThrowBox:
+				//	return "throw"
+				//case data.DonDisguise:
+				//	return "don_disguise"
+				//case data.DrillStart:
+				//	return "drill_start"
+				//case data.Drilling:
+				//	return "drill"
+				//case data.Hiding:
+				//	return "hiding"
+				//case data.FireFlamethrower:
+				//	return "flamethrower"
+				case data.TransportIn:
+					return "trans_in"
+				case data.TransportExit:
+					return "trans_exit"
+				default:
+					return "idle"
 				}
 			case data.Attack:
 				return "attack"

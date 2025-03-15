@@ -15,7 +15,7 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile) *data.Dynamic {
+func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.LevelReplay) *data.Dynamic {
 	player := data.NewDynamic(tile)
 	player.Layer = 27 - pIndex*2
 	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
@@ -25,7 +25,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile) *data.Dynamic {
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	SetAsPlayer(player, e, pIndex)
+	SetAsPlayer(player, e, pIndex, replay)
 	player.Object = obj
 	player.Entity = e
 	player.Player = pIndex
@@ -46,25 +46,41 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile) *data.Dynamic {
 	return player
 }
 
-func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int) {
+func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int, replay *data.LevelReplay) {
 	switch p {
 	case 0:
-		ch.Control = controllers.NewPlayerInput(data.P1Input, e)
+		if replay != nil {
+			ch.Control = controllers.NewReplayController(replay, p, e)
+		} else {
+			ch.Control = controllers.NewPlayerInput(data.P1Input, e)
+		}
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player1", true))
 		ch.Color = data.PlayerBlue
 	case 1:
-		ch.Control = controllers.NewPlayerInput(data.P2Input, e)
+		if replay != nil {
+			ch.Control = controllers.NewReplayController(replay, p, e)
+		} else {
+			ch.Control = controllers.NewPlayerInput(data.P2Input, e)
+		}
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player2", true))
 		ch.Color = data.PlayerGreen
 	case 2:
-		ch.Control = controllers.NewPlayerInput(data.P3Input, e)
+		if replay != nil {
+			ch.Control = controllers.NewReplayController(replay, p, e)
+		} else {
+			ch.Control = controllers.NewPlayerInput(data.P3Input, e)
+		}
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player3", true))
 		ch.Color = data.PlayerPurple
 	case 3:
-		ch.Control = controllers.NewPlayerInput(data.P4Input, e)
+		if replay != nil {
+			ch.Control = controllers.NewReplayController(replay, p, e)
+		} else {
+			ch.Control = controllers.NewPlayerInput(data.P4Input, e)
+		}
 		e.AddComponent(myecs.Controller, ch.Control)
 		ch.Anims.Add(animations.PlayerAnimation(ch, "player4", true))
 		ch.Color = data.PlayerOrange
@@ -107,6 +123,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if p < 0 ||
 		p >= constants.MaxPlayers ||
 		ch.Flags.Disguised ||
+		ch.Flags.ItemAction == data.TransportIn ||
 		ch.State == data.Hiding ||
 		ch.State == data.Hit ||
 		ch.State == data.Dead {

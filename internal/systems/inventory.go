@@ -35,10 +35,11 @@ type pickUpCheck struct {
 	inventory bool
 	entity    *ecs.Entity
 	obj       *object.Object
+	item      *data.BasicItem
 }
 
 // PickUpItem returns whether an item was picked up
-func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
+func PickUpItem(ch *data.Dynamic, p int) *data.BasicItem {
 	cx, cy := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 	chCoords := world.Coords{X: cx, Y: cy}
 	var heldEntity pickUpCheck
@@ -46,7 +47,8 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 	for _, result := range myecs.Manager.Query(myecs.IsPickUp) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		pu, okP := result.Components[myecs.PickUp].(*data.PickUp)
-		if okO && okP && !obj.Hidden &&
+		item, okI := result.Components[myecs.Item].(*data.BasicItem)
+		if okO && okP && okI && !obj.Hidden &&
 			obj.ID != ch.Object.ID &&
 			pu.Inventory == -1 &&
 			(pu.Color == ch.Color || pu.Color < data.PlayerBlue) {
@@ -67,6 +69,7 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 					cycle:    pu.Cycle[p],
 					entity:   result.Entity,
 					obj:      obj,
+					item:     item,
 				}
 			}
 		}
@@ -84,7 +87,7 @@ func PickUpItem(ch *data.Dynamic, p int) *ecs.Entity {
 			ch.Flags.ActionBuff = 0
 			heldEntity.obj.Hidden = true
 			ch.Flags.PickUpBuff = 0
-			return heldEntity.entity
+			return heldEntity.item
 		}
 	}
 	return nil
@@ -109,29 +112,23 @@ func DropItem(ch *data.Dynamic) bool {
 		return false
 	}
 	// set the object's new position
-	if o, okO := ch.Inventory.GetComponentData(myecs.Object); okO {
-		obj := o.(*object.Object)
-		tile := data.CurrLevel.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
-		obj.Hidden = false
-		obj.Pos = tile.Object.Pos
-		obj.PostPos = tile.Object.Pos
-	}
+	tile := data.CurrLevel.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
+	ch.Inventory.Object.Hidden = false
+	ch.Inventory.Object.Pos = tile.Object.Pos
+	ch.Inventory.Object.PostPos = tile.Object.Pos
 	// set the object's pickup data
-	if p, okP := ch.Inventory.GetComponentData(myecs.PickUp); okP {
-		pickUp := p.(*data.PickUp)
-		pickUp.Inventory = -1
-	}
+	ch.Inventory.PickUp.Inventory = -1
 	ch.Inventory = nil
 	return true
 }
 
 func DoAction(ch *data.Dynamic) bool {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers &&
-		ch.Inventory != nil && ch.Inventory.HasComponent(myecs.Action) {
-		if fnA, ok := ch.Inventory.GetComponentData(myecs.Action); ok {
+		ch.Inventory != nil && ch.Inventory.Entity.HasComponent(myecs.Action) {
+		if fnA, ok := ch.Inventory.Entity.GetComponentData(myecs.Action); ok {
 			if colFn, okC := fnA.(*data.Interact); okC {
 				ch.Flags.CheckAction = false
-				colFn.Fn(ch.Player, ch, ch.Inventory)
+				colFn.Fn(ch.Player, ch, ch.Inventory.Entity)
 				ch.Flags.ActionBuff = 0
 				return true
 			}
@@ -142,12 +139,7 @@ func DoAction(ch *data.Dynamic) bool {
 
 func UpdateInventory(ch *data.Dynamic) {
 	if ch.Inventory != nil {
-		o, ok1 := ch.Inventory.GetComponentData(myecs.Object)
-		if ok1 {
-			if obj, ok := o.(*object.Object); ok {
-				obj.SetPos(ch.Object.Pos)
-			}
-		}
+		ch.Inventory.Object.SetPos(ch.Object.Pos)
 	}
 }
 
@@ -257,7 +249,9 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 						} else {
 							ch.StoredBlocks = []*data.Tile{}
 						}
-						AddMask(digTile, "dig_mask_mask", isLeft, true)
+						AddMaskWithTrigger(digTile, "dig_mask_mask", isLeft, true, func() {
+							RemoveMask(digTile)
+						})
 
 						// add reversed wand
 						obj := object.New()

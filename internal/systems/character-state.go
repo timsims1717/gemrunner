@@ -185,6 +185,7 @@ func CharacterStateSystem() {
 					}
 				case data.DoingAction:
 					if ch.Flags.ItemAction == data.NoItemAction {
+						ch.Object.Layer = ch.Layer
 						if ch.Options.Flying || ch.Flags.Flying {
 							ch.Flags.Flying = true
 							ch.State = data.Flying

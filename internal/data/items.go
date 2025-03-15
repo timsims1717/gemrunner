@@ -18,16 +18,14 @@ func NewInteract(fn func(int, *Dynamic, *ecs.Entity)) *Interact {
 }
 
 type PickUp struct {
-	Name      string
 	Cycle     [constants.MaxPlayers]int
 	Priority  int
 	Inventory int
 	Color     ItemColor
 }
 
-func NewPickUp(name string, p int, color ItemColor) *PickUp {
+func NewPickUp(p int, color ItemColor) *PickUp {
 	return &PickUp{
-		Name:      name,
 		Priority:  p,
 		Inventory: -1,
 		Color:     color,
@@ -35,6 +33,7 @@ func NewPickUp(name string, p int, color ItemColor) *PickUp {
 }
 
 type BasicItem struct {
+	Name     string
 	Object   *object.Object
 	Entity   *ecs.Entity
 	Sprite   *img.Sprite
@@ -48,12 +47,22 @@ type BasicItem struct {
 	Regen    bool
 	Waiting  bool
 	Counter  int
+	Uses     int
 }
 
 type Door struct {
-	BasicItem
+	Item     *BasicItem
 	DoorType DoorType
 	Unlock   bool
+}
+
+type Transporter struct {
+	Item  *BasicItem
+	Dest  *Tile
+	BarE  *ecs.Entity
+	BarO  *object.Object
+	BarT  *reanimator.Tree
+	BarUp bool
 }
 
 type ItemColor int
@@ -132,41 +141,13 @@ const (
 )
 
 type Bomb struct {
-	BasicItem
+	Item   *BasicItem
 	Draws  []interface{}
 	SymSpr *img.Sprite
 	LitKey string
 }
 
-type Jetpack struct {
-	Object   *object.Object
-	Entity   *ecs.Entity
-	Anim     *reanimator.Tree
-	PickUp   *PickUp
-	Action   *Interact
-	Name     string
-	Metadata TileMetadata
-	Origin   world.Coords
-	Color    string
-	Counter  int
-	Using    bool
-	Regen    bool
-	Waiting  bool
-}
-
 type Disguise struct {
-	Object   *object.Object
-	Entity   *ecs.Entity
-	Anim     *reanimator.Tree
-	PickUp   *PickUp
-	Action   *Interact
-	Name     string
-	Metadata TileMetadata
-	Origin   world.Coords
-	Color    string
-	Counter  int
-	Using    bool
-	Doff     bool
-	Regen    bool
-	Waiting  bool
+	Item *BasicItem
+	Doff bool
 }

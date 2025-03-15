@@ -281,7 +281,7 @@ func ConfirmItemOptions() {
 // Other
 
 func ChangeNumberInput(in *ui.Element, change int) {
-	ChangeNumberInputWithLimits(in, change, 0, 99)
+	ChangeNumberInputWithLimits(in, change, 1, 99)
 }
 
 func ChangeNumberInputWithLimits(in *ui.Element, change, min, max int) {

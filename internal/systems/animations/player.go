@@ -82,6 +82,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	blow := reanimator.NewBatchAnimation("blow", batch, "exp_player", reanimator.Tran)
 
 	portalWait := reanimator.NewBatchAnimation("portal", batch, "portal_magic", reanimator.Loop)
+
+	transIn := reanimator.NewBatchAnimation("trans_in", batch, fmt.Sprintf("%s_trans_in", sprPre), reanimator.Hold)
+	transExit := reanimator.NewBatchAnimation("trans_exit", batch, fmt.Sprintf("%s_trans_out", sprPre), reanimator.Tran)
 	// triggers
 	if triggers {
 		breath.SetEndTrigger(func() {
@@ -181,6 +184,13 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Flags.Crush = false
 			ch.Flags.Blow = false
 		})
+		transIn.SetEndTrigger(func() {
+			ch.Flags.Transport = true
+		})
+		transExit.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+			ch.Object.Layer = ch.Layer
+		})
 	}
 	sw := reanimator.NewSwitch().
 		AddAnimation(regen).
@@ -212,6 +222,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(crush).
 		AddAnimation(blow).
 		AddAnimation(portalWait).
+		AddAnimation(transIn).
+		AddAnimation(transExit).
 		AddNull("none").
 		SetChooseFn(func() string {
 			if sprPre == "disguise" && !ch.Flags.Disguised {
@@ -260,6 +272,10 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "hiding"
 				case data.FireFlamethrower:
 					return "flamethrower"
+				case data.TransportIn:
+					return "trans_in"
+				case data.TransportExit:
+					return "trans_exit"
 				default:
 					return "idle"
 				}

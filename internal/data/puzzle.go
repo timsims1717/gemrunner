@@ -23,9 +23,11 @@ var (
 	CurrLevelSess *LevelSession
 	CurrLevel     *Level
 	CurrPuzzleSet *PuzzleSet
-	CurrSelect    *Selection
-	ClipSelect    *Selection
-	EditorDraw    bool
+	CurrReplay    *LevelReplay
+
+	CurrSelect *Selection
+	ClipSelect *Selection
+	EditorDraw bool
 
 	ColorShader  string
 	PuzzleShader string
@@ -74,6 +76,11 @@ type Level struct {
 	FakePlayer        *Dynamic
 	FakePlayerDir     Direction
 	FakePlayerCounter int
+
+	Recording   bool
+	SaveRecord  bool
+	LevelReplay *LevelReplay
+	ReplayFrame ReplayFrame
 
 	FrameNumber  int
 	FrameCounter int

@@ -18,6 +18,7 @@ type editor struct {
 	Mode      EditorMode
 	LastMode  EditorMode
 	NoInput   bool
+	LastTiles map[Block]*Tile
 
 	Hover        bool
 	Consume      string
@@ -35,6 +36,7 @@ type editor struct {
 func NewEditor() {
 	Editor = &editor{
 		LastCoords: world.Coords{X: -1, Y: -1},
+		LastTiles:  make(map[Block]*Tile),
 	}
 }
 
@@ -189,9 +191,9 @@ var BlockList = []Block{
 	BlockLadderExit,
 	BlockBar,
 	BlockHideout,
+	BlockTransporter,
+	BlockTransporterExit,
 	BlockBombLit,
-	BlockEmpty,
-	BlockEmpty,
 
 	BlockPlayer1,
 	BlockPlayer2,

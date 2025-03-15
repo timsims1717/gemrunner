@@ -77,34 +77,34 @@ float Gaus(float pos, float scale) {
 
 // 3-tap Gaussian filter along horz line.
 vec3 Horz3(vec2 pos,float off) {
-    vec3 b = Fetch(pos,vec2(-1.0, off));
-    vec3 c = Fetch(pos,vec2(0.0, off));
-    vec3 d = Fetch(pos,vec2(1.0, off));
-    float dst = Dist(pos).x;
+    vec3 b=Fetch(pos,vec2(-1.0,off));
+    vec3 c=Fetch(pos,vec2( 0.0,off));
+    vec3 d=Fetch(pos,vec2( 1.0,off));
+    float dst=Dist(pos).x;
     // Convert distance to weight.
-    float scale = hardPix;
-    float wb = Gaus(dst-1.0, scale);
-    float wc = Gaus(dst+0.0, scale);
-    float wd = Gaus(dst+1.0, scale);
+    float scale=hardPix;
+    float wb=Gaus(dst-1.0,scale);
+    float wc=Gaus(dst+0.0,scale);
+    float wd=Gaus(dst+1.0,scale);
     // Return filtered sample.
     return (b*wb+c*wc+d*wd)/(wb+wc+wd);
 }
 
 // 5-tap Gaussian filter along horz line.
 vec3 Horz5(vec2 pos,float off) {
-    vec3 a = Fetch(pos, vec2(-2.0, off));
-    vec3 b = Fetch(pos, vec2(-1.0, off));
-    vec3 c = Fetch(pos, vec2(0.0, off));
-    vec3 d = Fetch(pos, vec2(1.0, off));
-    vec3 e = Fetch(pos, vec2(2.0, off));
+    vec3 a=Fetch(pos,vec2(-2.0,off));
+    vec3 b=Fetch(pos,vec2(-1.0,off));
+    vec3 c=Fetch(pos,vec2( 0.0,off));
+    vec3 d=Fetch(pos,vec2( 1.0,off));
+    vec3 e=Fetch(pos,vec2( 2.0,off));
     float dst=Dist(pos).x;
     // Convert distance to weight.
-    float scale = hardPix;
-    float wa = Gaus(dst-2.0, scale);
-    float wb = Gaus(dst-1.0, scale);
-    float wc = Gaus(dst+0.0, scale);
-    float wd = Gaus(dst+1.0, scale);
-    float we = Gaus(dst+2.0, scale);
+    float scale=hardPix;
+    float wa=Gaus(dst-2.0,scale);
+    float wb=Gaus(dst-1.0,scale);
+    float wc=Gaus(dst+0.0,scale);
+    float wd=Gaus(dst+1.0,scale);
+    float we=Gaus(dst+2.0,scale);
     // Return filtered sample.
     return (a*wa+b*wb+c*wc+d*wd+e*we)/(wa+wb+wc+wd+we);
 }
@@ -112,17 +112,17 @@ vec3 Horz5(vec2 pos,float off) {
 // Return scanline weight.
 float Scan(vec2 pos,float off) {
     float dst = Dist(pos).y;
-    return Gaus(dst+off, hardScan);
+    return Gaus(dst+off,hardScan);
 }
 
 // Allow nearest three lines to effect pixel.
 vec3 Tri(vec2 pos) {
-    vec3 a = Horz3(pos, -1.0);
-    vec3 b = Horz5(pos, 0.0);
-    vec3 c = Horz3(pos, 1.0);
-    float wa = Scan(pos, -1.0);
-    float wb = Scan(pos, 0.0);
-    float wc = Scan(pos, 1.0);
+    vec3 a=Horz3(pos,-1.0);
+    vec3 b=Horz5(pos, 0.0);
+    vec3 c=Horz3(pos, 1.0);
+    float wa=Scan(pos,-1.0);
+    float wb=Scan(pos, 0.0);
+    float wc=Scan(pos, 1.0);
     return a*wa+b*wb+c*wc;
 }
 
@@ -134,9 +134,9 @@ vec2 Warp(vec2 pos) {
 }
 
 // Shadow mask.
-vec4 Mask(vec2 pos) {
+vec3 Mask(vec2 pos) {
     pos.x += pos.y*3.0;
-    vec4 mask = vec4(maskDark, maskDark, maskDark, 1.);
+    vec3 mask = vec3(maskDark, maskDark, maskDark);
     pos.x = fract(pos.x/6.0);
     if (pos.x<0.333) {
         mask.r = maskLight;

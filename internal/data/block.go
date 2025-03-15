@@ -23,6 +23,8 @@ const (
 	BlockLadderExit
 	BlockBar
 	BlockHideout
+	BlockTransporter
+	BlockTransporterExit
 
 	BlockPlayer1
 	BlockPlayer2
@@ -105,6 +107,10 @@ func (b Block) String() string {
 		return constants.TileExitLadderM
 	case BlockBar:
 		return constants.TileBar
+	case BlockTransporter:
+		return constants.TileTransporter
+	case BlockTransporterExit:
+		return constants.TileTransporterExit
 	case BlockJumpBoots:
 		return constants.ItemJumpBoots
 	case BlockBox:
@@ -186,6 +192,7 @@ func (b Block) String() string {
 func (b Block) SpriteString() string {
 	colSuffixKey := constants.SprColorYellow
 	colSuffixTools := ""
+	colSuffixTrans := ""
 	if Editor != nil {
 		switch Editor.PaletteColor {
 		case NonPlayerYellow:
@@ -198,18 +205,23 @@ func (b Block) SpriteString() string {
 			colSuffixKey = constants.SprColorCyan
 		case NonPlayerRed:
 			colSuffixKey = constants.SprColorRed
+			colSuffixTrans = constants.SprColorRed
 		case PlayerBlue:
 			colSuffixKey = constants.SprColorBlue
 			colSuffixTools = constants.SprColorBlue
+			colSuffixTrans = constants.SprColorBlue
 		case PlayerGreen:
 			colSuffixKey = constants.SprColorGreen
 			colSuffixTools = constants.SprColorGreen
+			colSuffixTrans = constants.SprColorGreen
 		case PlayerPurple:
 			colSuffixKey = constants.SprColorPurple
 			colSuffixTools = constants.SprColorPurple
+			colSuffixTrans = constants.SprColorPurple
 		case PlayerOrange:
 			colSuffixKey = constants.SprColorOrange
 			colSuffixTools = constants.SprColorOrange
+			colSuffixTrans = constants.SprColorOrange
 		}
 	}
 	switch b {
@@ -253,6 +265,8 @@ func (b Block) SpriteString() string {
 		return constants.TileDoorVisible + colSuffixKey
 	case BlockDoorLocked:
 		return constants.TileDoorLocked + colSuffixKey
+	case BlockTransporter:
+		return constants.TileTransporter + colSuffixTrans
 	default:
 		return b.String()
 	}
@@ -274,6 +288,8 @@ var toID = map[string]Block{
 	constants.TileLadderExitTurf:    BlockLadderExitTurf,
 	constants.TileBar:               BlockBar,
 	constants.TileHideout:           BlockHideout,
+	constants.TileTransporter:       BlockTransporter,
+	constants.TileTransporterExit:   BlockTransporterExit,
 	constants.ItemJumpBoots:         BlockJumpBoots,
 	constants.ItemBox:               BlockBox,
 	constants.ItemJetpack:           BlockJetpack,

@@ -45,4 +45,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	constants.ReplaysDir = constants.ContentDir + constants.ReplayDir
+	err = os.MkdirAll(constants.ReplaysDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
 }

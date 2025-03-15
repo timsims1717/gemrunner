@@ -68,7 +68,7 @@ func CharacterActionSystem() {
 				if actions.DigRight {
 					ch.Flags.DigRightBuff = constants.ButtonBuffer
 				}
-				if ch.Player > -1 {
+				if ch.Player > -1 && debug.ShowText {
 					debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
 					debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
 					p, a, l, r := "-", "-", "-", "-"
@@ -88,6 +88,21 @@ func CharacterActionSystem() {
 				}
 
 				if reanimator.FrameSwitch {
+					if data.CurrLevel.Recording &&
+						result.Entity.HasComponent(myecs.Player) &&
+						ch.Actions.Any() { // add to replay
+						recActions := ch.Actions.Copy()
+						switch ch.Player {
+						case 0:
+							data.CurrLevel.ReplayFrame.P1Actions = &recActions
+						case 1:
+							data.CurrLevel.ReplayFrame.P2Actions = &recActions
+						case 2:
+							data.CurrLevel.ReplayFrame.P3Actions = &recActions
+						case 3:
+							data.CurrLevel.ReplayFrame.P4Actions = &recActions
+						}
+					}
 					currPos := ch.Object.Pos.Add(ch.Object.Offset)
 					x, y := world.WorldToMap(currPos.X, currPos.Y)
 					tile := data.CurrLevel.Get(x, y)

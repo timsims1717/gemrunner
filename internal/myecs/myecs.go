@@ -42,6 +42,7 @@ var (
 	LvlElement = Manager.NewComponent()
 	Bomb       = Manager.NewComponent()
 	Text       = Manager.NewComponent()
+	Item       = Manager.NewComponent()
 
 	IsTemp    = ecs.BuildTag(Temp)
 	HasUpdate = ecs.BuildTag(Update)
@@ -63,12 +64,13 @@ var (
 	IsGem        = ecs.BuildTag(Object, Gem)
 	IsStandOn    = ecs.BuildTag(Object, Dynamic, StandOn)
 	IsSmash      = ecs.BuildTag(Object, Dynamic, Smash)
-	IsPickUp     = ecs.BuildTag(Object, PickUp)
+	IsPickUp     = ecs.BuildTag(Object, PickUp, Item)
 	HasAction    = ecs.BuildTag(Object, PickUp, Action)
 	IsDoor       = ecs.BuildTag(Object, Door)
 	IsLvlElement = ecs.BuildTag(Object, LvlElement)
 	IsBomb       = ecs.BuildTag(Object, Bomb)
 	IsText       = ecs.BuildTag(Object, Drawable, Text)
+	IsItem       = ecs.BuildTag(Object, Item)
 )
 
 func UpdateManager() {

@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
@@ -55,7 +56,20 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 	}
 	debug.AddText(fmt.Sprintf("Number of Players: %d", len(data.Players)))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-
+		err := content.LoadReplay("APlayTest_0_2025.02.19.14.09.01.replay")
+		if err != nil {
+			panic(err)
+		}
+		err = systems.OpenPuzzleSet(data.CurrReplay.PuzzleSet + constants.PuzzleExt)
+		if err != nil {
+			panic(err)
+		}
+		data.CurrPuzzleSet.SetTo(data.CurrReplay.PuzzleNum)
+		if data.CurrPuzzleSet.Metadata.NumPlayers < 1 {
+			data.CurrPuzzleSet.Metadata.NumPlayers = data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
+		}
+		systems.PuzzleInit()
+		state.SwitchState(constants.PlayStateKey)
 	}
 
 	// function systems

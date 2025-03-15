@@ -7,6 +7,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 )
 
@@ -52,6 +53,7 @@ func TileSystem() {
 										ch.Flags.Crush = true
 										ch.Flags.Hit = true
 										ch.State = data.Hit
+										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 									}
 								}
 							}
@@ -125,6 +127,7 @@ func TileSystem() {
 										ch.Flags.Crush = true
 										ch.Flags.Hit = true
 										ch.State = data.Hit
+										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 									}
 								}
 							}
@@ -229,6 +232,7 @@ func TileSystem() {
 									ch.Flags.Crush = true
 									ch.Flags.Hit = true
 									ch.State = data.Hit
+									sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 								}
 							}
 						}

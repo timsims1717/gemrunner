@@ -119,15 +119,15 @@ var (
 			"rCtrl":  pxginput.NewJoyless(pixelgl.KeyRightControl),
 			"shift":  pxginput.NewJoyless(pixelgl.KeyLeftShift),
 			"rShift": pxginput.NewJoyless(pixelgl.KeyRightShift),
+			"record": pxginput.NewJoyless(pixelgl.KeyF5),
 		},
 		Mode: pxginput.KeyboardMouse,
 	}
 	DebugInput = &pxginput.Input{
 		Buttons: map[string]*pxginput.ButtonSet{
 			"debugConsole": pxginput.NewJoyless(pixelgl.KeyGraveAccent),
-			"debug":        pxginput.NewJoyless(pixelgl.KeyF3),
-			"debugText":    pxginput.NewJoyless(pixelgl.KeyF4),
-			"fullscreen":   pxginput.NewJoyless(pixelgl.KeyF5),
+			"fullscreen":   pxginput.NewJoyless(pixelgl.KeyF3),
+			"debug":        pxginput.NewJoyless(pixelgl.KeyF4),
 			"fuzzy":        pxginput.NewJoyless(pixelgl.KeyF6),
 			"debugMenu":    pxginput.NewJoyless(pixelgl.KeyF7),
 			"debugTest":    pxginput.NewJoyless(pixelgl.KeyF8),

@@ -63,7 +63,7 @@ func (s *testState) Load(win *pixelgl.Window) {
 		}
 	}
 	systems.LevelSessionInit()
-	systems.LevelInit()
+	systems.LevelInit(false)
 	systems.UpdateViews()
 	reanimator.SetFrameRate(constants.FrameRate)
 	reanimator.Reset()
@@ -94,13 +94,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 			if player.Inventory == nil {
 				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))
 			} else {
-				item := "unknown"
-				cd, ok1 := player.Inventory.GetComponentData(myecs.PickUp)
-				if ok1 {
-					if pd, ok := cd.(*data.PickUp); ok {
-						item = pd.Name
-					}
-				}
+				item := player.Inventory.Name
 				debug.AddText(fmt.Sprintf("Player %d Inv: %s", i+1, item))
 			}
 			debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))

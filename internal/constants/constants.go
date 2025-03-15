@@ -3,19 +3,21 @@ package constants
 const (
 	Title            = "Gem Runner"
 	Release          = 0
-	Version          = 2
-	Build            = 20241025
+	Version          = 3
+	Build            = 20250331
 	ScreenRatioLimit = 0.8
 
 	// Directories
-	LinuxDir  = "/.local/share/GemRunnerEditor"
-	WinDir    = "/Documents/My Games/GemRunnerEditor"
-	MacDir    = "/Library/Application Support/GemRunnerEditor"
-	PuzzleDir = "/puzzles"
-	SaveDir   = "/saves"
-	PuzzleExt = ".puzzle"
-	SaveExt   = ".savegame"
-	Favorites = ".favorites"
+	LinuxDir   = "/.local/share/GemRunnerEditor"
+	WinDir     = "/Documents/My Games/GemRunnerEditor"
+	MacDir     = "/Library/Application Support/GemRunnerEditor"
+	PuzzleDir  = "/puzzles"
+	SaveDir    = "/saves"
+	ReplayDir  = "/replays"
+	PuzzleExt  = ".puzzle"
+	SaveExt    = ".savegame"
+	ReplayPath = "%s_%d_%s.replay"
+	Favorites  = ".favorites"
 
 	// World Constants
 	TileSize        = 16.
@@ -27,8 +29,8 @@ const (
 	PuzzleMinHeight = 6
 
 	// Editor Constants
-	BlockSelectWidth  = 8.
-	BlockSelectHeight = 11.
+	BlockSelectWidth  = 8
+	BlockSelectHeight = 11
 	RearrangeMoveDur  = 0.2
 	UndoStackSize     = 50
 
@@ -61,11 +63,12 @@ const (
 	ThinBorderWhite     = "white_dot"
 	ThinBorderBlue      = "blue_dot"
 	TextCaret           = "text_caret"
+	UIInfinity          = "tile_ui_infinity"
 	UINumber            = "tile_ui_%d"
 	UINumberX           = "tile_ui_%dx"
 
 	// UI Constants
-	ScrollSpeed = 250.
+	ScrollSpeed = 250
 
 	// In Game Constants
 	FrameRateMax    = 60
@@ -90,7 +93,7 @@ const (
 	ItemRegen       = 16
 	SpeedMod        = 0.001
 	TextTimer       = 16
-	TextProxDist    = 48.
+	TextProxDist    = 48
 	TextProxBuffer  = 48
 	BobInterval     = 16
 	FakePlayerR     = 16
@@ -136,6 +139,7 @@ var (
 	ContentDir string
 	PuzzlesDir string
 	SavesDir   string
+	ReplaysDir string
 	ConfigFile string
 
 	// Options

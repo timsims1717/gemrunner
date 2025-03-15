@@ -2,6 +2,7 @@ package systems
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/controllers"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
@@ -17,7 +18,7 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-func LevelInit() {
+func LevelInit(record bool) {
 	if data.CurrPuzzleSet.CurrPuzzle == nil {
 		panic("no puzzle loaded to start level")
 	}
@@ -30,7 +31,22 @@ func LevelInit() {
 	FloatingTextStartLevel()
 	SetPuzzleTitle()
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
-	random.SetLevelSeed(random.RandomSeed())
+	levelSeed := random.RandomSeed()
+	random.SetLevelSeed(levelSeed)
+	data.CurrLevel.Recording = data.CurrReplay == nil && record
+	data.CurrLevel.SaveRecord = false
+	if data.CurrLevel.Recording {
+		data.CurrLevel.LevelReplay = &data.LevelReplay{
+			PuzzleSet:  data.CurrPuzzleSet.Metadata.Name,
+			Filename:   data.CurrPuzzleSet.Metadata.Filename,
+			ReplayFile: content.ReplayFile(data.CurrPuzzleSet.Metadata.Name, data.CurrPuzzleSet.PuzzleIndex),
+			PuzzleNum:  data.CurrPuzzleSet.PuzzleIndex,
+			Seed:       levelSeed,
+		}
+		data.CurrLevel.ReplayFrame = data.ReplayFrame{}
+	} else if data.CurrReplay != nil {
+		data.CurrReplay.FrameIndex = 0
+	}
 
 	for _, row := range data.CurrLevel.Tiles.T {
 		for _, tile := range row {
@@ -66,7 +82,7 @@ func LevelInit() {
 				} else if tile.Block == data.BlockPlayer4 {
 					i = 3
 				}
-				PlayerCharacter(obj.Pos, i, tile)
+				PlayerCharacter(obj.Pos, i, tile, data.CurrReplay)
 				tile.Block = data.BlockEmpty
 			case data.BlockDemon:
 				DemonCharacter(obj.Pos, tile)
@@ -108,6 +124,11 @@ func LevelInit() {
 			case data.BlockFlamethrower:
 				CreateFlamethrower(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
+			case data.BlockTransporter:
+				CreateTransporter(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
+			case data.BlockTransporterExit:
+				CreateTransporterExit(obj.Pos, tile)
 			case data.BlockGear:
 				var a *reanimator.Anim
 				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {
