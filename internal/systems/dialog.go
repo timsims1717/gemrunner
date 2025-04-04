@@ -182,20 +182,20 @@ func UpdateSubElementLayer99(elements []*ui.Element) {
 	}
 }
 
-func DialogDrawSystem(win *pixelgl.Window) {
+func DialogDrawSystem(target pixel.Target) {
 	for _, dialog := range ui.DialogsOpen {
-		DrawDialog(dialog, win)
+		DrawDialog(dialog, target)
 	}
 	for _, dialog := range ui.DialogStack {
-		DrawDialog(dialog, win)
+		DrawDialog(dialog, target)
 	}
 }
 
-func DrawDialog(dialog *ui.Dialog, win *pixelgl.Window) {
+func DrawDialog(dialog *ui.Dialog, target pixel.Target) {
 	if !dialog.NoBorder {
 		dialog.BorderVP.Canvas.Clear(color.RGBA{})
 		DrawBorder(dialog.BorderObject, dialog.Border, dialog.BorderVP.Canvas)
-		dialog.BorderVP.Draw(win)
+		dialog.BorderVP.Draw(target)
 	}
 	// draw elements w/no sub elements
 	dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
@@ -205,7 +205,7 @@ func DrawDialog(dialog *ui.Dialog, win *pixelgl.Window) {
 	for _, e := range dialog.Elements {
 		DrawSubElements(e, dialog.ViewPort)
 	}
-	dialog.ViewPort.Draw(win)
+	dialog.ViewPort.Draw(target)
 	img.Clear()
 }
 

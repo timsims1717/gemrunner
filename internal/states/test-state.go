@@ -140,6 +140,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	data.PuzzleView.Update()
 	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
+	//data.ScreenView.Update()
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))

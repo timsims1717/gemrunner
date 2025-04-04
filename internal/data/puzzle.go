@@ -18,6 +18,7 @@ var (
 	PuzzleViewNoShader *viewport.ViewPort
 	WorldView          *viewport.ViewPort
 	BorderView         *viewport.ViewPort
+	ScreenView         *viewport.ViewPort
 	IMDraw             *imdraw.IMDraw
 
 	CurrLevelSess *LevelSession
@@ -32,6 +33,7 @@ var (
 	ColorShader  string
 	PuzzleShader string
 	WorldShader  string
+	ScreenShader string
 )
 
 type LevelSession struct {

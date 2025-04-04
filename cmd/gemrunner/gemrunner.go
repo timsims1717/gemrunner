@@ -47,6 +47,11 @@ func run() {
 	viewport.MainCamera.SetRect(pixel.R(0, 0, constants.WinWidth, constants.WinHeight))
 	viewport.MainCamera.CamPos = pixel.V(constants.WinWidth*0.5, constants.WinHeight*0.5)
 
+	data.ScreenView = viewport.New(nil)
+	data.ScreenView.SetRect(pixel.R(constants.WinWidth*-0.5, constants.WinHeight*-0.5, constants.WinWidth*0.5, constants.WinHeight*0.5))
+	data.ScreenView.PortPos = viewport.MainCamera.CamPos
+	data.ScreenView.CamPos = pixel.V(constants.WinWidth*0.5, constants.WinHeight*0.5)
+
 	state.Register(constants.MainMenuKey, state.New(states.MainMenuState))
 	state.Register(constants.EditorStateKey, state.New(states.EditorState))
 	state.Register(constants.TestStateKey, state.New(states.TestState))
@@ -81,6 +86,7 @@ func run() {
 	data.ColorShader = embed.ColorShader
 	data.PuzzleShader = embed.PuzzleShader
 	data.WorldShader = embed.WorldShader
+	data.ScreenShader = embed.ScreenShader
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Release = constants.Release
@@ -105,6 +111,7 @@ func run() {
 	systems.InitMainBorder()
 	systems.CursorInit()
 
+	//data.ScreenView.Canvas.SetFragmentShader(data.ScreenShader)
 	win.Show()
 	timing.Reset()
 	for !win.Closed() {

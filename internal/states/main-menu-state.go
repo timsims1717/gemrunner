@@ -87,13 +87,14 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 	systems.ParentSystem()
 	systems.ObjectSystem()
 
-	//data.BorderView.Update()
+	data.ScreenView.Update()
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
 }
 
 func (s *mainMenuState) Draw(win *pixelgl.Window) {
+	data.ScreenView.Canvas.Clear(constants.ColorBlack)
 	// draw border
 	//data.BorderView.Canvas.Clear(constants.ColorBlack)
 	//systems.BorderSystem(1)
@@ -101,9 +102,10 @@ func (s *mainMenuState) Draw(win *pixelgl.Window) {
 	//img.Clear()
 	//data.BorderView.Draw(win)
 	// dialog draw system
-	systems.DialogDrawSystem(win)
-	systems.DrawLayerSystem(win, -10)
+	systems.DialogDrawSystem(data.ScreenView.Canvas)
+	systems.DrawLayerSystem(data.ScreenView.Canvas, -10)
 	img.Clear()
+	data.ScreenView.Draw(win)
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
 	if options.Updated {

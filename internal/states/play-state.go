@@ -123,6 +123,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 	data.PuzzleView.Update()
 	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
+	//data.ScreenView.Update()
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
@@ -133,11 +134,12 @@ func (s *playState) Draw(win *pixelgl.Window) {
 }
 
 func drawPlayArea(win *pixelgl.Window) {
+	data.ScreenView.Canvas.Clear(constants.ColorBlack)
 	// draw border
 	data.BorderView.Canvas.Clear(constants.ColorBlack)
 	systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas)
 	img.Clear()
-	data.BorderView.Draw(win)
+	data.BorderView.Draw(data.ScreenView.Canvas)
 	// draw puzzle
 	data.WorldView.Canvas.Clear(pixel.RGBA{})
 	data.PuzzleView.Canvas.Clear(constants.ColorBlack)
@@ -163,14 +165,15 @@ func drawPlayArea(win *pixelgl.Window) {
 		debug.DrawLines(data.PuzzleViewNoShader.Canvas)
 	}
 	//data.PuzzleViewNoShader.Draw(data.WorldView.Canvas)
-	data.WorldView.Draw(win)
-	data.PuzzleViewNoShader.Draw(win)
+	data.WorldView.Draw(data.ScreenView.Canvas)
+	data.PuzzleViewNoShader.Draw(data.ScreenView.Canvas)
 	// dialog draw system
-	systems.DialogDrawSystem(win)
-	systems.DrawLayerSystem(win, -10)
+	systems.DialogDrawSystem(data.ScreenView.Canvas)
+	systems.DrawLayerSystem(data.ScreenView.Canvas, -10)
 	img.Clear()
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
+	data.ScreenView.Draw(win)
 	if options.Updated {
 		systems.UpdateViews()
 	}

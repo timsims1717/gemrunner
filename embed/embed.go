@@ -21,3 +21,8 @@ var PuzzleShader string
 //
 //go:embed world-shader.frag.glsl
 var WorldShader string
+
+// ScreenShader the CRT shader for the whole screen
+//
+//go:embed screen-shader.frag.glsl
+var ScreenShader string
