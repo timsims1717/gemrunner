@@ -39,27 +39,30 @@ var (
 )
 
 type PuzzleMetadata struct {
-	Name           string     `json:"title"`
-	Author         string     `json:"author"`
-	Filename       string     `json:"filename"`
-	Width          int        `json:"width"`
-	Height         int        `json:"height"`
-	WorldSprite    string     `json:"sprite"`
-	WorldNumber    int        `json:"world"`
-	PrimaryColor   pixel.RGBA `json:"primaryColor"`
-	SecondaryColor pixel.RGBA `json:"secondaryColor"`
-	DoodadColor    pixel.RGBA `json:"doodadColor"`
-	ShaderMode     int        `json:"shader"`
-	ShaderSpeed    float32    `json:"-"`
-	ShaderY        float32    `json:"-"`
-	ShaderX        float32    `json:"-"`
-	ShaderCustom   float32    `json:"-"`
-	ParticleMode   int        `json:"particles"`
-	MusicTrack     string     `json:"musicTrack"`
-	HubLevel       bool       `json:"hubLevel"`
-	SecretLevel    bool       `json:"secretLevel"`
-	Darkness       bool       `json:"darkness"`
-	Completed      bool       `json:"completed"`
+	Name                 string     `json:"title"`
+	Author               string     `json:"author"`
+	Filename             string     `json:"filename"`
+	Width                int        `json:"width"`
+	Height               int        `json:"height"`
+	WorldSprite          string     `json:"sprite"`
+	WorldNumber          int        `json:"world"`
+	WorldLiquid          string     `json:"liquid"`
+	PrimaryColor         pixel.RGBA `json:"primaryColor"`
+	SecondaryColor       pixel.RGBA `json:"secondaryColor"`
+	DoodadColor          pixel.RGBA `json:"doodadColor"`
+	LiquidPrimaryColor   pixel.RGBA `json:"liquidColor1"`
+	LiquidSecondaryColor pixel.RGBA `json:"liquidColor2"`
+	ShaderMode           int        `json:"shader"`
+	ShaderSpeed          float32    `json:"-"`
+	ShaderY              float32    `json:"-"`
+	ShaderX              float32    `json:"-"`
+	ShaderCustom         float32    `json:"-"`
+	ParticleMode         int        `json:"particles"`
+	MusicTrack           string     `json:"musicTrack"`
+	HubLevel             bool       `json:"hubLevel"`
+	SecretLevel          bool       `json:"secretLevel"`
+	Darkness             bool       `json:"darkness"`
+	Completed            bool       `json:"completed"`
 }
 
 type PuzzleSetMetadata struct {

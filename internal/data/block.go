@@ -17,6 +17,7 @@ const (
 	BlockClose
 	BlockPhase
 	BlockSpike
+	BlockLiquid
 
 	BlockLadder
 	BlockLadderCracked
@@ -99,6 +100,8 @@ func (b Block) String() string {
 		return constants.TilePhase
 	case BlockSpike:
 		return constants.TileSpike
+	case BlockLiquid:
+		return constants.TileLiquid
 	case BlockLadder:
 		return constants.TileLadderMiddle
 	case BlockLadderCracked:
@@ -236,6 +239,11 @@ func (b Block) SpriteString() string {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
+	case BlockLiquid:
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid != "" {
+			return fmt.Sprintf("%s_%s", constants.TileLiquid, CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid)
+		}
+		return constants.TileLiquid
 	case BlockSpike:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
@@ -280,6 +288,7 @@ var toID = map[string]Block{
 	constants.TileClose:             BlockClose,
 	constants.TilePhase:             BlockPhase,
 	constants.TileSpike:             BlockSpike,
+	constants.TileLiquid:            BlockLiquid,
 	constants.TileLadderMiddle:      BlockLadder,
 	constants.TileLadderCrackM:      BlockLadderCracked,
 	constants.TileExitLadderM:       BlockLadderExit,

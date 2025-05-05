@@ -54,6 +54,9 @@ func PuzzleInit() {
 		if data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack == "" {
 			data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[num]
 		}
+		if data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid == "" {
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid = constants.WorldLiquids[num]
+		}
 		data.SelectedWorldIndex = data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber
 		if data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldNumber == constants.WorldCustom {
 			for n, w := range constants.WorldSprites {
@@ -147,6 +150,12 @@ func UpdatePuzzleShaders() {
 	data.PuzzleView.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
 	data.PuzzleView.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
 	data.PuzzleView.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
+	data.PuzzleView.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
+	data.PuzzleView.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
+	data.PuzzleView.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
 	data.PuzzleView.Canvas.SetUniform("uMode", int32(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode))
 	data.PuzzleView.Canvas.SetUniform("uTime", &data.CurrPuzzleSet.Elapsed)
 	data.PuzzleView.Canvas.SetUniform("uSpeed", &data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed)

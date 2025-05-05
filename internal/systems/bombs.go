@@ -3,6 +3,7 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
@@ -385,14 +386,15 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 		_, okCO := resultC.Components[myecs.Object].(*object.Object)
 		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-		if okCO && okC && ch.State != data.Dead && ch.Flags.ItemAction != data.TransportIn {
+		if okCO && okC && ch.State != data.Dead &&
+			ch.State != data.Hit && ch.State != data.Waiting &&
+			ch.Flags.ItemAction != data.TransportIn {
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
 				tile := data.CurrLevel.Get(chX, chY)
 				ch.Object.Pos.X = tile.Object.Pos.X
 				ch.Object.Pos.Y = tile.Object.Pos.Y
-				ch.Flags.Blow = true
-				ch.Flags.Hit = true
+				ch.Flags.Death = death.Exploded
 				ch.State = data.Hit
 				ch.Object.Layer = 35
 			}

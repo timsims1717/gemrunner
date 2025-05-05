@@ -72,11 +72,11 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 	//   if they run into the tile
 	//   or if they are on a ladder (so they stay in the center of the ladder)
 	if ch.State == data.OnLadder || ch.State == data.Falling {
-		ch.Flags.LeftWall = left.IsSolid() || enemyLeft
-		ch.Flags.RightWall = right.IsSolid() || enemyRight
+		ch.Flags.LeftWall = left.IsSolid() || left.Block == data.BlockLiquid || enemyLeft
+		ch.Flags.RightWall = right.IsSolid() || right.Block == data.BlockLiquid || enemyRight
 	} else {
 		if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
-			if left.IsSolid() {
+			if left.IsSolid() || left.Block == data.BlockLiquid {
 				ch.Flags.LeftWall = true
 				ch.Object.Pos.X = tile.Object.Pos.X - world.HalfSize + ch.Object.HalfWidth
 			} else if enemyLeft && ch.Object.Pos.X < ch.Object.LastPos.X {
@@ -85,7 +85,7 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 			}
 		}
 		if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
-			if right.IsSolid() {
+			if right.IsSolid() || right.Block == data.BlockLiquid {
 				ch.Flags.RightWall = true
 				ch.Object.Pos.X = tile.Object.Pos.X + world.HalfSize - ch.Object.HalfWidth
 			} else if enemyRight && ch.Object.Pos.X > ch.Object.LastPos.X {
@@ -102,7 +102,7 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPo
 		return
 	}
 	if chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
-		if up.IsSolid() {
+		if up.IsSolid() || up.Block == data.BlockLiquid {
 			ch.Flags.Ceiling = true
 			ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
 		} else if enemyUp && ch.Object.Pos.Y > ch.Object.LastPos.Y {

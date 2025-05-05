@@ -167,14 +167,14 @@
       "w": 18
     },
     {
-      "key": "world_btn_big",
+      "key": "reset_btn_big",
       "x": 116,
       "y": 18,
       "h": 18,
       "w": 18
     },
     {
-      "key": "world_btn_click_big",
+      "key": "reset_btn_click_big",
       "x": 134,
       "y": 18,
       "h": 18,

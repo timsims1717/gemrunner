@@ -164,6 +164,8 @@ func CustomizeWorldDialog() {
 										pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 										sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 										dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+										lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
+										lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 										de.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
 										de.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
 										de.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
@@ -173,6 +175,12 @@ func CustomizeWorldDialog() {
 										de.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 										de.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 										de.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+										de.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+										de.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+										de.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+										de.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+										de.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+										de.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 									}
 								}
 							}
@@ -337,6 +345,8 @@ func OpenChangeWorldDialog() {
 					pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 					sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 					dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+					lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
+					lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 					ele.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
 					ele.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
 					ele.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
@@ -346,6 +356,12 @@ func OpenChangeWorldDialog() {
 					ele.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 					ele.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 					ele.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+					ele.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+					ele.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+					ele.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+					ele.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+					ele.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+					ele.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 				}
 			}
 		}
@@ -371,6 +387,9 @@ func ConfirmChangeWorld() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor = data.SelectedSecondaryColor
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor = data.SelectedDoodadColor
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[data.SelectedWorldIndex]
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid = constants.WorldLiquids[data.SelectedWorldIndex]
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor = pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 	}
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
@@ -397,6 +416,12 @@ func worldDialogShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(0))
 					e2.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 				}
 			}
@@ -410,6 +435,12 @@ func worldDialogShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(0))
 			e1.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 		}
 	}
@@ -425,6 +456,8 @@ func worldDialogNormalShaders() {
 					pc := pixel.ToRGBA(constants.WorldPrimary[i])
 					sc := pixel.ToRGBA(constants.WorldSecondary[i])
 					dc := pixel.ToRGBA(constants.WorldDoodad[i])
+					lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[i])
+					lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[i])
 					e2.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
 					e2.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
@@ -434,6 +467,12 @@ func worldDialogNormalShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+					e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+					e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+					e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+					e2.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+					e2.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+					e2.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 					i++
 				}
 			}
@@ -441,6 +480,8 @@ func worldDialogNormalShaders() {
 			pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 			sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 			dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+			lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
+			lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 			e1.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(pc.G))
 			e1.ViewPort.Canvas.SetUniform("uBluePrimary", float32(pc.B))
@@ -450,6 +491,12 @@ func worldDialogNormalShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+			e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+			e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+			e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+			e1.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+			e1.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+			e1.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 		}
 	}
 }
@@ -469,6 +516,12 @@ func worldDialogCustomShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.SelectedDoodadColor.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.SelectedDoodadColor.G))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.SelectedDoodadColor.B))
+					//e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+					//e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+					//e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+					//e2.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+					//e2.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+					//e2.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 				}
 			}
 		} else if e1.ElementType == ui.ContainerElement {
@@ -481,6 +534,12 @@ func worldDialogCustomShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.SelectedDoodadColor.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.SelectedDoodadColor.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.SelectedDoodadColor.B))
+			//e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
+			//e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
+			//e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
+			//e1.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(lsc.R))
+			//e1.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(lsc.G))
+			//e1.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(lsc.B))
 		}
 	}
 }

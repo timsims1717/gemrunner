@@ -12,6 +12,7 @@ import (
 
 type Tile struct {
 	Block        Block             `json:"tile"`
+	LastBlock    Block             `json:"-"`
 	Metadata     TileMetadata      `json:"metadata"`
 	Flags        TileFlags         `json:"-"`
 	Coords       world.Coords      `json:"-"`
@@ -76,6 +77,11 @@ func (t *Tile) SpriteString() string {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileSpike)
+	case BlockLiquid:
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid != "" {
+			return fmt.Sprintf("%s_%s", constants.TileLiquid, CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid)
+		}
+		return constants.TileLiquid
 	case BlockLadder:
 		return constants.TileLadderMiddle
 	case BlockLadderCracked:
@@ -247,7 +253,7 @@ func (t *Tile) IsRunnable() bool {
 			t.Block == BlockClose ||
 			t.Block == BlockSpike))
 }
-
+ 
 // IsBlock used for tile connectivity
 func (t *Tile) IsBlock() bool {
 	return t == nil ||

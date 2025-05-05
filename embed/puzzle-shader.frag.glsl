@@ -19,6 +19,14 @@ uniform float uRedDoodad;
 uniform float uGreenDoodad;
 uniform float uBlueDoodad;
 
+uniform float uRedLiquidPrimary;
+uniform float uGreenLiquidPrimary;
+uniform float uBlueLiquidPrimary;
+
+uniform float uRedLiquidSecondary;
+uniform float uGreenLiquidSecondary;
+uniform float uBlueLiquidSecondary;
+
 uniform int uMode;
 uniform float uSpeed;
 uniform float uTime;
@@ -37,6 +45,10 @@ void main() {
         col = vec4(uRedSecondary, uGreenSecondary, uBlueSecondary, col.a);
     } else if (col.r == 1. && col.b == 0. && col.g == 1.) {
         col = vec4(uRedDoodad, uGreenDoodad, uBlueDoodad, col.a);
+    } else if (col.r == 0. && col.b == 1. && col.g == 0.) {
+        col = vec4(uRedLiquidPrimary, uGreenLiquidPrimary, uBlueLiquidPrimary, col.a);
+    } else if (col.r == 1. && col.b == 0. && col.g == 0.) {
+        col = vec4(uRedLiquidSecondary, uGreenLiquidSecondary, uBlueLiquidSecondary, col.a);
     }
     fragColor = col;
 }

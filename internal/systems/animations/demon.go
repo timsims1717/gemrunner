@@ -3,8 +3,10 @@ package animations
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
+	"github.com/gopxl/pixel"
 )
 
 func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
@@ -74,15 +76,18 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	})
 	hit := reanimator.NewBatchAnimation("hit", batch, "demon_hit", reanimator.Tran)
 	hit.SetEndTrigger(func() {
-		ch.Flags.Hit = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
+		ch.Flags.Death = death.None
 	})
+	drown := reanimator.NewBatchAnimation("drown", batch, "demon_hit", reanimator.Tran)
+	drown.SetEndTrigger(func() {
+		ch.Flags.Death = death.None
+	})
+	drown = drown.WithSpriteOffset(pixel.V(0, 6), 0)
+	drown = drown.WithSpriteOffset(pixel.V(0, 4), 1)
+	drown = drown.WithSpriteOffset(pixel.V(0, 2), 2)
 	crush := reanimator.NewBatchAnimation("crush", batch, "demon_crush", reanimator.Tran)
 	crush.SetEndTrigger(func() {
-		ch.Flags.Hit = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
+		ch.Flags.Death = death.None
 	})
 	transIn := reanimator.NewBatchAnimation("trans_in", batch, "demon_trans_in", reanimator.Hold)
 	transExit := reanimator.NewBatchAnimation("trans_exit", batch, "demon_trans_out", reanimator.Tran)
@@ -107,6 +112,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(leapTo).
 		AddAnimation(bar).
 		AddAnimation(hit).
+		AddAnimation(drown).
 		AddAnimation(crush).
 		AddAnimation(attack).
 		AddAnimation(transIn).
@@ -119,11 +125,14 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 			case data.Dead:
 				return "none"
 			case data.Hit:
-				if ch.Flags.Crush {
+				switch ch.Flags.Death {
+				case death.Crushed:
 					return "crush"
-				} else if ch.Flags.Hit {
+				case death.Drowned:
+					return "drown"
+				case death.Exploded, death.Dying:
 					return "hit"
-				} else {
+				default:
 					return "none"
 				}
 			case data.DoingAction:

@@ -588,7 +588,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			pos := pixel.V(posX, posY)
 			var key string
 			switch tile.Block {
-			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike:
+			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike, data.BlockLiquid:
 				key = constants.PreviewTurf
 			case data.BlockBedrock, data.BlockPhase:
 				key = constants.PreviewBedrock

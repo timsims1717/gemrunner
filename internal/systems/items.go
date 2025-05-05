@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/pkg/img"
@@ -314,7 +315,7 @@ func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if *f-box.Object.Pos.Y >= constants.SmashDistance &&
 			ch.Object.Pos.Y < box.Object.Pos.Y &&
 			(ch.State != data.Falling || ch.Vars.Gravity < box.Vars.Gravity) {
-			ch.Flags.Hit = true
+			ch.Flags.Death = death.Dying
 			ch.State = data.Hit
 		}
 	}
@@ -871,7 +872,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 								_, okCO := resultC.Components[myecs.Object].(*object.Object)
 								ch2, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-								if okCO && okC && ch2.State != data.Dead {
+								if okCO && okC && ch2.State != data.Dead && ch2.State != data.Hit && ch2.State != data.Waiting {
 									chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
 									ch2Coords := world.NewCoords(chX, chY)
 									if ch2Coords == firstTile.Coords ||
@@ -880,8 +881,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 										tile2 := data.CurrLevel.Get(chX, chY)
 										ch2.Object.Pos.X = tile2.Object.Pos.X
 										ch2.Object.Pos.Y = tile2.Object.Pos.Y
-										ch2.Flags.Blow = true
-										ch2.Flags.Hit = true
+										ch2.Flags.Death = death.Exploded
 										ch2.State = data.Hit
 										ch2.Object.Layer = 35
 									}

@@ -31,6 +31,7 @@ type editor struct {
 	PaletteColor ItemColor
 
 	BlockSelect *viewport.ViewPort
+	FrameCount  int
 }
 
 func NewEditor() {
@@ -184,7 +185,7 @@ var BlockList = []Block{
 	BlockClose,
 	BlockPhase,
 	BlockSpike,
-	BlockEmpty,
+	BlockLiquid,
 
 	BlockLadder,
 	BlockLadderCracked,

@@ -86,6 +86,8 @@ func NewSimple(anim *Anim) *Tree {
 			SetChooseFn(func() string {
 				return anim.Key
 			}),
+		update:  true,
+		Default: anim.Key,
 	}
 	t.Update()
 	return t
@@ -188,9 +190,13 @@ func (t *Tree) CurrentSprite() *Result {
 	if t.spr == nil {
 		return nil
 	}
+	offset := t.anim.Offset
+	if len(t.anim.Offsets) > t.anim.Step {
+		offset = offset.Add(t.anim.Offsets[t.anim.Step])
+	}
 	return &Result{
 		Spr:   t.spr,
-		Off:   t.anim.Offset,
+		Off:   offset,
 		Col:   t.anim.Color,
 		Batch: t.anim.Batch,
 	}
@@ -268,9 +274,10 @@ type Anim struct {
 	Freeze   bool
 	Triggers map[int]func(*Anim, string, int)
 
-	Offset pixel.Vec
-	Color  pixel.RGBA
-	Batch  string
+	Offsets []pixel.Vec
+	Offset  pixel.Vec
+	Color   pixel.RGBA
+	Batch   string
 }
 
 type Finish int
@@ -294,6 +301,14 @@ func (anim *Anim) WithBatch(batch string) *Anim {
 
 func (anim *Anim) WithOffset(offset pixel.Vec) *Anim {
 	anim.Offset = offset
+	return anim
+}
+
+func (anim *Anim) WithSpriteOffset(offset pixel.Vec, i int) *Anim {
+	for len(anim.Offsets) < i+1 {
+		anim.Offsets = append(anim.Offsets, pixel.ZV)
+	}
+	anim.Offsets[i] = offset
 	return anim
 }
 

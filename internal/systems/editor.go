@@ -49,6 +49,12 @@ func UpdateEditorShaders() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
 	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
@@ -59,6 +65,12 @@ func UpdateEditorShaders() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
 	// set editor select shader uniforms
 	data.Editor.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
 	data.Editor.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
@@ -69,6 +81,12 @@ func UpdateEditorShaders() {
 	data.Editor.BlockSelect.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
 	data.Editor.BlockSelect.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
 	data.Editor.BlockSelect.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
 }
 
 func ChangeWorldToNext() {
@@ -89,6 +107,9 @@ func ChangeWorldTo(world int) {
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor = pixel.ToRGBA(constants.WorldSecondary[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor = pixel.ToRGBA(constants.WorldDoodad[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.MusicTrack = constants.WorldMusic[world]
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid = constants.WorldLiquids[world]
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[world])
+	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor = pixel.ToRGBA(constants.WorldLiquidSecondary[world])
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
 }

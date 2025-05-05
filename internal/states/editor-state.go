@@ -71,15 +71,19 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Undo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.UndoStack)))
 	debug.AddText(fmt.Sprintf("Redo Stack Size: %d", len(data.CurrPuzzleSet.CurrPuzzle.RedoStack)))
 	debug.AddTruthText("Puzzle Completed", data.CurrPuzzleSet.CurrPuzzle.Metadata.Completed)
-	t := data.CurrPuzzleSet.CurrPuzzle.Get(x, y)
-	if t != nil {
-		sprs := systems.GetTileSprites(t)
-		if len(sprs) == 1 {
-			debug.AddText(fmt.Sprintf("Tile Sprites: %s", sprs[0].Key))
-		} else if len(sprs) == 2 {
-			debug.AddText(fmt.Sprintf("Tile Sprites: %s, %s", sprs[0].Key, sprs[1].Key))
-		}
-	}
+	//t := data.CurrPuzzleSet.CurrPuzzle.Get(x, y)
+	//if t != nil {
+	//	sprs := systems.GetTileDrawables(t)
+	//	if len(sprs) == 1 {
+	//		if spr, ok := sprs[0].(*img.Sprite); ok {
+	//			debug.AddText(fmt.Sprintf("Tile Sprites: %s", spr.Key))
+	//		} else if anim, ok1 := sprs[0].(*reanimator.Tree); ok1 {
+	//			debug.AddText(fmt.Sprintf("Tile Sprites: %s", anim.))
+	//		}
+	//	} else if len(sprs) == 2 {
+	//		debug.AddText(fmt.Sprintf("Tile Sprites: %s, %s", sprs[0].Key, sprs[1].Key))
+	//	}
+	//}
 
 	if data.DebugInput.Get("camUp").JustPressed() || data.DebugInput.Get("camUp").Repeated() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY += 0.02
@@ -118,6 +122,9 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.FunctionSystem()
 	systems.InterpolationSystem()
+	if reanimator.FrameSwitch {
+		data.Editor.FrameCount++
+	}
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	if !ui.DialogStackOpen {

@@ -3,6 +3,7 @@ package animations
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
 )
@@ -14,16 +15,13 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 	boom := reanimator.NewBatchAnimation("boom", batch, "fly_boom", reanimator.Tran)
 	boom.SetEndTrigger(func() {
 		ch.State = data.Dead
-		ch.Flags.Hit = false
+		ch.Flags.Death = death.None
 		ch.Flags.Attack = false
-		ch.Flags.Crush = false
 	})
 	crush := reanimator.NewBatchAnimation("crush", batch, "fly_crush", reanimator.Tran)
 	crush.SetEndTrigger(func() {
-		ch.Flags.Hit = false
+		ch.Flags.Death = death.None
 		ch.Flags.Attack = false
-		ch.Flags.Crush = false
-		ch.Flags.Blow = false
 	})
 	regen := reanimator.NewBatchAnimation("regen", batch, "fly_regen", reanimator.Tran)
 	regen.SetEndTrigger(func() {
@@ -52,11 +50,12 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 			case data.Attack:
 				return "boom"
 			case data.Hit:
-				if ch.Flags.Crush {
+				switch ch.Flags.Death {
+				case death.Crushed:
 					return "crush"
-				} else if ch.Flags.Hit {
+				case death.Dying, death.Exploded, death.Drowned:
 					return "boom"
-				} else {
+				default:
 					return "none"
 				}
 			case data.DoingAction:

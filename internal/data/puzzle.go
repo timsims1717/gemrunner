@@ -362,14 +362,17 @@ func CreateBlankPuzzle() *Puzzle {
 	SelectedWorldIndex = 0
 	worldNum := constants.WorldMoss
 	md := PuzzleMetadata{
-		Width:          constants.PuzzleWidth,
-		Height:         constants.PuzzleHeight,
-		WorldSprite:    constants.WorldSprites[worldNum],
-		WorldNumber:    worldNum,
-		PrimaryColor:   pixel.ToRGBA(constants.WorldPrimary[worldNum]),
-		SecondaryColor: pixel.ToRGBA(constants.WorldSecondary[worldNum]),
-		DoodadColor:    pixel.ToRGBA(constants.WorldDoodad[worldNum]),
-		MusicTrack:     constants.WorldMusic[worldNum],
+		Width:                constants.PuzzleWidth,
+		Height:               constants.PuzzleHeight,
+		WorldSprite:          constants.WorldSprites[worldNum],
+		WorldNumber:          worldNum,
+		PrimaryColor:         pixel.ToRGBA(constants.WorldPrimary[worldNum]),
+		SecondaryColor:       pixel.ToRGBA(constants.WorldSecondary[worldNum]),
+		DoodadColor:          pixel.ToRGBA(constants.WorldDoodad[worldNum]),
+		WorldLiquid:          constants.WorldLiquids[worldNum],
+		LiquidPrimaryColor:   pixel.ToRGBA(constants.WorldLiquidPrimary[worldNum]),
+		LiquidSecondaryColor: pixel.ToRGBA(constants.WorldLiquidSecondary[worldNum]),
+		MusicTrack:           constants.WorldMusic[worldNum],
 	}
 	puz := &Puzzle{
 		Tiles:    NewTiles(md.Width, md.Height),

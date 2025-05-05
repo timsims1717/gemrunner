@@ -152,6 +152,12 @@ func customizeInGameDialogs(win *pixelgl.Window) {
 				dialog.ViewPort.Canvas.SetUniform("uRedDoodad", float32(1))
 				dialog.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(1))
 				dialog.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(1))
 				dialog.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 			}
 		}

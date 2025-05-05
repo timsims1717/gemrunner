@@ -8,9 +8,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/internal/ui"
-	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
-	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
@@ -129,16 +127,18 @@ func LevelInit(record bool) {
 				tile.Block = data.BlockEmpty
 			case data.BlockTransporterExit:
 				CreateTransporterExit(obj.Pos, tile)
-			case data.BlockGear:
-				var a *reanimator.Anim
-				if (tile.Coords.X+tile.Coords.Y)%2 == 0 {
-					a = reanimator.NewBatchAnimationCustom("gear", img.Batchers[constants.TileBatch], "gear", []int{3, 0, 1, 2}, reanimator.Loop).Reverse()
-				} else {
-					a = reanimator.NewBatchAnimation("gear", img.Batchers[constants.TileBatch], "gear", reanimator.Loop)
-				}
-				anim := reanimator.NewSimple(a)
-				tile.Entity.AddComponent(myecs.Drawable, anim)
-				tile.Entity.AddComponent(myecs.Animated, anim)
+				//case data.BlockGear:
+				//	var a *reanimator.Anim
+				//	if (tile.Coords.X+tile.Coords.Y)%2 == 0 {
+				//		a = reanimator.NewBatchAnimationCustom("gear", img.Batchers[constants.TileBatch], "gear", []int{3, 0, 1, 2}, reanimator.Loop).Reverse()
+				//	} else {
+				//		a = reanimator.NewBatchAnimation("gear", img.Batchers[constants.TileBatch], "gear", reanimator.Loop)
+				//	}
+				//	anim := reanimator.NewSimple(a)
+				//	tile.Entity.AddComponent(myecs.Drawable, anim)
+				//	tile.Entity.AddComponent(myecs.Animated, anim)
+			case data.BlockLiquid:
+				tile.Object.Layer = 30
 			}
 		}
 	}
@@ -165,6 +165,12 @@ func LevelInit(record bool) {
 			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.R))
 			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.G))
 			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.B))
 			data.CurrLevel.PLoc[p] = &mgl32.Vec2{}
 			data.CurrLevel.PLoc[p][0] = float32(data.CurrLevel.Players[p].Object.Pos.X)
 			data.CurrLevel.PLoc[p][1] = float32(data.CurrLevel.Players[p].Object.Pos.Y)

@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/controllers"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems/animations"
 	"gemrunner/pkg/img"
@@ -143,7 +144,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 				(ch.State == data.Falling && enemy.Flags.Flying) ||
 				ch.State == data.Flying ||
 				ch.State == data.DoingAction) {
-			ch.Flags.Hit = true
+			ch.Flags.Death = death.Dying
 			ch.State = data.Hit
 			enemy.Flags.Attack = true
 			enemy.State = data.Attack

@@ -3,6 +3,7 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
@@ -50,8 +51,7 @@ func TileSystem() {
 										(chTile.Coords.Y == tile.Coords.Y) {
 										ch.Object.Pos.X = tile.Object.Pos.X
 										ch.Object.Pos.Y = tile.Object.Pos.Y
-										ch.Flags.Crush = true
-										ch.Flags.Hit = true
+										ch.Flags.Death = death.Crushed
 										ch.State = data.Hit
 										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 									}
@@ -78,7 +78,7 @@ func TileSystem() {
 							(chTile.Coords.Y == tile.Coords.Y+1 || chTile.Coords.Y == tile.Coords.Y) {
 							ch.Object.Pos.X = tile.Object.Pos.X
 							ch.Object.Pos.Y = tile.Object.Pos.Y + world.TileSize*0.75
-							ch.Flags.Hit = true
+							ch.Flags.Death = death.Dying
 							ch.State = data.Hit
 						}
 					}
@@ -124,8 +124,7 @@ func TileSystem() {
 										(chTile.Coords.Y == tile.Coords.Y) {
 										ch.Object.Pos.X = tile.Object.Pos.X
 										ch.Object.Pos.Y = tile.Object.Pos.Y
-										ch.Flags.Crush = true
-										ch.Flags.Hit = true
+										ch.Flags.Death = death.Crushed
 										ch.State = data.Hit
 										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 									}
@@ -151,6 +150,24 @@ func TileSystem() {
 							tile.Flags.Cracked = false
 							tile.Metadata.Regenerate = true
 							tile.Counter = 0
+						}
+					}
+				}
+			case data.BlockLiquid:
+				// Drown any characters here
+				for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+					_, okCO := resultC.Components[myecs.Object].(*object.Object)
+					ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+					if okCO && okC && ch.State != data.Dead && ch.State != data.Hit && ch.State != data.Waiting {
+						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+						chTile := data.CurrLevel.Get(x, y)
+						if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+							(chTile.Coords.Y == tile.Coords.Y) {
+							ch.Object.Pos.X = tile.Object.Pos.X
+							ch.Object.Pos.Y = tile.Object.Pos.Y
+							ch.Flags.Death = death.Drowned
+							ch.State = data.Hit
+							//sfx.SoundPlayer.PlaySound(constants.SFXDrown, 0.)
 						}
 					}
 				}
@@ -229,8 +246,7 @@ func TileSystem() {
 									(chTile.Coords.Y == tile.Coords.Y) {
 									ch.Object.Pos.X = tile.Object.Pos.X
 									ch.Object.Pos.Y = tile.Object.Pos.Y
-									ch.Flags.Crush = true
-									ch.Flags.Hit = true
+									ch.Flags.Death = death.Crushed
 									ch.State = data.Hit
 									sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 								}

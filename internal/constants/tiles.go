@@ -56,6 +56,11 @@ const (
 
 	TileTransporter     = "transporter"
 	TileTransporterExit = "transporter_exit"
+
+	TileLiquid    = "liquid"
+	TileLiquidUFG = "liquid_lbr"
+	LiquidBubbles = "bubble"
+	LiquidWaves   = "wave"
 )
 
 // Characters

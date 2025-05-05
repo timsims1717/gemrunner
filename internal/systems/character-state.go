@@ -3,6 +3,7 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/pkg/object"
@@ -215,7 +216,7 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Hit:
-					if !ch.Flags.Hit {
+					if ch.Flags.Death == death.None {
 						ch.State = data.Dead
 						if ch.Player > -1 {
 							data.CurrLevelSess.PlayerStats[ch.Player].Deaths++
@@ -253,7 +254,7 @@ func CharacterStateSystem() {
 					ch.Flags.Disguised = false
 					ch.Flags.Flying = false
 					ch.Flags.Attack = false
-					ch.Flags.Hit = false
+					ch.Flags.Death = death.None
 					if ch.Enemy > -1 &&
 						ch.Options.Regen {
 						var t *data.Tile

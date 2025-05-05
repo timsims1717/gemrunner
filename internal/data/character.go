@@ -2,6 +2,7 @@ package data
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/data/death"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/world"
@@ -165,9 +166,7 @@ type Flags struct {
 	JumpR        bool
 	JumpL        bool
 	Thrown       bool
-	Hit          bool
-	Crush        bool
-	Blow         bool
+	Death        death.Type
 	Attack       bool
 	Regen        bool
 	Transport    bool

@@ -1,0 +1,62 @@
+{
+  "key": "options_menu",
+  "width": 12,
+  "height": 10,
+  "elements": [
+    {
+      "key":"options_title",
+      "text":"Options",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-52,
+        "Y":40
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"default",
+      "spriteKey":"reset_btn_big",
+      "spriteKey2":"reset_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Set to Default",
+      "pos":{
+        "X":4,
+        "Y":-36
+      },
+      "type":"button"
+    },
+    {
+      "key":"cancel",
+      "spriteKey":"cancel_btn_big",
+      "spriteKey2":"cancel_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Cancel",
+      "pos":{
+        "X":44,
+        "Y":-36
+      },
+      "type":"button"
+    },
+    {
+      "key":"confirm",
+      "spriteKey":"check_btn_big",
+      "spriteKey2":"check_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Confirm",
+      "pos":{
+        "X":24,
+        "Y":-36
+      },
+      "type":"button"
+    }
+  ]
+}

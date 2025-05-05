@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/data/death"
 	"gemrunner/internal/random"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/timing"
+	"github.com/gopxl/pixel"
 )
 
 func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator.Tree {
@@ -80,6 +82,10 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	crush := reanimator.NewBatchAnimation("crush", batch, fmt.Sprintf("%s_crush", sprPre), reanimator.Tran)
 
 	blow := reanimator.NewBatchAnimation("blow", batch, "exp_player", reanimator.Tran)
+	drown := reanimator.NewBatchAnimation("drown", batch, fmt.Sprintf("%s_drown", sprPre), reanimator.Tran)
+	drown = drown.WithOffset(pixel.V(0, 2))
+	drown = drown.WithSpriteOffset(pixel.V(0, 3), 0)
+	drown = drown.WithSpriteOffset(pixel.V(0, 1), 3)
 
 	portalWait := reanimator.NewBatchAnimation("portal", batch, "portal_magic", reanimator.Loop)
 
@@ -170,19 +176,16 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			}
 		})
 		hit.SetEndTrigger(func() {
-			ch.Flags.Hit = false
-			ch.Flags.Crush = false
-			ch.Flags.Blow = false
+			ch.Flags.Death = death.None
 		})
 		crush.SetEndTrigger(func() {
-			ch.Flags.Hit = false
-			ch.Flags.Crush = false
-			ch.Flags.Blow = false
+			ch.Flags.Death = death.None
 		})
 		blow.SetEndTrigger(func() {
-			ch.Flags.Hit = false
-			ch.Flags.Crush = false
-			ch.Flags.Blow = false
+			ch.Flags.Death = death.None
+		})
+		drown.SetEndTrigger(func() {
+			ch.Flags.Death = death.None
 		})
 		transIn.SetEndTrigger(func() {
 			ch.Flags.Transport = true
@@ -221,6 +224,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(hit).
 		AddAnimation(crush).
 		AddAnimation(blow).
+		AddAnimation(drown).
 		AddAnimation(portalWait).
 		AddAnimation(transIn).
 		AddAnimation(transExit).
@@ -237,13 +241,16 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			case data.Dead:
 				return "none"
 			case data.Hit:
-				if ch.Flags.Crush {
+				switch ch.Flags.Death {
+				case death.Crushed:
 					return "crush"
-				} else if ch.Flags.Blow {
+				case death.Exploded:
 					return "blow"
-				} else if ch.Flags.Hit {
+				case death.Drowned:
+					return "drown"
+				case death.Dying:
 					return "hit"
-				} else {
+				default:
 					return "none"
 				}
 			case data.Flying:

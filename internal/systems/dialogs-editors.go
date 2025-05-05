@@ -217,6 +217,9 @@ func CustomizeEditorDialog(key string) {
 							case data.BlockHideout:
 								beEx.Key = constants.TileHideout
 								beEx.Offset.Y = 0
+							case data.BlockLiquid:
+								beEx.Key = constants.TileLiquidUFG
+								beEx.Offset.Y = 0
 							default:
 								beEx.Key = ""
 								beEx.Offset.Y = 0
@@ -264,6 +267,8 @@ func CustomizeEditorDialog(key string) {
 							sprs = append(sprs, img.NewSprite(constants.TileClose, constants.TileBatch))
 						case data.BlockHideout:
 							sprs = append(sprs, img.NewSprite(constants.TileHideout, constants.TileBatch))
+						case data.BlockLiquid:
+							sprs = append(sprs, img.NewSprite(constants.TileLiquidUFG, constants.TileBatch))
 						}
 						obj := ele.Object
 						ele.Entity.AddComponent(myecs.Drawable, sprs)
@@ -360,6 +365,12 @@ func editorPanels() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
@@ -371,6 +382,12 @@ func editorPanels() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 	blockSelect := ui.Dialogs[constants.DialogEditorBlockSelect]
 	blockSelect.ViewPort.Canvas.SetUniform("uRedPrimary", float32(0))
@@ -382,5 +399,11 @@ func editorPanels() {
 	blockSelect.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(0))
 	blockSelect.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 }
