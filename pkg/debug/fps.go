@@ -5,7 +5,6 @@ import (
 	"gemrunner/pkg/timing"
 	"gemrunner/pkg/typeface"
 	"github.com/gopxl/pixel"
-	"github.com/gopxl/pixel/pixelgl"
 )
 
 var (
@@ -25,13 +24,13 @@ func InitializeFPS() {
 		WithScalar(2.)
 }
 
-func DrawFPS(win *pixelgl.Window) {
+func DrawFPS(target pixel.Target, dim pixel.Vec) {
 	fpsText.SetText(fmt.Sprintf("FPS: %d", timing.FPS))
-	fpsText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*-0.5+2., win.Bounds().H()*-0.5+2))
+	fpsText.Obj.Pos = winV.Add(pixel.V(dim.X*-0.5+2., dim.Y*-0.5+2))
 	fpsText.Obj.Update()
-	fpsText.Draw(win)
+	fpsText.Draw(target)
 	versionText.SetText(fmt.Sprintf("%d.%d.%d", Release, Version, Build))
-	versionText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*0.5-2., win.Bounds().H()*-0.5+2))
+	versionText.Obj.Pos = winV.Add(pixel.V(dim.X*0.5-2., dim.Y*-0.5+2))
 	versionText.Obj.Update()
-	versionText.Draw(win)
+	versionText.Draw(target)
 }

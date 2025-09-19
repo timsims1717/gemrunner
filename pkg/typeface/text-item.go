@@ -166,6 +166,10 @@ func (item *Text) PrintLines() {
 	}
 }
 
+func (item *Text) GetWidth() float64 {
+	return item.Text.Bounds().W() * item.Scalar
+}
+
 func (item *Text) GetHeight() float64 {
 	return item.fullHeight * item.Scalar
 }

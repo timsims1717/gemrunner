@@ -221,10 +221,10 @@ func OnChangeNameDialog() {
 		inEle := changeName.Get("puzzle_name")
 		if data.CurrPuzzleSet.Metadata.Name != "" {
 			if inEle.Value != data.CurrPuzzleSet.Metadata.Name {
-				ui.ChangeText(inEle, data.CurrPuzzleSet.Metadata.Name)
+				ui.SetText(inEle, data.CurrPuzzleSet.Metadata.Name)
 			}
 		} else {
-			ui.ChangeText(inEle, "Untitled")
+			ui.SetText(inEle, "Untitled")
 		}
 		changeName.Get("change_name_error").Object.Hidden = true
 	}
@@ -292,18 +292,18 @@ func OpenPuzzleSettingsDialog() {
 			case "puzzle_name":
 				if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name != "" {
 					if ele.Value != data.CurrPuzzleSet.CurrPuzzle.Metadata.Name {
-						ui.ChangeText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Name)
+						ui.SetText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Name)
 					}
 				} else {
-					ui.ChangeText(ele, "Untitled")
+					ui.SetText(ele, "Untitled")
 				}
 			case "puzzle_author":
 				if data.CurrPuzzleSet.CurrPuzzle.Metadata.Author != "" {
 					if ele.Value != data.CurrPuzzleSet.CurrPuzzle.Metadata.Author {
-						ui.ChangeText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Author)
+						ui.SetText(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Author)
 					}
 				} else {
-					ui.ChangeText(ele, constants.Username)
+					ui.SetText(ele, constants.Username)
 				}
 			case "puzzle_hub_check":
 				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.HubLevel)
@@ -319,10 +319,10 @@ func OpenPuzzleSettingsDialog() {
 				ui.SetChecked(ele, data.CurrPuzzleSet.CurrPuzzle.Metadata.Darkness)
 			case "puzzle_width_input":
 				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Width))
+				ui.SetText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Width))
 			case "puzzle_height_input":
 				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Height))
+				ui.SetText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Height))
 			}
 		}
 	}
@@ -376,18 +376,18 @@ func OpenPuzzleSetSettingsDialog() {
 			case "puzzle_set_name":
 				if data.CurrPuzzleSet.Metadata.Name != "" {
 					if ele.Value != data.CurrPuzzleSet.Metadata.Name {
-						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Name)
+						ui.SetText(ele, data.CurrPuzzleSet.Metadata.Name)
 					}
 				} else {
-					ui.ChangeText(ele, "Untitled")
+					ui.SetText(ele, "Untitled")
 				}
 			case "puzzle_set_author":
 				if data.CurrPuzzleSet.Metadata.Author != "" {
 					if ele.Value != data.CurrPuzzleSet.Metadata.Author {
-						ui.ChangeText(ele, data.CurrPuzzleSet.Metadata.Author)
+						ui.SetText(ele, data.CurrPuzzleSet.Metadata.Author)
 					}
 				} else {
-					ui.ChangeText(ele, constants.Username)
+					ui.SetText(ele, constants.Username)
 				}
 			case "sequential_check":
 				ui.SetChecked(ele, !data.CurrPuzzleSet.Metadata.Adventure)

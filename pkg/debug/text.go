@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gemrunner/pkg/typeface"
 	"github.com/gopxl/pixel"
-	"github.com/gopxl/pixel/pixelgl"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ func InitializeText() {
 		WithScalar(2.)
 }
 
-func DrawText(win *pixelgl.Window) {
+func DrawText(target pixel.Target, dim pixel.Vec) {
 	if ShowText {
 		var sb strings.Builder
 		for i, line := range lines {
@@ -29,9 +28,9 @@ func DrawText(win *pixelgl.Window) {
 			sb.WriteString(line)
 		}
 		debugText.SetText(sb.String())
-		debugText.Obj.Pos = winV.Add(pixel.V(win.Bounds().W()*-0.5+2., win.Bounds().H()*0.5-2))
+		debugText.Obj.Pos = winV.Add(pixel.V(dim.X*-0.5+2., dim.Y*0.5-2))
 		debugText.Obj.Update()
-		debugText.Draw(win)
+		debugText.Draw(target)
 	}
 }
 

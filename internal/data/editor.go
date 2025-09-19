@@ -194,7 +194,7 @@ var BlockList = []Block{
 	BlockHideout,
 	BlockTransporter,
 	BlockTransporterExit,
-	BlockBombLit,
+	BlockBigBombLit,
 
 	BlockPlayer1,
 	BlockPlayer2,
@@ -216,7 +216,7 @@ var BlockList = []Block{
 
 	BlockJumpBoots,
 	BlockBox,
-	BlockBomb,
+	BlockBigBomb,
 	BlockJetpack,
 	BlockDisguise,
 	BlockDrill,

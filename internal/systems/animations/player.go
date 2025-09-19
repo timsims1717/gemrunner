@@ -195,7 +195,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Object.Layer = ch.Layer
 		})
 	}
-	sw := reanimator.NewSwitch().
+	tree := reanimator.New().
 		AddAnimation(regen).
 		AddAnimation(idle).
 		AddAnimation(breath).
@@ -331,7 +331,6 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 				}
 			}
 			return "fall"
-		})
-	tree := reanimator.New(sw, "regen")
+		}).SetDefault("regen").Finish()
 	return tree
 }

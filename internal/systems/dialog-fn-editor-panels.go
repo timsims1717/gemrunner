@@ -113,14 +113,14 @@ func OnOpenBombOptions() {
 			case "bomb_regenerate_check":
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "bomb_options_title":
-				if firstTile.Block == data.BlockBomb {
+				if firstTile.Block == data.BlockBigBomb {
 					ele.Text.SetText("Bomb Item Options")
 				} else {
 					ele.Text.SetText("Lit Bomb Options")
 				}
 			case "bomb_regenerate_delay_input":
 				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
+				ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
 			}
 		}
 	}
@@ -213,8 +213,8 @@ func OnOpenItemOptions() {
 					name = "Flamethrower"
 				case data.BlockDisguise:
 					name = "Disguise"
-				case data.BlockBomb:
-					name = "Bomb"
+				case data.BlockBigBomb:
+					name = "Big Bomb"
 				}
 				ele.Text.SetText(fmt.Sprintf("%s Options", name))
 			case "item_timer":
@@ -228,10 +228,10 @@ func OnOpenItemOptions() {
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "item_regenerate_delay_input":
 				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
+				ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
 			case "item_timer_input":
 				ele.InputType = ui.Numeric
-				ui.ChangeText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
+				ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
 			}
 		}
 	}
@@ -300,5 +300,5 @@ func ChangeNumberInputWithLimits(in *ui.Element, change, min, max int) {
 	} else if di > max {
 		di = max
 	}
-	ui.ChangeText(in, fmt.Sprintf("%d", di))
+	ui.SetText(in, fmt.Sprintf("%d", di))
 }

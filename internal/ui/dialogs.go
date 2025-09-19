@@ -108,6 +108,9 @@ func NewDialog(dc *DialogConstructor) {
 		case ContainerElement:
 			ct2 := CreateContainer(element, dlg, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, ct2)
+		case DropdownElement:
+			d := CreateDropdownElement(element, dlg, nil, dlg.ViewPort, false)
+			dlg.Elements = append(dlg.Elements, d)
 		case InputElement:
 			i := CreateInputElement(element, dlg, nil, dlg.ViewPort, false)
 			dlg.Elements = append(dlg.Elements, i)
@@ -116,6 +119,9 @@ func NewDialog(dc *DialogConstructor) {
 			dlg.Elements = append(dlg.Elements, i)
 		case ScrollElement:
 			s := CreateScrollElement(element, dlg, nil, dlg.ViewPort)
+			dlg.Elements = append(dlg.Elements, s)
+		case SliderElement:
+			s := CreateSliderElement(element, dlg, nil, dlg.ViewPort)
 			dlg.Elements = append(dlg.Elements, s)
 		case SpriteElement:
 			s := CreateSpriteElement(element)

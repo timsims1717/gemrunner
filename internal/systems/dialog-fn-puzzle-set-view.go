@@ -608,7 +608,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 				key = constants.PreviewGem
 			case data.BlockBar:
 				key = constants.PreviewBar
-			case data.BlockBomb, data.BlockBombLit:
+			case data.BlockBigBomb, data.BlockBigBombLit:
 				key = constants.PreviewBomb
 			case data.BlockJetpack, data.BlockDisguise,
 				data.BlockDrill, data.BlockFlamethrower,

@@ -3,14 +3,27 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/timing"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
+	"github.com/gopxl/pixel"
 )
 
-func ShaderSystem() {
+func EffectsSystem() {
 	if data.CurrPuzzleSet != nil {
 		data.CurrPuzzleSet.Elapsed += float32(timing.DT)
 	}
+	// screen shake
+	if data.ScreenShake != nil && constants.Configuration.Gameplay.ScreenShake {
+		offset, fin := data.ScreenShake.Shake(timing.DT)
+		if fin {
+			data.WorldView.Offset = pixel.ZV
+		} else {
+			data.WorldView.Offset = offset
+		}
+	}
+	// shadow
 	if data.CurrLevel != nil {
 		for p := 0; p < constants.MaxPlayers; p++ {
 			if p < data.CurrPuzzleSet.CurrPuzzle.NumPlayers() {
@@ -20,6 +33,16 @@ func ShaderSystem() {
 				data.CurrLevel.PLoc[p][0] = -1
 				data.CurrLevel.PLoc[p][1] = -1
 			}
+		}
+	}
+}
+
+func ShakeScreen() {
+	if constants.Configuration.Gameplay.ScreenShake {
+		if data.ScreenShake == nil {
+			data.ScreenShake = util.NewShaker(30., 20., 0.5, random.Effects.Int63())
+		} else {
+			data.ScreenShake.Reset(random.Effects.Int63())
 		}
 	}
 }

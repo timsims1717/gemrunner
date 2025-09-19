@@ -32,7 +32,7 @@ func LevelInit(record bool) {
 	levelSeed := random.RandomSeed()
 	random.SetLevelSeed(levelSeed)
 	data.CurrLevel.Recording = data.CurrReplay == nil && record
-	data.CurrLevel.SaveRecord = false
+	data.CurrLevel.SaveRecord = constants.Configuration.Gameplay.AlwaysRecord
 	if data.CurrLevel.Recording {
 		data.CurrLevel.LevelReplay = &data.LevelReplay{
 			PuzzleSet:  data.CurrPuzzleSet.Metadata.Name,
@@ -103,12 +103,12 @@ func LevelInit(record bool) {
 			case data.BlockKey:
 				CreateKey(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
-			case data.BlockBomb:
-				CreateBomb(obj.Pos, tile)
+			case data.BlockBigBomb:
+				CreateBomb(obj.Pos, tile, "big", true)
 				tile.Block = data.BlockEmpty
-			case data.BlockBombLit:
+			case data.BlockBigBombLit:
 				key := tile.Block.SpriteString()
-				CreateLitBomb(obj.Pos, key, tile.Metadata)
+				CreateLitBomb(obj.Pos, key, "big", true, tile.Metadata.Regenerate, tile.Metadata.RegenDelay)
 				tile.Block = data.BlockEmpty
 			case data.BlockJetpack:
 				CreateJetpack(obj.Pos, tile)

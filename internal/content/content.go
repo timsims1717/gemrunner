@@ -3,6 +3,7 @@ package content
 import (
 	"fmt"
 	"gemrunner/internal/constants"
+	"github.com/pkg/errors"
 	"os"
 	"os/user"
 	"runtime"
@@ -48,6 +49,13 @@ func init() {
 	constants.ReplaysDir = constants.ContentDir + constants.ReplayDir
 	err = os.MkdirAll(constants.ReplaysDir, os.ModePerm)
 	if err != nil {
+		panic(err)
+	}
+	constants.ConfigFile = constants.ContentDir + constants.ConfigFilename
+	_, err = os.Open(constants.ConfigFile)
+	if errors.Is(err, os.ErrNotExist) {
+		CreateConfig()
+	} else if err != nil {
 		panic(err)
 	}
 }

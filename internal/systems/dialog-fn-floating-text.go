@@ -98,7 +98,7 @@ func OnOpenFloatingText() {
 		if theTile.TextData == nil {
 			data.SelectedTextColor = pixel.ToRGBA(constants.ColorWhite)
 			data.SelectedShadowColor = pixel.ToRGBA(constants.ColorBlue)
-			ui.ChangeText(ftDialog.Get("floating_text_value"), "")
+			ui.SetText(ftDialog.Get("floating_text_value"), "")
 			for _, ele := range ftDialog.Elements {
 				if strings.Contains(ele.Key, "_check_color") {
 					ui.SetChecked(ele, false)
@@ -111,12 +111,12 @@ func OnOpenFloatingText() {
 			ui.SetChecked(ftDialog.Get("floating_text_shadow_check"), true)
 			ui.SetChecked(ftDialog.Get("floating_text_show_check"), false)
 			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), true)
-			ui.ChangeText(ftDialog.Get("floating_text_time_input"), "0")
+			ui.SetText(ftDialog.Get("floating_text_time_input"), "0")
 			// add alignment here
 		} else {
 			data.SelectedTextColor = theTile.TextData.Color
 			data.SelectedShadowColor = theTile.TextData.ShadowCol
-			ui.ChangeText(ftDialog.Get("floating_text_value"), theTile.TextData.Raw)
+			ui.SetText(ftDialog.Get("floating_text_value"), theTile.TextData.Raw)
 			for _, ele := range ftDialog.Elements {
 				if strings.Contains(ele.Key, "_check_color") {
 					updateColorCheckbox(ele, theTile.TextData.Color)
@@ -129,7 +129,7 @@ func OnOpenFloatingText() {
 			ui.SetChecked(ftDialog.Get("floating_text_bob_check"), theTile.TextData.Bob)
 			timerInput := ftDialog.Get("floating_text_time_input")
 			timerInput.InputType = ui.Numeric
-			ui.ChangeText(timerInput, strconv.Itoa(theTile.TextData.Timer))
+			ui.SetText(timerInput, strconv.Itoa(theTile.TextData.Timer))
 			// add alignment here
 		}
 	}

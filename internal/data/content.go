@@ -2,6 +2,7 @@ package data
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/data/config"
 	"github.com/google/uuid"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -24,6 +25,8 @@ var (
 	SelectedDoodadColor    pixel.RGBA
 	SelectedTextColor      pixel.RGBA
 	SelectedShadowColor    pixel.RGBA
+
+	OriginalConfiguration config.Configuration
 
 	PuzzleSetViewIsMoving bool
 	PuzzleSetViewIndex    int

@@ -30,7 +30,7 @@ func WindowUpdate(win *pixelgl.Window) {
 	if win.Focused() {
 		win.SetVSync(VSync)
 		win.SetSmooth(BilinearFilter)
-		if FullScreen != fullscreen {
+		if FullScreen != fullscreen || ResolutionIndex != resIndex {
 			// get window position (center)
 			pos := win.GetPos()
 			pos.X += win.Bounds().W() * 0.5
@@ -68,10 +68,17 @@ func WindowUpdate(win *pixelgl.Window) {
 				CurrResolution = pixel.V(x, y)
 			} else {
 				win.SetMonitor(nil)
-				CurrResolution = pixel.V(Resolutions[ResolutionIndex].X, Resolutions[ResolutionIndex].Y)
+				res := pixel.V(1600, 900)
+				if len(Resolutions) > ResolutionIndex {
+					res = Resolutions[ResolutionIndex]
+				}
+				CurrResolution = pixel.V(res.X, res.Y)
 			}
-			viewport.MainCamera.SetRect(pixel.R(0, 0, CurrResolution.X, CurrResolution.Y))
+			r := pixel.R(0, 0, CurrResolution.X, CurrResolution.Y)
+			win.SetBounds(r)
+			viewport.MainCamera.SetRect(r)
 			fullscreen = FullScreen
+			resIndex = ResolutionIndex
 			Updated = true
 		}
 	}

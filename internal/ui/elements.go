@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/img"
@@ -167,6 +168,7 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 		Object:      vpObj,
 		Entity:      e,
 		ViewPort:    ctvp,
+		Background:  element.Background,
 		ElementType: ContainerElement,
 		Left:        element.Left,
 		Right:       element.Right,
@@ -187,6 +189,9 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 		case ContainerElement:
 			ct2 := CreateContainer(ele, dlg, ct.ViewPort)
 			ct.Elements = append(ct.Elements, ct2)
+		case DropdownElement:
+			d := CreateDropdownElement(ele, dlg, ct, ct.ViewPort, false)
+			ct.Elements = append(ct.Elements, d)
 		case InputElement:
 			i := CreateInputElement(ele, dlg, ct, ct.ViewPort, false)
 			ct.Elements = append(ct.Elements, i)
@@ -195,6 +200,9 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 			ct.Elements = append(ct.Elements, i)
 		case ScrollElement:
 			s := CreateScrollElement(ele, dlg, ct, ct.ViewPort)
+			ct.Elements = append(ct.Elements, s)
+		case SliderElement:
+			s := CreateSliderElement(ele, dlg, ct, ct.ViewPort)
 			ct.Elements = append(ct.Elements, s)
 		case SpriteElement:
 			s := CreateSpriteElement(ele)
@@ -207,17 +215,210 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 	return ct
 }
 
+func CreateDropdownElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort, multiselect bool) *Element {
+	svp := viewport.New(nil)
+	svp.ParentView = vp
+	svp.SetRect(pixel.R(0, 0, element.Width, element.Height))
+	svp.CamPos = pixel.ZV
+	svp.PortPos = element.Position
+
+	vpObj := object.New()
+	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
+	vpObj.SetPos(element.Position)
+	vpObj.Layer = 99
+
+	var bord = &Border{
+		Rect:  pixel.R(0, 0, element.Width, element.Height),
+		Style: ThinBorder,
+	}
+	tf := typeface.New("main").
+		WithAlign(typeface.NewAlign(typeface.Left, typeface.Top)).
+		WithScalar(0.0625)
+	tf.SetPos(pixel.V(-element.Width*0.5+2, element.Height*0.5-4.))
+	tf.SetColor(pixel.ToRGBA(element.Color))
+	//tf.Debug = true
+	tf.Update()
+	tf.SetText(element.Text)
+	te := myecs.Manager.NewEntity()
+	te.AddComponent(myecs.Object, tf.Obj)
+	te.AddComponent(myecs.Drawable, tf)
+	te.AddComponent(myecs.DrawTarget, svp.Canvas)
+
+	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
+	d := &Element{
+		Key:         element.Key,
+		Value:       element.Text,
+		Text:        tf,
+		Object:      vpObj,
+		ViewPort:    svp,
+		Border:      bord,
+		Entity:      e,
+		Background:  element.Background,
+		ElementType: DropdownElement,
+		MultiLine:   multiselect,
+		Left:        element.Left,
+		Right:       element.Right,
+		Up:          element.Up,
+		Down:        element.Down,
+	}
+
+	w := element.Width
+	h := math.Max(float64(len(element.SubElements))*world.TileSize, world.TileSize)
+	for _, se := range element.SubElements {
+		if se.Width > w {
+			w = se.Width
+		}
+	}
+	//if w > 8*world.TileSize {
+	//	w = 8 * world.TileSize
+	//}
+	if h > 8*world.TileSize {
+		h = 8 * world.TileSize
+	}
+
+	// dropdown scroll
+	ele := ElementConstructor{
+		Key:         fmt.Sprintf("%s_scroll", element.Key),
+		Width:       w,
+		Height:      h,
+		Batch:       constants.UIBatch,
+		Position:    element.Position,
+		Background:  element.Background,
+		ElementType: ScrollElement,
+		SubElements: element.SubElements,
+	}
+	sc := CreateScrollElement(ele, dlg, parent, dlg.ViewPort)
+	sc.Object.Hidden = true
+	if parent != nil {
+		parent.Elements = append(parent.Elements, sc)
+	} else {
+		dlg.Elements = append(dlg.Elements, sc)
+	}
+
+	// dropdown button
+	sprKey := "dropdown"
+	cSprKey := "dropdown_click"
+	btnX := (element.Width - img.Batchers[element.Batch].GetSprite(sprKey).Frame().W()) * 0.5
+	pos := pixel.V(btnX, 0.)
+	key := fmt.Sprintf("%s_dropdown", element.Key)
+	btn := ElementConstructor{
+		Key:         key,
+		SprKey:      sprKey,
+		SprKey2:     cSprKey,
+		Batch:       element.Batch,
+		Position:    pos,
+		ElementType: ButtonElement,
+	}
+	b := CreateSpriteElement(btn)
+	d.Elements = append(d.Elements, b)
+	// dropdown functionality
+	var dropdownQuick bool
+	var dropdownTimer *timing.Timer
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, svp, func(hvc *data.HoverClick) {
+		if dlg.Open && dlg.Active && !dlg.Lock {
+			dropdownTimer.Update()
+			click := hvc.Input.Get("click")
+			if hvc.ViewHover {
+				if d.Checked {
+					if click.JustPressed() {
+						d.Checked = false
+						dropdownTimer = nil
+						dropdownQuick = false
+						click.Consume()
+					} else if click.JustReleased() {
+						if dropdownTimer != nil && !dropdownTimer.Done() {
+							dropdownQuick = true
+						}
+					} else if !click.Pressed() && !dropdownQuick {
+						d.Checked = false
+						dropdownTimer = nil
+					}
+				} else {
+					dropdownQuick = false
+					if click.JustPressed() {
+						d.Checked = true
+						dropdownTimer = timing.New(0.2)
+					}
+				}
+			}
+		}
+	}))
+	// dropdown button behavior
+	b.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+		if dlg.Open && dlg.Active && !dlg.Lock {
+			if d.Checked {
+				b.Sprite.Key = cSprKey
+				sc.Object.Hidden = false
+			} else {
+				b.Sprite.Key = sprKey
+				sc.Object.Hidden = true
+			}
+		}
+	}))
+	UpdateDropdownElements(sc, d, dlg)
+	return d
+}
+
+func UpdateDropdownElements(sc, dd *Element, dlg *Dialog) {
+	// dropdown scroll size
+	w := dd.Object.Rect.W()
+	h := math.Max(float64(len(sc.Elements))*world.TileSize, world.TileSize)
+	for _, se := range sc.Elements {
+		if se.ElementType == TextElement {
+			tw := se.Text.GetWidth()
+			if tw > w {
+				w = tw
+			}
+		}
+	}
+	if int(w)%2 != 0 {
+		w++
+	}
+	if h > 8*world.TileSize {
+		h = 8 * world.TileSize
+	}
+	pos := dlg.Pos.Add(dd.Object.Pos).Add(pixel.V(0., (h+dd.Object.Rect.H())*-0.5))
+	//sc.ViewPort.SetRect(pixel.R(0, 0, w, h))
+	//sc.ViewPort.CamPos = pixel.V(0, 0)
+	//sc.ViewPort.PortPos = pos
+	//sc.ViewPort.PortPos.X -= world.HalfSize
+
+	sc.Object.SetRect(pixel.R(0, 0, w, h))
+	sc.Object.SetPos(pos)
+	sc.Object.Layer = 99
+
+	sc.Border.Rect = pixel.R(0, 0, w-2, h-2)
+	UpdateScrollBounds(sc)
+
+	// dropdown scroll behavior
+	for _, eleI := range sc.Elements {
+		eleI.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, sc.ViewPort, func(hvc *data.HoverClick) {
+			if dlg.Open && dlg.Active && !dlg.Lock &&
+				hvc.ViewHover {
+				if hvc.Hover {
+					eleI.Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
+					click := hvc.Input.Get("click")
+					if click.JustPressed() {
+						click.Consume()
+						dd.Checked = false
+						if eleI.OnClick != nil {
+							eleI.OnClick()
+						}
+					}
+				} else {
+					eleI.Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
+				}
+			}
+		}))
+	}
+}
+
 func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort, multiline bool) *Element {
 	ivp := viewport.New(nil)
 	ivp.ParentView = vp
 	ivp.SetRect(pixel.R(0, 0, element.Width, element.Height))
 	ivp.CamPos = pixel.V(ivp.Rect.W()*0.5-2, ivp.Rect.H()*-0.5+8)
 	ivp.PortPos = element.Position
-
-	bvp := viewport.New(nil)
-	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
-	bvp.CamPos = pixel.ZV
-	bvp.PortPos = element.Position
 
 	vpObj := object.New()
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
@@ -267,6 +468,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 		ViewPort:    ivp,
 		Border:      bord,
 		Entity:      e,
+		Background:  element.Background,
 		ElementType: InputElement,
 		MultiLine:   multiline,
 		Left:        element.Left,
@@ -497,7 +699,7 @@ func Typing(i *Element, hvc *data.HoverClick) bool {
 	return changed
 }
 
-func ChangeText(input *Element, rt string) {
+func SetText(input *Element, rt string) {
 	input.Value = rt
 	input.Text.SetText(input.Value)
 }
@@ -505,9 +707,9 @@ func ChangeText(input *Element, rt string) {
 func UpdateInputScrollBounds(input *Element) bool {
 	yTop := input.Text.Obj.Pos.Y + input.Text.Text.Orig.Y + 1
 	yBot := yTop - input.Text.GetHeight() - input.Text.Text.LineHeight*input.Text.Scalar
-	input.YTop = yTop
-	input.YBot = yBot
-	if input.YTop-input.YBot > input.ViewPort.Rect.H() && input.ScrollUp.Object.Hidden {
+	input.Top = yTop
+	input.Bot = yBot
+	if input.Top-input.Bot > input.ViewPort.Rect.H() && input.ScrollUp.Object.Hidden {
 		input.ScrollUp.Object.Hidden = false
 		input.ScrollDown.Object.Hidden = false
 		input.Bar.Object.Hidden = false
@@ -515,7 +717,7 @@ func UpdateInputScrollBounds(input *Element) bool {
 		input.Text.SetWidth(input.ViewPort.Rect.W() - world.TileSize*0.75)
 		input.ViewPort.PortPos.X = input.Object.Pos.X - world.HalfSize
 		return true
-	} else if input.YTop-input.YBot <= input.ViewPort.Rect.H() && !input.ScrollUp.Object.Hidden {
+	} else if input.Top-input.Bot <= input.ViewPort.Rect.H() && !input.ScrollUp.Object.Hidden {
 		input.ScrollUp.Object.Hidden = true
 		input.ScrollDown.Object.Hidden = true
 		input.Bar.Object.Hidden = true
@@ -531,15 +733,10 @@ func UpdateInputScrollBounds(input *Element) bool {
 func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort) *Element {
 	svp := viewport.New(nil)
 	svp.ParentView = vp
-	svp.SetRect(pixel.R(0, 0, element.Width-world.TileSize, element.Height))
+	svp.SetRect(pixel.R(0, 0, element.Width, element.Height))
 	svp.CamPos = pixel.V(0, 0)
 	svp.PortPos = element.Position
-	svp.PortPos.X -= world.HalfSize
-
-	bvp := viewport.New(nil)
-	bvp.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
-	bvp.CamPos = pixel.V(0, 0)
-	bvp.PortPos = element.Position
+	//svp.PortPos.X -= world.HalfSize
 
 	vpObj := object.New()
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
@@ -558,6 +755,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 		Object:      vpObj,
 		Entity:      e,
 		ViewPort:    svp,
+		Background:  element.Background,
 		ElementType: ScrollElement,
 		Left:        element.Left,
 		Right:       element.Right,
@@ -591,6 +789,9 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 		case ContainerElement:
 			ct := CreateContainer(ele, dlg, s.ViewPort)
 			s.Elements = append(s.Elements, ct)
+		case DropdownElement:
+			d := CreateDropdownElement(ele, dlg, s, s.ViewPort, false)
+			s.Elements = append(s.Elements, d)
 		case InputElement:
 			i := CreateInputElement(ele, dlg, s, s.ViewPort, false)
 			s.Elements = append(s.Elements, i)
@@ -599,6 +800,9 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 			s.Elements = append(s.Elements, i)
 		case ScrollElement:
 			s2 := CreateScrollElement(ele, dlg, s, s.ViewPort)
+			s.Elements = append(s.Elements, s2)
+		case SliderElement:
+			s2 := CreateSliderElement(ele, dlg, s, s.ViewPort)
 			s.Elements = append(s.Elements, s2)
 		case SpriteElement:
 			s2 := CreateSpriteElement(ele)
@@ -614,10 +818,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 }
 
 func CreateScrollBars(dlg *Dialog, s, parent *Element, element ElementConstructor) {
-	btnX := s.ViewPort.Rect.W() * 0.5
-	if s.MultiLine {
-		btnX -= world.TileSize * 0.5
-	}
+	btnX := (s.ViewPort.Rect.W() - world.TileSize) * 0.5
 	for i := 0; i < 3; i++ {
 		var pos pixel.Vec
 		var key, sprKey, cSprKey string
@@ -649,10 +850,8 @@ func CreateScrollBars(dlg *Dialog, s, parent *Element, element ElementConstructo
 		var b *Element
 		if parent != nil {
 			b = CreateButtonElement(btn, dlg, parent.ViewPort)
-			parent.Elements = append(parent.Elements, b)
 		} else {
 			b = CreateButtonElement(btn, dlg, dlg.ViewPort)
-			dlg.Elements = append(dlg.Elements, b)
 		}
 		switch i {
 		case 0:
@@ -701,28 +900,28 @@ func CreateScrollBars(dlg *Dialog, s, parent *Element, element ElementConstructo
 func AlignViewToBar(s *Element) {
 	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
 	viewHeight := s.ViewPort.Rect.H()
-	if math.Abs(s.YTop-s.YBot) < viewHeight {
+	if math.Abs(s.Top-s.Bot) < viewHeight {
 		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
 		return
 	}
-	scrollHeight := s.YTop - s.YBot - s.ViewPort.Rect.H()
+	scrollHeight := s.Top - s.Bot - s.ViewPort.Rect.H()
 	barTop := s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
 	barPos := s.Bar.Object.Pos.Y
 	barDist := barTop - barPos
 	barRatio := barDist / barHeight
 	scrollDist := barRatio * scrollHeight
-	s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5 - scrollDist
+	s.ViewPort.CamPos.Y = s.Top - s.ViewPort.Rect.H()*0.5 - scrollDist
 }
 
 func AlignBarToView(s *Element) {
 	barHeight := s.ViewPort.Rect.H() - s.ButtonHeight*2 - s.Bar.Object.Rect.H()
 	viewHeight := s.ViewPort.Rect.H()
-	if math.Abs(s.YTop-s.YBot) < viewHeight {
+	if math.Abs(s.Top-s.Bot) < viewHeight {
 		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y + s.ViewPort.Rect.H()*0.5 - s.ButtonHeight - s.Bar.Object.Rect.H()*0.5
 		return
 	}
-	scrollHeight := s.YTop - s.YBot - s.ViewPort.Rect.H()
-	scrollTop := s.YTop - s.ViewPort.Rect.H()*0.5
+	scrollHeight := s.Top - s.Bot - s.ViewPort.Rect.H()
+	scrollTop := s.Top - s.ViewPort.Rect.H()*0.5
 	viewPos := s.ViewPort.CamPos.Y
 	scrollDist := scrollTop - viewPos
 	scrollRatio := scrollDist / scrollHeight
@@ -746,11 +945,11 @@ func RestrictScroll(s *Element) {
 	if s.Bar.Object.Pos.Y < s.ViewPort.PortPos.Y-s.ViewPort.Rect.H()*0.5+s.ButtonHeight+s.Bar.Object.Rect.H()*0.5 {
 		s.Bar.Object.Pos.Y = s.ViewPort.PortPos.Y - s.ViewPort.Rect.H()*0.5 + s.ButtonHeight + s.Bar.Object.Rect.H()*0.5
 	}
-	if s.ViewPort.CamPos.Y-s.ViewPort.Rect.H()*0.5 < s.YBot {
-		s.ViewPort.CamPos.Y = s.YBot + s.ViewPort.Rect.H()*0.5
+	if s.ViewPort.CamPos.Y-s.ViewPort.Rect.H()*0.5 < s.Bot {
+		s.ViewPort.CamPos.Y = s.Bot + s.ViewPort.Rect.H()*0.5
 	}
-	if s.ViewPort.CamPos.Y+s.ViewPort.Rect.H()*0.5 > s.YTop {
-		s.ViewPort.CamPos.Y = s.YTop - s.ViewPort.Rect.H()*0.5
+	if s.ViewPort.CamPos.Y+s.ViewPort.Rect.H()*0.5 > s.Top {
+		s.ViewPort.CamPos.Y = s.Top - s.ViewPort.Rect.H()*0.5
 	}
 }
 
@@ -770,13 +969,161 @@ func UpdateScrollBounds(scroll *Element) {
 			yBot = oBot
 		}
 	}
-	scroll.YTop = yTop
-	scroll.YBot = yBot
+	scroll.Top = yTop
+	scroll.Bot = yBot
+	// hide scroll bar if not needed
+	hide := scroll.Bot > scroll.ViewPort.CamPos.Y-scroll.ViewPort.Rect.H()*0.5
+	scroll.ScrollUp.Object.Hidden = hide
+	scroll.ScrollDown.Object.Hidden = hide
+	scroll.Bar.Object.Hidden = hide
+	//if hide { // expand view
+	scroll.ViewPort.PortPos = scroll.Object.Pos
+	scroll.ViewPort.SetRect(pixel.R(0, 0, scroll.Object.Rect.W()-1, scroll.Object.Rect.H()-1))
+	//} else { // reduce view
+	//	scroll.ViewPort.PortPos = scroll.Object.Pos
+	//	scroll.ViewPort.PortPos.X -= world.HalfSize
+	//	scroll.ViewPort.SetRect(pixel.R(0, 0, scroll.Object.Rect.W()-world.TileSize-1, scroll.Object.Rect.H()-1))
+	//}
 }
 
 func MoveToScrollTop(scroll *Element) {
-	scroll.ViewPort.CamPos.Y = scroll.YTop - scroll.ViewPort.Rect.H()*0.5
+	scroll.ViewPort.CamPos.Y = scroll.Top - scroll.ViewPort.Rect.H()*0.5
 	scroll.Bar.Object.Pos.Y = scroll.ViewPort.PortPos.Y + scroll.ViewPort.Rect.H()*0.5 - scroll.ButtonHeight - scroll.Bar.Object.Rect.H()*0.5
+}
+
+func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort) *Element {
+	obj := object.New()
+	obj.Pos = element.Position
+	obj.Layer = 99
+	obj.SetRect(pixel.R(0, 0, element.Width, element.Height))
+
+	bord := &Border{
+		Rect:  pixel.R(0, 0, element.Width, element.Height),
+		Style: ThinBorder,
+	}
+
+	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, obj)
+	s := &Element{
+		Key:         element.Key,
+		HelpText:    element.HelpText,
+		Object:      obj,
+		Entity:      e,
+		ElementType: SliderElement,
+		Border:      bord,
+		Background:  element.Background,
+		Left:        element.Left,
+		Right:       element.Right,
+		Up:          element.Up,
+		Down:        element.Down,
+		Min:         element.Min,
+		Max:         element.Max,
+		Interval:    element.Interval,
+	}
+	if s.Max-s.Min < 1 {
+		fmt.Printf("WARNING: incorrect slider min/max values for element %s\n", element.Key)
+	} else if s.Interval < 1 || s.Interval > s.Max-s.Min {
+		fmt.Printf("WARNING: incorrect slider interval value for element %s\n", element.Key)
+	}
+	// slider bar
+	pos := element.Position
+	key := fmt.Sprintf("%s_slider_bar", element.Key)
+	sprKey := "slider_bar"
+	cSprKey := "slider_bar_click"
+	btn := ElementConstructor{
+		Key:         key,
+		SprKey:      sprKey,
+		SprKey2:     cSprKey,
+		Batch:       element.Batch,
+		Position:    pos,
+		ElementType: ButtonElement,
+	}
+	var b *Element
+	if parent != nil {
+		b = CreateButtonElement(btn, dlg, parent.ViewPort)
+		parent.Elements = append(parent.Elements, b)
+	} else {
+		b = CreateButtonElement(btn, dlg, dlg.ViewPort)
+		dlg.Elements = append(dlg.Elements, b)
+	}
+	s.Bar = b
+	offset := 0.
+	barClick := false
+	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
+		if dlg.Open && dlg.Active && !dlg.Lock && (parent == nil || !parent.Object.Hidden) {
+			click := hvc.Input.Get("click")
+			if hvc.Hover && click.JustPressed() {
+				b.Entity.AddComponent(myecs.Drawable, b.Sprite2)
+				offset = hvc.Pos.X - b.Object.Pos.X
+				if offset > b.Object.HalfWidth {
+					offset = 0
+				}
+				dlg.Click = true
+				barClick = true
+			}
+			if click.Pressed() && barClick {
+				b.Object.Pos.X = hvc.Pos.X - offset
+				RestrictSlider(s)
+			} else {
+				if barClick {
+					b.Entity.AddComponent(myecs.Drawable, b.Sprite)
+					if s.OnClick != nil {
+						s.OnClick()
+					}
+				}
+				barClick = false
+			}
+		}
+	}))
+	return s
+}
+
+func SetSliderValue(s *Element, val int) {
+	if val < s.Min {
+		val = s.Min
+	} else if val > s.Max {
+		val = s.Max
+	}
+	s.IntValue = val
+	dVal := float64(val - s.Min)
+	w := float64(s.Max - s.Min)
+	fw := s.Object.Rect.W() - s.Bar.Object.Rect.W()
+	dist := fw * (dVal / w)
+	left := s.Object.Pos.X - s.Object.HalfWidth + s.Bar.Object.HalfWidth
+	s.Bar.Object.Pos.X = left + dist
+	RestrictSlider(s)
+}
+
+func RestrictSlider(s *Element) {
+	if s.Bar.Object.Pos.X > s.Object.Pos.X+s.Object.HalfWidth-s.Bar.Object.HalfWidth {
+		s.Bar.Object.Pos.X = s.Object.Pos.X + s.Object.HalfWidth - s.Bar.Object.HalfWidth
+		s.IntValue = s.Max
+	} else if s.Bar.Object.Pos.X < s.Object.Pos.X-s.Object.HalfWidth+s.Bar.Object.HalfWidth {
+		s.Bar.Object.Pos.X = s.Object.Pos.X - s.Object.HalfWidth + s.Bar.Object.HalfWidth
+		s.IntValue = s.Min
+	} else {
+		w := s.Object.Rect.W() - s.Bar.Object.Rect.W()
+		fInterval := w / (float64(s.Max-s.Min) / float64(s.Interval))
+		left := s.Object.Pos.X - s.Object.HalfWidth + s.Bar.Object.HalfWidth
+		x := s.Bar.Object.Pos.X - left
+		lx := 0.
+		rx := fInterval
+		c := 0
+		for rx <= x {
+			lx += fInterval
+			rx += fInterval
+			c++
+		}
+		if x-lx < rx-x { // use lx
+			s.Bar.Object.Pos.X = left + lx
+			s.IntValue = s.Min + c*s.Interval
+		} else if rx > w { // max
+			s.Bar.Object.Pos.X = s.Object.Pos.X + s.Object.HalfWidth - s.Bar.Object.HalfWidth
+			s.IntValue = s.Max
+		} else { // use rx
+			s.Bar.Object.Pos.X = left + rx
+			s.IntValue = s.Min + (c+1)*s.Interval
+		}
+	}
 }
 
 func CreateSpriteElement(element ElementConstructor) *Element {

@@ -95,34 +95,36 @@ func PuzzleViewInit() {
 	for constants.PickedRatio+1 < maxRatio {
 		constants.PickedRatio += 1
 	}
-	if data.PuzzleView == nil {
-		data.PuzzleView = viewport.New(nil)
-		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
-		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
-		data.PuzzleView.PortPos = viewport.MainCamera.CamPos
-		UpdatePuzzleShaders()
-		data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
-	}
-	if data.PuzzleViewNoShader == nil {
-		data.PuzzleViewNoShader = viewport.New(nil)
-		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
-		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
-		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.CamPos
-	}
-	if data.BorderView == nil {
-		data.BorderView = viewport.New(nil)
-		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(w+1), world.TileSize*(h+1)))
-		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
-	}
 	if data.WorldView == nil {
 		data.WorldView = viewport.New(nil)
 		xWidth := w * world.TileSize * constants.PickedRatio
 		yHeight := h * world.TileSize * constants.PickedRatio
 		data.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
-		data.WorldView.CamPos = viewport.MainCamera.CamPos
+		data.WorldView.CamPos = pixel.ZV
 		data.WorldView.PortPos = viewport.MainCamera.CamPos
 		ChangeWorldShader(0)
 		data.WorldView.Canvas.SetFragmentShader(data.WorldShader)
+	}
+	if data.PuzzleView == nil {
+		data.PuzzleView = viewport.New(nil)
+		data.PuzzleView.ParentView = data.WorldView
+		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
+		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
+		data.PuzzleView.PortPos = pixel.ZV
+		UpdatePuzzleShaders()
+		data.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
+	}
+	if data.PuzzleViewNoShader == nil {
+		data.PuzzleViewNoShader = viewport.New(nil)
+		data.PuzzleViewNoShader.ParentView = data.WorldView
+		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
+		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
+		data.PuzzleViewNoShader.PortPos = pixel.ZV
+	}
+	if data.BorderView == nil {
+		data.BorderView = viewport.New(nil)
+		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(w+1), world.TileSize*(h+1)))
+		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
 	}
 }
 

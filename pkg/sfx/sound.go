@@ -84,6 +84,7 @@ func (p *soundPlayer) KillSound(id *uuid.UUID) {
 	if id != nil {
 		if s, ok := p.volumes[*id]; ok {
 			s.Silent = true
+			delete(p.volumes, *id)
 		}
 	}
 }

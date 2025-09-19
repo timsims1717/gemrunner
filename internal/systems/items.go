@@ -17,6 +17,65 @@ import (
 	"github.com/gopxl/pixel"
 )
 
+func RegenerateOrRemove(item *data.BasicItem) {
+	if item.Metadata.Regenerate {
+		item.Counter = 0
+		item.Waiting = true
+	} else {
+		myecs.Manager.DisposeEntity(item.Entity)
+	}
+}
+
+func DefaultAnim(item *data.BasicItem) {
+	item.Anim = reanimator.New().
+		AddAnimation(reanimator.NewBatchSprite("item", img.Batchers[constants.TileBatch], item.Sprite.Key, reanimator.Hold)).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if item.Waiting {
+				return "none"
+			} else {
+				return "item"
+			}
+		}).SetDefault("item").Finish()
+	item.Entity.AddComponent(myecs.Drawable, item.Anim)
+	item.Entity.AddComponent(myecs.Animated, item.Anim)
+}
+
+func DefaultRegen(item *data.BasicItem) {
+	if item.Metadata.Regenerate {
+		if item.Delay == 0 {
+			item.Delay = constants.ItemRegen * (item.Metadata.RegenDelay + 2)
+		}
+		item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if item.Waiting {
+				if reanimator.FrameSwitch {
+					item.Counter++
+				}
+				if item.Counter > item.Delay && data.CurrLevel.FrameChange {
+					item.Object.Pos = world.MapToWorld(item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					item.Regen = true
+					item.Waiting = false
+					// smoke animation
+					e := myecs.Manager.NewEntity()
+					obj := object.New()
+					obj.Pos = item.Object.Pos
+					obj.Layer = 33
+					smoke := reanimator.NewBatchAnimation("smoke", img.Batchers[constants.TileBatch], "smoke_regen_anim", reanimator.Tran)
+					smoke.SetEndTrigger(func() {
+						item.Regen = false
+						myecs.Manager.DisposeEntity(e)
+					})
+					anim := reanimator.NewSimple(smoke)
+					e.AddComponent(myecs.Object, obj).
+						AddComponent(myecs.Animated, anim).
+						AddComponent(myecs.Drawable, anim).
+						AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				}
+			}
+		}))
+	}
+}
+
 func CreateGem(pos pixel.Vec, tile *data.Tile) {
 	key := tile.SpriteString()
 	obj := object.New().WithID(key)
@@ -31,7 +90,7 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 	shimmer.SetEndTrigger(func() {
 		gemShimmer = false
 	})
-	anim := reanimator.New(reanimator.NewSwitch().
+	anim := reanimator.New().
 		AddAnimation(gemSpr).
 		AddAnimation(shimmer).
 		SetChooseFn(func() string {
@@ -43,7 +102,7 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 				}
 				return "gem"
 			}
-		}), "gem")
+		}).SetDefault("gem").Finish()
 	myecs.Manager.NewEntity().
 		AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
@@ -184,11 +243,13 @@ func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
 	jumpBoots.Action = Jump()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	e.AddComponent(myecs.Drawable, jumpBoots.Sprite)
+	//e.AddComponent(myecs.Drawable, jumpBoots.Sprite)
 	e.AddComponent(myecs.PickUp, jumpBoots.PickUp)
 	e.AddComponent(myecs.Action, jumpBoots.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, jumpBoots)
+	DefaultRegen(jumpBoots)
+	DefaultAnim(jumpBoots)
 }
 
 func Jump() *data.Interact {
@@ -256,7 +317,7 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	box.Metadata.Timer = -1
 	e.AddComponent(myecs.Object, box.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	e.AddComponent(myecs.Drawable, box.Sprite)
+	//e.AddComponent(myecs.Drawable, box.Sprite)
 	e.AddComponent(myecs.StandOn, struct{}{})
 	e.AddComponent(myecs.Smash, smash)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
@@ -269,6 +330,8 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	dyn.Entity = e
 	dyn.Flags.NoLadders = true
 	e.AddComponent(myecs.Dynamic, dyn)
+	DefaultRegen(box)
+	DefaultAnim(box)
 }
 
 func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
@@ -335,16 +398,21 @@ func CreateKey(pos pixel.Vec, tile *data.Tile) {
 		PickUp: data.NewPickUp(5, tile.Metadata.Color),
 		Action: KeyAction(color),
 		Color:  color,
+		Origin: tile.Coords,
 	}
 	theKey.Metadata.Timer = -1
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-	e.AddComponent(myecs.Drawable, theKey.Sprite)
+	//e.AddComponent(myecs.Drawable, theKey.Sprite)
 	e.AddComponent(myecs.PickUp, theKey.PickUp)
 	e.AddComponent(myecs.Action, theKey.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, theKey)
+	theKey.Entity = e
+	theKey.Metadata.Regenerate = true
+	DefaultRegen(theKey)
+	DefaultAnim(theKey)
 }
 
 func KeyAction(color data.ItemColor) *data.Interact {
@@ -396,7 +464,7 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 	jpr.SetEndTrigger(func() {
 		jetpack.Regen = false
 	})
-	jetpack.Anim = reanimator.New(reanimator.NewSwitch().
+	jetpack.Anim = reanimator.New().
 		AddAnimation(jpa).
 		AddAnimation(jpr).
 		AddNull("none").
@@ -408,7 +476,7 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 			} else {
 				return "jetpack"
 			}
-		}), "jetpack")
+		}).SetDefault("jetpack").Finish()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, jetpack.Anim)
@@ -417,6 +485,20 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Action, jetpack.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, jetpack)
+	jetpack.Delay = constants.ItemRegen * (jetpack.Metadata.RegenDelay + 2)
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		if jetpack.Waiting {
+			if reanimator.FrameSwitch {
+				jetpack.Counter++
+			}
+			if jetpack.Counter > jetpack.Delay && data.CurrLevel.FrameChange {
+				jetpack.Object.Pos = world.MapToWorld(jetpack.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+				jetpack.Regen = true
+				jetpack.Waiting = false
+				jetpack.Entity.AddComponent(myecs.PickUp, jetpack.PickUp)
+			}
+		}
+	}))
 }
 
 func JetpackAction(jetpack *data.BasicItem) *data.Interact {
@@ -487,12 +569,23 @@ func JetpackAction(jetpack *data.BasicItem) *data.Interact {
 				if reanimator.FrameSwitch {
 					jetpack.Counter++
 				}
-				delay := constants.ItemRegen * (jetpack.Metadata.RegenDelay + 2)
-				if jetpack.Counter > delay && data.CurrLevel.FrameChange {
+				if jetpack.Counter > jetpack.Delay && data.CurrLevel.FrameChange {
 					jetpack.Object.Pos = world.MapToWorld(jetpack.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
 					jetpack.Regen = true
 					jetpack.Waiting = false
-					jetpack.Entity.RemoveComponent(myecs.Update)
+					jetpack.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+						if jetpack.Waiting {
+							if reanimator.FrameSwitch {
+								jetpack.Counter++
+							}
+							if jetpack.Counter > jetpack.Delay && data.CurrLevel.FrameChange {
+								jetpack.Object.Pos = world.MapToWorld(jetpack.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+								jetpack.Regen = true
+								jetpack.Waiting = false
+								jetpack.Entity.AddComponent(myecs.PickUp, jetpack.PickUp)
+							}
+						}
+					}))
 					jetpack.Entity.AddComponent(myecs.PickUp, jetpack.PickUp)
 				}
 			}
@@ -531,6 +624,7 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 	regenA.SetEndTrigger(func() {
 		obj.Pos.Y = pos.Y
 		disguise.Item.Regen = false
+		disguise.Doff = false
 	})
 	doff := reanimator.NewBatchAnimation("doff", img.Batchers[constants.TileBatch], "disguise_doff", reanimator.Tran)
 	doff.SetEndTrigger(func() {
@@ -542,7 +636,7 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 			myecs.Manager.DisposeEntity(disguise.Item.Entity)
 		}
 	})
-	disguise.Item.Anim = reanimator.New(reanimator.NewSwitch().
+	disguise.Item.Anim = reanimator.New().
 		AddAnimation(regenA).
 		AddAnimation(reanimator.NewBatchSprite("disguise", img.Batchers[constants.TileBatch], key, reanimator.Hold)).
 		AddAnimation(doff).
@@ -557,7 +651,7 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 			} else {
 				return "disguise"
 			}
-		}), "disguise")
+		}).SetDefault("disguise").Finish()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, disguise.Item.Anim)
@@ -566,6 +660,20 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Action, disguise.Item.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, disguise.Item)
+	disguise.Item.Delay = constants.ItemRegen * (disguise.Item.Metadata.RegenDelay + 2)
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		if disguise.Item.Waiting {
+			if reanimator.FrameSwitch {
+				disguise.Item.Counter++
+			}
+			if disguise.Item.Counter > disguise.Item.Delay && data.CurrLevel.FrameChange {
+				disguise.Item.Object.Pos = world.MapToWorld(disguise.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+				disguise.Item.Regen = true
+				disguise.Item.Waiting = false
+				disguise.Item.Entity.AddComponent(myecs.PickUp, disguise.Item.PickUp)
+			}
+		}
+	}))
 }
 
 func DonDisguise(disguise *data.Disguise) *data.Interact {
@@ -634,12 +742,23 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 				if reanimator.FrameSwitch {
 					disguise.Item.Counter++
 				}
-				delay := constants.ItemRegen * (disguise.Item.Metadata.RegenDelay + 2)
-				if disguise.Item.Counter > delay && data.CurrLevel.FrameChange {
+				if disguise.Item.Counter > disguise.Item.Delay && data.CurrLevel.FrameChange {
 					disguise.Item.Object.Pos = world.MapToWorld(disguise.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
 					disguise.Item.Regen = true
 					disguise.Item.Waiting = false
-					disguise.Item.Entity.RemoveComponent(myecs.Update)
+					disguise.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+						if disguise.Item.Waiting {
+							if reanimator.FrameSwitch {
+								disguise.Item.Counter++
+							}
+							if disguise.Item.Counter > disguise.Item.Delay && data.CurrLevel.FrameChange {
+								disguise.Item.Object.Pos = world.MapToWorld(disguise.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+								disguise.Item.Regen = true
+								disguise.Item.Waiting = false
+								disguise.Item.Entity.AddComponent(myecs.PickUp, disguise.Item.PickUp)
+							}
+						}
+					}))
 					disguise.Item.Entity.AddComponent(myecs.PickUp, disguise.Item.PickUp)
 				}
 			}
@@ -671,6 +790,7 @@ func CreateDrill(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Action, drill.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, drill)
+	DefaultRegen(drill)
 }
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
@@ -707,7 +827,7 @@ func UseDrill(drill *data.BasicItem) *data.Interact {
 							}
 						} else {
 							ch.Flags.ItemAction = data.NoItemAction
-							entity.RemoveComponent(myecs.Update)
+							DefaultRegen(drill)
 						}
 					}
 				}))
@@ -736,7 +856,7 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 	ftr.SetEndTrigger(func() {
 		flamethrower.Regen = false
 	})
-	flamethrower.Anim = reanimator.New(reanimator.NewSwitch().
+	flamethrower.Anim = reanimator.New().
 		AddAnimation(fta).
 		AddAnimation(ftr).
 		AddNull("none").
@@ -748,7 +868,7 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 			} else {
 				return "flamethrower"
 			}
-		}), "flamethrower")
+		}).SetDefault("flamethrower").Finish()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, flamethrower.Anim)
@@ -757,6 +877,20 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Action, flamethrower.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Item, flamethrower)
+	flamethrower.Delay = constants.ItemRegen * (flamethrower.Metadata.RegenDelay + 2)
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		if flamethrower.Waiting {
+			if reanimator.FrameSwitch {
+				flamethrower.Counter++
+			}
+			if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
+				flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+				flamethrower.Regen = true
+				flamethrower.Waiting = false
+				flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+			}
+		}
+	}))
 }
 
 func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
@@ -937,12 +1071,23 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 					if reanimator.FrameSwitch {
 						flamethrower.Counter++
 					}
-					delay := constants.ItemRegen * (flamethrower.Metadata.RegenDelay + 2)
-					if flamethrower.Counter > delay && data.CurrLevel.FrameChange {
+					if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
 						flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
 						flamethrower.Regen = true
 						flamethrower.Waiting = false
-						flamethrower.Entity.RemoveComponent(myecs.Update)
+						flamethrower.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+							if flamethrower.Waiting {
+								if reanimator.FrameSwitch {
+									flamethrower.Counter++
+								}
+								if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
+									flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+									flamethrower.Regen = true
+									flamethrower.Waiting = false
+									flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+								}
+							}
+						}))
 						flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
 					}
 				}
@@ -972,7 +1117,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 	if len(tile.Metadata.LinkedTiles) > 0 {
 		trans.Dest = data.CurrLevel.Get(tile.Metadata.LinkedTiles[0].X, tile.Metadata.LinkedTiles[0].Y)
 	}
-	if trans.Dest.Block != data.BlockTransporterExit {
+	if trans.Dest != nil && trans.Dest.Block != data.BlockTransporterExit {
 		trans.Dest = nil
 	}
 	trans.BarO = object.New()
@@ -985,7 +1130,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 		trans.Item.Using = false
 		trans.BarUp = false
 	})
-	sw := reanimator.NewSwitch().
+	trans.BarT = reanimator.New().
 		AddNull("none").
 		AddAnimation(barDown).
 		AddAnimation(barUp).
@@ -999,8 +1144,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 			}
 			trans.BarUp = false
 			return "none"
-		})
-	trans.BarT = reanimator.New(sw, "none")
+		}).SetDefault("none").Finish()
 	trans.BarE = myecs.Manager.NewEntity()
 	trans.BarE.AddComponent(myecs.Object, trans.BarO)
 	trans.BarE.AddComponent(myecs.Drawable, trans.BarT)
@@ -1010,6 +1154,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, trans.Item.Sprite)
+	e.AddComponent(myecs.Item, trans.Item)
 	if trans.Dest != nil {
 		trans.Item.Action = EnterTransporter(trans)
 		e.AddComponent(myecs.OnTouch, trans.Item.Action)
@@ -1077,7 +1222,7 @@ func CreateTransporterExit(pos pixel.Vec, tile *data.Tile) {
 	zap.SetEndTrigger(func() {
 		tile.Flags.Using = false
 	})
-	sw := reanimator.NewSwitch().
+	tree := reanimator.New().
 		AddNull("none").
 		AddAnimation(zap).
 		SetChooseFn(func() string {
@@ -1085,8 +1230,7 @@ func CreateTransporterExit(pos pixel.Vec, tile *data.Tile) {
 				return "zap"
 			}
 			return "none"
-		})
-	tree := reanimator.New(sw, "none")
+		}).SetDefault("none").Finish()
 	e := myecs.Manager.NewEntity()
 	obj := object.New()
 	obj.Pos = pos

@@ -3,8 +3,8 @@ package states
 import (
 	"fmt"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/data"
-	"gemrunner/internal/load"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
 	"gemrunner/internal/ui"
@@ -49,7 +49,7 @@ func (s *editorState) Load(win *pixelgl.Window) {
 	systems.EditorInit()
 	systems.PuzzleInit()
 	systems.UpdateViews()
-	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
 	systems.PushUndoArray(true)
 }
@@ -107,10 +107,13 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
 	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		dKey := constants.DialogPuzzleSettings
-		load.ReloadDialog(dKey)
-		systems.CustomizeEditorDialog(dKey)
-		systems.UpdateDialogView(ui.Dialogs[dKey])
+		//dKey := constants.DialogPuzzleSettings
+		//load.ReloadDialog(dKey)
+		//systems.CustomizeEditorDialog(dKey)
+		//systems.UpdateDialogView(ui.Dialogs[dKey])
+		constants.Configuration.Graphics.Resolution++
+		constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
+		content.UpdateConfiguration()
 	}
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode++
@@ -143,10 +146,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	systems.DialogSystem(win)
 	systems.UndoStackSystem()
 	// object systems
-	systems.ShaderSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
+	systems.EffectsSystem()
 
 	//s.UpdateViews()
 
@@ -203,10 +206,6 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 		img.Clear()
 		systems.TemporarySystem()
 		data.IMDraw.Clear()
-		data.ScreenView.Draw(win)
-		if options.Updated {
-			systems.UpdateViews()
-		}
 	}
 }
 

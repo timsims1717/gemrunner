@@ -156,7 +156,7 @@ func buildDrawable(sprCh *spriteChanger, live bool) any {
 }
 
 func NeedsUpdate(tile *data.Tile) bool {
-	if tile.Update || tile.Block != tile.LastBlock {
+	if tile.Update || tile.Metadata.Changed || tile.Block != tile.LastBlock {
 		return true
 	}
 	switch tile.Block {
@@ -166,6 +166,9 @@ func NeedsUpdate(tile *data.Tile) bool {
 		data.BlockSpike, data.BlockHideout, data.BlockLiquid:
 		return true
 	default:
+		if data.Editor.Mode == data.ModeWrench {
+			return true
+		}
 		return false
 	}
 }
@@ -195,23 +198,15 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 		if !tile.Live {
 			sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
 		}
-	case data.BlockBomb:
+	case data.BlockBigBomb:
 		sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
-		if tile.Metadata.Regenerate && tile.Metadata.BombCross {
-			sprs = append(sprs, newSprChanger(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
-		} else if tile.Metadata.BombCross {
-			sprs = append(sprs, newSprChanger(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
-		} else if tile.Metadata.Regenerate {
-			sprs = append(sprs, newSprChanger(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+		if tile.Metadata.Regenerate {
+			sprs = append(sprs, newSprChanger(constants.ItemBigBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		}
-	case data.BlockBombLit:
-		sprs = append(sprs, newSprChanger(constants.ItemBombLit, constants.TileBatch))
-		if tile.Metadata.Regenerate && tile.Metadata.BombCross {
-			sprs = append(sprs, newSprChanger(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
-		} else if tile.Metadata.BombCross {
-			sprs = append(sprs, newSprChanger(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2)))
-		} else if tile.Metadata.Regenerate {
-			sprs = append(sprs, newSprChanger(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+	case data.BlockBigBombLit:
+		sprs = append(sprs, newSprChanger(constants.ItemBigBombLit, constants.TileBatch))
+		if tile.Metadata.Regenerate {
+			sprs = append(sprs, newSprChanger(constants.ItemBigBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		}
 	case data.BlockGear:
 		//if tile.Live {

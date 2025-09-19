@@ -17,13 +17,15 @@ func MainDialogs(win *pixelgl.Window) {
 	ui.NewDialog(ui.DialogConstructors[constants.DialogMainMenu])
 	ui.NewDialog(load.AddPlayersConstructor)
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayLocal])
-	customizeMainDialogs(win)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogOptions])
+	CustomizeMainDialogs(win)
 }
 
 func DisposeMainDialogs() {
 	for k, d := range ui.Dialogs {
 		switch k {
 		case constants.DialogMainMenu,
+			constants.DialogOptions,
 			constants.DialogAddPlayers,
 			constants.DialogPlayLocal:
 			ui.DisposeDialog(d)
@@ -31,8 +33,19 @@ func DisposeMainDialogs() {
 	}
 }
 
-func customizeMainDialogs(win *pixelgl.Window) {
+func CustomizeMainDialogs(win *pixelgl.Window) {
 	for key := range ui.Dialogs {
+		CustomizeMainDialog(win, key)
+	}
+}
+
+func CustomizeMainDialog(win *pixelgl.Window, key string) {
+	switch key {
+	case constants.DialogOptions:
+		customizeOptionsDialog()
+	case constants.DialogMainMenu,
+		constants.DialogAddPlayers,
+		constants.DialogPlayLocal:
 		dialog := ui.Dialogs[key]
 		switch key {
 		case constants.DialogPlayLocal:
@@ -60,6 +73,8 @@ func customizeMainDialogs(win *pixelgl.Window) {
 					ele.OnClick = OpenAddPlayers
 				case "start_editor_btn":
 					ele.OnClick = StartEditor
+				case "start_options_btn":
+					ele.OnClick = OpenOptions
 				case "quit_btn":
 					ele.OnClick = QuitGame(win)
 				case "confirm":

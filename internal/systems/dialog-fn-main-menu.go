@@ -18,6 +18,7 @@ import (
 
 func QuitGame(win *pixelgl.Window) func() {
 	return func() {
+		content.SaveConfig()
 		win.SetClosed(true)
 	}
 }

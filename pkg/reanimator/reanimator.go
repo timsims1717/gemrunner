@@ -51,7 +51,8 @@ func (ts *TreeSet) Update() {
 }
 
 type Tree struct {
-	Root      *Switch
+	Elements  map[string]*Anim
+	Choose    func() string
 	spr       *pixel.Sprite
 	anim      *Anim
 	animKey   string
@@ -81,24 +82,32 @@ func Update() {
 
 func NewSimple(anim *Anim) *Tree {
 	t := &Tree{
-		Root: NewSwitch().
-			AddAnimation(anim).
-			SetChooseFn(func() string {
-				return anim.Key
-			}),
-		update:  true,
-		Default: anim.Key,
+		Elements: map[string]*Anim{},
+		update:   true,
+		Default:  anim.Key,
 	}
+	t.AddAnimation(anim)
+	t.SetChooseFn(func() string {
+		return anim.Key
+	})
 	t.Update()
 	return t
 }
 
-func New(root *Switch, def string) *Tree {
+func New() *Tree {
 	t := &Tree{
-		Root:    root,
-		update:  true,
-		Default: def,
+		Elements: map[string]*Anim{},
+		update:   true,
 	}
+	return t
+}
+
+func (t *Tree) SetDefault(def string) *Tree {
+	t.Default = def
+	return t
+}
+
+func (t *Tree) Finish() *Tree {
 	t.Update()
 	return t
 }
@@ -119,7 +128,7 @@ func (t *Tree) Update() {
 	if !t.Done {
 		if FrameSwitch || t.update {
 			t.update = false
-			t.anim = t.Root.choose()
+			t.anim = t.choose()
 			if t.anim == nil {
 				t.spr = nil
 				t.animKey = ""
@@ -169,9 +178,9 @@ func (t *Tree) Update() {
 }
 
 func (t *Tree) SetAnim(key string, frame int) {
-	if a, ok := t.Root.Elements[key]; ok {
-		if a.Anim != nil {
-			t.anim = a.Anim
+	if a, ok := t.Elements[key]; ok {
+		if a != nil {
+			t.anim = a
 			t.animKey = key
 			t.frame = frame
 			t.anim.Step = frame
@@ -181,9 +190,28 @@ func (t *Tree) SetAnim(key string, frame int) {
 
 type Result struct {
 	Spr   *pixel.Sprite
+	SKey  string
 	Off   pixel.Vec
 	Col   pixel.RGBA
 	Batch string
+}
+
+func (t *Tree) GetSprite(key string) *Result {
+	anim, ok := t.Elements[key]
+	if !ok {
+		return nil
+	}
+	offset := anim.Offset
+	if len(anim.Offsets) > 0 {
+		offset = offset.Add(anim.Offsets[0])
+	}
+	return &Result{
+		Spr:   anim.S[0],
+		SKey:  anim.SKey,
+		Off:   offset,
+		Col:   anim.Color,
+		Batch: anim.Batch,
+	}
 }
 
 func (t *Tree) CurrentSprite() *Result {
@@ -196,6 +224,7 @@ func (t *Tree) CurrentSprite() *Result {
 	}
 	return &Result{
 		Spr:   t.spr,
+		SKey:  t.anim.SKey,
 		Off:   offset,
 		Col:   t.anim.Color,
 		Batch: t.anim.Batch,
@@ -214,60 +243,36 @@ func (t *Tree) DrawColorMask(target pixel.Target, mat pixel.Matrix, col color.RG
 	}
 }
 
-type switchEl struct {
-	Switch *Switch
-	Anim   *Anim
+//func NewSwitch() *Switch {
+//	return &Switch{
+//		Elements: map[string]*Anim{},
+//		Choose:   func() string { return "" },
+//	}
+//}
+
+func (t *Tree) AddNull(key string) *Tree {
+	t.Elements[key] = nil
+	return t
 }
 
-type Switch struct {
-	Elements map[string]*switchEl
-	Choose   func() string
+func (t *Tree) AddAnimation(anim *Anim) *Tree {
+	t.Elements[anim.Key] = anim
+	return t
 }
 
-func NewSwitch() *Switch {
-	return &Switch{
-		Elements: map[string]*switchEl{},
-		Choose:   func() string { return "" },
-	}
+func (t *Tree) SetChooseFn(fn func() string) *Tree {
+	t.Choose = fn
+	return t
 }
 
-func (s *Switch) AddNull(key string) *Switch {
-	s.Elements[key] = &switchEl{}
-	return s
-}
-
-func (s *Switch) AddAnimation(anim *Anim) *Switch {
-	s.Elements[anim.Key] = &switchEl{
-		Anim: anim,
-	}
-	return s
-}
-
-func (s *Switch) AddSubSwitch(ss *Switch, key string) *Switch {
-	s.Elements[key] = &switchEl{
-		Switch: ss,
-	}
-	return s
-}
-
-func (s *Switch) SetChooseFn(fn func() string) *Switch {
-	s.Choose = fn
-	return s
-}
-
-func (s *Switch) choose() *Anim {
-	el := s.Elements[s.Choose()]
-	if el.Switch != nil {
-		return el.Switch.choose()
-	} else if el.Anim != nil {
-		return el.Anim
-	} else {
-		return nil
-	}
+func (t *Tree) choose() *Anim {
+	el, _ := t.Elements[t.Choose()]
+	return el
 }
 
 type Anim struct {
 	Key      string
+	SKey     string
 	S        []*pixel.Sprite
 	Step     int
 	Finish   Finish
@@ -315,6 +320,7 @@ func (anim *Anim) WithSpriteOffset(offset pixel.Vec, i int) *Anim {
 func NewAnimFromSprite(key string, spr *pixel.Sprite, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
+		SKey:   key,
 		S:      []*pixel.Sprite{spr},
 		Finish: f,
 		Color:  util.White,
@@ -324,6 +330,7 @@ func NewAnimFromSprite(key string, spr *pixel.Sprite, f Finish) *Anim {
 func NewAnimFromSprites(key string, spr []*pixel.Sprite, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
+		SKey:   key,
 		S:      spr,
 		Finish: f,
 		Color:  util.White,
@@ -333,6 +340,7 @@ func NewAnimFromSprites(key string, spr []*pixel.Sprite, f Finish) *Anim {
 func NewBatchSprite(key string, batch *img.Batcher, spr string, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
+		SKey:   spr,
 		S:      []*pixel.Sprite{batch.GetSprite(spr)},
 		Finish: f,
 		Batch:  batch.Key,
@@ -343,6 +351,7 @@ func NewBatchSprite(key string, batch *img.Batcher, spr string, f Finish) *Anim 
 func NewBatchAnimation(key string, batch *img.Batcher, anim string, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
+		SKey:   anim,
 		S:      batch.GetAnimation(anim).S,
 		Finish: f,
 		Batch:  batch.Key,
@@ -353,6 +362,7 @@ func NewBatchAnimation(key string, batch *img.Batcher, anim string, f Finish) *A
 func NewBatchAnimationFrame(key string, batch *img.Batcher, anim string, frame int, f Finish) *Anim {
 	return &Anim{
 		Key:    key,
+		SKey:   anim,
 		S:      []*pixel.Sprite{batch.GetAnimation(anim).S[frame]},
 		Finish: f,
 		Batch:  batch.Key,
@@ -368,6 +378,7 @@ func NewBatchAnimationCustom(key string, batch *img.Batcher, anim string, frames
 	}
 	return &Anim{
 		Key:    key,
+		SKey:   anim,
 		S:      nSpr,
 		Finish: f,
 		Batch:  batch.Key,
@@ -388,6 +399,7 @@ func NewAnimFromSheet(key string, spriteSheet *img.SpriteSheet, rs []int, f Fini
 	}
 	return &Anim{
 		Key:    key,
+		SKey:   key,
 		S:      spr,
 		Step:   0,
 		Finish: f,
@@ -457,6 +469,7 @@ func (anim *Anim) Reverse() *Anim {
 func (anim *Anim) Copy() *Anim {
 	return &Anim{
 		Key:      anim.Key,
+		SKey:     anim.SKey,
 		S:        anim.S,
 		Step:     anim.Step,
 		Finish:   anim.Finish,

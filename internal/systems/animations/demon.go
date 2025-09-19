@@ -98,7 +98,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.ItemAction = data.NoItemAction
 		ch.Object.Layer = ch.Layer
 	})
-	sw := reanimator.NewSwitch().
+	tree := reanimator.New().
 		AddAnimation(regen).
 		AddAnimation(idle).
 		AddAnimation(run).
@@ -195,7 +195,6 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 				}
 			}
 			return "idle"
-		})
-	tree := reanimator.New(sw, "regen")
+		}).SetDefault("regen").Finish()
 	return tree
 }

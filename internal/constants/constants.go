@@ -1,23 +1,30 @@
 package constants
 
+import (
+	"gemrunner/internal/data/config"
+	"github.com/gopxl/pixel"
+)
+
 const (
 	Title            = "Gem Runner"
 	Release          = 0
-	Version          = 3
-	Build            = 20250331
+	Version          = 4
+	Build            = 20250930
 	ScreenRatioLimit = 0.8
 
 	// Directories
-	LinuxDir   = "/.local/share/GemRunnerEditor"
-	WinDir     = "/Documents/My Games/GemRunnerEditor"
-	MacDir     = "/Library/Application Support/GemRunnerEditor"
-	PuzzleDir  = "/puzzles"
-	SaveDir    = "/saves"
-	ReplayDir  = "/replays"
-	PuzzleExt  = ".puzzle"
-	SaveExt    = ".savegame"
-	ReplayPath = "%s_%d_%s.replay"
-	Favorites  = ".favorites"
+	ContentDirName = "GemRunner/"
+	LinuxDir       = "/.local/share/" + ContentDirName
+	WinDir         = "/Documents/My Games/" + ContentDirName
+	MacDir         = "/Library/Application Support/" + ContentDirName
+	PuzzleDir      = "puzzles"
+	SaveDir        = "saves"
+	ReplayDir      = "replays"
+	PuzzleExt      = ".puzzle"
+	SaveExt        = ".savegame"
+	ReplayPath     = "%s_%d_%s.replay"
+	Favorites      = ".favorites"
+	ConfigFilename = "config.toml"
 
 	// World Constants
 	TileSize        = 16.
@@ -133,20 +140,28 @@ const (
 
 var (
 	// Config
-	System     string
-	Username   string
-	HomeDir    string
-	ContentDir string
-	PuzzlesDir string
-	SavesDir   string
-	ReplaysDir string
-	ConfigFile string
+	System        string
+	Username      string
+	HomeDir       string
+	ContentDir    string
+	PuzzlesDir    string
+	SavesDir      string
+	ReplaysDir    string
+	ConfigFile    string
+	Configuration config.Configuration
 
 	// Options
-	WinWidth    = 1600.
-	WinHeight   = 900.
-	FrameRate   = 30
 	PickedRatio = 1.
+	Resolutions = []pixel.Vec{
+		//pixel.V(640, 480),
+		pixel.V(1280, 720),
+		pixel.V(1366, 768),
+		pixel.V(1600, 900),
+		pixel.V(1920, 1080),
+		pixel.V(2560, 1440),
+		pixel.V(3840, 2160),
+	}
+	Scanlines int32
 
 	// In Game Vars
 	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}

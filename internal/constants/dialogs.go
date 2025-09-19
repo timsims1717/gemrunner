@@ -6,6 +6,8 @@ const (
 	DialogAddPlayers = "add_players"
 	DialogPlayLocal  = "play_local"
 
+	DialogOptions = "options_menu"
+
 	DialogPauseMenu   = "pause_menu"
 	DialogPlayer1Inv  = "player1_inv"
 	DialogPlayer2Inv  = "player2_inv"
@@ -44,6 +46,7 @@ const (
 
 var DialogKeys = []string{
 	DialogMainMenu,
+	DialogOptions,
 
 	DialogPlayer1Inv,
 	DialogPlayer2Inv,

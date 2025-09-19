@@ -106,10 +106,10 @@ func (t *Tile) SpriteString() string {
 		return constants.ItemDrill + colSuffixTools
 	case BlockFlamethrower:
 		return constants.ItemFlamethrower + colSuffixTools
-	case BlockBomb:
-		return constants.ItemBomb + colSuffixTools
-	case BlockBombLit:
-		return constants.ItemBombLit
+	case BlockBigBomb:
+		return constants.ItemBigBomb + colSuffixTools
+	case BlockBigBombLit:
+		return constants.ItemBigBombLit
 	case BlockPlayer1:
 		return constants.CharPlayer1
 	case BlockPlayer2:
@@ -253,7 +253,7 @@ func (t *Tile) IsRunnable() bool {
 			t.Block == BlockClose ||
 			t.Block == BlockSpike))
 }
- 
+
 // IsBlock used for tile connectivity
 func (t *Tile) IsBlock() bool {
 	return t == nil ||

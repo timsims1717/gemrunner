@@ -65,7 +65,7 @@ func (s *testState) Load(win *pixelgl.Window) {
 	systems.LevelSessionInit()
 	systems.LevelInit(false)
 	systems.UpdateViews()
-	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 }
@@ -77,7 +77,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	data.P4Input.Update(win, viewport.MainCamera.Mat)
 	systems.CursorSystem(true)
 	debug.AddText("Test State")
-	debug.AddText(fmt.Sprintf("Speed: %d", constants.FrameRate))
+	debug.AddText(fmt.Sprintf("Speed: %d", constants.Configuration.Gameplay.FrameRate))
 	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
 	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
 	debug.AddText(fmt.Sprintf("Frame Cycle: %d", data.CurrLevel.FrameCycle))
@@ -101,8 +101,8 @@ func (s *testState) Update(win *pixelgl.Window) {
 		}
 	}
 
-	if reanimator.FRate != constants.FrameRate {
-		reanimator.SetFrameRate(constants.FrameRate)
+	if reanimator.FRate != constants.Configuration.Gameplay.FrameRate {
+		reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	}
 	reanimator.Update()
 
@@ -134,13 +134,13 @@ func (s *testState) Update(win *pixelgl.Window) {
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
-	systems.ShaderSystem()
+	systems.EffectsSystem()
 
 	data.BorderView.Update()
 	data.PuzzleView.Update()
 	data.WorldView.Update()
 	data.PuzzleViewNoShader.Update()
-	//data.ScreenView.Update()
+	data.ScreenView.Update()
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))

@@ -26,16 +26,19 @@ import (
 
 func run() {
 	world.SetTileSize(constants.TileSize)
-	constants.WinWidth = 1920
-	constants.WinHeight = 1080
-	options.RegisterResolution(pixel.V(1920, 1080))
+	for _, res := range constants.Resolutions {
+		options.RegisterResolution(res)
+	}
+	content.LoadConfig()
+	if options.ResolutionIndex >= len(options.Resolutions) {
+		options.ResolutionIndex = 0
+	}
+	options.CurrResolution = options.Resolutions[options.ResolutionIndex]
 	cfg := pixelgl.WindowConfig{
 		Title:  constants.Title,
-		Bounds: pixel.R(0, 0, constants.WinWidth, constants.WinHeight),
+		Bounds: pixel.R(0, 0, options.CurrResolution.X, options.CurrResolution.Y),
 		VSync:  true,
 	}
-	options.BilinearFilter = false
-	options.VSync = true
 	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
@@ -44,13 +47,13 @@ func run() {
 	win.SetCursorVisible(false)
 	viewport.ILockDefault = true
 	viewport.MainCamera = viewport.New(win.Canvas())
-	viewport.MainCamera.SetRect(pixel.R(0, 0, constants.WinWidth, constants.WinHeight))
-	viewport.MainCamera.CamPos = pixel.V(constants.WinWidth*0.5, constants.WinHeight*0.5)
+	viewport.MainCamera.SetRect(pixel.R(0, 0, options.CurrResolution.X, options.CurrResolution.Y))
+	viewport.MainCamera.CamPos = pixel.V(options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5)
 
 	data.ScreenView = viewport.New(nil)
-	data.ScreenView.SetRect(pixel.R(constants.WinWidth*-0.5, constants.WinHeight*-0.5, constants.WinWidth*0.5, constants.WinHeight*0.5))
+	data.ScreenView.SetRect(pixel.R(options.CurrResolution.X*-0.5, options.CurrResolution.Y*-0.5, options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5))
 	data.ScreenView.PortPos = viewport.MainCamera.CamPos
-	data.ScreenView.CamPos = pixel.V(constants.WinWidth*0.5, constants.WinHeight*0.5)
+	data.ScreenView.CamPos = pixel.V(options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5)
 
 	state.Register(constants.MainMenuKey, state.New(states.MainMenuState))
 	state.Register(constants.EditorStateKey, state.New(states.EditorState))
@@ -111,6 +114,9 @@ func run() {
 	systems.InitMainBorder()
 	systems.CursorInit()
 
+	win.Canvas().SetUniform("uOn", &constants.Scanlines)
+	win.Canvas().SetFragmentShader(data.ScreenShader)
+	//data.ScreenView.Canvas.SetUniform("uOn", &constants.Scanlines)
 	//data.ScreenView.Canvas.SetFragmentShader(data.ScreenShader)
 	win.Show()
 	timing.Reset()
@@ -146,11 +152,17 @@ func run() {
 		viewport.MainCamera.Update()
 		state.Draw(win)
 
-		win.SetSmooth(false)
-		debug.DrawText(win)
-		debug.DrawFPS(win)
-		win.SetSmooth(options.BilinearFilter)
+		data.ScreenView.Canvas.SetSmooth(false)
+		debug.DrawText(data.ScreenView.Canvas, options.CurrResolution)
+		debug.DrawFPS(data.ScreenView.Canvas, options.CurrResolution)
+		data.ScreenView.Canvas.SetSmooth(options.BilinearFilter)
 
+		data.ScreenView.Draw(win)
+		if options.Updated {
+			systems.UpdateViews()
+		}
+
+		sfx.MuteMaster((!win.Focused() && constants.Configuration.Audio.MuteUnfocus) || !constants.Configuration.Audio.MasterOn)
 		sfx.MusicPlayer.Update()
 		win.Update()
 	}

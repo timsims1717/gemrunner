@@ -47,6 +47,7 @@ type BasicItem struct {
 	Regen    bool
 	Waiting  bool
 	Counter  int
+	Delay    int
 	Uses     int
 }
 
@@ -145,6 +146,8 @@ type Bomb struct {
 	Draws  []interface{}
 	SymSpr *img.Sprite
 	LitKey string
+	Prefix string
+	Big    bool
 }
 
 type Disguise struct {

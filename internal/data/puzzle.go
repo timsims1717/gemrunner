@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/go-gl/mathgl/mgl32"
@@ -20,6 +21,7 @@ var (
 	BorderView         *viewport.ViewPort
 	ScreenView         *viewport.ViewPort
 	IMDraw             *imdraw.IMDraw
+	ScreenShake        *util.NoiseShaker
 
 	CurrLevelSess *LevelSession
 	CurrLevel     *Level

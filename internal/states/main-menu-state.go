@@ -13,6 +13,7 @@ import (
 	"gemrunner/pkg/options"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/timing"
 	"github.com/gopxl/pixel/pixelgl"
 	pxginput "github.com/timsims1717/pixel-go-input"
 )
@@ -56,20 +57,23 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 	}
 	debug.AddText(fmt.Sprintf("Number of Players: %d", len(data.Players)))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		err := content.LoadReplay("APlayTest_0_2025.02.19.14.09.01.replay")
-		if err != nil {
-			panic(err)
-		}
-		err = systems.OpenPuzzleSet(data.CurrReplay.PuzzleSet + constants.PuzzleExt)
-		if err != nil {
-			panic(err)
-		}
-		data.CurrPuzzleSet.SetTo(data.CurrReplay.PuzzleNum)
-		if data.CurrPuzzleSet.Metadata.NumPlayers < 1 {
-			data.CurrPuzzleSet.Metadata.NumPlayers = data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
-		}
-		systems.PuzzleInit()
-		state.SwitchState(constants.PlayStateKey)
+		//dKey := constants.DialogOptions
+		//load.ReloadDialog(dKey)
+		//systems.CustomizeMainDialog(win, dKey)
+		//systems.UpdateDialogView(ui.Dialogs[dKey])
+		constants.Configuration.Graphics.Resolution++
+		constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
+		content.UpdateConfiguration()
+	}
+	if data.DebugInput.Get("camUp").JustPressed() || data.DebugInput.Get("camUp").Repeated() {
+		data.ScreenView.CamPos.Y += 1000 * timing.DT
+	} else if data.DebugInput.Get("camDown").JustPressed() || data.DebugInput.Get("camDown").Repeated() {
+		data.ScreenView.CamPos.Y -= 1000 * timing.DT
+	}
+	if data.DebugInput.Get("camRight").JustPressed() || data.DebugInput.Get("camRight").Repeated() {
+		data.ScreenView.CamPos.X += 1000 * timing.DT
+	} else if data.DebugInput.Get("camLeft").JustPressed() || data.DebugInput.Get("camLeft").Repeated() {
+		data.ScreenView.CamPos.X -= 1000 * timing.DT
 	}
 
 	// function systems
@@ -105,12 +109,12 @@ func (s *mainMenuState) Draw(win *pixelgl.Window) {
 	systems.DialogDrawSystem(data.ScreenView.Canvas)
 	systems.DrawLayerSystem(data.ScreenView.Canvas, -10)
 	img.Clear()
-	data.ScreenView.Draw(win)
+	//data.ScreenView.Draw(win)
 	systems.TemporarySystem()
 	//data.IMDraw.Clear()
-	if options.Updated {
-		systems.UpdateViews()
-	}
+	//if options.Updated {
+	//	systems.UpdateViews()
+	//}
 }
 
 func (s *mainMenuState) SetAbstract(aState *state.AbstractState) {

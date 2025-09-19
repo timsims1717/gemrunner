@@ -61,6 +61,7 @@ const (
 	TileLiquidUFG = "liquid_lbr"
 	LiquidBubbles = "bubble"
 	LiquidWaves   = "wave"
+	LiquidTiny    = "tiny"
 )
 
 // Characters
@@ -95,12 +96,13 @@ const (
 	ItemDrill        = "drill"
 	ItemFlamethrower = "flamethrower"
 
-	ItemBomb           = "bomb"
-	ItemBombLit        = "bomb_lit"
-	ItemBombRegen      = "bomb_regen"
-	ItemBombCross      = "bomb_cross"
-	ItemBombRegenCross = "bomb_regen_cross"
-	ItemBombLitCross   = "bomb_lit_cross"
+	ItemBigBomb      = "big_bomb"
+	ItemBigBombLit   = "big_bomb_lit"
+	ItemBigBombRegen = "big_bomb_regen"
+
+	ItemSmallBomb      = "small_bomb"
+	ItemSmallBombLit   = "small_bomb_lit"
+	ItemSmallBombRegen = "small_bomb_regen"
 )
 
 // Doodads

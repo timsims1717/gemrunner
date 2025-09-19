@@ -162,7 +162,7 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 	}
 }
 
-func DrawThing(draw interface{}, obj *object.Object, target pixel.Target) {
+func DrawThing(draw any, obj *object.Object, target pixel.Target) {
 	if spr, ok0 := draw.(*pixel.Sprite); ok0 {
 		spr.DrawColorMask(target, obj.Mat, obj.Mask)
 	} else if sprH, ok1 := draw.(*img.Sprite); ok1 {

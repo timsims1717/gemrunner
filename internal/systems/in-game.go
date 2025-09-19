@@ -45,14 +45,14 @@ func InGameSystem() {
 
 func PlayerMetaInput() {
 	if data.P1Input.Get("speedUp").JustPressed() {
-		constants.FrameRate += constants.FrameRateInt
-		if constants.FrameRate > constants.FrameRateMax {
-			constants.FrameRate = constants.FrameRateMax
+		constants.Configuration.Gameplay.FrameRate += constants.FrameRateInt
+		if constants.Configuration.Gameplay.FrameRate > constants.FrameRateMax {
+			constants.Configuration.Gameplay.FrameRate = constants.FrameRateMax
 		}
 	} else if data.P1Input.Get("speedDown").JustPressed() {
-		constants.FrameRate -= constants.FrameRateInt
-		if constants.FrameRate < constants.FrameRateMin {
-			constants.FrameRate = constants.FrameRateMin
+		constants.Configuration.Gameplay.FrameRate -= constants.FrameRateInt
+		if constants.Configuration.Gameplay.FrameRate < constants.FrameRateMin {
+			constants.Configuration.Gameplay.FrameRate = constants.FrameRateMin
 		}
 	}
 	if data.P1Input.Get("kill").JustPressed() {
@@ -128,7 +128,7 @@ func UpdatePlayerInv() {
 						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
 							if a, okA := draw.(*reanimator.Tree); okA {
 								ele.Object.Hidden = false
-								ele.Sprite.Key = a.Default
+								ele.Sprite.Key = a.GetSprite(a.Default).SKey
 							} else if s, okS := draw.(*img.Sprite); okS {
 								ele.Object.Hidden = false
 								ele.Sprite.Key = s.Key
@@ -138,7 +138,7 @@ func UpdatePlayerInv() {
 									ele.Sprite.Key = saSpr.Key
 								} else if saAnim, ok3 := sa[0].(*reanimator.Tree); ok3 {
 									ele.Object.Hidden = false
-									ele.Sprite.Key = saAnim.Default
+									ele.Sprite.Key = saAnim.GetSprite(saAnim.Default).SKey
 								}
 							}
 						}

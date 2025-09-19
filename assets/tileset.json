@@ -2410,36 +2410,23 @@
       "h": 16,
       "w": 16
     },
+
     {
-      "key": "bomb",
+      "key": "big_bomb",
       "x": 560,
       "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "bomb_lit",
+      "key": "big_bomb_lit",
       "x": 576,
       "y": 256,
       "h": 16,
       "w": 16
     },
     {
-      "key": "bomb_cross",
-      "x": 592,
-      "y": 264,
-      "h": 8,
-      "w": 8
-    },
-    {
-      "key": "bomb_regen_cross",
-      "x": 600,
-      "y": 264,
-      "h": 8,
-      "w": 8
-    },
-    {
-      "key": "bomb_regen",
+      "key": "big_bomb_regen",
       "x": 592,
       "y": 256,
       "h": 8,
@@ -2447,7 +2434,7 @@
     },
 
     {
-      "key": "bomb_fuse1",
+      "key": "big_bomb_fuse1",
       "anim": true,
       "x": 576,
       "y": 256,
@@ -2455,7 +2442,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse1",
+      "key": "big_bomb_fuse1",
       "anim": true,
       "x": 608,
       "y": 256,
@@ -2464,7 +2451,7 @@
     },
 
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 624,
       "y": 256,
@@ -2472,7 +2459,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 560,
       "y": 240,
@@ -2480,7 +2467,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 576,
       "y": 240,
@@ -2488,7 +2475,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 592,
       "y": 240,
@@ -2496,7 +2483,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 608,
       "y": 240,
@@ -2504,7 +2491,7 @@
       "w": 16
     },
     {
-      "key": "bomb_fuse2",
+      "key": "big_bomb_fuse2",
       "anim": true,
       "x": 624,
       "y": 240,
@@ -2513,7 +2500,7 @@
     },
 
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 640,
       "y": 272,
@@ -2521,7 +2508,7 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 656,
       "y": 272,
@@ -2529,7 +2516,7 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 672,
       "y": 272,
@@ -2537,7 +2524,7 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 688,
       "y": 272,
@@ -2545,7 +2532,7 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 704,
       "y": 272,
@@ -2553,7 +2540,7 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 720,
       "y": 272,
@@ -2561,10 +2548,204 @@
       "w": 16
     },
     {
-      "key": "bomb_regen_anim",
+      "key": "big_bomb_regen_anim",
       "anim": true,
       "x": 560,
       "y": 256,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "small_bomb",
+      "x": 576,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_lit",
+      "x": 592,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen",
+      "x": 592,
+      "y": 264,
+      "h": 6,
+      "w": 6
+    },
+
+    {
+      "key": "small_bomb_fuse1",
+      "anim": true,
+      "x": 592,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse1",
+      "anim": true,
+      "x": 608,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 624,
+      "y": 272,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 560,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 576,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 592,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 608,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_fuse2",
+      "anim": true,
+      "x": 624,
+      "y": 288,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 640,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 656,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 672,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 688,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 704,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 720,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_regen_anim",
+      "anim": true,
+      "x": 560,
+      "y": 208,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 640,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 656,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 672,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 688,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 704,
+      "y": 192,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "smoke_regen_anim",
+      "anim": true,
+      "x": 720,
+      "y": 192,
       "h": 16,
       "w": 16
     },
@@ -4352,138 +4533,138 @@
 
     {
       "key": "chain",
-      "x": 640,
-      "y": 192,
+      "x": 864,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "reeds",
-      "x": 656,
-      "y": 192,
+      "x": 880,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "flowers",
-      "x": 672,
-      "y": 192,
+      "x": 896,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "moss",
-      "x": 688,
-      "y": 192,
+      "x": 912,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "grass",
-      "x": 704,
-      "y": 192,
+      "x": 928,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "skull",
-      "x": 720,
-      "y": 192,
+      "x": 944,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "dots",
-      "x": 736,
-      "y": 192,
+      "x": 960,
+      "y": 32,
       "h": 16,
       "w": 16
     },
     {
       "key": "boulder",
-      "x": 640,
-      "y": 176,
+      "x": 864,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "cactus1",
-      "x": 656,
-      "y": 176,
+      "x": 880,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "cactus2",
-      "x": 672,
-      "y": 176,
+      "x": 896,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "cattail",
-      "x": 688,
-      "y": 176,
+      "x": 912,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "vine",
-      "x": 704,
-      "y": 176,
+      "x": 928,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "nest",
-      "x": 720,
-      "y": 176,
+      "x": 944,
+      "y": 16,
       "h": 16,
       "w": 16
     },
     {
       "key": "mushroom1",
-      "x": 640,
-      "y": 160,
+      "x": 864,
+      "y": 0,
       "h": 16,
       "w": 16
     },
     {
       "key": "mushroom2",
-      "x": 656,
-      "y": 160,
+      "x": 880,
+      "y": 0,
       "h": 16,
       "w": 16
     },
     {
       "key": "gear",
       "anim": true,
-      "x": 672,
-      "y": 160,
+      "x": 896,
+      "y": 0,
       "h": 16,
       "w": 16
     },
     {
       "key": "gear",
       "anim": true,
-      "x": 688,
-      "y": 160,
+      "x": 912,
+      "y": 0,
       "h": 16,
       "w": 16
     },
     {
       "key": "gear",
       "anim": true,
-      "x": 704,
-      "y": 160,
+      "x": 928,
+      "y": 0,
       "h": 16,
       "w": 16
     },
     {
       "key": "gear",
       "anim": true,
-      "x": 720,
-      "y": 160,
+      "x": 944,
+      "y":  0,
       "h": 16,
       "w": 16
     },
@@ -9256,7 +9437,7 @@
       "w": 16
     },
     {
-      "key": "bomb_blue",
+      "key": "big_bomb_blue",
       "x": 64,
       "y": 192,
       "h": 16,
@@ -9345,7 +9526,7 @@
       "w": 16
     },
     {
-      "key": "bomb_green",
+      "key": "big_bomb_green",
       "x": 160,
       "y": 192,
       "h": 16,
@@ -9434,7 +9615,7 @@
       "w": 16
     },
     {
-      "key": "bomb_purple",
+      "key": "big_bomb_purple",
       "x": 256,
       "y": 192,
       "h": 16,
@@ -9523,7 +9704,7 @@
       "w": 16
     },
     {
-      "key": "bomb_orange",
+      "key": "big_bomb_orange",
       "x": 352,
       "y": 192,
       "h": 16,

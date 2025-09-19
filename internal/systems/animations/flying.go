@@ -36,7 +36,7 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.ItemAction = data.NoItemAction
 		ch.Object.Layer = ch.Layer
 	})
-	return reanimator.New(reanimator.NewSwitch().
+	return reanimator.New().
 		AddAnimation(idle).
 		AddAnimation(flying).
 		AddAnimation(boom).
@@ -90,5 +90,5 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 			default:
 				return "flying"
 			}
-		}), "flying")
+		}).SetDefault("flying").Finish()
 }

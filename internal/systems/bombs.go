@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/data/death"
@@ -17,14 +18,16 @@ import (
 	"math"
 )
 
-func CreateBomb(pos pixel.Vec, tile *data.Tile) {
+func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	obj := object.New().WithID(tile.SpriteString())
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 14
 	e := myecs.Manager.NewEntity()
 	theBomb := &data.Bomb{
-		Item: &data.BasicItem{},
+		Item:   &data.BasicItem{},
+		Prefix: prefix,
+		Big:    big,
 	}
 	theBomb.Item.Object = obj
 	theBomb.Item.Entity = e
@@ -32,7 +35,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 	theBomb.Item.Metadata.Timer = -1
 	theBomb.Item.Origin = tile.Coords
 	theBomb.Item.Color = tile.Metadata.Color
-	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "bomb_regen_anim", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
+	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], fmt.Sprintf("%s_bomb_regen_anim", prefix), []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
 		case 7, 8:
@@ -53,7 +56,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 		theBomb.Item.Regen = false
 		theBomb.SymSpr.ToggleHidden(false)
 	})
-	theBomb.Item.Anim = reanimator.New(reanimator.NewSwitch().
+	theBomb.Item.Anim = reanimator.New().
 		AddAnimation(regenA).
 		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], tile.SpriteString(), reanimator.Hold)).
 		AddNull("none").
@@ -65,20 +68,20 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 			} else {
 				return "bomb"
 			}
-		}), "bomb")
+		}).
+		SetDefault("bomb").Finish()
 	theBomb.Draws = append(theBomb.Draws, theBomb.Item.Anim)
 	name := "Bomb"
-	litKey := constants.ItemBombLit
-	if tile.Metadata.BombCross && tile.Metadata.Regenerate {
-		theBomb.SymSpr = img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
-		name = "Bomb Cross"
-		litKey = constants.ItemBombLitCross
-	} else if tile.Metadata.BombCross {
-		theBomb.SymSpr = img.NewSprite(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
-		name = "Bomb Cross"
-		litKey = constants.ItemBombLitCross
-	} else if tile.Metadata.Regenerate {
-		theBomb.SymSpr = img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2))
+	litKey := constants.ItemBigBombLit
+	regenKey := constants.ItemBigBombRegen
+	symOff := pixel.V(0, -2)
+	if !big {
+		litKey = constants.ItemSmallBombLit
+		regenKey = constants.ItemSmallBombRegen
+		symOff = pixel.V(-1, -3)
+	}
+	if tile.Metadata.Regenerate {
+		theBomb.SymSpr = img.NewSprite(regenKey, constants.TileBatch).WithOffset(symOff)
 	}
 	if theBomb.SymSpr != nil {
 		theBomb.Draws = append(theBomb.Draws, theBomb.SymSpr)
@@ -87,6 +90,23 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile) {
 	theBomb.LitKey = litKey
 	theBomb.Item.PickUp = data.NewPickUp(5, tile.Metadata.Color)
 	theBomb.Item.Action = BombAction(theBomb)
+	theBomb.Item.Delay = constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2)
+	if theBomb.Item.Metadata.Regenerate {
+		theBomb.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if theBomb.Item.Waiting {
+				if reanimator.FrameSwitch {
+					theBomb.Item.Counter++
+				}
+				if theBomb.Item.Counter > theBomb.Item.Delay && data.CurrLevel.FrameChange {
+					theBomb.Item.Object.Pos = world.MapToWorld(theBomb.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					theBomb.Item.Regen = true
+					theBomb.Item.Waiting = false
+					theBomb.Item.Object.Hidden = false
+					theBomb.Item.Delay = constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2)
+				}
+			}
+		}))
+	}
 
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -113,29 +133,19 @@ func BombAction(theBomb *data.Bomb) *data.Interact {
 }
 
 func LightBomb(theBomb *data.Bomb, tile *data.Tile) {
+	theBomb.SymSpr.ToggleHidden(true)
 	if theBomb.Item.Metadata.Regenerate {
-		theBomb.SymSpr.ToggleHidden(true)
-		counter := 0
+		//theBomb.SymSpr.ToggleHidden(true)
+		theBomb.Item.Counter = 0
 		theBomb.Item.Waiting = true
-		theBomb.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
-			if reanimator.FrameSwitch {
-				counter++
-			}
-			delay := constants.BombFuse + (constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2))
-			if counter > delay && data.CurrLevel.FrameChange {
-				theBomb.Item.Object.Pos = world.MapToWorld(theBomb.Item.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
-				theBomb.Item.Regen = true
-				theBomb.Item.Waiting = false
-				theBomb.Item.Entity.RemoveComponent(myecs.Update)
-			}
-		}))
 	} else {
 		myecs.Manager.DisposeEntity(theBomb.Item.Entity)
 	}
-	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, data.TileMetadata{BombCross: theBomb.Item.Metadata.BombCross})
+	theBomb.Item.Delay = constants.BombFuse + (constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2))
+	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, theBomb.Prefix, theBomb.Big, false, 0)
 }
 
-func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
+func CreateLitBomb(pos pixel.Vec, key, prefix string, big, regenerate bool, regenDelay int) {
 	counter := 0
 	obj := object.New().WithID(key)
 	obj.Pos = pos
@@ -144,22 +154,18 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 	waiting := false
 	regen := false
 	var symbolSprite *img.Sprite
-	if metadata.BombCross && metadata.Regenerate {
-		symbolSprite = img.NewSprite(constants.ItemBombRegenCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
-	} else if metadata.BombCross {
-		symbolSprite = img.NewSprite(constants.ItemBombCross, constants.TileBatch).WithOffset(pixel.V(0, -2))
-	} else if metadata.Regenerate {
-		symbolSprite = img.NewSprite(constants.ItemBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2))
+	if regenerate {
+		symbolSprite = img.NewSprite(constants.ItemBigBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2))
 	}
 	//fuseSound := sfx.SoundPlayer.PlaySound(constants.SFXBombLight, 0)
 	e := myecs.Manager.NewEntity()
-	fuse1 := reanimator.NewBatchAnimation("fuse1", img.Batchers[constants.TileBatch], "bomb_fuse1", reanimator.Loop)
+	fuse1 := reanimator.NewBatchAnimation("fuse1", img.Batchers[constants.TileBatch], fmt.Sprintf("%s_bomb_fuse1", prefix), reanimator.Loop)
 	fuse1.SetTriggerAll(func() {
 		counter++
 	})
-	fuse2 := reanimator.NewBatchAnimation("fuse2", img.Batchers[constants.TileBatch], "bomb_fuse2", reanimator.Tran)
+	fuse2 := reanimator.NewBatchAnimation("fuse2", img.Batchers[constants.TileBatch], fmt.Sprintf("%s_bomb_fuse2", prefix), reanimator.Tran)
 	fuse2.SetEndTrigger(func() {
-		if metadata.Regenerate {
+		if regenerate {
 			obj.Hidden = true
 			waiting = true
 			counter = 0
@@ -167,7 +173,7 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 				if reanimator.FrameSwitch {
 					counter++
 				}
-				if counter > constants.ItemRegen*(metadata.RegenDelay+2) && data.CurrLevel.FrameChange {
+				if counter > constants.ItemRegen*(regenDelay+2) && data.CurrLevel.FrameChange {
 					obj.Hidden = false
 					counter = 0
 					waiting = false
@@ -178,9 +184,9 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 		} else {
 			myecs.Manager.DisposeEntity(e)
 		}
-		CreateExplosion(pos, metadata.BombCross, nil)
+		CreateExplosion(pos, big, nil)
 	})
-	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "bomb_regen_anim", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
+	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], fmt.Sprintf("%s_bomb_regen_anim", prefix), []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
 		case 7, 8:
@@ -201,7 +207,7 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 		regen = false
 		symbolSprite.ToggleHidden(false)
 	})
-	tree := reanimator.New(reanimator.NewSwitch().
+	tree := reanimator.New().
 		AddAnimation(fuse1).
 		AddAnimation(fuse2).
 		AddAnimation(regenA).
@@ -216,7 +222,7 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 			} else {
 				return "fuse1"
 			}
-		}), "fuse1")
+		}).SetDefault("fuse1").Finish()
 	draws := []interface{}{tree}
 	if symbolSprite != nil {
 		draws = append(draws, symbolSprite)
@@ -228,33 +234,21 @@ func CreateLitBomb(pos pixel.Vec, key string, metadata data.TileMetadata) {
 	e.AddComponent(myecs.LvlElement, struct{}{})
 }
 
-func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
+func CreateExplosion(pos pixel.Vec, big bool, fuseSound *uuid.UUID) {
 	var coords []world.Coords
 	x, y := world.WorldToMap(pos.X, pos.Y)
 
-	if cross {
-		for n := y - 3; n < y+4; n++ {
-			if n == y {
-				for m := x - 3; m < x+4; m++ {
-					coords = append(coords, world.NewCoords(m, n))
-				}
-			} else {
-				coords = append(coords, world.NewCoords(x, n))
+	for n := y - 2; n < y+3; n++ {
+		if n == y {
+			for m := x - 2; m < x+3; m++ {
+				coords = append(coords, world.NewCoords(m, n))
 			}
-		}
-	} else {
-		for n := y - 2; n < y+3; n++ {
-			if n == y {
-				for m := x - 2; m < x+3; m++ {
-					coords = append(coords, world.NewCoords(m, n))
-				}
-			} else if n == y-1 || n == y+1 {
-				for m := x - 1; m < x+2; m++ {
-					coords = append(coords, world.NewCoords(m, n))
-				}
-			} else {
-				coords = append(coords, world.NewCoords(x, n))
+		} else if n == y-1 || n == y+1 {
+			for m := x - 1; m < x+2; m++ {
+				coords = append(coords, world.NewCoords(m, n))
 			}
+		} else {
+			coords = append(coords, world.NewCoords(x, n))
 		}
 	}
 	var blownCoords []world.Coords
@@ -263,103 +257,35 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 		r := 0.
 		flip := false
 		flop := false
-		if cross {
-			if c.X == x && c.Y == y {
-				key = "exp_cross"
-			} else if (c.X == x && util.Abs(c.Y-y) < 3) ||
-				(c.Y == y && util.Abs(c.X-x) < 3) {
-				key = "exp_line"
-			}
-			if c.X == x && c.Y != y { // vert line
-				if c.Y < y { // bottom of cross
-					flop = true
-				}
-			} else if c.Y == y && c.X != x { // horiz line
-				r = math.Pi * -0.5
-				if c.X < x { // left of cross
-					r = math.Pi * 0.5
-				}
-			}
-		} else {
-			if c.X == x && c.Y == y {
-				key = "exp_center"
-			} else if (c.X == x && util.Abs(c.Y-y) == 1) ||
-				(c.Y == y && util.Abs(c.X-x) == 1) {
-				key = "exp_tee"
-			} else if util.Abs(c.X-x) == 1 && util.Abs(c.Y-y) == 1 {
-				key = "exp_corner"
-			}
-			if c.X == x && c.Y != y { // vert line
-				if c.Y < y { // bottom
-					flop = true
-				}
-			} else if c.Y == y && c.X != x { // horiz line
-				r = math.Pi * -0.5
-				if c.X < x {
-					r = math.Pi * 0.5
-				}
-			} else if c.X > x && c.Y > y { // top right
-				flip = true
-			} else if c.X > x && c.Y < y { // bottom right
-				flip = true
-				flop = true
-			} else if c.X < x && c.Y < y { // bottom left
+		if c.X == x && c.Y == y {
+			key = "exp_center"
+		} else if (c.X == x && util.Abs(c.Y-y) == 1) ||
+			(c.Y == y && util.Abs(c.X-x) == 1) {
+			key = "exp_tee"
+		} else if util.Abs(c.X-x) == 1 && util.Abs(c.Y-y) == 1 {
+			key = "exp_corner"
+		}
+		if c.X == x && c.Y != y { // vert line
+			if c.Y < y { // bottom
 				flop = true
 			}
+		} else if c.Y == y && c.X != x { // horiz line
+			r = math.Pi * -0.5
+			if c.X < x {
+				r = math.Pi * 0.5
+			}
+		} else if c.X > x && c.Y > y { // top right
+			flip = true
+		} else if c.X > x && c.Y < y { // bottom right
+			flip = true
+			flop = true
+		} else if c.X < x && c.Y < y { // bottom left
+			flop = true
 		}
 		// destroy turf
 		tile := data.CurrLevel.Get(c.X, c.Y)
 		if tile != nil {
-		outSwitch:
-			switch {
-			default:
-				if util.Abs(c.X-x)+util.Abs(c.Y-y) > 1 {
-					if c.X == x {
-						if c.Y > y {
-							for tY := c.Y - 1; tY > y; tY-- {
-								tt := data.CurrLevel.Get(x, tY)
-								if tt.Block == data.BlockBedrock {
-									break outSwitch
-								}
-							}
-						} else {
-							for tY := c.Y + 1; tY < y; tY++ {
-								tt := data.CurrLevel.Get(x, tY)
-								if tt.Block == data.BlockBedrock {
-									break outSwitch
-								}
-							}
-						}
-					} else if c.Y == y {
-						if c.X > x {
-							for tX := c.X - 1; tX > x; tX-- {
-								tt := data.CurrLevel.Get(tX, y)
-								if tt.Block == data.BlockBedrock {
-									break outSwitch
-								}
-							}
-						} else {
-							for tX := c.X + 1; tX < x; tX++ {
-								tt := data.CurrLevel.Get(tX, y)
-								if tt.Block == data.BlockBedrock {
-									break outSwitch
-								}
-							}
-						}
-					} else {
-						tX := c.X
-						tY := c.Y
-						t1 := data.CurrLevel.Get(tX, y)
-						t2 := data.CurrLevel.Get(x, tY)
-						if t1.Block == data.BlockBedrock && t2.Block == data.BlockBedrock {
-							break outSwitch
-						}
-					}
-				}
-				if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockClose {
-					tile.Flags.Collapse = true
-					tile.Counter = constants.CollapseCounter
-				}
+			if DestroyTile(tile, x, y, big) {
 				blownCoords = append(blownCoords, tile.Coords)
 			}
 		}
@@ -400,21 +326,120 @@ func CreateExplosion(pos pixel.Vec, cross bool, fuseSound *uuid.UUID) {
 			}
 		}
 	}
-	// light other bombs
+	// light or destroy other bombs
 	for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
 		obj, okO := resultB.Components[myecs.Object].(*object.Object)
 		b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
 		if okO && okB && !obj.Hidden && !b.Item.Waiting && !b.Item.Regen {
 			chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
-				tile := data.CurrLevel.Get(chX, chY)
-				obj.Pos.X = tile.Object.Pos.X
-				obj.Pos.Y = tile.Object.Pos.Y
-				LightBomb(b, tile)
+				if big {
+					if b.Item.Metadata.Regenerate {
+						b.SymSpr.ToggleHidden(true)
+						b.Item.Counter = 0
+						b.Item.Waiting = true
+					} else {
+						myecs.Manager.DisposeEntity(b.Item.Entity)
+					}
+				} else {
+					tile := data.CurrLevel.Get(chX, chY)
+					obj.Pos.X = tile.Object.Pos.X
+					obj.Pos.Y = tile.Object.Pos.Y
+					LightBomb(b, tile)
+				}
+			}
+		}
+	}
+	if big {
+		// destroy all items
+		for _, resultB := range myecs.Manager.Query(myecs.IsItem) {
+			obj, okO := resultB.Components[myecs.Object].(*object.Object)
+			item, okI := resultB.Components[myecs.Item].(*data.BasicItem)
+			if okO && okI && !obj.Hidden && !item.Waiting && !item.Regen {
+				chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+				if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
+					if item.Metadata.Regenerate {
+						item.Counter = 0
+						item.Waiting = true
+					} else {
+						myecs.Manager.DisposeEntity(item.Entity)
+					}
+				}
+			}
+		}
+		// destroy all gems
+		for _, resultB := range myecs.Manager.Query(myecs.IsGem) {
+			obj, okO := resultB.Components[myecs.Object].(*object.Object)
+			if okO {
+				chX, chY := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+				if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
+					myecs.Manager.DisposeEntity(resultB.Entity)
+				}
 			}
 		}
 	}
 	// sfx
 	sfx.SoundPlayer.KillSound(fuseSound)
 	sfx.SoundPlayer.PlaySound(constants.SFXBombBlow, 0)
+	ShakeScreen()
+}
+
+// DestroyTile checks the tile to see if it gets blown up. If it is big, it will
+// always be permanently destroyed. Otherwise, only normal tiles get temporarily
+// collapsed, and bedrock can block it.
+func DestroyTile(tile *data.Tile, x, y int, big bool) bool {
+	c := tile.Coords
+	if big {
+		tile.Block = data.BlockEmpty
+		return true
+	} else {
+		if util.Abs(c.X-x)+util.Abs(c.Y-y) > 1 {
+			if c.X == x {
+				if c.Y > y {
+					for tY := c.Y - 1; tY > y; tY-- {
+						tt := data.CurrLevel.Get(x, tY)
+						if tt.Block == data.BlockBedrock {
+							return false
+						}
+					}
+				} else {
+					for tY := c.Y + 1; tY < y; tY++ {
+						tt := data.CurrLevel.Get(x, tY)
+						if tt.Block == data.BlockBedrock {
+							return false
+						}
+					}
+				}
+			} else if c.Y == y {
+				if c.X > x {
+					for tX := c.X - 1; tX > x; tX-- {
+						tt := data.CurrLevel.Get(tX, y)
+						if tt.Block == data.BlockBedrock {
+							return false
+						}
+					}
+				} else {
+					for tX := c.X + 1; tX < x; tX++ {
+						tt := data.CurrLevel.Get(tX, y)
+						if tt.Block == data.BlockBedrock {
+							return false
+						}
+					}
+				}
+			} else {
+				tX := c.X
+				tY := c.Y
+				t1 := data.CurrLevel.Get(tX, y)
+				t2 := data.CurrLevel.Get(x, tY)
+				if t1.Block == data.BlockBedrock && t2.Block == data.BlockBedrock {
+					return false
+				}
+			}
+		}
+		if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockClose {
+			tile.Flags.Collapse = true
+			tile.Counter = constants.CollapseCounter
+		}
+		return true
+	}
 }

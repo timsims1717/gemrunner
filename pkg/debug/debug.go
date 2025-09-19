@@ -2,7 +2,6 @@ package debug
 
 import (
 	"github.com/gopxl/pixel"
-	"github.com/gopxl/pixel/pixelgl"
 )
 
 var (
@@ -19,10 +18,10 @@ func Initialize(v *pixel.Vec) {
 	InitializeFPS()
 }
 
-func Draw(win *pixelgl.Window) {
-	DrawLines(win)
-	DrawText(win)
-	DrawFPS(win)
+func Draw(target pixel.Target, dim pixel.Vec) {
+	DrawLines(target)
+	DrawText(target, dim)
+	DrawFPS(target, dim)
 }
 
 func Clear() {

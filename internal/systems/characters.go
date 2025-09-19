@@ -230,7 +230,7 @@ func PlayerPortal(layer int, pos pixel.Vec) {
 	b.SetEndTrigger(func() {
 		myecs.Manager.DisposeEntity(m)
 	})
-	anim := reanimator.New(reanimator.NewSwitch().
+	anim := reanimator.New().
 		AddAnimation(a).
 		AddAnimation(b).
 		SetChooseFn(func() string {
@@ -239,7 +239,7 @@ func PlayerPortal(layer int, pos pixel.Vec) {
 			} else {
 				return "portalClose"
 			}
-		}), "portal")
+		}).SetDefault("portal").Finish()
 	m.AddComponent(myecs.Object, obj)
 	m.AddComponent(myecs.Animated, anim)
 	m.AddComponent(myecs.Drawable, anim)

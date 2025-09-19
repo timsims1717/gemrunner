@@ -17,9 +17,11 @@ const (
 	ButtonElement = iota
 	CheckboxElement
 	ContainerElement
+	DropdownElement
 	InputElement
 	MultiLineInputElement
 	ScrollElement
+	SliderElement
 	SpriteElement
 	TextElement
 	CustomElement
@@ -29,9 +31,11 @@ var elementTypeStrings = map[ElementType]string{
 	ButtonElement:         "button",
 	CheckboxElement:       "checkbox",
 	ContainerElement:      "container",
+	DropdownElement:       "dropdown",
 	InputElement:          "input",
 	MultiLineInputElement: "multiline",
 	ScrollElement:         "scroll",
+	SliderElement:         "slider",
 	SpriteElement:         "sprite",
 	TextElement:           "text",
 	CustomElement:         "custom",
@@ -41,9 +45,11 @@ var elementTypeIDs = map[string]ElementType{
 	"button":    ButtonElement,
 	"checkbox":  CheckboxElement,
 	"container": ContainerElement,
+	"dropdown":  DropdownElement,
 	"input":     InputElement,
 	"multiline": MultiLineInputElement,
 	"scroll":    ScrollElement,
+	"slider":    SliderElement,
 	"sprite":    SpriteElement,
 	"text":      TextElement,
 	"custom":    CustomElement,
@@ -80,6 +86,7 @@ type ElementConstructor struct {
 	Text        string               `json:"text,omitempty"`
 	HelpText    string               `json:"helpText,omitempty"`
 	Color       pixel.RGBA           `json:"color,omitempty"`
+	Background  pixel.RGBA           `json:"background,omitempty"`
 	Position    pixel.Vec            `json:"pos"`
 	CanFocus    bool                 `json:"canFocus,omitempty"`
 	Left        string               `json:"left,omitempty"`
@@ -89,6 +96,9 @@ type ElementConstructor struct {
 	ElementType ElementType          `json:"type"`
 	SubElements []ElementConstructor `json:"elements,omitempty"`
 	Anchor      pixel.Anchor         `json:"anchor,omitempty"`
+	Min         int                  `json:"min"`
+	Max         int                  `json:"max"`
+	Interval    int                  `json:"interval"`
 }
 
 type Element struct {
@@ -111,30 +121,36 @@ type Element struct {
 
 	ElementType ElementType
 
-	Checked    bool
-	Value      string
+	Checked  bool
+	Value    string
+	IntValue int
+	Min      int
+	Max      int
+	Interval int
+	//FloatValue float64
 	InFocus    bool
 	Text       *typeface.Text
 	CaretIndex int
 	CaretObj   *object.Object
-	InputType  InputType
+	InputType  ValueType
 	MultiLine  bool
 
-	Border   *Border
-	ViewPort *viewport.ViewPort
-	Layer    int
-	Elements []*Element
-	Focused  string
+	Border     *Border
+	ViewPort   *viewport.ViewPort
+	Layer      int
+	Elements   []*Element
+	Focused    string
+	Background pixel.RGBA
 
 	Bar          *Element
 	ScrollUp     *Element
 	ScrollDown   *Element
 	ButtonHeight float64
-	YTop         float64
-	YBot         float64
+	Top          float64
+	Bot          float64
 }
 
-type InputType int
+type ValueType int
 
 const (
 	AlphaNumeric = iota

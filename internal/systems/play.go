@@ -72,7 +72,7 @@ func Restart() {
 	LevelInit(record)
 	UpdateViews()
 	data.EditorDraw = false
-	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 	go content.SaveSaveGame()
@@ -88,7 +88,7 @@ func GoToLevel(i int) {
 	LevelInit(record)
 	UpdateViews()
 	data.EditorDraw = false
-	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 	go content.SaveSaveGame()
@@ -104,7 +104,7 @@ func NextLevel() {
 	LevelInit(record)
 	UpdateViews()
 	data.EditorDraw = false
-	reanimator.SetFrameRate(constants.FrameRate)
+	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
 	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
 	go content.SaveSaveGame()

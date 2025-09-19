@@ -9,7 +9,6 @@ import (
 	"golang.org/x/image/colornames"
 	"image/color"
 	"math"
-	"math/rand"
 )
 
 var (
@@ -21,6 +20,7 @@ type ViewPort struct {
 	Canvas     *pixelgl.Canvas
 	Rect       pixel.Rect
 	CamPos     pixel.Vec
+	Offset     pixel.Vec
 	PostCamPos pixel.Vec
 	Zoom       float64
 	TargetZoom float64
@@ -40,9 +40,6 @@ type ViewPort struct {
 	interX *gween.Sequence
 	interY *gween.Sequence
 	interZ *gween.Sequence
-	shakeX *gween.Tween
-	shakeY *gween.Tween
-	shakeZ *gween.Tween
 	velX   float64
 	velY   float64
 	velZ   float64
@@ -88,29 +85,7 @@ func (v *ViewPort) Update() {
 	if fin && v.lock {
 		v.lock = false
 	}
-	v.PostCamPos = v.CamPos
-	if v.shakeX != nil {
-		x, finSX := v.shakeX.Update(timing.DT)
-		v.PostCamPos.X += x
-		if finSX {
-			v.shakeX = nil
-		}
-	}
-	if v.shakeY != nil {
-		y, finSY := v.shakeY.Update(timing.DT)
-		v.PostCamPos.Y += y
-		if finSY {
-			v.shakeY = nil
-		}
-	}
-	v.PostZoom = v.Zoom
-	if v.shakeZ != nil {
-		z, finSZ := v.shakeZ.Update(timing.DT)
-		v.PostZoom += z
-		if finSZ {
-			v.shakeZ = nil
-		}
-	}
+	v.PostCamPos = v.CamPos.Add(v.Offset)
 	v.PostPortPos = v.PortPos
 	if v.iLock {
 		v.PostCamPos.X = math.Round(v.PostCamPos.X)
@@ -381,25 +356,6 @@ func (v *ViewPort) SetILock(b bool) {
 
 func (v *ViewPort) SetColor(col color.RGBA) {
 	v.Mask = col
-}
-
-func (v *ViewPort) Shake(dur, freq float64) {
-	v.shakeX = gween.New((rand.Float64()-0.5)*8., 0., dur, SetSine(freq))
-	v.shakeY = gween.New((rand.Float64()-0.5)*8., 0., dur, SetSine(freq))
-}
-
-func (v *ViewPort) ZoomShake(dur, freq float64) {
-	v.shakeZ = gween.New(0.02, 0., dur, SetSine(freq))
-}
-
-func SetSine(freq float64) func(float64, float64, float64, float64) float64 {
-	return func(t, b, c, d float64) float64 {
-		return b * math.Pow(math.E, -math.Abs(c)*t) * math.Sin(freq*math.Pi*t)
-	}
-}
-
-func Sine(t, b, c, d float64) float64 {
-	return b * math.Pow(math.E, -math.Abs(c)*t) * math.Sin(10.*math.Pi*t)
 }
 
 func (v *ViewPort) PointInside(vec pixel.Vec) bool {

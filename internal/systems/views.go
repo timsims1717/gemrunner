@@ -4,12 +4,17 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/ui"
+	"gemrunner/pkg/options"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 )
 
 func UpdateViews() {
+	data.ScreenView.SetRect(pixel.R(options.CurrResolution.X*-0.5, options.CurrResolution.Y*-0.5, options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5))
+	data.ScreenView.PortPos = viewport.MainCamera.CamPos
+	data.ScreenView.CamPos = pixel.V(options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5)
+
 	width := float64(constants.PuzzleWidth)
 	height := float64(constants.PuzzleHeight)
 	if data.CurrLevel != nil {
@@ -37,8 +42,8 @@ func UpdateViews() {
 		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
 		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
 		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
-		data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
-		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
+		//data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
+		//data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
 		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 
@@ -76,9 +81,10 @@ func UpdateViews() {
 }
 
 func UpdateDialogView(dialog *ui.Dialog) {
-	posRatX := viewport.MainCamera.Rect.W() / constants.WinWidth
-	posRatY := viewport.MainCamera.Rect.H() / constants.WinHeight
-	nPos := pixel.V(dialog.Pos.X*posRatX, dialog.Pos.Y*posRatY)
+	//posRatX := data.ScreenView.Rect.W() / options.CurrResolution.X
+	//posRatY := data.ScreenView.Rect.H() / options.CurrResolution.Y
+	//nPos := pixel.V(dialog.Pos.X*posRatX, dialog.Pos.Y*posRatY)
+	nPos := dialog.Pos.Scaled(constants.PickedRatio)
 	if !dialog.NoBorder {
 		dialog.BorderVP.PortPos = viewport.MainCamera.PostCamPos.Add(nPos)
 		dialog.BorderVP.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
