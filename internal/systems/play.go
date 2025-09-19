@@ -12,11 +12,11 @@ import (
 )
 
 func PlayPauseSystem() {
-	if data.MenuInput.Get("escape").JustPressed() ||
+	if !ui.DialogStackOpen && (data.MenuInput.Get("escape").JustPressed() ||
 		data.P1Input.Get("pause").JustPressed() ||
 		data.P2Input.Get("pause").JustPressed() ||
 		data.P3Input.Get("pause").JustPressed() ||
-		data.P4Input.Get("pause").JustPressed() {
+		data.P4Input.Get("pause").JustPressed()) {
 		data.MenuInput.Get("escape").Consume()
 		data.P1Input.Get("pause").Consume()
 		data.P2Input.Get("pause").Consume()
@@ -31,6 +31,9 @@ func PlaySystem() {
 		data.CurrLevel.SaveRecord = true
 	}
 	data.CurrLevelSess.TimePlayed = time.Since(data.CurrLevelSess.LevelStart)
+	if constants.Configuration.Gameplay.ShowTimer {
+		UpdatePuzzleTimer()
+	}
 	allDead := true
 	for _, p := range data.CurrLevel.Players {
 		if p == nil {

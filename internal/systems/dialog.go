@@ -136,6 +136,17 @@ func UpdateSubElements(elements []*ui.Element, vp *viewport.ViewPort, layer int)
 			} else {
 				nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
 			}
+		case ui.SliderElement:
+			e.Bar.Object.Layer = nextLayer
+			nextLayer++
+			e.Object.Layer = nextLayer
+			e.Layer = nextLayer
+			if !e.Object.Hidden && !e.Object.Unloaded {
+				e.ViewPort.Update()
+				nextLayer = UpdateSubElements(e.Elements, e.ViewPort, e.Layer)
+			} else {
+				nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
+			}
 		}
 	}
 	return nextLayer
@@ -182,6 +193,12 @@ func UpdateSubElementLayers(elements []*ui.Element, layer int) int {
 			e.Object.Layer = nextLayer
 			e.Layer = nextLayer
 			nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
+		case ui.SliderElement:
+			e.Bar.Object.Layer = nextLayer
+			nextLayer++
+			e.Object.Layer = nextLayer
+			e.Layer = nextLayer
+			nextLayer = UpdateSubElementLayers(e.Elements, e.Layer)
 		}
 	}
 	return nextLayer
@@ -223,6 +240,11 @@ func UpdateSubElementLayer99(elements []*ui.Element) {
 		case ui.ContainerElement:
 			e.Object.Layer = 99
 			e.Layer = 99
+			UpdateSubElementLayer99(e.Elements)
+		case ui.SliderElement:
+			e.Object.Layer = 99
+			e.Layer = 99
+			e.Bar.Object.Layer = 99
 			UpdateSubElementLayer99(e.Elements)
 		}
 	}
@@ -307,41 +329,7 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		img.Clear()
 		// draw border
 		DrawBorder(element.Object, element.Border, vp.Canvas)
-	//case ui.SliderElement:
-	//	DrawBorder(element.Object, element.Border, vp.Canvas)
-	default:
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas)
-	}
-}
-
-// DrawSubElementsOutside draws the border and sub elements of ui elements
-// with sub elements outside the dialog.
-func DrawSubElementsOutside(element *ui.Element, target pixel.Target) {
-	if element == nil || element.Object.Hidden || element.Object.Unloaded {
-		return
-	}
-	switch element.ElementType {
-	case ui.DropdownElement:
-		// draw dropdown
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		for _, e := range element.Elements {
-			DrawSubElements(e, element.ViewPort)
-		}
-		element.ViewPort.Draw(target)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, target)
-	case ui.InputElement:
-		// draw input
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		element.ViewPort.Draw(target)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, target)
-	case ui.ScrollElement, ui.ContainerElement:
+	case ui.SliderElement:
 		// draw container elements
 		element.ViewPort.Canvas.Clear(element.Background)
 		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
@@ -349,14 +337,14 @@ func DrawSubElementsOutside(element *ui.Element, target pixel.Target) {
 		for _, e := range element.Elements {
 			DrawSubElements(e, element.ViewPort)
 		}
-		element.ViewPort.Draw(target)
+		element.ViewPort.Draw(vp.Canvas)
+		img.Clear()
+		DrawLayerSystem(vp.Canvas, element.Layer-1)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, target)
-	//case ui.SliderElement:
-	//	DrawBorder(element.Object, element.Border, vp.Canvas)
+		DrawBorder(element.Object, element.Border, vp.Canvas)
 	default:
 		// draw border
-		DrawBorder(element.Object, element.Border, target)
+		DrawBorder(element.Object, element.Border, vp.Canvas)
 	}
 }

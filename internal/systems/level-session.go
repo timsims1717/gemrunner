@@ -45,6 +45,9 @@ func LevelSessionInit() {
 	if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name != "" {
 		ui.OpenDialog(constants.DialogPuzzleTitle)
 	}
+	if constants.Configuration.Gameplay.ShowTimer {
+		ui.OpenDialog(constants.DialogPuzzleTimer)
+	}
 }
 
 func LevelSessionDispose() {

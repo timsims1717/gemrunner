@@ -28,6 +28,7 @@ func LevelInit(record bool) {
 	data.CurrLevel.Puzzle = data.CurrPuzzleSet.CurrPuzzle
 	FloatingTextStartLevel()
 	SetPuzzleTitle()
+	UpdatePuzzleTimer()
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
 	levelSeed := random.RandomSeed()
 	random.SetLevelSeed(levelSeed)

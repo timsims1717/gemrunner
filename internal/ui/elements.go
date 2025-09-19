@@ -992,6 +992,12 @@ func MoveToScrollTop(scroll *Element) {
 }
 
 func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Element, vp *viewport.ViewPort) *Element {
+	svp := viewport.New(nil)
+	svp.ParentView = vp
+	svp.SetRect(pixel.R(0, 0, element.Width, element.Height))
+	svp.CamPos = pixel.V(0, 0)
+	svp.PortPos = element.Position
+
 	obj := object.New()
 	obj.Pos = element.Position
 	obj.Layer = 99
@@ -1008,6 +1014,7 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 		HelpText:    element.HelpText,
 		Object:      obj,
 		Entity:      e,
+		ViewPort:    svp,
 		ElementType: SliderElement,
 		Border:      bord,
 		Background:  element.Background,
@@ -1037,17 +1044,19 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 		Position:    pos,
 		ElementType: ButtonElement,
 	}
+	// slider button
 	var b *Element
 	if parent != nil {
 		b = CreateButtonElement(btn, dlg, parent.ViewPort)
-		parent.Elements = append(parent.Elements, b)
+		//parent.Elements = append(parent.Elements, b)
 	} else {
 		b = CreateButtonElement(btn, dlg, dlg.ViewPort)
-		dlg.Elements = append(dlg.Elements, b)
+		//dlg.Elements = append(dlg.Elements, b)
 	}
 	s.Bar = b
 	offset := 0.
 	barClick := false
+	// slider behavior
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
 		if dlg.Open && dlg.Active && !dlg.Lock && (parent == nil || !parent.Object.Hidden) {
 			click := hvc.Input.Get("click")
@@ -1074,6 +1083,68 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 			}
 		}
 	}))
+	// slider scale
+	w := s.Object.Rect.W() - s.Bar.Object.Rect.W()
+	fInterval := w / (float64(s.Max-s.Min) / float64(s.Interval))
+	i := 0
+slider:
+	for {
+		var scaleKey string
+		var scalePos, scalar pixel.Vec
+		switch i {
+		case 0: // line
+			scaleKey = fmt.Sprintf("%s_line", element.Key)
+			scalar = pixel.V(s.Object.Rect.W()-s.Bar.Object.Rect.W(), 1.)
+		case 1: // min
+			scaleKey = fmt.Sprintf("%s_min", element.Key)
+			scalePos = pixel.V(-s.Object.HalfWidth+s.Bar.Object.HalfWidth, 0.)
+			scalar = pixel.V(1., 7.5)
+		case 2: // max
+			scaleKey = fmt.Sprintf("%s_max", element.Key)
+			scalePos = pixel.V(s.Object.HalfWidth-s.Bar.Object.HalfWidth, 0.)
+			scalar = pixel.V(1., 7.5)
+		default: // the rest
+			j := (i-3)*s.Interval + s.Min
+			if j >= s.Max {
+				break slider
+			}
+			scaleKey = fmt.Sprintf("%s_%d", element.Key, j)
+			scalePos = pixel.V(-s.Object.HalfWidth+s.Bar.Object.HalfWidth+(fInterval*float64(j)), 0.)
+			scalar = pixel.V(1., 3.5)
+		}
+		sprEC := ElementConstructor{
+			Key:         scaleKey,
+			SprKey:      "white_dot",
+			Batch:       constants.UIBatch,
+			Position:    scalePos,
+			ElementType: SpriteElement,
+		}
+		sprEl := CreateSpriteElement(sprEC)
+		sprEl.Object.Sca = scalar
+		s.Elements = append(s.Elements, sprEl)
+		i++
+	}
+
+	//sprMin := ElementConstructor{
+	//	Key:         fmt.Sprintf("%s_min", element.Key),
+	//	SprKey:      "white_dot",
+	//	Batch:       constants.UIBatch,
+	//	Position:    pixel.V(-s.Object.HalfWidth+s.Bar.Object.HalfWidth, 0.),
+	//	ElementType: SpriteElement,
+	//}
+	//eMin := CreateSpriteElement(sprMin)
+	//eMin.Object.Sca.Y = 7.5
+	//s.Elements = append(s.Elements, eMin)
+	//sprMax := ElementConstructor{
+	//	Key:         fmt.Sprintf("%s_max", element.Key),
+	//	SprKey:      "white_dot",
+	//	Batch:       constants.UIBatch,
+	//	Position:    pixel.V(s.Object.HalfWidth-s.Bar.Object.HalfWidth, 0.),
+	//	ElementType: SpriteElement,
+	//}
+	//eMax := CreateSpriteElement(sprMax)
+	//eMax.Object.Sca.Y = 7.5
+	//s.Elements = append(s.Elements, eMax)
 	return s
 }
 

@@ -11,7 +11,6 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
-	"strings"
 )
 
 func InGameDialogs(win *pixelgl.Window) {
@@ -20,42 +19,64 @@ func InGameDialogs(win *pixelgl.Window) {
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer2Inv])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer3Inv])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPlayer4Inv])
-	ui.NewDialog(load.PuzzleTitleConstructor)
-	customizeInGameDialogs(win)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleTitle])
+	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleTimer])
+	CustomizeInGameDialogs(win)
 }
 
 func DisposeInGameDialogs() {
-	for k, d := range ui.Dialogs {
-		switch k {
-		case constants.DialogPauseMenu,
-			constants.DialogPlayer1Inv,
-			constants.DialogPlayer2Inv,
-			constants.DialogPlayer3Inv,
-			constants.DialogPlayer4Inv,
-			constants.DialogPuzzleTitle:
-			ui.DisposeDialog(d)
+	for _, k := range constants.InGameDialogs {
+		if dlg, ok := ui.Dialogs[k]; ok {
+			ui.DisposeDialog(dlg)
 		}
 	}
 }
 
-func customizeInGameDialogs(win *pixelgl.Window) {
-	for key := range ui.Dialogs {
-		dialog := ui.Dialogs[key]
-		for _, e := range dialog.Elements {
-			ele := e
-			if ele.ElementType == ui.ButtonElement {
-				switch ele.Key {
-				default:
-					switch dialog.Key {
-					default:
-						if strings.Contains(ele.Key, "cancel") {
-							ele.OnClick = CloseDialog(dialog.Key)
-						} else if ele.OnClick == nil && ele.OnHold == nil {
-							ele.OnClick = Test(fmt.Sprintf("pressed button %s", ele.Key))
-						}
-					}
+func CustomizeInGameDialogs(win *pixelgl.Window) {
+	for _, k := range constants.InGameDialogs {
+		CustomizeInGameDialog(win, k)
+	}
+}
+
+func CustomizeInGameDialog(win *pixelgl.Window, key string) {
+	if dialog, ok := ui.Dialogs[key]; ok {
+		switch key {
+		case constants.DialogPlayer1Inv,
+			constants.DialogPlayer2Inv,
+			constants.DialogPlayer3Inv,
+			constants.DialogPlayer4Inv:
+			dialog.Border.Style = ui.ThinBorder
+			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
+			if dialog.Key != constants.DialogPuzzleTitle {
+				dialog.ViewPort.Canvas.SetUniform("uRedPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBluePrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(1))
+				dialog.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
+			}
+			for _, e := range dialog.Elements {
+				ele := e
+				if ele.Key == "player_inv_item" {
+					ele.Object.Hidden = true
 				}
-			} else if ele.ElementType == ui.ContainerElement {
+			}
+		case constants.DialogPuzzleTitle, constants.DialogPuzzleTimer:
+			dialog.Border.Style = ui.ThinBorder
+			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
+		case constants.DialogPauseMenu:
+			for _, e := range dialog.Elements {
+				ele := e
 				switch ele.Key {
 				case "pause_resume_ct", "pause_restart_ct", "pause_options_ct", "pause_quit_mm_ct", "pause_quit_full_ct":
 					ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
@@ -128,37 +149,6 @@ func customizeInGameDialogs(win *pixelgl.Window) {
 						}
 					}
 				}
-			} else if ele.ElementType == ui.SpriteElement {
-				if ele.Key == "player_inv_item" {
-					ele.Object.Hidden = true
-				}
-			}
-		}
-		switch dialog.Key {
-		case constants.DialogPlayer1Inv,
-			constants.DialogPlayer2Inv,
-			constants.DialogPlayer3Inv,
-			constants.DialogPlayer4Inv,
-			constants.DialogPuzzleTitle:
-			dialog.Border.Style = ui.ThinBorder
-			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
-			if dialog.Key != constants.DialogPuzzleTitle {
-				dialog.ViewPort.Canvas.SetUniform("uRedPrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uBluePrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uRedSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uRedDoodad", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(1))
-				dialog.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 			}
 		}
 	}
@@ -180,10 +170,21 @@ func SetPuzzleTitle() {
 	dlg.BorderVP.SetRect(pixel.R(0, 0, dlgWidth+1, float64(dlg.Border.Rect.H())+1))
 	dlg.ViewPort.SetRect(pixel.R(0, 0, dlgWidth, dlg.Border.Rect.H()))
 	for _, ele := range dlg.Elements {
-		if ele.Key == "puzzle_title_bg" {
+		if ele.Key == "puzzle_title_shadow" {
 			ele.Text.SetColor(data.CurrLevel.Metadata.PrimaryColor)
 		}
 		ele.Object.Pos.X = width * -0.5
 		ele.Text.SetText(title)
 	}
+}
+
+func UpdatePuzzleTimer() {
+	if data.CurrLevel == nil {
+		return
+	}
+	timerText := FormatTimePlayed()
+	dlg := ui.Dialogs[constants.DialogPuzzleTimer]
+	txt := dlg.Get("puzzle_timer")
+	txt.Text.SetText(timerText)
+	txt.Object.Pos.X = txt.Text.GetWidth() * -0.5
 }

@@ -112,11 +112,11 @@ func OnOpenBombOptions() {
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "bomb_options_title":
 				if firstTile.Block == data.BlockBigBomb {
-					ele.Text.SetText("Big Bomb Item Options")
+					ele.Text.SetText("Big Bomb Options")
 				} else if firstTile.Block == data.BlockBigBombLit {
 					ele.Text.SetText("Lit Big Bomb Options")
 				} else if firstTile.Block == data.BlockSmallBomb {
-					ele.Text.SetText("Small Bomb Item Options")
+					ele.Text.SetText("Small Bomb Options")
 				} else if firstTile.Block == data.BlockSmallBombLit {
 					ele.Text.SetText("Lit Small Bomb Options")
 				}

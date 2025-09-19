@@ -266,6 +266,13 @@ func customizeOptionsDialog() {
 				case "timer_check":
 					ele1.OnClick = func() {
 						constants.Configuration.Gameplay.ShowTimer = ele1.Checked
+						if data.CurrLevel != nil {
+							if ele1.Checked {
+								ui.OpenDialog(constants.DialogPuzzleTimer)
+							} else {
+								ui.CloseDialog(constants.DialogPuzzleTimer)
+							}
+						}
 					}
 					SetOptionsCheckboxFunc(ele1, optionsDlg, ele)
 				case "scan_lines_check":

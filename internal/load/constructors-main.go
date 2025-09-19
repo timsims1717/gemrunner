@@ -21,8 +21,7 @@ var (
 	// options
 
 	// in game
-	PauseConstructor       *ui.DialogConstructor
-	PuzzleTitleConstructor *ui.DialogConstructor
+	PauseConstructor *ui.DialogConstructor
 )
 
 func InitMainMenuConstructors() {
@@ -289,35 +288,11 @@ func InitMainMenuConstructors() {
 			},
 		},
 	}
-	PuzzleTitleConstructor = &ui.DialogConstructor{
-		Key:    constants.DialogPuzzleTitle,
-		Width:  6,
-		Height: 1,
-		Pos:    pixel.V(0, 414),
-		Elements: []ui.ElementConstructor{
-			{
-				Key:         "puzzle_title_bg",
-				Text:        "-",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(0, 1),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-			{
-				Key:         "puzzle_title",
-				Text:        "-",
-				Color:       pixel.ToRGBA(constants.ColorWhite),
-				Position:    pixel.V(0, 0),
-				ElementType: ui.TextElement,
-				Anchor:      pixel.Right,
-			},
-		},
-	}
-	//f, err := os.Create("assets/ui/main_menu.json")
+	//f, err := os.Create("assets/ui/puzzle_title.json")
 	//if err != nil {
 	//	panic(err)
 	//}
-	//bts, err := json.Marshal(MainMenuConstructor)
+	//bts, err := json.Marshal(PuzzleTitleConstructor)
 	//if err != nil {
 	//	panic(err)
 	//}

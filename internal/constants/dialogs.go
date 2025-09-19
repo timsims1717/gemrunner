@@ -14,6 +14,7 @@ const (
 	DialogPlayer3Inv  = "player3_inv"
 	DialogPlayer4Inv  = "player4_inv"
 	DialogPuzzleTitle = "puzzle_title"
+	DialogPuzzleTimer = "puzzle_timer"
 )
 
 // Editor Dialogs
@@ -52,6 +53,8 @@ var DialogKeys = []string{
 	DialogPlayer2Inv,
 	DialogPlayer3Inv,
 	DialogPlayer4Inv,
+	DialogPuzzleTitle,
+	DialogPuzzleTimer,
 
 	DialogPlayLocal,
 
@@ -66,4 +69,21 @@ var DialogKeys = []string{
 	DialogFloatingText,
 	DialogDoors,
 	DialogPalette,
+}
+
+var MainDialogs = []string{
+	DialogMainMenu,
+	DialogOptions,
+	DialogAddPlayers,
+	DialogPlayLocal,
+}
+
+var InGameDialogs = []string{
+	DialogPauseMenu,
+	DialogPlayer1Inv,
+	DialogPlayer2Inv,
+	DialogPlayer3Inv,
+	DialogPlayer4Inv,
+	DialogPuzzleTitle,
+	DialogPuzzleTimer,
 }

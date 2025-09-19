@@ -22,20 +22,16 @@ func MainDialogs(win *pixelgl.Window) {
 }
 
 func DisposeMainDialogs() {
-	for k, d := range ui.Dialogs {
-		switch k {
-		case constants.DialogMainMenu,
-			constants.DialogOptions,
-			constants.DialogAddPlayers,
-			constants.DialogPlayLocal:
-			ui.DisposeDialog(d)
+	for _, k := range constants.MainDialogs {
+		if dlg, ok := ui.Dialogs[k]; ok {
+			ui.DisposeDialog(dlg)
 		}
 	}
 }
 
 func CustomizeMainDialogs(win *pixelgl.Window) {
-	for key := range ui.Dialogs {
-		CustomizeMainDialog(win, key)
+	for _, k := range constants.MainDialogs {
+		CustomizeMainDialog(win, k)
 	}
 }
 
