@@ -39,18 +39,22 @@ func UpdateViews() {
 
 	if data.PuzzleView != nil {
 		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
-		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
 		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
-		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
 		//data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
 		//data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
 		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
-		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
-
+	}
+	if data.BorderView != nil {
 		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(width+1), world.TileSize*(height+1)))
 		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
 		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
 		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
+	if data.PuzzleViewNoShader != nil {
+		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
+		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
+		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	}
 	if data.WorldView != nil {
 		data.WorldView.PortPos = viewport.MainCamera.PostCamPos

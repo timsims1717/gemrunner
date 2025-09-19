@@ -608,9 +608,10 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 				key = constants.PreviewGem
 			case data.BlockBar:
 				key = constants.PreviewBar
-			case data.BlockBigBomb, data.BlockBigBombLit:
+			case data.BlockSmallBomb, data.BlockSmallBombLit:
 				key = constants.PreviewBomb
-			case data.BlockJetpack, data.BlockDisguise,
+			case data.BlockBigBomb, data.BlockBigBombLit,
+				data.BlockJetpack, data.BlockDisguise,
 				data.BlockDrill, data.BlockFlamethrower,
 				data.BlockJumpBoots, data.BlockBox,
 				data.BlockTransporter, data.BlockTransporterExit:

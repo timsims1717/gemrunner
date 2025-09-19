@@ -119,6 +119,7 @@ const (
 	PlayerLongJumpHSpeed  = 3.75
 	PlayerLongJumpCounter = 8
 	IdleFrequency         = 10
+	SmallBombInv          = 4
 
 	// Demon Constants
 	DemonWalkSpeed       = 2

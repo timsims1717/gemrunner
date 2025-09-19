@@ -15,6 +15,7 @@ type PlayerInput struct {
 	JumpKey     string
 	PickUpKey   string
 	ActionKey   string
+	BombKey     string
 	DigLeftKey  string
 	DigRightKey string
 	Entity      *ecs.Entity
@@ -37,6 +38,7 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	down := pi.Input.Get(pi.DownKey)
 	pickUp := pi.Input.Get(pi.PickUpKey)
 	action := pi.Input.Get(pi.ActionKey)
+	bomb := pi.Input.Get(pi.BombKey)
 	digLeft := pi.Input.Get(pi.DigLeftKey)
 	digRight := pi.Input.Get(pi.DigRightKey)
 	if !left.Pressed() && !right.Pressed() && !up.Pressed() && !down.Pressed() {
@@ -82,6 +84,10 @@ func (pi *PlayerInput) GetActions() data.Actions {
 	if action.Pressed() {
 		actions.Action = true
 	}
+	if bomb.JustPressed() {
+		actions.Bomb = true
+		bomb.Consume()
+	}
 	if digLeft.Pressed() {
 		actions.DigLeft = true
 	}
@@ -106,6 +112,7 @@ func NewPlayerInput(in *pxginput.Input, e *ecs.Entity) *PlayerInput {
 		JumpKey:     "jump",
 		PickUpKey:   "pickUp",
 		ActionKey:   "action",
+		BombKey:     "bomb",
 		DigLeftKey:  "digLeft",
 		DigRightKey: "digRight",
 		Entity:      e,

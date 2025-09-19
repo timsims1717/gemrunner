@@ -108,15 +108,17 @@ func OnOpenBombOptions() {
 		firstTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
 		for _, ele := range ui.Dialogs[constants.DialogBomb].Elements {
 			switch ele.Key {
-			case "bomb_cross_check":
-				ui.SetChecked(ele, firstTile.Metadata.BombCross)
 			case "bomb_regenerate_check":
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "bomb_options_title":
 				if firstTile.Block == data.BlockBigBomb {
-					ele.Text.SetText("Bomb Item Options")
-				} else {
-					ele.Text.SetText("Lit Bomb Options")
+					ele.Text.SetText("Big Bomb Item Options")
+				} else if firstTile.Block == data.BlockBigBombLit {
+					ele.Text.SetText("Lit Big Bomb Options")
+				} else if firstTile.Block == data.BlockSmallBomb {
+					ele.Text.SetText("Small Bomb Item Options")
+				} else if firstTile.Block == data.BlockSmallBombLit {
+					ele.Text.SetText("Lit Small Bomb Options")
 				}
 			case "bomb_regenerate_delay_input":
 				ele.InputType = ui.Numeric
@@ -133,12 +135,10 @@ func ConfirmBombOptions() {
 			ui.CloseDialog(constants.DialogBomb)
 			return
 		}
-		var regen, cross bool
+		var regen bool
 		var delay int
 		for _, ele := range ui.Dialogs[constants.DialogBomb].Elements {
 			switch ele.Key {
-			case "bomb_cross_check":
-				cross = ele.Checked
 			case "bomb_regenerate_check":
 				regen = ele.Checked
 			case "bomb_regenerate_delay_input":
@@ -152,7 +152,6 @@ func ConfirmBombOptions() {
 		}
 		for _, tile := range data.CurrPuzzleSet.CurrPuzzle.WrenchTiles {
 			tile.Metadata.Regenerate = regen
-			tile.Metadata.BombCross = cross
 			tile.Metadata.RegenDelay = delay
 			tile.Metadata.Changed = true
 		}
@@ -215,6 +214,8 @@ func OnOpenItemOptions() {
 					name = "Disguise"
 				case data.BlockBigBomb:
 					name = "Big Bomb"
+				case data.BlockSmallBomb:
+					name = "Small Bomb"
 				}
 				ele.Text.SetText(fmt.Sprintf("%s Options", name))
 			case "item_timer":

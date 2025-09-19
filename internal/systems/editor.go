@@ -401,6 +401,7 @@ func PuzzleEditSystem() {
 												t.Metadata.Changed = true
 											case data.BlockCracked, data.BlockLadderCracked,
 												data.BlockBigBomb, data.BlockBigBombLit,
+												data.BlockSmallBomb, data.BlockSmallBombLit,
 												data.BlockJetpack, data.BlockDisguise,
 												data.BlockFlamethrower:
 												data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = append(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles, t)
@@ -424,7 +425,8 @@ func PuzzleEditSystem() {
 									data.CurrPuzzleSet.CurrPuzzle.Changed = true
 								case data.BlockCracked, data.BlockLadderCracked:
 									ui.OpenDialogInStack(constants.DialogCrackedTiles)
-								case data.BlockBigBomb, data.BlockBigBombLit:
+								case data.BlockBigBomb, data.BlockBigBombLit,
+									data.BlockSmallBomb, data.BlockSmallBombLit:
 									ui.OpenDialogInStack(constants.DialogBomb)
 								case data.BlockJetpack, data.BlockDisguise,
 									data.BlockFlamethrower:
@@ -450,7 +452,8 @@ func PuzzleEditSystem() {
 							case data.BlockCracked, data.BlockLadderCracked:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogCrackedTiles)
-							case data.BlockBigBomb, data.BlockBigBombLit:
+							case data.BlockBigBomb, data.BlockBigBombLit,
+								data.BlockSmallBomb, data.BlockSmallBombLit:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogBomb)
 							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower:

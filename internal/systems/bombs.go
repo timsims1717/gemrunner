@@ -71,14 +71,15 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 		}).
 		SetDefault("bomb").Finish()
 	theBomb.Draws = append(theBomb.Draws, theBomb.Item.Anim)
-	name := "Bomb"
+	name := "Big Bomb"
 	litKey := constants.ItemBigBombLit
 	regenKey := constants.ItemBigBombRegen
 	symOff := pixel.V(0, -2)
 	if !big {
+		name = "Small Bomb"
 		litKey = constants.ItemSmallBombLit
 		regenKey = constants.ItemSmallBombRegen
-		symOff = pixel.V(-1, -3)
+		symOff = pixel.V(0, -4)
 	}
 	if tile.Metadata.Regenerate {
 		theBomb.SymSpr = img.NewSprite(regenKey, constants.TileBatch).WithOffset(symOff)
@@ -88,8 +89,15 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	}
 	theBomb.Item.Name = name
 	theBomb.LitKey = litKey
-	theBomb.Item.PickUp = data.NewPickUp(5, tile.Metadata.Color)
-	theBomb.Item.Action = BombAction(theBomb)
+	if big {
+		theBomb.Item.PickUp = data.NewPickUp(5, tile.Metadata.Color)
+		theBomb.Item.Action = BombAction(theBomb)
+		e.AddComponent(myecs.PickUp, theBomb.Item.PickUp)
+		e.AddComponent(myecs.Action, theBomb.Item.Action)
+	} else {
+		theBomb.Item.Action = CollectSmallBomb(theBomb)
+		e.AddComponent(myecs.OnTouch, theBomb.Item.Action)
+	}
 	theBomb.Item.Delay = constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2)
 	if theBomb.Item.Metadata.Regenerate {
 		theBomb.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
@@ -112,11 +120,24 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, theBomb.Draws)
 	e.AddComponent(myecs.Animated, theBomb.Item.Anim)
-	e.AddComponent(myecs.PickUp, theBomb.Item.PickUp)
-	e.AddComponent(myecs.Action, theBomb.Item.Action)
 	e.AddComponent(myecs.LvlElement, struct{}{})
 	e.AddComponent(myecs.Bomb, theBomb)
 	e.AddComponent(myecs.Item, theBomb.Item)
+}
+
+func CollectSmallBomb(theBomb *data.Bomb) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+		if p < 0 || p >= constants.MaxPlayers ||
+			(ch.Color != theBomb.Item.Color && theBomb.Item.Color > data.NonPlayerRed) ||
+			data.CurrLevel.Players[p].SmallBombs >= data.CurrLevelSess.PlayerStats[p].Bombs+data.CurrLevelSess.PlayerStats[p].LBombs ||
+			theBomb.Item.Waiting || theBomb.Item.Regen || theBomb.Item.Object.Hidden {
+			return
+		}
+		theBomb.SymSpr.ToggleHidden(true)
+		data.CurrLevel.Players[p].SmallBombs++
+		sfx.SoundPlayer.PlaySound(constants.SFXItem, -1.)
+		RegenerateOrRemove(theBomb.Item)
+	})
 }
 
 func BombAction(theBomb *data.Bomb) *data.Interact {
@@ -438,7 +459,12 @@ func DestroyTile(tile *data.Tile, x, y int, big bool) bool {
 		}
 		if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockClose {
 			tile.Flags.Collapse = true
+			tile.Flags.BareFangs = false
+			tile.Flags.Cracked = false
+			tile.Flags.Regen = false
+			RemoveMask(tile)
 			tile.Counter = constants.CollapseCounter
+			tile.Update = true
 		}
 		return true
 	}

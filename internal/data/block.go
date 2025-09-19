@@ -45,11 +45,14 @@ const (
 	BlockJumpBoots
 	BlockBox
 	BlockJetpack
-	BlockBigBomb
-	BlockBigBombLit
 	BlockDisguise
 	BlockDrill
 	BlockFlamethrower
+
+	BlockBigBomb
+	BlockBigBombLit
+	BlockSmallBomb
+	BlockSmallBombLit
 
 	BlockReeds
 	BlockFlowers
@@ -130,6 +133,10 @@ func (b Block) String() string {
 		return constants.ItemBigBomb
 	case BlockBigBombLit:
 		return constants.ItemBigBombLit
+	case BlockSmallBomb:
+		return constants.ItemSmallBomb
+	case BlockSmallBombLit:
+		return constants.ItemSmallBombLit
 	case BlockPlayer1:
 		return constants.CharPlayer1
 	case BlockPlayer2:
@@ -263,6 +270,8 @@ func (b Block) SpriteString() string {
 		return constants.ItemFlamethrower + colSuffixTools
 	case BlockBigBomb:
 		return constants.ItemBigBomb + colSuffixTools
+	case BlockSmallBomb:
+		return constants.ItemSmallBomb + colSuffixTools
 	case BlockGem:
 		return constants.ItemGem + colSuffixKey
 	case BlockKey:
@@ -309,6 +318,8 @@ var toID = map[string]Block{
 	"bomb_lit":                      BlockBigBombLit,
 	constants.ItemBigBomb:           BlockBigBomb,
 	constants.ItemBigBombLit:        BlockBigBombLit,
+	constants.ItemSmallBomb:         BlockSmallBomb,
+	constants.ItemSmallBombLit:      BlockSmallBombLit,
 	constants.CharPlayer1:           BlockPlayer1,
 	constants.CharPlayer2:           BlockPlayer2,
 	constants.CharPlayer3:           BlockPlayer3,

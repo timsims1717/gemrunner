@@ -38,6 +38,7 @@ type Actions struct {
 	PrevDirection Direction `json:"prevDirection,omitempty"`
 	PickUp        bool      `json:"pickUp,omitempty"`
 	Action        bool      `json:"action,omitempty"`
+	Bomb          bool      `json:"bomb,omitempty"`
 	DigLeft       bool      `json:"digLeft,omitempty"`
 	DigRight      bool      `json:"digRight,omitempty"`
 }
@@ -66,7 +67,7 @@ func (a Actions) Right() bool {
 }
 
 func (a Actions) Any() bool {
-	return a.Direction != NoDirection || a.PickUp || a.Action || a.DigLeft || a.DigRight
+	return a.Direction != NoDirection || a.PickUp || a.Action || a.Bomb || a.DigLeft || a.DigRight
 }
 
 func (a Actions) Copy() Actions {
@@ -75,6 +76,7 @@ func (a Actions) Copy() Actions {
 		PrevDirection: a.PrevDirection,
 		PickUp:        a.PickUp,
 		Action:        a.Action,
+		Bomb:          a.Bomb,
 		DigLeft:       a.DigLeft,
 		DigRight:      a.DigRight,
 	}

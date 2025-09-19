@@ -110,6 +110,10 @@ func (t *Tile) SpriteString() string {
 		return constants.ItemBigBomb + colSuffixTools
 	case BlockBigBombLit:
 		return constants.ItemBigBombLit
+	case BlockSmallBomb:
+		return constants.ItemSmallBomb + colSuffixTools
+	case BlockSmallBombLit:
+		return constants.ItemSmallBombLit
 	case BlockPlayer1:
 		return constants.CharPlayer1
 	case BlockPlayer2:
@@ -366,7 +370,6 @@ type TileMetadata struct {
 	Regenerate  bool           `json:"regenerate,omitempty"`
 	RegenDelay  int            `json:"regenDelay,omitempty"`
 	Timer       int            `json:"timer,omitempty"`
-	BombCross   bool           `json:"bombCross,omitempty"`
 	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles,omitempty"`
 	Phase       int            `json:"phase,omitempty"`
 	ShowCrack   bool           `json:"showCrack,omitempty"`
@@ -390,7 +393,6 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		Regenerate:  m.Regenerate,
 		RegenDelay:  m.RegenDelay,
 		Timer:       m.Timer,
-		BombCross:   m.BombCross,
 		LinkedTiles: nil,
 		Phase:       m.Phase,
 		ShowCrack:   m.ShowCrack,

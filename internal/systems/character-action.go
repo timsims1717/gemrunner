@@ -37,6 +37,10 @@ func CharacterActionSystem() {
 						ch.Actions.Action = true
 						ch.Flags.ActionBuff--
 					}
+					if ch.Flags.BombBuff > 0 {
+						ch.Actions.Bomb = true
+						ch.Flags.BombBuff--
+					}
 					if ch.Flags.DigRightBuff > 0 {
 						ch.Actions.DigRight = true
 						ch.Flags.DigRightBuff--
@@ -54,6 +58,7 @@ func CharacterActionSystem() {
 				}
 				ch.Actions.PickUp = ch.Actions.PickUp || actions.PickUp
 				ch.Actions.Action = ch.Actions.Action || actions.Action
+				ch.Actions.Bomb = ch.Actions.Bomb || actions.Bomb
 				ch.Actions.DigLeft = ch.Actions.DigLeft || actions.DigLeft
 				ch.Actions.DigRight = ch.Actions.DigRight || actions.DigRight
 				if actions.PickUp {
@@ -61,6 +66,9 @@ func CharacterActionSystem() {
 				}
 				if actions.Action && ch.State != data.DoingAction {
 					ch.Flags.ActionBuff = constants.ButtonBuffer
+				}
+				if actions.Bomb && ch.State != data.DoingAction {
+					ch.Flags.BombBuff = constants.ButtonBuffer
 				}
 				if actions.DigLeft {
 					ch.Flags.DigLeftBuff = constants.ButtonBuffer
@@ -71,12 +79,15 @@ func CharacterActionSystem() {
 				if ch.Player > -1 && debug.ShowText {
 					debug.AddText(fmt.Sprintf("Direction: %5s", ch.Actions.Direction))
 					debug.AddText(fmt.Sprintf("Previous:  %5s", ch.Actions.PrevDirection))
-					p, a, l, r := "-", "-", "-", "-"
+					p, a, b, l, r := "-", "-", "-", "-", "-"
 					if ch.Actions.PickUp {
 						p = "P"
 					}
 					if ch.Actions.Action {
 						a = "A"
+					}
+					if ch.Actions.Bomb {
+						b = "B"
 					}
 					if ch.Actions.DigLeft {
 						l = "<"
@@ -84,7 +95,7 @@ func CharacterActionSystem() {
 					if ch.Actions.DigRight {
 						r = ">"
 					}
-					debug.AddText(fmt.Sprintf("%s|%s|%s|%s", p, a, l, r))
+					debug.AddText(fmt.Sprintf("%s|%s|%s|%s|%s", p, a, b, l, r))
 				}
 
 				if reanimator.FrameSwitch {

@@ -67,64 +67,64 @@ func TileSpriteSystem() {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok {
-			needsUpdate := NeedsUpdate(tile)
-			if needsUpdate {
-				drs, hasDraws := result.Entity.GetComponentData(myecs.Drawable)
-				sprs := GetTileDrawables(tile)
-				if len(sprs) == 0 {
-					if hasDraws {
-						result.Entity.RemoveComponent(myecs.Drawable)
-						result.Entity.RemoveComponent(myecs.Animated)
-					}
+			//needsUpdate := NeedsUpdate(tile)
+			//if needsUpdate {
+			drs, hasDraws := result.Entity.GetComponentData(myecs.Drawable)
+			sprs := GetTileDrawables(tile)
+			if len(sprs) == 0 {
+				if hasDraws {
+					result.Entity.RemoveComponent(myecs.Drawable)
+					result.Entity.RemoveComponent(myecs.Animated)
+				}
+				continue
+			}
+			// only change the drawables that have changed
+			var changed bool
+			currDraws, okD := drs.([]any)
+			if !okD {
+				currDraws = []any{}
+				changed = true
+			}
+			var hasAnim bool
+			for i, spr := range sprs {
+				if spr.IsAnim {
+					hasAnim = true
+				}
+				if !okD || i >= len(currDraws) {
+					currDraws = append(currDraws, buildDrawable(spr, tile.Live))
+					changed = true
 					continue
 				}
-				// only change the drawables that have changed
-				var changed bool
-				currDraws, okD := drs.([]any)
-				if !okD {
-					currDraws = []any{}
-					changed = true
-				}
-				var hasAnim bool
-				for i, spr := range sprs {
-					if spr.IsAnim {
-						hasAnim = true
-					}
-					if !okD || i >= len(currDraws) {
-						currDraws = append(currDraws, buildDrawable(spr, tile.Live))
-						changed = true
-						continue
-					}
-					cd := currDraws[i]
-					if cSpr, ok1 := cd.(*img.Sprite); ok1 {
-						if !(cSpr.Key == spr.SprKey && cSpr.Batch == spr.Batch &&
-							cSpr.Offset == spr.Offset && !spr.IsAnim) {
-							currDraws[i] = buildDrawable(spr, tile.Live)
-							changed = true
-						}
-					} else if cAnim, ok2 := cd.(*reanimator.Tree); ok2 {
-						if !(cAnim.Default == spr.SprKey && spr.IsAnim) {
-							currDraws[i] = buildDrawable(spr, tile.Live)
-							changed = true
-						}
-					} else {
+				cd := currDraws[i]
+				if cSpr, ok1 := cd.(*img.Sprite); ok1 {
+					if !(cSpr.Key == spr.SprKey && cSpr.Batch == spr.Batch &&
+						cSpr.Offset == spr.Offset && !spr.IsAnim) {
 						currDraws[i] = buildDrawable(spr, tile.Live)
 						changed = true
 					}
-				}
-				if len(currDraws) > len(sprs) {
-					currDraws = currDraws[:len(sprs)]
+				} else if cAnim, ok2 := cd.(*reanimator.Tree); ok2 {
+					if !(cAnim.Default == spr.SprKey && spr.IsAnim) {
+						currDraws[i] = buildDrawable(spr, tile.Live)
+						changed = true
+					}
+				} else {
+					currDraws[i] = buildDrawable(spr, tile.Live)
 					changed = true
 				}
-				if changed {
-					result.Entity.AddComponent(myecs.Drawable, currDraws)
-					if hasAnim {
-						result.Entity.AddComponent(myecs.Animated, currDraws)
-					} else {
-						result.Entity.RemoveComponent(myecs.Animated)
-					}
+			}
+			if len(currDraws) > len(sprs) {
+				currDraws = currDraws[:len(sprs)]
+				changed = true
+			}
+			if changed {
+				result.Entity.AddComponent(myecs.Drawable, currDraws)
+				if hasAnim {
+					result.Entity.AddComponent(myecs.Animated, currDraws)
+				} else {
+					result.Entity.RemoveComponent(myecs.Animated)
 				}
 			}
+			//}
 			tile.LastBlock = tile.Block
 		}
 	}
@@ -166,7 +166,7 @@ func NeedsUpdate(tile *data.Tile) bool {
 		data.BlockSpike, data.BlockHideout, data.BlockLiquid:
 		return true
 	default:
-		if data.Editor.Mode == data.ModeWrench {
+		if data.Editor != nil && data.Editor.Mode == data.ModeWrench {
 			return true
 		}
 		return false
@@ -198,15 +198,15 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 		if !tile.Live {
 			sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
 		}
-	case data.BlockBigBomb:
+	case data.BlockBigBomb, data.BlockBigBombLit:
 		sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
 		if tile.Metadata.Regenerate {
 			sprs = append(sprs, newSprChanger(constants.ItemBigBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
 		}
-	case data.BlockBigBombLit:
-		sprs = append(sprs, newSprChanger(constants.ItemBigBombLit, constants.TileBatch))
+	case data.BlockSmallBomb, data.BlockSmallBombLit:
+		sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
 		if tile.Metadata.Regenerate {
-			sprs = append(sprs, newSprChanger(constants.ItemBigBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -2)))
+			sprs = append(sprs, newSprChanger(constants.ItemSmallBombRegen, constants.TileBatch).WithOffset(pixel.V(0, -4)))
 		}
 	case data.BlockGear:
 		//if tile.Live {
@@ -473,6 +473,20 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/100), constants.UIBatch).WithOffset(pixel.V(-6, yOffset)))
 				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%100/10), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
 				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(6, yOffset)))
+			}
+		case data.BlockBigBomb, data.BlockBigBombLit, data.BlockSmallBomb, data.BlockSmallBombLit:
+			if tile.Metadata.Regenerate {
+				yOffset := 0.
+				if tile.Block == data.BlockSmallBomb || tile.Block == data.BlockSmallBombLit {
+					yOffset = -2.
+				}
+				timer := tile.Metadata.RegenDelay
+				if timer < 10 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+				} else if timer < 100 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
+				}
 			}
 		}
 	}

@@ -82,6 +82,14 @@ func (s *playState) Update(win *pixelgl.Window) {
 		}
 	}
 
+	if data.DebugInput.Get("debugTest").JustPressed() {
+		for _, player := range data.CurrLevel.Players {
+			if player != nil {
+				player.SmallBombs++
+			}
+		}
+	}
+
 	if reanimator.FRate != constants.Configuration.Gameplay.FrameRate {
 		reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	}

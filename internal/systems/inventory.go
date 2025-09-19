@@ -22,6 +22,7 @@ func PickUpOrDropItem(ch *data.Dynamic, p int) {
 		ch.Flags.PickUpBuff = 0
 	} else {
 		item := PickUpItem(ch, p)
+		ch.Flags.PickUpBuff = 0
 		if item != nil {
 			ch.Inventory = item
 			sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
@@ -141,6 +142,24 @@ func UpdateInventory(ch *data.Dynamic) {
 	if ch.Inventory != nil {
 		ch.Inventory.Object.SetPos(ch.Object.Pos)
 	}
+}
+
+func PlaceSmallBomb(ch *data.Dynamic) bool {
+	if ch.SmallBombs < 1 {
+		return false
+	}
+	if ch.Player > -1 && ch.Player < constants.MaxPlayers {
+		if ch.State == data.OnLadder ||
+			ch.State == data.Grounded ||
+			ch.State == data.Flying {
+			ch.Flags.BombBuff = 0
+			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			tile := data.CurrLevel.Get(x, y)
+			CreateLitBomb(tile.Object.Pos, constants.ItemSmallBombLit, "small", false, false, 0)
+			ch.SmallBombs--
+		}
+	}
+	return false
 }
 
 func Dig(ch *data.Dynamic, isLeft bool) bool {

@@ -81,6 +81,7 @@ void main() {
         col = texture(uTexture, dist_tex_coord).rgba;
         break;
     }
+    // darkness
     if (uDarkness == 1) {
         float ar = (uTexBounds.z / uTexBounds.w) * uDarknessWidth;
         vec2 ot = vTexCoords / uTexBounds.zw;

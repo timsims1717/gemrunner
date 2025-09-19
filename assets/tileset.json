@@ -2695,8 +2695,8 @@
     {
       "key": "small_bomb_regen_anim",
       "anim": true,
-      "x": 560,
-      "y": 208,
+      "x": 576,
+      "y": 272,
       "h": 16,
       "w": 16
     },
@@ -9488,6 +9488,13 @@
       "w": 16
     },
     {
+      "key": "small_bomb_blue",
+      "x": 80,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "jetpack_blue",
       "x": 0,
       "y": 112,
@@ -9572,6 +9579,13 @@
     {
       "key": "transporter_green",
       "x": 160,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_green",
+      "x": 176,
       "y": 144,
       "h": 16,
       "w": 16
@@ -9666,6 +9680,13 @@
       "w": 16
     },
     {
+      "key": "small_bomb_purple",
+      "x": 272,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "jetpack_purple",
       "x": 192,
       "y": 112,
@@ -9750,6 +9771,13 @@
     {
       "key": "transporter_orange",
       "x": 352,
+      "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "small_bomb_orange",
+      "x": 368,
       "y": 144,
       "h": 16,
       "w": 16

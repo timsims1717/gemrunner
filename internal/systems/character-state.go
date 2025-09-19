@@ -304,6 +304,7 @@ func CharacterStateSystem() {
 					} else if ch.Actions.DigLeft && Place(ch, true) {
 					} else if ch.Actions.DigRight && Place(ch, false) {
 					} else if ch.Actions.Action && DoAction(ch) {
+					} else if ch.Actions.Bomb && PlaceSmallBomb(ch) {
 					}
 				} else if ch.State == data.Dead {
 					DropItem(ch)

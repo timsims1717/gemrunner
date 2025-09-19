@@ -16,6 +16,7 @@ type Dynamic struct {
 	Entity       *ecs.Entity
 	Inventory    *BasicItem
 	StoredBlocks []*Tile
+	SmallBombs   int
 	Control      Controller
 
 	Actions  Actions
@@ -176,6 +177,7 @@ type Flags struct {
 	Frame        bool
 	PickUpBuff   int
 	ActionBuff   int
+	BombBuff     int
 	DigLeftBuff  int
 	DigRightBuff int
 	ItemAction   ItemAction

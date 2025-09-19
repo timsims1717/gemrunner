@@ -110,6 +110,13 @@ func LevelInit(record bool) {
 				key := tile.Block.SpriteString()
 				CreateLitBomb(obj.Pos, key, "big", true, tile.Metadata.Regenerate, tile.Metadata.RegenDelay)
 				tile.Block = data.BlockEmpty
+			case data.BlockSmallBomb:
+				CreateBomb(obj.Pos, tile, "small", false)
+				tile.Block = data.BlockEmpty
+			case data.BlockSmallBombLit:
+				key := tile.Block.SpriteString()
+				CreateLitBomb(obj.Pos, key, "small", false, tile.Metadata.Regenerate, tile.Metadata.RegenDelay)
+				tile.Block = data.BlockEmpty
 			case data.BlockJetpack:
 				CreateJetpack(obj.Pos, tile)
 				tile.Block = data.BlockEmpty

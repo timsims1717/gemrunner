@@ -1,9 +1,9 @@
 {
   "key":"player1_inv",
-  "width":6,
+  "width":7,
   "height":1,
   "pos":{
-    "X":-176,
+    "X":-168,
     "Y":-144
   },
   "elements":[
@@ -17,7 +17,7 @@
         "A":1
       },
       "pos":{
-        "X":-12,
+        "X":-4,
         "Y":3
       },
       "type":"text",
@@ -32,7 +32,7 @@
       "batchKey":"ui",
       "helpText":"Player 1's total deaths",
       "pos":{
-        "X":-42,
+        "X":-46,
         "Y":-4
       },
       "type":"sprite"
@@ -47,7 +47,7 @@
         "A":1
       },
       "pos":{
-        "X":-36,
+        "X":-40,
         "Y":-5
       },
       "type":"text",
@@ -62,14 +62,14 @@
       "batchKey":"ui",
       "helpText":"Player 1's total gems",
       "pos":{
-        "X":-6,
-        "Y":-3
+        "X":-52,
+        "Y":5
       },
       "type":"sprite"
     },
     {
       "key":"player_gems",
-      "text":"x0000",
+      "text":"x00000",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -77,7 +77,71 @@
         "A":1
       },
       "pos":{
+        "X":-46,
+        "Y":3
+      },
+      "type":"text",
+      "anchor":{
         "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"player_bomb_count_1",
+      "spriteKey":"player1_bomb",
+      "batchKey":"ui",
+      "helpText":"Player 1's small bomb count",
+      "pos":{
+        "X":35,
+        "Y":-4
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"player_bomb_count_2",
+      "spriteKey":"player1_bomb",
+      "batchKey":"ui",
+      "helpText":"Player 1's small bomb count",
+      "pos":{
+        "X":27,
+        "Y":-4
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"player_bomb_count_3",
+      "spriteKey":"player1_bomb",
+      "batchKey":"ui",
+      "helpText":"Player 1's small bomb count",
+      "pos":{
+        "X":19,
+        "Y":-4
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"player_bomb_count_4",
+      "spriteKey":"player1_bomb",
+      "batchKey":"ui",
+      "helpText":"Player 1's small bomb count",
+      "pos":{
+        "X":11,
+        "Y":-4
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"player_bombs",
+      "text":"x00",
+      "helpText":"Player 1's small bomb count",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":20,
         "Y":-5
       },
       "type":"text",
@@ -91,7 +155,7 @@
       "width":16,
       "height":16,
       "pos":{
-        "X":40,
+        "X":48,
         "Y":0
       },
       "type":"container",
@@ -142,7 +206,7 @@
       "spriteKey":"rock",
       "batchKey":"tiles",
       "pos":{
-        "X":40,
+        "X":48,
         "Y":0
       },
       "type":"sprite"
@@ -152,7 +216,7 @@
       "spriteKey":"rock",
       "batchKey":"tiles",
       "pos":{
-        "X":40,
+        "X":48,
         "Y":0
       },
       "type":"sprite"

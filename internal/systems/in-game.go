@@ -111,15 +111,48 @@ func UpdatePlayerInv() {
 			case 3:
 				dgKey = constants.DialogPlayer4Inv
 			}
+			bombs := data.CurrLevel.Players[i].SmallBombs
+			if bombs > 4 {
+				if bombs > 99 {
+					bombs = 99
+				}
+			}
 			scoreDialog := ui.Dialogs[dgKey]
 			for _, ele := range scoreDialog.Elements {
 				switch ele.Key {
 				case "player_score":
-					ele.Text.SetText(fmt.Sprintf("%07d", data.CurrLevelSess.PlayerStats[i].Score+data.CurrLevelSess.PlayerStats[i].LScore))
+					score := data.CurrLevelSess.PlayerStats[i].Score + data.CurrLevelSess.PlayerStats[i].LScore
+					if score > 9999999 {
+						score = 9999999
+					}
+					ele.Text.SetText(fmt.Sprintf("%07d", score))
 				case "player_deaths":
-					ele.Text.SetText(fmt.Sprintf("x%03d", data.CurrLevelSess.PlayerStats[i].Deaths))
+					deaths := data.CurrLevelSess.PlayerStats[i].Deaths
+					if deaths > 999 {
+						deaths = 999
+					}
+					ele.Text.SetText(fmt.Sprintf("x%03d", deaths))
 				case "player_gems":
-					ele.Text.SetText(fmt.Sprintf("x%04d", data.CurrLevelSess.PlayerStats[i].Gems+data.CurrLevelSess.PlayerStats[i].LGems))
+					gems := data.CurrLevelSess.PlayerStats[i].Gems + data.CurrLevelSess.PlayerStats[i].LGems
+					if gems > 99999 {
+						gems = 99999
+					}
+					ele.Text.SetText(fmt.Sprintf("x%05d", gems))
+				case "player_bombs":
+					if bombs > 4 {
+						ele.Text.Show()
+						ele.Text.SetText(fmt.Sprintf("x%02d", bombs))
+					} else {
+						ele.Text.Hide()
+					}
+				case "player_bomb_count_1":
+					ele.Object.Hidden = bombs < 1 || bombs > 4
+				case "player_bomb_count_2":
+					ele.Object.Hidden = bombs < 2 || bombs > 4
+				case "player_bomb_count_3":
+					ele.Object.Hidden = bombs < 3 || bombs > 4
+				case "player_bomb_count_4":
+					ele.Object.Hidden = bombs < 4
 				case "player_inv_item":
 					if p.Inventory == nil {
 						ele.Object.Hidden = true
