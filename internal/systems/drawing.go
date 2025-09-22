@@ -11,6 +11,32 @@ import (
 	"github.com/gopxl/pixel"
 )
 
+//func AnimationTransitionSystem() {
+//	for _, result := range myecs.Manager.Query(myecs.HasAnimation) {
+//		obj, okO := result.Components[myecs.Object].(*object.Object)
+//		theAnim := result.Components[myecs.Animated]
+//		if okO && !obj.Hidden {
+//			if theAnim == nil {
+//				continue
+//			} else if animSet, okAS := theAnim.(*reanimator.TreeSet); okAS {
+//				animSet.Transition()
+//			} else if anims, okS := theAnim.([]*reanimator.Tree); okS {
+//				for _, anim := range anims {
+//					anim.Transition()
+//				}
+//			} else if things, okT := theAnim.([]interface{}); okT {
+//				for _, thing := range things {
+//					if anim, okA := thing.(*reanimator.Tree); okA {
+//						anim.Transition()
+//					}
+//				}
+//			} else if anim, okA := theAnim.(*reanimator.Tree); okA {
+//				anim.Transition()
+//			}
+//		}
+//	}
+//}
+
 func AnimationSystem() {
 	for _, result := range myecs.Manager.Query(myecs.HasAnimation) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)

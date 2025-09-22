@@ -50,6 +50,15 @@ func (ts *TreeSet) Update() {
 	}
 }
 
+//func (ts *TreeSet) Transition() {
+//	for _, anim := range ts.Set {
+//		if anim == nil {
+//			continue
+//		}
+//		anim.Transition()
+//	}
+//}
+
 type Tree struct {
 	Elements  map[string]*Anim
 	Choose    func() string
@@ -124,6 +133,26 @@ func (t *Tree) GetCurrentFrame() int {
 	return t.frame
 }
 
+//func (t *Tree) Transition() {
+//	if !t.Done {
+//		if FrameSwitch || t.update {
+//			t.anim = t.choose()
+//			if t.anim == nil {
+//				t.spr = nil
+//				t.animKey = ""
+//				t.frame = 0
+//			} else if t.anim.Step+1%len(t.anim.S) == 0 &&
+//				t.anim.Finish == Tran && t.anim.Triggers != nil {
+//				// run the transition trigger if it exists
+//				step := len(t.anim.S)
+//				if fn, ok := t.anim.Triggers[step]; ok {
+//					fn(t.anim, t.anim.Key, step)
+//				}
+//			}
+//		}
+//	}
+//}
+
 func (t *Tree) Update() {
 	if !t.Done {
 		if FrameSwitch || t.update {
@@ -137,6 +166,7 @@ func (t *Tree) Update() {
 				pKey := t.animKey
 				pFrame := t.frame
 				var trigger int
+				finish := false
 				if t.anim.Key != t.animKey {
 					t.anim.Step = 0
 					trigger = 0
@@ -144,15 +174,13 @@ func (t *Tree) Update() {
 					t.anim.Step++
 					trigger = t.anim.Step
 					if t.anim.Step%len(t.anim.S) == 0 {
+						finish = true
 						switch t.anim.Finish {
 						case Loop:
 							t.anim.Step = 0
 							trigger = 0
-						case Hold:
+						case Hold, Tran:
 							t.anim.Step = len(t.anim.S) - 1
-						case Tran:
-							t.anim.Step = len(t.anim.S) - 1
-							t.update = true
 						case Done:
 							t.anim.Step = len(t.anim.S) - 1
 							t.Done = true
@@ -163,15 +191,15 @@ func (t *Tree) Update() {
 					if fn, ok := t.anim.Triggers[trigger]; ok {
 						fn(t.anim, pKey, pFrame)
 					}
+					if finish && t.anim.Finish == Tran {
+						if fn, ok := t.anim.Triggers[trigger+1]; ok {
+							fn(t.anim, pKey, pFrame)
+						}
+					}
 				}
 				t.spr = t.anim.S[t.anim.Step]
-				if t.update {
-					t.animKey = t.Default
-					t.frame = t.anim.Step
-				} else {
-					t.animKey = t.anim.Key
-					t.frame = t.anim.Step
-				}
+				t.animKey = t.anim.Key
+				t.frame = t.anim.Step
 			}
 		}
 	}

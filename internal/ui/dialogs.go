@@ -279,8 +279,18 @@ func DisposeDialog(d *Dialog) {
 }
 
 func DisposeSubElements(elements []*Element) {
-	for _, e := range elements {
-		DisposeSubElements(e.Elements)
-		myecs.Manager.DisposeEntity(e.Entity)
+	for _, ele := range elements {
+		switch ele.ElementType {
+		case DropdownElement, InputElement, MultiLineInputElement:
+			myecs.Manager.DisposeEntity(ele.TextEntity)
+		case ScrollElement:
+			myecs.Manager.DisposeEntity(ele.ScrollUp.Entity)
+			myecs.Manager.DisposeEntity(ele.ScrollDown.Entity)
+			myecs.Manager.DisposeEntity(ele.Bar.Entity)
+		case SliderElement:
+			myecs.Manager.DisposeEntity(ele.Bar.Entity)
+		}
+		DisposeSubElements(ele.Elements)
+		myecs.Manager.DisposeEntity(ele.Entity)
 	}
 }

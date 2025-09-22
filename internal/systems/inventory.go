@@ -223,6 +223,7 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 							if anim.Done || ch.State != data.DoingAction {
 								myecs.Manager.DisposeEntity(m)
 								ch.StoredBlocks = append(ch.StoredBlocks, digTile)
+								RemoveMask(digTile)
 							}
 						}))
 						return true

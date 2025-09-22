@@ -12,12 +12,14 @@ var (
 		Y: 0,
 	}
 	TileRect pixel.Rect
+	HalfVec  pixel.Vec
 )
 
 func SetTileSize(s float64) {
 	TileSize = s
 	HalfSize = s * 0.5
 	TileRect = pixel.R(0, 0, s, s)
+	HalfVec = pixel.V(HalfSize, HalfSize)
 }
 
 func MapToWorld(a Coords) pixel.Vec {

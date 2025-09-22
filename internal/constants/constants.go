@@ -134,6 +134,7 @@ const (
 	DemonLongJumpVSpeed  = 0.8
 	DemonLongJumpHSpeed  = 1.7
 	DemonLongJumpCounter = 16
+	DemonInHoleCounter   = 32
 
 	// Fly Constants
 	FlySpeed = 2

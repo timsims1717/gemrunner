@@ -92,6 +92,9 @@ const (
 	Dead
 	Waiting
 	Regen
+	Tripping
+	InHole
+	ClimbingOut
 )
 
 type ItemAction int
@@ -145,6 +148,7 @@ func (s CharacterState) String() string {
 }
 
 type Flags struct {
+	NoCollision  bool
 	LeftWall     bool
 	RightWall    bool
 	Ceiling      bool
@@ -168,7 +172,7 @@ type Flags struct {
 	JumpL        bool
 	Thrown       bool
 	Death        death.Type
-	Attack       bool
+	NextStep     bool
 	Regen        bool
 	Transport    bool
 	Flying       bool

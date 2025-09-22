@@ -136,17 +136,18 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if (enemy.State == data.Grounded ||
 			enemy.State == data.OnLadder ||
 			enemy.State == data.Leaping ||
-			enemy.State == data.Flying) &&
+			enemy.State == data.Flying ||
+			enemy.State == data.InHole) &&
 			(ch.State == data.Grounded ||
 				ch.State == data.OnLadder ||
 				ch.State == data.Leaping ||
 				ch.State == data.Jumping ||
-				(ch.State == data.Falling && enemy.Flags.Flying) ||
+				(ch.State == data.Falling && (enemy.Flags.Flying || enemy.State == data.InHole)) ||
 				ch.State == data.Flying ||
 				ch.State == data.DoingAction) {
 			ch.Flags.Death = death.Dying
 			ch.State = data.Hit
-			enemy.Flags.Attack = true
+			enemy.Flags.NextStep = false
 			enemy.State = data.Attack
 		}
 	}

@@ -31,7 +31,7 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 	ui.ClearDialogStack()
 	systems.DisposeEditor()
 	systems.DisposeEditorDialogs()
-	systems.DisposeInGameDialogs()
+	//systems.DisposeInGameDialogs()
 	systems.PuzzleDispose()
 	data.CurrPuzzleSet = nil
 }
@@ -128,6 +128,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	if reanimator.FrameSwitch {
 		data.Editor.FrameCount++
 	}
+	//systems.AnimationTransitionSystem()
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	if !ui.DialogStackOpen {

@@ -51,7 +51,7 @@ func (rw *RandomWalk) GetActions() data.Actions {
 		l := !rw.Ch.Flags.LeftWall
 		r := !rw.Ch.Flags.RightWall
 		u := !rw.Ch.Flags.Ceiling && currTile.IsLadder()
-		d := !belowTile.IsNilOrSolid()
+		d := !belowTile.IsSolid()
 		rn := random.Level.Intn(4)
 		if rn == 0 && l {
 			rw.Direction = data.Left

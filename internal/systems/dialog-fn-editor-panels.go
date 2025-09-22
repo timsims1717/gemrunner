@@ -116,9 +116,9 @@ func OnOpenBombOptions() {
 				} else if firstTile.Block == data.BlockBigBombLit {
 					ele.Text.SetText("Lit Big Bomb Options")
 				} else if firstTile.Block == data.BlockSmallBomb {
-					ele.Text.SetText("Small Bomb Options")
+					ele.Text.SetText("Bomb Options")
 				} else if firstTile.Block == data.BlockSmallBombLit {
-					ele.Text.SetText("Lit Small Bomb Options")
+					ele.Text.SetText("Lit Bomb Options")
 				}
 			case "bomb_regenerate_delay_input":
 				ele.InputType = ui.Numeric

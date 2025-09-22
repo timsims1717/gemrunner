@@ -9083,7 +9083,177 @@
       "key": "demon_trans_out",
       "anim": true,
       "x": 496,
-      "y": 416 ,
+      "y": 416,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 384,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 400,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 416,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 432,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 448,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 464,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 480,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 496,
+      "y": 432,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 384,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 400,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 384,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_tripping",
+      "anim": true,
+      "x": 416,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_in_hole",
+      "anim": true,
+      "x": 416,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "demon_hole_look",
+      "anim": true,
+      "x": 384,
+      "y": 352,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_hole_look",
+      "anim": true,
+      "x": 432,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 448,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 464,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 480,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 496,
+      "y": 448,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 384,
+      "y": 464,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "demon_climb_out",
+      "anim": true,
+      "x": 400,
+      "y": 464,
       "h": 16,
       "w": 16
     },

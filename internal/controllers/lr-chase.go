@@ -3,9 +3,13 @@ package controllers
 import (
 	"fmt"
 	"gemrunner/internal/data"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
+	"github.com/gopxl/pixel/imdraw"
+	"golang.org/x/image/colornames"
+	"image/color"
 	"math"
 )
 
@@ -44,9 +48,17 @@ func (lr *LRChase) GetActions() data.Actions {
 	if lr.Target == nil {
 		return actions
 	}
+	if lr.Ch.State == data.ClimbingOut {
+		actions.Direction = lr.Ch.Actions.PrevDirection
+		return actions
+	}
 	x, y := world.WorldToMap(lr.Ch.Object.Pos.X, lr.Ch.Object.Pos.Y)
 	px, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
 	// picked a player
+	// if in hole, treat as if above current pos
+	if lr.Ch.State == data.InHole {
+		y++
+	}
 	// enemy is on the same y level as player
 	if py == y && lr.Target.State != data.Falling {
 		sx := x
@@ -95,9 +107,9 @@ func (lr *LRChase) GetActions() data.Actions {
 					actions.Direction = data.Left
 				}
 			}
-			//if debug.ShowDebug {
-			//
-			//}
+			if debug.ShowDebug {
+				debugHorizontal(x, y, px, colornames.Yellow)
+			}
 			return actions
 		}
 	}
@@ -110,6 +122,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 	bestScore := 10000
 	actions.Direction = data.NoDirection
 	var left, right int
+	var bestSeries []world.Coords
 
 	// scan to the left
 	for sx > 0 {
@@ -149,19 +162,27 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 	// scan the current x up and down as the best option
 	sx = startX
 	belowTile := data.CurrLevel.Get(sx, sy-1)
-	if sy > 0 && !belowTile.IsSolid() { // can move down
-		currScore := lr.scanDown(sx, startX, sy)
+	if sy > 0 && !belowTile.IsSolid() &&
+		belowTile.Block != data.BlockTurf &&
+		lr.Ch.State != data.InHole { // can move down
+		currScore, series := lr.scanDown(sx, startX, sy)
 		if currScore < bestScore {
 			bestScore = currScore
 			actions.Direction = data.Down
+			if debug.ShowDebug {
+				bestSeries = series
+			}
 		}
 	}
 	nextTile := data.CurrLevel.Get(sx, sy)
 	if nextTile.IsLadder() { // can move up a ladder
-		currScore := lr.scanUp(sx, startX, sy)
+		currScore, series := lr.scanUp(sx, startX, sy)
 		if currScore < bestScore {
 			bestScore = currScore
 			actions.Direction = data.Up
+			if debug.ShowDebug {
+				bestSeries = series
+			}
 		}
 	}
 
@@ -178,19 +199,26 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 			}
 		}
 		belowTile = data.CurrLevel.Get(sx, sy-1)
-		if sy > 0 && !belowTile.IsSolid() { // can move down
-			currScore := lr.scanDown(sx, startX, sy)
+		if sy > 0 && !belowTile.IsSolid() &&
+			belowTile.Block != data.BlockTurf { // can move down
+			currScore, series := lr.scanDown(sx, startX, sy)
 			if currScore < bestScore {
 				bestScore = currScore
 				actions.Direction = currDir
+				if debug.ShowDebug {
+					bestSeries = series
+				}
 			}
 		}
 		nextTile = data.CurrLevel.Get(sx, sy)
 		if nextTile.IsLadder() { // can move up a ladder
-			currScore := lr.scanUp(sx, startX, sy)
+			currScore, series := lr.scanUp(sx, startX, sy)
 			if currScore < bestScore {
 				bestScore = currScore
 				actions.Direction = currDir
+				if debug.ShowDebug {
+					bestSeries = series
+				}
 			}
 		}
 		if currDir == data.Left {
@@ -199,10 +227,14 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 			sx--
 		}
 	}
+	if debug.ShowDebug {
+		debugSeries(bestSeries, colornames.Yellow)
+	}
 	return actions
 }
 
-func (lr *LRChase) scanDown(x, startX, startY int) int {
+func (lr *LRChase) scanDown(x, startX, startY int) (int, []world.Coords) {
+	var series []world.Coords
 	y := startY
 	_, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
 	for y > 0 && !data.CurrLevel.Get(x, y-1).IsSolid() { // can move down
@@ -227,17 +259,25 @@ func (lr *LRChase) scanDown(x, startX, startY int) int {
 		y--
 	}
 
+	// series
+	if debug.ShowDebug {
+		for sy := startY; sy >= y; sy-- {
+			series = append(series, world.Coords{X: x, Y: sy})
+		}
+	}
+
 	// score
 	if y == py {
-		return util.Abs(startX - x)
+		return util.Abs(startX - x), series
 	} else if y < py {
-		return py - y + 200
+		return py - y + 200, series
 	} else {
-		return y - py + 100
+		return y - py + 100, series
 	}
 }
 
-func (lr *LRChase) scanUp(x, startX, startY int) int {
+func (lr *LRChase) scanUp(x, startX, startY int) (int, []world.Coords) {
+	var series []world.Coords
 	y := startY
 	_, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
 	for y < data.CurrLevel.Metadata.Height-1 && data.CurrLevel.Get(x, y).IsLadder() { // while can go up
@@ -262,13 +302,61 @@ func (lr *LRChase) scanUp(x, startX, startY int) int {
 		}
 	}
 
+	// series
+	if debug.ShowDebug {
+		for sy := startY; sy <= y; sy++ {
+			series = append(series, world.Coords{X: x, Y: sy})
+		}
+	}
+
 	// score
 	if y == py {
-		return util.Abs(startX - x)
+		return util.Abs(startX - x), series
 	} else if y < py {
-		return py - y + 200
+		return py - y + 200, series
 	} else {
-		return y - py + 100
+		return y - py + 100, series
+	}
+}
+
+func debugHorizontal(x, y, tx int, col color.RGBA) color.RGBA {
+	dx := x
+	for {
+		v := world.MapToWorld(world.Coords{X: dx, Y: y}).Add(world.HalfVec)
+		x2 := dx + 1
+		if x > tx {
+			x2 = dx - 1
+		}
+		v2 := world.MapToWorld(world.Coords{X: x2, Y: y}).Add(world.HalfVec)
+		debug.AddLine(col, imdraw.RoundEndShape, v, v2, 2.)
+		col.G -= 10
+		if tx > x {
+			dx++
+			if dx >= tx {
+				break
+			}
+		} else {
+			dx--
+			if dx <= tx {
+				break
+			}
+		}
+	}
+	return col
+}
+
+func debugSeries(a []world.Coords, col color.RGBA) {
+	if len(a) <= 1 {
+		return
+	}
+	for i, c := range a {
+		if i >= len(a)-1 {
+			return
+		}
+		v := world.MapToWorld(world.Coords{X: c.X, Y: c.Y}).Add(world.HalfVec)
+		v2 := world.MapToWorld(world.Coords{X: a[i+1].X, Y: a[i+1].Y}).Add(world.HalfVec)
+		debug.AddLine(col, imdraw.RoundEndShape, v, v2, 2.)
+		col.G -= 10
 	}
 }
 

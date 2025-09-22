@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/data/death"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
+	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 )
 
@@ -72,7 +73,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	fullAttack := []int{0, 1, 2, 3, 4, 5, 4, 5, 4, 5}
 	attack := reanimator.NewBatchAnimationCustom("attack", batch, "demon_attack", fullAttack, reanimator.Tran)
 	attack.SetEndTrigger(func() {
-		ch.Flags.Attack = false
+		ch.Flags.NextStep = true
 	})
 	hit := reanimator.NewBatchAnimation("hit", batch, "demon_hit", reanimator.Tran)
 	hit.SetEndTrigger(func() {
@@ -98,6 +99,79 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Flags.ItemAction = data.NoItemAction
 		ch.Object.Layer = ch.Layer
 	})
+	tripping := reanimator.NewBatchAnimation("tripping", batch, "demon_tripping", reanimator.Tran)
+	tripping.SetTriggerAll(func() {
+		switch tripping.Step {
+		case 5:
+			if ch.Object.Flip {
+				ch.Object.Pos.X -= 2
+			} else {
+				ch.Object.Pos.X += 2
+			}
+		case 6:
+			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			tile := data.CurrLevel.Get(x, y-1)
+			ch.Object.Pos.X = tile.Object.Pos.X
+			ch.Object.Pos.Y = tile.Object.Pos.Y + 6
+		case 7:
+			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			tile := data.CurrLevel.Get(x, y)
+			ch.Object.Pos = tile.Object.Pos
+		}
+		ch.Object.Update()
+	})
+	tripping.SetEndTrigger(func() {
+		ch.Flags.NextStep = true
+	})
+	inHole := reanimator.NewBatchSprite("in_hole", batch, "demon_in_hole", reanimator.Hold)
+	holeLookFore := reanimator.NewBatchAnimationCustom("hole_look_fore", batch, "demon_hole_look", []int{0, 1, 1, 0, 0, 0}, reanimator.Tran)
+	holeLookFore.SetEndTrigger(func() {
+		ch.Flags.NextStep = true
+		ch.Flags.JumpL = false
+		ch.Flags.JumpR = false
+	})
+	holeLookBack := reanimator.NewBatchAnimationCustom("hole_look_back", batch, "demon_hole_look", []int{0, 1, 1, 1, 1, 0}, reanimator.Tran)
+	holeLookBack.SetTrigger(5, func() {
+		ch.Object.Flip = !ch.Object.Flip
+	})
+	holeLookBack.SetEndTrigger(func() {
+		ch.Flags.NextStep = true
+		ch.Flags.JumpL = false
+		ch.Flags.JumpR = false
+	})
+	climbingOut := reanimator.NewBatchAnimation("climb_out", batch, "demon_climb_out", reanimator.Tran)
+	climbingOut.SetTriggerAll(func() {
+		xD := 0.
+		yD := 0.
+		switch climbingOut.Step {
+		case 1:
+			xD = 3
+			yD = 3
+		case 2:
+			xD = 4
+			yD = 4
+		case 3:
+			xD = 6
+			yD = 5
+		case 4:
+			xD = 6
+			yD = 10
+		case 5, 6:
+			xD = 8
+			yD = 13
+		}
+		if ch.Object.Flip {
+			xD = -xD
+		}
+		//fmt.Println(xD, yD)
+		ch.Object.Pos.X = ch.NextTile.Object.Pos.X + xD
+		ch.Object.Pos.Y = ch.NextTile.Object.Pos.Y + yD
+		ch.Flags.NoCollision = true
+		//ch.Object.Update()
+	})
+	climbingOut.SetEndTrigger(func() {
+		ch.Flags.NextStep = true
+	})
 	tree := reanimator.New().
 		AddAnimation(regen).
 		AddAnimation(idle).
@@ -117,6 +191,11 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(attack).
 		AddAnimation(transIn).
 		AddAnimation(transExit).
+		AddAnimation(tripping).
+		AddAnimation(inHole).
+		AddAnimation(holeLookFore).
+		AddAnimation(holeLookBack).
+		AddAnimation(climbingOut).
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
@@ -185,6 +264,20 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 				return "jump"
 			case data.Falling:
 				return "fall"
+			case data.Tripping:
+				return "tripping"
+			case data.InHole:
+				if ch.Flags.JumpL || ch.Flags.JumpR {
+					if ch.Flags.JumpL == ch.Object.Flip {
+						return "hole_look_fore"
+					} else {
+						return "hole_look_back"
+					}
+				} else {
+					return "in_hole"
+				}
+			case data.ClimbingOut:
+				return "climb_out"
 			case data.Leaping:
 				if ch.Flags.LeapOff {
 					return "leap_off"

@@ -40,6 +40,7 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	ui.CloseDialog(constants.DialogPlayer3Inv)
 	ui.CloseDialog(constants.DialogPlayer4Inv)
 	ui.CloseDialog(constants.DialogPuzzleTitle)
+	ui.CloseDialog(constants.DialogPuzzleTimer)
 	systems.LevelSessionDispose()
 	systems.LevelDispose()
 	systems.ClearTemp()
@@ -109,6 +110,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	// function systems
 	systems.FunctionSystem()
 	systems.InterpolationSystem()
+	//systems.AnimationTransitionSystem()
 	systems.TestSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)

@@ -219,20 +219,7 @@ func (t *Tile) IsEmpty() bool {
 }
 
 func (t *Tile) IsSolid() bool {
-	return t == nil || (!t.Flags.Collapse &&
-		!t.IsLadder() &&
-		(t.Block == BlockTurf ||
-			t.Block == BlockBedrock ||
-			t.Block == BlockFall ||
-			t.Block == BlockPhase ||
-			t.Block == BlockCracked ||
-			t.Block == BlockClose ||
-			t.Block == BlockSpike ||
-			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
-}
-
-func (t *Tile) IsNilOrSolid() bool {
-	return t == nil || (!t.Flags.Collapse &&
+	return t == nil || (!(t.Flags.Collapse && t.Flags.Occupied == nil) &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
@@ -245,7 +232,7 @@ func (t *Tile) IsNilOrSolid() bool {
 }
 
 func (t *Tile) IsRunnable() bool {
-	return t == nil || (!t.Flags.Collapse &&
+	return t == nil || (!(t.Flags.Collapse && t.Flags.Occupied == nil) &&
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
 			t.Block == BlockLadderTurf ||
@@ -350,14 +337,15 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 }
 
 type TileFlags struct {
-	Cracked     bool `json:"-"`
-	Collapse    bool `json:"-"`
-	BareFangs   bool `json:"-"`
-	Regen       bool `json:"-"`
-	PhaseChange bool `json:"-"`
-	LCracked    bool `json:"-"`
-	LCollapse   bool `json:"-"`
-	Using       bool `json:"-"`
+	Cracked     bool     `json:"-"`
+	Collapse    bool     `json:"-"`
+	BareFangs   bool     `json:"-"`
+	Regen       bool     `json:"-"`
+	PhaseChange bool     `json:"-"`
+	LCracked    bool     `json:"-"`
+	LCollapse   bool     `json:"-"`
+	Using       bool     `json:"-"`
+	Occupied    *Dynamic `json:"-"`
 }
 
 func DefaultFlags() TileFlags {

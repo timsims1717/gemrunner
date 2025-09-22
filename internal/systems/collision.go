@@ -14,7 +14,7 @@ func CollisionSystem() {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		if okO && okC && !obj.Hidden &&
-			ch.State != data.Hit && ch.State != data.Dead {
+			ch.State != data.Hit && ch.State != data.Dead && !ch.Flags.NoCollision {
 			setCollisionFlags(ch)
 			chPos := ch.Object.Pos
 			pPos := ch.Object.LastPos

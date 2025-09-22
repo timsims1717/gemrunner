@@ -130,6 +130,7 @@ type Element struct {
 	//FloatValue float64
 	InFocus    bool
 	Text       *typeface.Text
+	TextEntity *ecs.Entity
 	CaretIndex int
 	CaretObj   *object.Object
 	InputType  ValueType
