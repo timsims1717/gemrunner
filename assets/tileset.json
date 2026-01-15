@@ -79,6 +79,20 @@
       "w": 16
     },
     {
+      "key": "rock_phase_top",
+      "x": 0,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "rock_phase",
+      "x": 0,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "slate_top",
       "x": 48,
       "y": 32,
@@ -152,6 +166,20 @@
       "key": "slate_bedrock_bottom",
       "x": 48,
       "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_phase_top",
+      "x": 32,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "slate_phase",
+      "x": 32,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -233,6 +261,20 @@
       "w": 16
     },
     {
+      "key": "brick_phase_top",
+      "x": 64,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "brick_phase",
+      "x": 64,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "gravel_top",
       "x": 112,
       "y": 32,
@@ -305,6 +347,20 @@
       "key": "gravel_bedrock_bottom",
       "x": 112,
       "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gravel_phase_top",
+      "x": 96,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "gravel_phase",
+      "x": 96,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -386,6 +442,20 @@
       "w": 16
     },
     {
+      "key": "dirt_phase_top",
+      "x": 128,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "dirt_phase",
+      "x": 128,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "stone_top",
       "x": 176,
       "y": 32,
@@ -463,6 +533,20 @@
       "w": 16
     },
     {
+      "key": "stone_phase_top",
+      "x": 160,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "stone_phase",
+      "x": 160,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "shell_top",
       "x": 208,
       "y": 32,
@@ -535,6 +619,20 @@
       "key": "shell_bedrock_bottom",
       "x": 208,
       "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "shell_phase_top",
+      "x": 192,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "shell_phase",
+      "x": 192,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -616,6 +714,20 @@
       "w": 16
     },
     {
+      "key": "metal_phase_top",
+      "x": 224,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "metal_phase",
+      "x": 224,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "ice_top",
       "x": 272,
       "y": 32,
@@ -689,6 +801,20 @@
       "key": "ice_bedrock_bottom",
       "x": 272,
       "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ice_phase_top",
+      "x": 256,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "ice_phase",
+      "x": 256,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -770,6 +896,20 @@
       "w": 16
     },
     {
+      "key": "tree_phase_top",
+      "x": 288,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "tree_phase",
+      "x": 288,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "crystal_top",
       "x": 336,
       "y": 32,
@@ -847,6 +987,20 @@
       "w": 16
     },
     {
+      "key": "crystal_phase_top",
+      "x": 320,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "crystal_phase",
+      "x": 320,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "bubble_top",
       "x": 368,
       "y": 32,
@@ -920,6 +1074,20 @@
       "key": "bubble_bedrock_bottom",
       "x": 368,
       "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bubble_phase_top",
+      "x": 352,
+      "y": 96,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "bubble_phase",
+      "x": 352,
+      "y": 80,
       "h": 16,
       "w": 16
     },
@@ -1889,6 +2057,63 @@
       "w": 16
     },
 
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 608,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 624,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 640,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 656,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 672,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 688,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "open_block_mask",
+      "anim": true,
+      "x": 704,
+      "y": 48,
+      "h": 16,
+      "w": 16
+    },
+
 
 
 
@@ -2095,6 +2320,14 @@
       "h": 16,
       "w": 16
     },
+    {
+      "key": "barrier",
+      "x": 560,
+      "y": 80,
+      "h": 16,
+      "w": 16
+    },
+
     {
       "key": "bar",
       "x": 464,
@@ -2746,6 +2979,31 @@
       "anim": true,
       "x": 720,
       "y": 192,
+      "h": 16,
+      "w": 16
+    },
+
+    {
+      "key": "lever",
+      "anim": true,
+      "x": 560,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "button",
+      "anim": true,
+      "x": 576,
+      "y": 304,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "button_down",
+      "anim": true,
+      "x": 592,
+      "y": 304,
       "h": 16,
       "w": 16
     },
@@ -9665,6 +9923,14 @@
       "w": 16
     },
     {
+      "key": "lever_blue",
+      "anim": true,
+      "x": 64,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "jetpack_blue",
       "x": 0,
       "y": 112,
@@ -9757,6 +10023,14 @@
       "key": "small_bomb_green",
       "x": 176,
       "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lever_green",
+      "anim": true,
+      "x": 160,
+      "y": 128,
       "h": 16,
       "w": 16
     },
@@ -9857,6 +10131,14 @@
       "w": 16
     },
     {
+      "key": "lever_purple",
+      "anim": true,
+      "x": 256,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "jetpack_purple",
       "x": 192,
       "y": 112,
@@ -9949,6 +10231,14 @@
       "key": "small_bomb_orange",
       "x": 368,
       "y": 144,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "lever_orange",
+      "anim": true,
+      "x": 352,
+      "y": 128,
       "h": 16,
       "w": 16
     },

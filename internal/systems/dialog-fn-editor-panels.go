@@ -279,10 +279,92 @@ func ConfirmItemOptions() {
 	}
 }
 
+// Barrier Options
+
+func customizeBarrierOptions() {
+	barrierDlg := ui.Dialogs[constants.DialogBarrier]
+	barrierDlg.OnOpen = OnOpenBarrierOptions
+	for _, e := range barrierDlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmBarrierOptions
+		case "barrier_complete_delay_minus":
+			ele.OnClick = func() {
+				ChangeNumberInput(barrierDlg.Get("barrier_complete_delay_input"), -1)
+			}
+		case "barrier_complete_delay_plus":
+			ele.OnClick = func() {
+				ChangeNumberInput(barrierDlg.Get("barrier_complete_delay_input"), 1)
+			}
+		case "cancel":
+			ele.OnClick = CloseDialog(constants.DialogBarrier)
+		}
+	}
+}
+
+func OnOpenBarrierOptions() {
+	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
+		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
+			fmt.Println("WARNING: no tiles selected by wrench")
+			ui.CloseDialog(constants.DialogBarrier)
+			return
+		}
+		firstTile := data.CurrPuzzleSet.CurrPuzzle.WrenchTiles[0]
+		for _, ele := range ui.Dialogs[constants.DialogBarrier].Elements {
+			switch ele.Key {
+			case "barrier_toggle_check":
+				ui.SetChecked(ele, firstTile.Metadata.Toggle)
+			case "barrier_complete_check":
+				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
+			case "barrier_complete_delay_input":
+				ele.InputType = ui.Numeric
+				ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
+			}
+		}
+	}
+}
+
+func ConfirmBarrierOptions() {
+	if data.Editor != nil && data.CurrPuzzleSet.CurrPuzzle != nil {
+		if len(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles) < 1 {
+			fmt.Println("WARNING: no tiles selected by wrench")
+			ui.CloseDialog(constants.DialogBarrier)
+			return
+		}
+		var toggle, complete bool
+		var timer int
+		for _, ele := range ui.Dialogs[constants.DialogBarrier].Elements {
+			switch ele.Key {
+			case "barrier_toggle_check":
+				toggle = ele.Checked
+			case "barrier_complete_check":
+				complete = ele.Checked
+			case "barrier_complete_delay_input":
+				di, err := strconv.Atoi(ele.Text.Raw)
+				if err != nil {
+					fmt.Println("WARNING: complete delay not an int:", err)
+					di = 0
+				}
+				timer = di
+			}
+		}
+		for _, tile := range data.CurrPuzzleSet.CurrPuzzle.WrenchTiles {
+			tile.Metadata.Toggle = toggle
+			tile.Metadata.Regenerate = complete
+			tile.Metadata.RegenDelay = timer
+			tile.Metadata.Changed = true
+		}
+		ui.CloseDialog(constants.DialogBarrier)
+		data.CurrPuzzleSet.CurrPuzzle.Update = true
+		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+	}
+}
+
 // Other
 
 func ChangeNumberInput(in *ui.Element, change int) {
-	ChangeNumberInputWithLimits(in, change, 1, 99)
+	ChangeNumberInputWithLimits(in, change, 0, 99)
 }
 
 func ChangeNumberInputWithLimits(in *ui.Element, change, min, max int) {

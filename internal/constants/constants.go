@@ -73,6 +73,13 @@ const (
 	UIInfinity          = "tile_ui_infinity"
 	UINumber            = "tile_ui_%d"
 	UINumberX           = "tile_ui_%dx"
+	UIRegenerate        = "tile_ui_regen"
+	UIEnemy             = "tile_ui_enemy"
+	UIShow              = "tile_ui_show"
+	UIFlip              = "tile_ui_flip"
+	UIDoor              = "tile_ui_door"
+	UILock              = "tile_ui_lock"
+	UIUnlock            = "tile_ui_unlock"
 
 	// UI Constants
 	ScrollSpeed = 250

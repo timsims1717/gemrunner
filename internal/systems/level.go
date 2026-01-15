@@ -69,6 +69,11 @@ func LevelInit(record bool) {
 				case 5, 6, 7, 0:
 
 				}
+			case data.BlockBarrier:
+				if tile.Metadata.Toggle {
+					tile.Flags.Collapse = true
+					tile.Counter = 10
+				}
 			case data.BlockClose:
 				tile.Flags.Collapse = true
 				tile.Counter = constants.CrackedCounter + 1

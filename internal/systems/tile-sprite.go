@@ -161,7 +161,7 @@ func NeedsUpdate(tile *data.Tile) bool {
 	}
 	switch tile.Block {
 	case data.BlockTurf, data.BlockBedrock,
-		data.BlockFall, data.BlockCracked, data.BlockClose, data.BlockPhase,
+		data.BlockFall, data.BlockCracked, data.BlockClose, data.BlockPhase, data.BlockBarrier,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf,
 		data.BlockSpike, data.BlockHideout, data.BlockLiquid:
 		return true
@@ -180,12 +180,24 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
 	case data.BlockTurf, data.BlockBedrock,
-		data.BlockFall, data.BlockCracked, data.BlockClose, data.BlockPhase,
+		data.BlockFall, data.BlockCracked, data.BlockClose,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf:
 		if data.EditorDraw {
 			sprs = GetBlockSpritesEditor(tile)
 		} else {
 			sprs = GetBlockSprites(tile)
+		}
+	case data.BlockPhase, data.BlockBarrier:
+		if tile.Flags.Collapse && tile.Counter > constants.CollapseCounter {
+			return sprs
+		}
+		sprs = append(sprs, newSprChanger(GetPhaseSprite(tile, false), constants.TileBatch))
+		if data.EditorDraw {
+			if tile.Block == data.BlockPhase {
+				sprs = append(sprs, newSprChanger(constants.TilePhase, constants.TileBatch))
+			} else {
+				sprs = append(sprs, newSprChanger(constants.TileBarrier, constants.TileBatch))
+			}
 		}
 	case data.BlockSpike:
 		sprs = append(sprs, newSprChanger(GetSpikeSprite(tile), constants.TileBatch))
@@ -240,14 +252,17 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 func GetBlockSpritesEditor(tile *data.Tile) []*spriteChanger {
 	var sprs []*spriteChanger
 	sprs = append(sprs, newSprChanger(GetBlockSprite(tile), constants.TileBatch))
-	if tile.Block == data.BlockFall {
+	switch tile.Block {
+	case data.BlockFall:
 		sprs = append(sprs, newSprChanger(constants.TileFall, constants.TileBatch))
-	} else if tile.Block == data.BlockCracked {
+	case data.BlockCracked:
 		sprs = append(sprs, newSprChanger(constants.TileCracked, constants.TileBatch))
-	} else if tile.Block == data.BlockClose {
+	case data.BlockClose:
 		sprs = append(sprs, newSprChanger(constants.TileClose, constants.TileBatch))
-	} else if tile.Block == data.BlockPhase {
+	case data.BlockPhase:
 		sprs = append(sprs, newSprChanger(constants.TilePhase, constants.TileBatch))
+	case data.BlockBarrier:
+		sprs = append(sprs, newSprChanger(constants.TileBarrier, constants.TileBatch))
 	}
 	return sprs
 }
@@ -255,7 +270,7 @@ func GetBlockSpritesEditor(tile *data.Tile) []*spriteChanger {
 func GetBlockSprites(tile *data.Tile) []*spriteChanger {
 	var sprs []*spriteChanger
 	if tile.Flags.Collapse &&
-		(!tile.Flags.BareFangs && tile.Counter > constants.CollapseCounter) {
+		!tile.Flags.BareFangs && tile.Counter > constants.CollapseCounter {
 		return sprs
 	}
 	spr := newSprChanger(GetBlockSprite(tile), constants.TileBatch)
@@ -398,6 +413,22 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 		switch tile.Block {
 		case data.BlockPhase:
 			sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, tile.Metadata.Phase), constants.UIBatch))
+		case data.BlockBarrier:
+			yOffset := 4.
+			if !tile.Metadata.Toggle {
+				sprs = append(sprs, newSprChanger(constants.UIShow, constants.UIBatch).WithOffset(pixel.V(-4, yOffset)))
+			}
+			if tile.Metadata.Regenerate {
+				sprs = append(sprs, newSprChanger(constants.UIDoor, constants.UIBatch).WithOffset(pixel.V(4, yOffset)))
+				timer := tile.Metadata.RegenDelay
+				yOffset = -4
+				if timer < 10 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+				} else {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
+				}
+			}
 		case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
 			exitIndex := tile.Metadata.ExitIndex + 1
 			if tile.Metadata.ExitIndex == -1 {
@@ -428,7 +459,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 							tile.Block == data.BlockDisguise ||
 							tile.Block == data.BlockFly ||
 							tile.Block == data.BlockDemon) {
-						sprs = append(sprs, newSprChanger("tile_ui_regen", constants.UIBatch).WithOffset(offset))
+						sprs = append(sprs, newSprChanger(constants.UIRegenerate, constants.UIBatch).WithOffset(offset))
 					}
 				case 1:
 					offset.X = 4
@@ -436,10 +467,10 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 						(tile.Block == data.BlockCracked ||
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked) {
-						sprs = append(sprs, newSprChanger("tile_ui_show", constants.UIBatch).WithOffset(offset))
+						sprs = append(sprs, newSprChanger(constants.UIShow, constants.UIBatch).WithOffset(offset))
 					} else if tile.Metadata.Flipped &&
 						tile.Block == data.BlockFly {
-						sprs = append(sprs, newSprChanger("tile_ui_flip", constants.UIBatch).WithOffset(offset))
+						sprs = append(sprs, newSprChanger(constants.UIFlip, constants.UIBatch).WithOffset(offset))
 					}
 				case 2:
 					offset.X = -4
@@ -448,7 +479,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 						(tile.Block == data.BlockCracked ||
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked) {
-						sprs = append(sprs, newSprChanger("tile_ui_enemy", constants.UIBatch).WithOffset(offset))
+						sprs = append(sprs, newSprChanger(constants.UIEnemy, constants.UIBatch).WithOffset(offset))
 					}
 				case 3:
 					offset.X = 4
@@ -458,7 +489,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower:
 			yOffset := 0.
 			if tile.Metadata.Regenerate {
-				sprs = append(sprs, newSprChanger("tile_ui_regen", constants.UIBatch).WithOffset(pixel.V(-4, 4)))
+				sprs = append(sprs, newSprChanger(constants.UIRegenerate, constants.UIBatch).WithOffset(pixel.V(-4, 4)))
 				yOffset = -4
 			}
 			timer := tile.Metadata.Timer
@@ -483,7 +514,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 				timer := tile.Metadata.RegenDelay
 				if timer < 10 {
 					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
-				} else if timer < 100 {
+				} else {
 					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
 					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
 				}
@@ -524,6 +555,33 @@ func GetBlockSprite(tile *data.Tile) string {
 		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileBottom)
 	} else if tile.AltBlock == 1 && tile.Block == data.BlockTurf {
 		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileAlt)
+	} else {
+		sKey = tile.SpriteString()
+	}
+	return sKey
+}
+
+func GetPhaseSprite(tile *data.Tile, isSelect bool) string {
+	// check position to get correct sprite
+	top := true
+	var a *data.Tile
+	if tile.Live {
+		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+	} else if isSelect {
+		above := tile.Coords
+		above.Y++
+		if CoordsLegalSelection(above) {
+			a = data.CurrSelect.Tiles[above.Y][above.X]
+		}
+	} else {
+		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+	}
+	if a.IsBlock() || a.Block == data.BlockLiquid {
+		top = false
+	}
+	var sKey string
+	if top {
+		sKey = fmt.Sprintf("%s%s", tile.SpriteString(), constants.TileTop)
 	} else {
 		sKey = tile.SpriteString()
 	}
@@ -706,17 +764,24 @@ func GetTileSpritesSelection(tile *data.Tile) []any {
 	if data.EditorDraw {
 		switch tile.Block {
 		case data.BlockEmpty:
-		case data.BlockTurf, data.BlockFall, data.BlockCracked, data.BlockPhase:
+		case data.BlockFall, data.BlockCracked, data.BlockClose:
 			sprs = append(sprs, img.NewSprite(GetSpriteSelection(tile), constants.TileBatch))
-			if tile.Block == data.BlockFall {
-				sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
-			} else if tile.Block == data.BlockCracked {
-				sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
-			} else if tile.Block == data.BlockPhase {
-				sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
-			}
+		case data.BlockPhase, data.BlockBarrier:
+			sprs = append(sprs, img.NewSprite(GetPhaseSprite(tile, true), constants.TileBatch))
 		default:
 			sprs = append(sprs, img.NewSprite(tile.SpriteString(), constants.TileBatch))
+		}
+		switch tile.Block {
+		case data.BlockFall:
+			sprs = append(sprs, newSprChanger(constants.TileFall, constants.TileBatch))
+		case data.BlockCracked:
+			sprs = append(sprs, newSprChanger(constants.TileCracked, constants.TileBatch))
+		case data.BlockClose:
+			sprs = append(sprs, newSprChanger(constants.TileClose, constants.TileBatch))
+		case data.BlockPhase:
+			sprs = append(sprs, newSprChanger(constants.TilePhase, constants.TileBatch))
+		case data.BlockBarrier:
+			sprs = append(sprs, newSprChanger(constants.TileBarrier, constants.TileBatch))
 		}
 		lStr := GetLadderSpriteSelection(tile)
 		if lStr != "" {

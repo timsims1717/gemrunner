@@ -16,6 +16,7 @@ const (
 	BlockCracked
 	BlockClose
 	BlockPhase
+	BlockBarrier
 	BlockSpike
 	BlockLiquid
 
@@ -26,6 +27,8 @@ const (
 	BlockHideout
 	BlockTransporter
 	BlockTransporterExit
+	BlockLever
+	BlockButton
 
 	BlockPlayer1
 	BlockPlayer2
@@ -101,6 +104,8 @@ func (b Block) String() string {
 		return constants.TileBedrock
 	case BlockPhase:
 		return constants.TilePhase
+	case BlockBarrier:
+		return constants.TileBarrier
 	case BlockSpike:
 		return constants.TileSpike
 	case BlockLiquid:
@@ -117,6 +122,10 @@ func (b Block) String() string {
 		return constants.TileTransporter
 	case BlockTransporterExit:
 		return constants.TileTransporterExit
+	case BlockLever:
+		return constants.TileLever
+	case BlockButton:
+		return constants.TileButton
 	case BlockJumpBoots:
 		return constants.ItemJumpBoots
 	case BlockBox:
@@ -241,11 +250,16 @@ func (b Block) SpriteString() string {
 			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
-	case BlockBedrock, BlockPhase:
+	case BlockBedrock:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
+	case BlockPhase, BlockBarrier:
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TilePhase)
+		}
+		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TilePhase)
 	case BlockLiquid:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid != "" {
 			return fmt.Sprintf("%s_%s", constants.TileLiquid, CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid)
@@ -296,6 +310,7 @@ var toID = map[string]Block{
 	constants.TileCracked:           BlockCracked,
 	constants.TileClose:             BlockClose,
 	constants.TilePhase:             BlockPhase,
+	constants.TileBarrier:           BlockBarrier,
 	constants.TileSpike:             BlockSpike,
 	constants.TileLiquid:            BlockLiquid,
 	constants.TileLadderMiddle:      BlockLadder,
@@ -308,6 +323,8 @@ var toID = map[string]Block{
 	constants.TileHideout:           BlockHideout,
 	constants.TileTransporter:       BlockTransporter,
 	constants.TileTransporterExit:   BlockTransporterExit,
+	constants.TileLever:             BlockLever,
+	constants.TileButton:            BlockButton,
 	constants.ItemJumpBoots:         BlockJumpBoots,
 	constants.ItemBox:               BlockBox,
 	constants.ItemJetpack:           BlockJetpack,

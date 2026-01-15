@@ -25,11 +25,11 @@ func customizeFloatingText() {
 			ele.OnClick = ConfirmFloatingText
 		case "floating_text_time_minus":
 			ele.OnClick = func() {
-				ChangeNumberInput(floatingTextDlg.Get("floating_text_time_input"), -1)
+				ChangeNumberInputWithLimits(floatingTextDlg.Get("floating_text_time_input"), -1, 1, 99)
 			}
 		case "floating_text_time_plus":
 			ele.OnClick = func() {
-				ChangeNumberInput(floatingTextDlg.Get("floating_text_time_input"), 1)
+				ChangeNumberInputWithLimits(floatingTextDlg.Get("floating_text_time_input"), 1, 1, 99)
 			}
 		case "floating_text_shadow_check":
 			ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, floatingTextDlg.ViewPort, func(hvc *data.HoverClick) {

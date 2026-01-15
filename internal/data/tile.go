@@ -67,11 +67,16 @@ func (t *Tile) SpriteString() string {
 			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
-	case BlockBedrock, BlockPhase:
+	case BlockBedrock:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
+	case BlockPhase, BlockBarrier:
+		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TilePhase)
+		}
+		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TilePhase)
 	case BlockSpike:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
@@ -94,6 +99,10 @@ func (t *Tile) SpriteString() string {
 		return constants.TileTransporterExit
 	case BlockTransporter:
 		return constants.TileTransporter + colSuffixTrans
+	case BlockLever:
+		return constants.TileLever + colSuffixTools
+	case BlockButton:
+		return constants.TileButton
 	case BlockJumpBoots:
 		return constants.ItemJumpBoots + colSuffixTools
 	case BlockBox:
@@ -214,6 +223,7 @@ func (t *Tile) IsEmpty() bool {
 		t.Block == BlockBedrock ||
 		t.Block == BlockFall ||
 		t.Block == BlockPhase ||
+		t.Block == BlockBarrier ||
 		t.Block == BlockCracked ||
 		t.Block == BlockSpike)
 }
@@ -225,6 +235,7 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
+			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
@@ -240,6 +251,7 @@ func (t *Tile) IsRunnable() bool {
 			t.Block == BlockLadderExitTurf ||
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
+			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike))
@@ -255,6 +267,7 @@ func (t *Tile) IsBlock() bool {
 			t.Block == BlockLadderExitTurf ||
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
+			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike) &&
@@ -361,6 +374,7 @@ type TileMetadata struct {
 	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles,omitempty"`
 	Phase       int            `json:"phase,omitempty"`
 	ShowCrack   bool           `json:"showCrack,omitempty"`
+	Toggle      bool           `json:"toggle,omitempty"`
 	Changed     bool           `json:"-"`
 	ExitIndex   int            `json:"exitIndex,omitempty"`
 	Color       ItemColor      `json:"itemColor"`
@@ -371,6 +385,7 @@ func DefaultMetadata() TileMetadata {
 		Regenerate: true,
 		Timer:      5,
 		ExitIndex:  -1,
+		RegenDelay: 0,
 	}
 }
 
@@ -384,6 +399,7 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		LinkedTiles: nil,
 		Phase:       m.Phase,
 		ShowCrack:   m.ShowCrack,
+		Toggle:      m.Toggle,
 		ExitIndex:   m.ExitIndex,
 		Color:       m.Color,
 	}

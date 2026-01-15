@@ -24,6 +24,7 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.UnableToSaveConstructor)
 	ui.NewDialog(load.UnableToSaveConfirmConstructor)
 	ui.NewDialog(load.CombineSetsConstructor)
+	ui.NewDialog(ui.DialogConstructors[constants.DialogBarrier])
 	ui.NewDialog(load.CrackedTileOptionsConstructor)
 	ui.NewDialog(load.BombOptionsConstructor)
 	ui.NewDialog(ui.DialogConstructors[constants.DialogItemOptions])
@@ -32,45 +33,27 @@ func EditorDialogs(win *pixelgl.Window) {
 	editorPanels()
 	ui.NewDialog(load.EditorOptBottomConstructor)
 	ui.NewDialog(ui.DialogConstructors[constants.DialogEditorOptionsRight])
-	customizeEditorDialogs(win)
+	CustomizeEditorDialogs(win)
 }
 
 func DisposeEditorDialogs() {
-	for k, d := range ui.Dialogs {
-		switch k {
-		case constants.DialogOpenPuzzle,
-			constants.DialogChangeName,
-			constants.DialogPuzzleSettings,
-			constants.DialogPuzzleSetSettings,
-			constants.DialogNoPlayersInPuzzle,
-			constants.DialogAreYouSureDelete,
-			constants.DialogUnableToSave,
-			constants.DialogUnableToSaveConfirm,
-			constants.DialogChangeWorld,
-			constants.DialogCombineSets,
-			constants.DialogRearrangePuzzleSet,
-			constants.DialogCrackedTiles,
-			constants.DialogBomb,
-			constants.DialogDoors,
-			constants.DialogPalette,
-			constants.DialogEditorPanelLeft,
-			constants.DialogEditorPanelTop,
-			constants.DialogEditorOptionsRight,
-			constants.DialogEditorOptionsBot,
-			constants.DialogEditorBlockSelect:
-			ui.DisposeDialog(d)
+	for _, k := range constants.EditorDialogs {
+		if dlg, ok := ui.Dialogs[k]; ok {
+			ui.DisposeDialog(dlg)
 		}
 	}
 }
 
-func customizeEditorDialogs(win *pixelgl.Window) {
-	for key := range ui.Dialogs {
+func CustomizeEditorDialogs(win *pixelgl.Window) {
+	for _, key := range constants.EditorDialogs {
 		CustomizeEditorDialog(key)
 	}
 }
 
 func CustomizeEditorDialog(key string) {
 	switch key {
+	case constants.DialogBarrier:
+		customizeBarrierOptions()
 	case constants.DialogFloatingText:
 		customizeFloatingText()
 	case constants.DialogPalette:
@@ -208,6 +191,9 @@ func CustomizeEditorDialog(key string) {
 							case data.BlockPhase:
 								beEx.Key = constants.TilePhase
 								beEx.Offset.Y = 0
+							case data.BlockBarrier:
+								beEx.Key = constants.TileBarrier
+								beEx.Offset.Y = 0
 							case data.BlockCracked:
 								beEx.Key = constants.TileCracked
 								beEx.Offset.Y = 0
@@ -261,6 +247,8 @@ func CustomizeEditorDialog(key string) {
 							sprs = append(sprs, img.NewSprite(constants.TileFall, constants.TileBatch))
 						case data.BlockPhase:
 							sprs = append(sprs, img.NewSprite(constants.TilePhase, constants.TileBatch))
+						case data.BlockBarrier:
+							sprs = append(sprs, img.NewSprite(constants.TileBarrier, constants.TileBatch))
 						case data.BlockCracked:
 							sprs = append(sprs, img.NewSprite(constants.TileCracked, constants.TileBatch))
 						case data.BlockClose:

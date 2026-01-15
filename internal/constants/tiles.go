@@ -43,6 +43,7 @@ const (
 
 	TileFall        = "fall"
 	TilePhase       = "phase"
+	TileBarrier     = "barrier"
 	TileSpike       = "spike"
 	TileBedrock     = "bedrock"
 	TileCracked     = "cracked"
@@ -56,6 +57,8 @@ const (
 
 	TileTransporter     = "transporter"
 	TileTransporterExit = "transporter_exit"
+	TileLever           = "lever"
+	TileButton          = "button"
 
 	TileLiquid    = "liquid"
 	TileLiquidUFG = "liquid_lbr"
@@ -151,4 +154,7 @@ const (
 	PreviewBar     = "preview_bar"
 	PreviewBomb    = "preview_bomb"
 	PreviewTool    = "preview_tool"
+	PreviewHideout = "preview_hideout"
+	PreviewPhase   = "preview_phase"
+	PreviewLiquid  = "preview_liquid"
 )

@@ -37,6 +37,7 @@ const (
 	DialogEditorOptionsRight = "editor_options_right"
 	DialogEditorBlockSelect  = "block_select"
 
+	DialogBarrier      = "barrier_options"
 	DialogCrackedTiles = "cracked_tile_options"
 	DialogBomb         = "bomb_options"
 	DialogItemOptions  = "item_options"
@@ -65,6 +66,7 @@ var DialogKeys = []string{
 	DialogRearrangePuzzleSet,
 	DialogNoPlayersInPuzzle,
 
+	DialogBarrier,
 	DialogItemOptions,
 	DialogFloatingText,
 	DialogDoors,
@@ -86,4 +88,25 @@ var InGameDialogs = []string{
 	DialogPlayer4Inv,
 	DialogPuzzleTitle,
 	DialogPuzzleTimer,
+}
+
+var EditorDialogs = []string{
+	DialogOpenPuzzle,
+	DialogChangeName,
+	DialogPuzzleSettings,
+	DialogPuzzleSetSettings,
+	DialogNoPlayersInPuzzle,
+	DialogAreYouSureDelete,
+	DialogUnableToSave,
+	DialogUnableToSaveConfirm,
+	DialogCombineSets,
+	DialogBarrier,
+	DialogCrackedTiles,
+	DialogBomb,
+	DialogPalette,
+	DialogEditorPanelLeft,
+	DialogEditorPanelTop,
+	DialogEditorOptionsRight,
+	DialogEditorOptionsBot,
+	DialogEditorBlockSelect,
 }
