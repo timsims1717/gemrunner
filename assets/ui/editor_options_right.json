@@ -1,7 +1,7 @@
 {
   "key":"editor_options_right",
   "width":2,
-  "height":10,
+  "height":11,
   "pos":{
     "X":256,
     "Y":0
@@ -18,7 +18,7 @@
       },
       "pos":{
         "X":-11,
-        "Y":72
+        "Y":80
       },
       "type":"text",
       "anchor":{
@@ -34,7 +34,7 @@
       "helpText":"Test Puzzle (Enter)",
       "pos":{
         "X":-8,
-        "Y":56
+        "Y":64
       },
       "type":"button"
     },
@@ -46,7 +46,7 @@
       "helpText":"Save Puzzle Set (Ctrl+S)",
       "pos":{
         "X":-8,
-        "Y":40
+        "Y":48
       },
       "type":"button"
     },
@@ -58,7 +58,7 @@
       "helpText":"Open Puzzle Set (Ctrl+O)",
       "pos":{
         "X":8,
-        "Y":40
+        "Y":48
       },
       "type":"button"
     },
@@ -70,7 +70,7 @@
       "helpText":"New Puzzle Set (Ctrl+N)",
       "pos":{
         "X":-8,
-        "Y":24
+        "Y":32
       },
       "type":"button"
     },
@@ -82,7 +82,7 @@
       "helpText":"Combine Puzzle Set (Ctrl+Shift+O)",
       "pos":{
         "X":8,
-        "Y":24
+        "Y":32
       },
       "type":"button"
     },
@@ -94,7 +94,7 @@
       "helpText":"New Puzzle in Set (Ctrl+A)",
       "pos":{
         "X":-8,
-        "Y":8
+        "Y":16
       },
       "type":"button"
     },
@@ -106,31 +106,55 @@
       "helpText":"Delete Puzzle",
       "pos":{
         "X":8,
-        "Y":8
+        "Y":16
       },
       "type":"button"
     },
     {
-      "key":"prev_btn",
-      "spriteKey":"prev_btn",
-      "spriteKey2":"prev_btn_click",
+      "key":"left_puz_btn",
+      "spriteKey":"left_puz_btn",
+      "spriteKey2":"left_puz_btn_click",
       "batchKey":"ui",
-      "helpText":"Previous Puzzle (Left)",
+      "helpText":"Change Puzzle (Left)",
       "pos":{
         "X":-8,
-        "Y":-8
+        "Y":0
       },
       "type":"button"
     },
     {
-      "key":"next_btn",
-      "spriteKey":"next_btn",
-      "spriteKey2":"next_btn_click",
+      "key":"right_puz_btn",
+      "spriteKey":"right_puz_btn",
+      "spriteKey2":"right_puz_btn_click",
       "batchKey":"ui",
-      "helpText":"Next Puzzle (Right)",
+      "helpText":"Change Puzzle (Right)",
       "pos":{
         "X":8,
-        "Y":-8
+        "Y":0
+      },
+      "type":"button"
+    },
+    {
+      "key":"up_puz_btn",
+      "spriteKey":"up_puz_btn",
+      "spriteKey2":"up_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Change Puzzle (Up)",
+      "pos":{
+        "X":-8,
+        "Y":-16
+      },
+      "type":"button"
+    },
+    {
+      "key":"down_puz_btn",
+      "spriteKey":"down_puz_btn",
+      "spriteKey2":"down_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Change Puzzle (Down)",
+      "pos":{
+        "X":8,
+        "Y":-16
       },
       "type":"button"
     },
@@ -142,7 +166,7 @@
       "helpText":"Puzzle Settings (Ctrl+Q)",
       "pos":{
         "X":-8,
-        "Y":-24
+        "Y":-32
       },
       "type":"button"
     },
@@ -154,7 +178,7 @@
       "helpText":"Change World (Ctrl+W)",
       "pos":{
         "X":8,
-        "Y":-24
+        "Y":-32
       },
       "type":"button"
     },
@@ -166,7 +190,7 @@
       "helpText":"Puzzle Set Settings (Ctrl+E)",
       "pos":{
         "X":-8,
-        "Y":-40
+        "Y":-48
       },
       "type":"button"
     },
@@ -178,7 +202,7 @@
       "helpText":"Rearrange Puzzle Set",
       "pos":{
         "X":-8,
-        "Y":-56
+        "Y":-64
       },
       "type":"button"
     },
@@ -190,7 +214,7 @@
       "helpText":"Change Name",
       "pos":{
         "X":8,
-        "Y":-56
+        "Y":-64
       },
       "type":"button"
     },
@@ -202,7 +226,7 @@
       "helpText":"Quit (Ctrl+Q)",
       "pos":{
         "X":-8,
-        "Y":-72
+        "Y":-80
       },
       "type":"button"
     }

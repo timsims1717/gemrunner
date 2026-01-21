@@ -109,17 +109,18 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 		AddComponent(myecs.Drawable, anim).
 		AddComponent(myecs.Animated, anim).
 		AddComponent(myecs.Gem, struct{}{}).
-		AddComponent(myecs.OnTouch, CollectGem(color)).
+		AddComponent(myecs.OnTouch, CollectGem(color, tile.Coords)).
 		AddComponent(myecs.LvlElement, struct{}{})
 }
 
-func CollectGem(color data.ItemColor) *data.Interact {
+func CollectGem(color data.ItemColor, c world.Coords) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if p < 0 || p >= constants.MaxPlayers || (ch.Color != color && color > data.NonPlayerRed) {
 			return
 		}
 		data.CurrLevelSess.PlayerStats[p].LScore += 1
 		data.CurrLevelSess.PlayerStats[p].LGems++
+		data.CurrLevelSess.GemsCollected = append(data.CurrLevelSess.GemsCollected, c)
 		sfx.SoundPlayer.PlaySound(constants.SFXGem, -2.)
 		myecs.Manager.DisposeEntity(entity)
 	})

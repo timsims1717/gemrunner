@@ -21,6 +21,7 @@ func LevelSessionInit() {
 		for p := 0; p < data.CurrPuzzleSet.Metadata.NumPlayers; p++ {
 			data.CurrLevelSess.PlayerStats[p] = data.NewStats()
 		}
+		data.CurrLevelSess.LevelMap = make(map[int]data.LevelCompletion)
 		data.CurrLevelSess.PuzzleFile = data.CurrPuzzleSet.Metadata.Name
 		data.CurrLevelSess.Filename = fmt.Sprintf("%s%s", data.CurrPuzzleSet.Metadata.Name, constants.SaveExt)
 	} else {

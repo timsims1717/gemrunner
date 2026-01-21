@@ -119,22 +119,24 @@ func CharacterActionSystem() {
 					tile := data.CurrLevel.Get(x, y)
 					below := data.CurrLevel.Get(x, y-1)
 					ch.ACounter++
-					switch ch.State {
-					case data.Grounded:
-						grounded(ch, tile, below)
-					case data.OnLadder:
-						onLadder(ch, tile, below)
-					case data.OnBar:
-						onBar(ch, tile, below)
-					case data.Falling:
-						falling(ch, tile)
-					case data.Jumping:
-						jumping(ch, tile)
-					case data.Leaping:
-						leaping(ch, tile)
-					case data.Flying:
-						flying(ch, tile)
-					case data.DoingAction:
+					if tile != nil {
+						switch ch.State {
+						case data.Grounded:
+							grounded(ch, tile, below)
+						case data.OnLadder:
+							onLadder(ch, tile, below)
+						case data.OnBar:
+							onBar(ch, tile, below)
+						case data.Falling:
+							falling(ch, tile)
+						case data.Jumping:
+							jumping(ch, tile)
+						case data.Leaping:
+							leaping(ch, tile)
+						case data.Flying:
+							flying(ch, tile)
+						case data.DoingAction:
+						}
 					}
 					ch.Flags.Frame = true
 				}
@@ -322,7 +324,7 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 	if ch.Object.Flip {
 		// going left
 		ch.Object.Pos.X -= ch.Vars.LeapSpeed
-		if ch.Object.Pos.X < ch.NextTile.Object.Pos.X { // the leap is complete
+		if ch.NextTile != nil && ch.Object.Pos.X < ch.NextTile.Object.Pos.X { // the leap is complete
 			ch.Object.Pos.X = ch.NextTile.Object.Pos.X
 			ch.Flags.LeapOn = false
 			ch.Flags.LeapTo = false
@@ -330,7 +332,7 @@ func leaping(ch *data.Dynamic, tile *data.Tile) {
 		}
 	} else {
 		ch.Object.Pos.X += ch.Vars.LeapSpeed
-		if ch.Object.Pos.X > ch.NextTile.Object.Pos.X { // the leap is complete
+		if ch.NextTile != nil && ch.Object.Pos.X > ch.NextTile.Object.Pos.X { // the leap is complete
 			ch.Object.Pos.X = ch.NextTile.Object.Pos.X
 			ch.Flags.LeapOn = false
 			ch.Flags.LeapTo = false

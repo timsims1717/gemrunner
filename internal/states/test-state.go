@@ -121,6 +121,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
 		systems.CollisionSystem()
+		systems.OutsideMapSystem()
 		systems.CharacterStateSystem()
 		systems.TouchSystem()
 		systems.SmashSystem()

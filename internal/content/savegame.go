@@ -30,6 +30,10 @@ func LoadSaveGame(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
+	data.CurrLevelSess.LevelMap = make(map[int]data.LevelCompletion)
+	for _, lc := range data.CurrLevelSess.LevelArray {
+		data.CurrLevelSess.LevelMap[lc.Index] = lc
+	}
 	if debug.Verbose {
 		fmt.Printf("INFO: loaded session from %s\n", svgPath)
 	}
@@ -42,6 +46,10 @@ func SaveSaveGame() {
 	if data.CurrLevelSess == nil {
 		fmt.Println("ERROR: no session to save")
 		return
+	}
+	data.CurrLevelSess.LevelArray = []data.LevelCompletion{}
+	for _, lc := range data.CurrLevelSess.LevelMap {
+		data.CurrLevelSess.LevelArray = append(data.CurrLevelSess.LevelArray, lc)
 	}
 	svgFName := data.CurrLevelSess.Filename
 	svgPath := fmt.Sprintf("%s/%s", constants.SavesDir, svgFName)

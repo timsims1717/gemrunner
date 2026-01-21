@@ -1,0 +1,86 @@
+{
+  "key":"add_puzzle",
+  "width":6,
+  "height":4,
+  "elements":[
+    {
+      "key":"add_puzzle_title",
+      "text":"Add New Puzzle",
+      "color":{
+        "R":0.9607843137254902,
+        "G":0.9607843137254902,
+        "B":0.9607843137254902,
+        "A":1
+      },
+      "pos":{
+        "X":-44,
+        "Y":24
+      },
+      "type":"text",
+      "anchor":{
+        "X":0,
+        "Y":0.5
+      }
+    },
+    {
+      "key":"cancel",
+      "spriteKey":"cancel_btn_big",
+      "spriteKey2":"cancel_btn_click_big",
+      "batchKey":"ui",
+      "helpText":"Cancel",
+      "pos":{
+        "X":36,
+        "Y":-20
+      },
+      "type":"button"
+    },
+    {
+      "key":"add_up",
+      "spriteKey":"up_puz_btn",
+      "spriteKey2":"up_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Add Puzzle Above",
+      "pos":{
+        "X":0,
+        "Y":10
+      },
+      "type":"button"
+    },
+    {
+      "key":"add_down",
+      "spriteKey":"down_puz_btn",
+      "spriteKey2":"down_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Add Puzzle Below",
+      "pos":{
+        "X":0,
+        "Y":-10
+      },
+      "type":"button"
+    },
+    {
+      "key":"add_right",
+      "spriteKey":"right_puz_btn",
+      "spriteKey2":"right_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Add Puzzle To Right",
+      "pos":{
+        "X":20,
+        "Y":0
+      },
+      "type":"button"
+    },
+    {
+      "key":"add_left",
+      "spriteKey":"left_puz_btn",
+      "spriteKey2":"left_puz_btn_click",
+      "batchKey":"ui",
+      "helpText":"Add Puzzle To Left",
+      "pos":{
+        "X":-20,
+        "Y":0
+      },
+      "type":"button"
+    }
+  ]
+}

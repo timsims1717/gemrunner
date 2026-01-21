@@ -25,6 +25,8 @@ type Tile struct {
 	AltBlock     int               `json:"alt"`
 	FloatingText *FloatingText     `json:"-"`
 	TextData     *FloatingTextData `json:"text,omitempty"`
+
+	Transitions map[Direction]*LevelTransition `json:"-"`
 }
 
 func (t *Tile) SpriteString() string {
@@ -239,7 +241,7 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
-			(t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen)))
+			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
 }
 
 func (t *Tile) IsRunnable() bool {
@@ -276,6 +278,9 @@ func (t *Tile) IsBlock() bool {
 }
 
 func (t *Tile) IsLadder() bool {
+	if t == nil {
+		return false
+	}
 	if t.Live {
 		return !t.Flags.LCollapse && (t.Block == BlockLadder ||
 			t.Block == BlockLadderTurf ||
@@ -295,6 +300,9 @@ func (t *Tile) IsLadder() bool {
 }
 
 func (t *Tile) CanDig() bool {
+	if t == nil {
+		return false
+	}
 	return !t.Flags.Collapse && t.Block == BlockTurf
 }
 

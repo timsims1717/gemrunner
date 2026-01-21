@@ -2,6 +2,7 @@ package systems
 
 import (
 	"gemrunner/internal/constants"
+	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
@@ -12,45 +13,13 @@ import (
 	"math"
 )
 
-func BorderSystem(layer int) {
-	for _, result := range myecs.Manager.Query(myecs.HasBorder) {
-		obj, okO := result.Components[myecs.Object].(*object.Object)
-		bord, okB := result.Components[myecs.Border].(*ui.Border)
-		if okO && okB && obj.Layer == layer {
-			if bord == nil || bord.Hidden {
-				continue
-			}
-			switch bord.Style {
-			case ui.FancyBorder:
-				DrawFancyBorder(bord, obj)
-			case ui.ThinBorder:
-				DrawThinBorder(bord, obj)
-			case ui.ThinBorderReverse:
-				DrawThinBorderReverse(bord, obj)
-			case ui.ThinBorderWhite:
-				DrawThinBorderWhite(bord, obj)
-			case ui.ThinBorderBlue:
-				DrawThinBorderBlue(bord, obj)
-			case ui.ThickBorder:
-				DrawThickBorder(bord, obj)
-			case ui.ThickBorderReverse:
-				DrawThickBorderReverse(bord, obj)
-			case ui.ThickBorderWhite:
-				DrawThickBorderWhite(bord, obj)
-			case ui.ThickBorderBlue:
-				DrawThickBorderBlue(bord, obj)
-			}
-		}
-	}
-}
-
-func DrawBorder(obj *object.Object, bord *ui.Border, target pixel.Target) {
+func DrawBorder(obj *object.Object, bord *ui.Border, target pixel.Target, level bool) {
 	if bord == nil || bord.Hidden {
 		return
 	}
 	switch bord.Style {
 	case ui.FancyBorder:
-		DrawFancyBorder(bord, obj)
+		DrawFancyBorder(bord, obj, level)
 	case ui.ThinBorder:
 		DrawThinBorder(bord, obj)
 	case ui.ThinBorderReverse:
@@ -72,22 +41,22 @@ func DrawBorder(obj *object.Object, bord *ui.Border, target pixel.Target) {
 	img.Clear()
 }
 
-func DrawFancyBorder(bord *ui.Border, obj *object.Object) {
-	for y := 0; y < bord.Height+1; y++ {
-		if y == 0 || y == bord.Height {
-			for x := 0; x < bord.Width+1; x++ {
-				DrawFancyBorderSection(x, y, bord, obj)
-				if !bord.Empty && y == bord.Height && x != 0 {
-					DrawBlackSquare(x, y, bord, obj)
-				}
+func DrawFancyBorder(bord *ui.Border, obj *object.Object, level bool) {
+	for y := 0; y < bord.Height+2; y++ {
+		if y == 0 || y == bord.Height+1 {
+			for x := 0; x < bord.Width+2; x++ {
+				DrawFancyBorderSection(x, y, bord, obj, level)
+				//if !bord.Empty && y == bord.Height && x != 0 {
+				//	DrawBlackSquare(x, y, bord, obj)
+				//}
 			}
 		} else {
-			for x := 0; x < bord.Width+1; x++ {
-				if x == 0 || x == bord.Width {
-					DrawFancyBorderSection(x, y, bord, obj)
-					if !bord.Empty && x == bord.Width {
-						DrawBlackSquare(x, y, bord, obj)
-					}
+			for x := 0; x < bord.Width+2; x++ {
+				if x == 0 || x == bord.Width+1 {
+					DrawFancyBorderSection(x, y, bord, obj, level)
+					//if !bord.Empty && x == bord.Width {
+					//	DrawBlackSquare(x, y, bord, obj)
+					//}
 				} else if !bord.Empty {
 					DrawBlackSquare(x, y, bord, obj)
 				}
@@ -96,28 +65,65 @@ func DrawFancyBorder(bord *ui.Border, obj *object.Object) {
 	}
 }
 
-func DrawFancyBorderSection(x, y int, bord *ui.Border, obj *object.Object) {
+func DrawFancyBorderSection(x, y int, bord *ui.Border, obj *object.Object, level bool) {
+	if level && data.CurrLevel != nil && data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen {
+		if x == 0 && y > 0 && y <= bord.Height {
+			if t := data.CurrLevel.Get(x, y-1); !t.IsSolid() {
+				if _, ok := t.Transitions[data.Left]; ok {
+					return
+				}
+			}
+		} else if x == bord.Width+1 && y > 0 && y <= bord.Height {
+			if t := data.CurrLevel.Get(x-2, y-1); !t.IsSolid() {
+				if _, ok := t.Transitions[data.Right]; ok {
+					return
+				}
+			}
+		} else if y == 0 && x > 0 && x <= bord.Width {
+			if t := data.CurrLevel.Get(x-1, y); !t.IsSolid() {
+				if _, ok := t.Transitions[data.Down]; ok {
+					return
+				}
+			}
+		} else if y == bord.Height+1 && x > 0 && x <= bord.Width {
+			if t := data.CurrLevel.Get(x-1, y-2); !t.IsSolid() {
+				if _, ok := t.Transitions[data.Up]; ok {
+					return
+				}
+			}
+		}
+	}
 	mat := pixel.IM
-	offset := pixel.V(world.TileSize*(float64(x)-float64(bord.Width)*0.5), world.TileSize*(float64(y)-float64(bord.Height)*0.5))
 	sKey := constants.FancyBorderStraight
-	if (x == 0 || x == bord.Width) && (y == 0 || y == bord.Height) {
+	if (x == 0 || x == bord.Width+1) && (y == 0 || y == bord.Height+1) {
 		sKey = constants.FancyBorderCorner
 	}
+	offset := pixel.V(world.TileSize*(float64(x)-float64(bord.Width+1)*0.5), world.TileSize*(float64(y)-float64(bord.Height+1)*0.5))
+	if x == 0 {
+		offset.X += world.TileSize * 0.25
+	} else if x == bord.Width+1 {
+		offset.X -= world.TileSize * 0.25
+	}
 	if y == 0 {
-		if x > 0 && x < bord.Width {
+		offset.Y += world.TileSize * 0.25
+	} else if y == bord.Height+1 {
+		offset.Y -= world.TileSize * 0.25
+	}
+	if y == 0 {
+		if x > 0 && x <= bord.Width {
 			mat = mat.Rotated(pixel.ZV, 0.5*math.Pi)
-		} else if x == bord.Width {
+		} else if x == bord.Width+1 {
 			mat = mat.ScaledXY(pixel.ZV, pixel.V(-1., 1.))
 		}
-	} else if y == bord.Height {
-		if x > 0 && x < bord.Width {
+	} else if y == bord.Height+1 {
+		if x > 0 && x <= bord.Width {
 			mat = mat.Rotated(pixel.ZV, -0.5*math.Pi)
 		} else if x == 0 {
 			mat = mat.ScaledXY(pixel.ZV, pixel.V(1., -1.))
-		} else if x == bord.Width {
+		} else if x == bord.Width+1 {
 			mat = mat.ScaledXY(pixel.ZV, pixel.V(-1., -1.))
 		}
-	} else if x == bord.Width {
+	} else if x == bord.Width+1 {
 		mat = mat.ScaledXY(pixel.ZV, pixel.V(-1., 1.))
 	}
 	img.Batchers[constants.UIBatch].DrawSpriteColor(sKey, mat.Moved(obj.PostPos).Moved(offset), colornames.White)

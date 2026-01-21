@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func LoadImage(path string) (pixel.Picture, error) {
+func LoadImage(path string) (*pixel.PictureData, error) {
 	errMsg := "load image"
 	file, err := os.Open(path)
 	if err != nil {

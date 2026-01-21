@@ -51,6 +51,11 @@ func New() *Object {
 	}
 }
 
+func (obj *Object) WithFixedID(code string) *Object {
+	obj.ID = code
+	return obj
+}
+
 func (obj *Object) WithID(code string) *Object {
 	obj.ID = fmt.Sprintf("%s-%d", code, objIndex)
 	objIndex++

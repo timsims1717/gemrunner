@@ -213,11 +213,11 @@ func SavePuzzleSetToFile() error {
 	}
 	data.CurrPuzzleSet.Metadata.NumPuzzles = len(data.CurrPuzzleSet.Puzzles)
 	pzlPath := fmt.Sprintf("%s/%s", constants.PuzzlesDir, pzlFName)
-	pzlFile, err := os.Create(pzlPath)
+	bts, err := json.Marshal(data.CurrPuzzleSet)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
-	bts, err := json.Marshal(data.CurrPuzzleSet)
+	pzlFile, err := os.Create(pzlPath)
 	if err != nil {
 		return errors.Wrap(err, errMsg)
 	}
@@ -249,6 +249,7 @@ func OpenPuzzleSetFile(filename string) error {
 	if debug.Verbose {
 		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
 	}
+	data.CurrPuzzleSet.SetUpGrid()
 	return nil
 }
 
@@ -270,6 +271,7 @@ func OpenPuzzleSetFileRt(filename string) (*data.PuzzleSet, error) {
 	if debug.Verbose {
 		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
 	}
+	rtPzlSet.SetUpGrid()
 	return rtPzlSet, nil
 }
 

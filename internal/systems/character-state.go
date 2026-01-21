@@ -13,11 +13,11 @@ import (
 )
 
 func CharacterStateSystem() {
-	for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
-		_, okO := result.Components[myecs.Object].(*object.Object)
-		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
-		if okO && okC {
-			if reanimator.FrameSwitch {
+	if reanimator.FrameSwitch {
+		for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
+			_, okO := result.Components[myecs.Object].(*object.Object)
+			ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+			if okO && okC {
 				currPos := ch.Object.Pos.Add(ch.Object.Offset)
 				x, y := world.WorldToMap(currPos.X, currPos.Y)
 				tile := data.CurrLevel.Get(x, y)
@@ -96,7 +96,7 @@ func CharacterStateSystem() {
 								ch.Flags.LeapOff = true
 							}
 						}
-					} else if tile.Block == data.BlockBar && !ch.Actions.Down() {
+					} else if tile != nil && tile.Block == data.BlockBar && !ch.Actions.Down() {
 						ch.State = data.OnBar
 					} else if !tile.IsLadder() && below != nil && below.IsLadder() {
 						if ch.Actions.Direction == data.Left { // run to the left
@@ -268,7 +268,6 @@ func CharacterStateSystem() {
 				case data.InHole:
 					if ch.Flags.NextStep {
 						ch.State = data.ClimbingOut
-						ch.NextTile.Flags.Occupied = nil
 					} else if ch.ACounter > constants.DemonInHoleCounter {
 						if ch.Actions.Left() || ch.Actions.Right() {
 							if ch.Actions.Left() {
@@ -316,6 +315,7 @@ func CharacterStateSystem() {
 					ch.Flags.Flying = false
 					ch.Flags.NextStep = false
 					ch.Flags.Death = death.None
+					sfx.SoundPlayer.KillSound(ch.SFX)
 					if ch.Enemy > -1 &&
 						ch.Options.Regen {
 						var t *data.Tile
@@ -375,7 +375,9 @@ func CharacterStateSystem() {
 					ch.ACounter = 0
 					ch.Control.ClearPrev()
 					ch.Actions.PrevDirection = data.NoDirection
-					ch.Object.Pos.Y = tile.Object.Pos.Y
+					if tile != nil {
+						ch.Object.Pos.Y = tile.Object.Pos.Y
+					}
 					ch.Flags.Climbed = false
 					ch.Flags.GoingUp = false
 					ch.Object.PostPos = ch.Object.Pos
@@ -396,6 +398,65 @@ func CharacterStateSystem() {
 						case data.Falling:
 							ch.SFX = sfx.SoundPlayer.PlaySound(constants.SFXFall, 0.)
 						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func OutsideMapSystem() {
+	if reanimator.FrameSwitch && data.CurrLevel.Continuity {
+		for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
+			_, okO := result.Components[myecs.Object].(*object.Object)
+			ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+			if okO && okC {
+				if ch.State != data.Dead && ch.State != data.Waiting && ch.Flags.OutsideMap {
+					ch.Flags.OutsideMap = false
+					if ch.Player > -1 && ch.Player < constants.MaxPlayers {
+						currPos := ch.Object.Pos.Add(ch.Object.Offset)
+						x, y := world.WorldToMap(currPos.X, currPos.Y)
+						lastTile := ch.LastTile
+						if lastTile != nil {
+							if x < lastTile.Coords.X {
+								if t, ok := lastTile.Transitions[data.Left]; ok {
+									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
+									data.CurrLevel.Complete = true
+									data.CurrLevel.ExitIndex = t.ExitIndex
+									data.CurrLevel.StartCoords = &t.ExitTile
+									return
+								}
+							} else if x > lastTile.Coords.X {
+								if t, ok := lastTile.Transitions[data.Right]; ok {
+									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
+									data.CurrLevel.Complete = true
+									data.CurrLevel.ExitIndex = t.ExitIndex
+									data.CurrLevel.StartCoords = &t.ExitTile
+									return
+								}
+							} else if y < lastTile.Coords.Y {
+								if t, ok := lastTile.Transitions[data.Down]; ok {
+									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
+									data.CurrLevel.Complete = true
+									data.CurrLevel.ExitIndex = t.ExitIndex
+									data.CurrLevel.StartCoords = &t.ExitTile
+									return
+								}
+							} else if y > lastTile.Coords.Y {
+								if t, ok := lastTile.Transitions[data.Up]; ok {
+									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
+									data.CurrLevel.Complete = true
+									data.CurrLevel.ExitIndex = t.ExitIndex
+									data.CurrLevel.StartCoords = &t.ExitTile
+									return
+								}
+							}
+						}
+					}
+					// kill them
+					ch.State = data.Dead
+					if ch.Player > -1 {
+						data.CurrLevelSess.PlayerStats[ch.Player].Deaths++
 					}
 				}
 			}

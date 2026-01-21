@@ -6,7 +6,6 @@ import (
 	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
-	"gemrunner/internal/ui"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
@@ -69,10 +68,7 @@ func PuzzleInit() {
 	} else {
 		panic("no puzzle loaded")
 	}
-	if data.Editor != nil {
-		num := ui.Dialogs[constants.DialogEditorOptionsRight].Get("puzzle_number")
-		num.Text.SetText(fmt.Sprintf("%04d", data.CurrPuzzleSet.PuzzleIndex+1))
-	}
+	UpdateEditorOptions()
 	PuzzleViewInit()
 	UpdateEditorShaders()
 	UpdatePuzzleShaders()
@@ -203,6 +199,44 @@ func AddPuzzle() {
 	PuzzleInit()
 }
 
+func InsertPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Insert(nil, data.CurrPuzzleSet.PuzzleIndex+1)
+	PuzzleInit()
+}
+
+func AddPuzzleUp() {
+	PuzzleDispose()
+	grid := data.CurrPuzzleSet.CurrPuzzle.Grid
+	grid.Y++
+	data.CurrPuzzleSet.InsertGrid(nil, grid)
+	PuzzleInit()
+}
+
+func AddPuzzleDown() {
+	PuzzleDispose()
+	grid := data.CurrPuzzleSet.CurrPuzzle.Grid
+	grid.Y--
+	data.CurrPuzzleSet.InsertGrid(nil, grid)
+	PuzzleInit()
+}
+
+func AddPuzzleRight() {
+	PuzzleDispose()
+	grid := data.CurrPuzzleSet.CurrPuzzle.Grid
+	grid.X++
+	data.CurrPuzzleSet.InsertGrid(nil, grid)
+	PuzzleInit()
+}
+
+func AddPuzzleLeft() {
+	PuzzleDispose()
+	grid := data.CurrPuzzleSet.CurrPuzzle.Grid
+	grid.X--
+	data.CurrPuzzleSet.InsertGrid(nil, grid)
+	PuzzleInit()
+}
+
 func PrevPuzzle() {
 	PuzzleDispose()
 	data.CurrPuzzleSet.Prev()
@@ -212,6 +246,30 @@ func PrevPuzzle() {
 func NextPuzzle() {
 	PuzzleDispose()
 	data.CurrPuzzleSet.Next()
+	PuzzleInit()
+}
+
+func UpPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Up()
+	PuzzleInit()
+}
+
+func DownPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Down()
+	PuzzleInit()
+}
+
+func RightPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Right()
+	PuzzleInit()
+}
+
+func LeftPuzzle() {
+	PuzzleDispose()
+	data.CurrPuzzleSet.Left()
 	PuzzleInit()
 }
 

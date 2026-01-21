@@ -89,6 +89,10 @@ func (s *playState) Update(win *pixelgl.Window) {
 			}
 		}
 	}
+	if data.DebugInput.Get("debugInv").JustPressed() {
+		data.CurrLevel.DoorsOpen = true
+		data.CurrLevel.Continuity = data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity
+	}
 
 	if reanimator.FRate != constants.Configuration.Gameplay.FrameRate {
 		reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
@@ -110,6 +114,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
 		systems.CollisionSystem()
+		systems.OutsideMapSystem()
 		systems.CharacterStateSystem()
 		systems.TouchSystem()
 		systems.SmashSystem()
@@ -145,7 +150,7 @@ func drawPlayArea(win *pixelgl.Window) {
 	data.ScreenView.Canvas.Clear(constants.ColorBlack)
 	// draw border
 	data.BorderView.Canvas.Clear(constants.ColorBlack)
-	systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas)
+	systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas, true)
 	img.Clear()
 	data.BorderView.Draw(data.ScreenView.Canvas)
 	// draw puzzle

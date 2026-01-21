@@ -20,6 +20,7 @@ func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSettings])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSetSettings])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogNoPlayersInPuzzle])
+	ui.NewDialog(ui.DialogConstructors[constants.DialogAddPuzzle])
 	ui.NewDialog(load.AreYouSureDeleteConstructor)
 	ui.NewDialog(load.UnableToSaveConstructor)
 	ui.NewDialog(load.UnableToSaveConfirmConstructor)
@@ -62,6 +63,10 @@ func CustomizeEditorDialog(key string) {
 		customizeItemOptions()
 	case constants.DialogPuzzleSettings:
 		customizePuzzleSettings()
+	case constants.DialogEditorOptionsRight, constants.DialogEditorOptionsBot:
+		customizeEditorOptions(key)
+	case constants.DialogAddPuzzle:
+		customizeAddPuzzle()
 	default:
 		dialog := ui.Dialogs[key]
 		b := 0
@@ -94,28 +99,6 @@ func CustomizeEditorDialog(key string) {
 					case constants.DialogOpenPuzzle:
 						ele.OnClick = OnOpenPuzzle
 					}
-				case "new_btn":
-					ele.OnClick = NewPuzzle
-				case "open_btn":
-					ele.OnClick = OpenOpenPuzzleDialog
-				case "combine_btn":
-					ele.OnClick = OpenCombineSetsDialog
-				case "rearrange_btn":
-					ele.OnClick = OpenRearrangePuzzlesDialog
-				case "exit_editor_btn":
-					ele.OnClick = ExitEditor
-				case "save_btn":
-					ele.OnClick = OnSavePuzzleSet
-				case "world_btn":
-					ele.OnClick = OpenChangeWorldDialog
-				case "name_btn":
-					ele.OnClick = OpenDialog(constants.DialogChangeName)
-				case "test_btn":
-					ele.OnClick = TestPuzzle
-				case "puzzle_settings_btn":
-					ele.OnClick = OpenDialog(constants.DialogPuzzleSettings)
-				case "puzzle_set_settings_btn":
-					ele.OnClick = OpenPuzzleSetSettingsDialog
 				case "bomb_regenerate_delay_minus":
 					ele.OnClick = func() {
 						ChangeNumberInput(dialog.Get("bomb_regenerate_delay_input"), -1)
@@ -124,14 +107,6 @@ func CustomizeEditorDialog(key string) {
 					ele.OnClick = func() {
 						ChangeNumberInput(dialog.Get("bomb_regenerate_delay_input"), 1)
 					}
-				case "add_btn":
-					ele.OnClick = AddPuzzle
-				case "prev_btn":
-					ele.OnClick = PrevPuzzle
-				case "next_btn":
-					ele.OnClick = NextPuzzle
-				case "delete_btn":
-					ele.OnClick = OpenConfirmDelete
 				default:
 					switch dialog.Key {
 					case constants.DialogEditorPanelTop, constants.DialogEditorPanelLeft:
@@ -289,11 +264,6 @@ func CustomizeEditorDialog(key string) {
 						}))
 					}
 					b++
-				}
-			} else if ele.ElementType == ui.TextElement {
-				switch ele.Key {
-				case "puzzle_number":
-					ele.Text.SetText("0001")
 				}
 			}
 		}

@@ -185,6 +185,7 @@ type Flags struct {
 	DigLeftBuff  int
 	DigRightBuff int
 	ItemAction   ItemAction
+	OutsideMap   bool
 }
 
 type CharacterOptions struct {

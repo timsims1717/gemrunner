@@ -95,7 +95,7 @@ func (s *Sprite) ToggleHidden(hide bool) {
 }
 
 type SpriteSheet struct {
-	Img       pixel.Picture
+	Img       *pixel.PictureData
 	Sprites   []pixel.Rect
 	SpriteMap map[string]pixel.Rect
 	AnimMap   map[string]AnimDef

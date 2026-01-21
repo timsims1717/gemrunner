@@ -3,29 +3,29 @@
   "sprites": [
     {
       "key": "border_corner",
-      "x": 0,
-      "y": 0,
-      "h": 16,
-      "w": 16
+      "x": 8,
+      "y": 16,
+      "h": 8,
+      "w": 8
     },
     {
       "key": "border_straight",
       "x": 0,
       "y": 16,
       "h": 16,
-      "w": 16
+      "w": 8
     },
     {
       "key": "white_dot",
       "x": 7,
-      "y": 7,
+      "y": 16,
       "h": 1,
       "w": 1
     },
     {
       "key": "blue_dot",
-      "x": 4,
-      "y": 4,
+      "x": 3,
+      "y": 18,
       "h": 1,
       "w": 1
     },
@@ -619,14 +619,14 @@
       "w": 16
     },
     {
-      "key": "prev_btn",
+      "key": "left_puz_btn",
       "x": 64,
       "y": 144,
       "h": 16,
       "w": 16
     },
     {
-      "key": "prev_btn_click",
+      "key": "left_puz_btn_click",
       "x": 80,
       "y": 144,
       "h": 16,
@@ -703,14 +703,14 @@
       "w": 16
     },
     {
-      "key": "next_btn",
+      "key": "right_puz_btn",
       "x": 64,
       "y": 160,
       "h": 16,
       "w": 16
     },
     {
-      "key": "next_btn_click",
+      "key": "right_puz_btn_click",
       "x": 80,
       "y": 160,
       "h": 16,
@@ -874,6 +874,62 @@
       "key": "puzzle_symbol",
       "x": 48,
       "y": 208,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "down_puz_btn",
+      "x": 144,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "down_puz_btn_click",
+      "x": 160,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "up_puz_btn",
+      "x": 144,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "up_puz_btn_click",
+      "x": 160,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "minus_btn_med",
+      "x": 176,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "minus_btn_click_med",
+      "x": 192,
+      "y": 224,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "plus_btn_med",
+      "x": 176,
+      "y": 240,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "plus_btn_click_med",
+      "x": 192,
+      "y": 240,
       "h": 16,
       "w": 16
     },
@@ -1490,6 +1546,22 @@
       "y": 108,
       "w": 4,
       "h": 4
+    },
+
+
+    {
+      "key": "white_level_preview",
+      "x": 176,
+      "y": 160,
+      "h": 4,
+      "w": 7
+    },
+    {
+      "key": "white_level_preview_border",
+      "x": 212,
+      "y": 192,
+      "h": 18,
+      "w": 30
     },
 
 

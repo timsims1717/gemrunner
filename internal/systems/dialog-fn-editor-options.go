@@ -11,8 +11,94 @@ import (
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
+	"golang.org/x/image/colornames"
 	"strconv"
 )
+
+// options panel
+
+func customizeEditorOptions(key string) {
+	editorOptions := ui.Dialogs[key]
+	for _, e := range editorOptions.Elements {
+		ele := e
+		switch ele.Key {
+		case "puzzle_number":
+			ele.Text.SetText("0001")
+		case "test_btn":
+			ele.OnClick = TestPuzzle
+		case "save_btn":
+			ele.OnClick = OnSavePuzzleSet
+		case "open_btn":
+			ele.OnClick = OpenOpenPuzzleDialog
+		case "new_btn":
+			ele.OnClick = NewPuzzle
+		case "combine_btn":
+			ele.OnClick = OpenCombineSetsDialog
+		case "add_btn":
+			ele.OnClick = InsertPuzzle
+		case "delete_btn":
+			ele.OnClick = OpenConfirmDelete
+		case "left_puz_btn":
+			ele.OnClick = PrevPuzzle
+		case "right_puz_btn":
+			ele.OnClick = NextPuzzle
+		case "up_puz_btn":
+			ele.OnClick = UpPuzzle
+		case "down_puz_btn":
+			ele.OnClick = DownPuzzle
+		case "rearrange_btn":
+			ele.OnClick = OpenRearrangeDialog
+		case "world_btn":
+			ele.OnClick = OpenChangeWorldDialog
+		case "name_btn":
+			ele.OnClick = OpenDialog(constants.DialogChangeName)
+		case "puzzle_settings_btn":
+			ele.OnClick = OpenDialog(constants.DialogPuzzleSettings)
+		case "puzzle_set_settings_btn":
+			ele.OnClick = OpenPuzzleSetSettingsDialog
+		case "exit_editor_btn":
+			ele.OnClick = ExitEditor
+		}
+	}
+}
+
+func UpdateEditorOptions() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		optionsKeys := []string{constants.DialogEditorOptionsRight, constants.DialogEditorOptionsBot}
+		for _, key := range optionsKeys {
+			editorOptions := ui.Dialogs[key]
+			for _, e := range editorOptions.Elements {
+				ele := e
+				switch ele.Key {
+				case "add_btn":
+					ele.OnClick = OpenDialog(constants.DialogAddPuzzle)
+				case "puzzle_number":
+					if data.CurrPuzzleSet.Metadata.Adventure {
+						ele.Text.SetText(fmt.Sprintf("%02d,%02d", data.CurrPuzzleSet.CurrPuzzle.Grid.X, data.CurrPuzzleSet.CurrPuzzle.Grid.Y))
+					} else {
+						ele.Text.SetText(fmt.Sprintf("%04d", data.CurrPuzzleSet.PuzzleIndex+1))
+					}
+				case "left_puz_btn":
+					if data.CurrPuzzleSet.Metadata.Adventure {
+						ele.OnClick = LeftPuzzle
+					} else {
+						ele.OnClick = PrevPuzzle
+					}
+				case "right_puz_btn":
+					if data.CurrPuzzleSet.Metadata.Adventure {
+						ele.OnClick = RightPuzzle
+					} else {
+						ele.OnClick = NextPuzzle
+					}
+				case "up_puz_btn":
+					ele.Object.Hidden = !data.CurrPuzzleSet.Metadata.Adventure
+				case "down_puz_btn":
+					ele.Object.Hidden = !data.CurrPuzzleSet.Metadata.Adventure
+				}
+			}
+		}
+	}
+}
 
 // open puzzle dialog
 
@@ -253,6 +339,92 @@ func ChangeName() {
 	}
 }
 
+// add puzzle dialog
+
+func customizeAddPuzzle() {
+	addPuzzleDlg := ui.Dialogs[constants.DialogAddPuzzle]
+	addPuzzleDlg.OnOpen = OpenAddPuzzleDialog
+	for _, e := range addPuzzleDlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "cancel":
+			ele.OnClick = CloseDialog(constants.DialogAddPuzzle)
+		case "add_up":
+			ele.OnClick = func() {
+				AddPuzzleUp()
+				ui.CloseDialog(constants.DialogAddPuzzle)
+			}
+		case "add_down":
+			ele.OnClick = func() {
+				AddPuzzleDown()
+				ui.CloseDialog(constants.DialogAddPuzzle)
+			}
+		case "add_right":
+			ele.OnClick = func() {
+				AddPuzzleRight()
+				ui.CloseDialog(constants.DialogAddPuzzle)
+			}
+		case "add_left":
+			ele.OnClick = func() {
+				AddPuzzleLeft()
+				ui.CloseDialog(constants.DialogAddPuzzle)
+			}
+		}
+	}
+}
+
+func OpenAddPuzzleDialog() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		currPuzzle := data.CurrPuzzleSet.CurrPuzzle
+		currGrid := currPuzzle.Grid
+		for _, e := range ui.Dialogs[constants.DialogAddPuzzle].Elements {
+			ele := e
+			switch ele.Key {
+			case "add_up":
+				grid := currGrid
+				grid.Y++
+				if _, ok := data.CurrPuzzleSet.PuzzGrid[grid]; ok {
+					ele.Object.Mask = pixel.ToRGBA(constants.ColorDisable)
+					ele.Disable(true)
+				} else {
+					ele.Object.Mask = pixel.ToRGBA(colornames.White)
+					ele.Disable(false)
+				}
+			case "add_down":
+				grid := currGrid
+				grid.Y--
+				if _, ok := data.CurrPuzzleSet.PuzzGrid[grid]; ok {
+					ele.Object.Mask = pixel.ToRGBA(constants.ColorDisable)
+					ele.Disable(true)
+				} else {
+					ele.Object.Mask = pixel.ToRGBA(colornames.White)
+					ele.Disable(false)
+				}
+			case "add_right":
+				grid := currGrid
+				grid.X++
+				if _, ok := data.CurrPuzzleSet.PuzzGrid[grid]; ok {
+					ele.Object.Mask = pixel.ToRGBA(constants.ColorDisable)
+					ele.Disable(true)
+				} else {
+					ele.Object.Mask = pixel.ToRGBA(colornames.White)
+					ele.Disable(false)
+				}
+			case "add_left":
+				grid := currGrid
+				grid.X--
+				if _, ok := data.CurrPuzzleSet.PuzzGrid[grid]; ok {
+					ele.Object.Mask = pixel.ToRGBA(constants.ColorDisable)
+					ele.Disable(true)
+				} else {
+					ele.Object.Mask = pixel.ToRGBA(colornames.White)
+					ele.Disable(false)
+				}
+			}
+		}
+	}
+}
+
 // puzzle settings dialog
 
 func customizePuzzleSettings() {
@@ -413,6 +585,7 @@ func ConfirmPuzzleSetSettings() {
 		}
 		ui.CloseDialog(constants.DialogPuzzleSetSettings)
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+		UpdateEditorOptions()
 		//if !SavePuzzleSet() {
 		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
 		//}
@@ -514,54 +687,293 @@ func ConfirmDelete() {
 	ui.CloseDialog(constants.DialogAreYouSureDelete)
 }
 
-// rearrange puzzles
-
-func OpenRearrangePuzzlesDialog() {
+func OpenRearrangeDialog() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		ui.NewDialog(ui.DialogConstructors[constants.DialogRearrangePuzzleSet])
-		rearrangePzl := ui.Dialogs[constants.DialogRearrangePuzzleSet]
-		for _, ele := range rearrangePzl.Elements {
-			switch ele.Key {
-			case "confirm":
-				ele.OnClick = ConfirmRearrangedPuzzles
-			case "rearrange_next":
-				ele.OnHold = PuzzleSetViewNextPuzzle(rearrangePzl)
-				ele.OnClick = PuzzleSetViewNextPuzzle(rearrangePzl)
-			case "rearrange_prev":
-				ele.OnHold = PuzzleSetViewPrevPuzzle(rearrangePzl)
-				ele.OnClick = PuzzleSetViewPrevPuzzle(rearrangePzl)
-			case "rearrange_swap_next":
-				ele.OnHold = PuzzleSetViewSwapNext(rearrangePzl)
-				ele.OnClick = PuzzleSetViewSwapNext(rearrangePzl)
-			case "rearrange_swap_prev":
-				ele.OnHold = PuzzleSetViewSwapPrev(rearrangePzl)
-				ele.OnClick = PuzzleSetViewSwapPrev(rearrangePzl)
-			case "rearrange_end":
-				ele.OnHold = PuzzleSetViewSwapEnd(rearrangePzl)
-				ele.OnClick = PuzzleSetViewSwapEnd(rearrangePzl)
-			case "rearrange_begin":
-				ele.OnHold = PuzzleSetViewSwapToBegin(rearrangePzl)
-				ele.OnClick = PuzzleSetViewSwapToBegin(rearrangePzl)
-			case "cancel":
-				ele.OnClick = DisposeDialog(constants.DialogRearrangePuzzleSet)
+		if data.CurrPuzzleSet.Metadata.Adventure {
+			OpenRearrangeAdventureDialog()
+		} else {
+			OpenRearrangePuzzlesDialog()
+		}
+	}
+}
+
+// rearrange puzzles (adventure)
+
+func OpenRearrangeAdventureDialog() {
+	key := constants.DialogRearrangeAdventureSet
+	ui.NewDialog(ui.DialogConstructors[key])
+	rearrangePzl := ui.Dialogs[key]
+	for _, e := range rearrangePzl.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmRearrangeAdventure
+		case "cancel":
+			ele.OnClick = DisposeDialog(key)
+		case "zoom_in":
+			ele.OnClick = Zoom(key, true, true)
+		case "zoom_out":
+			ele.OnClick = Zoom(key, true, false)
+		case "puzzle_set_view":
+			for _, ele1 := range ele.Elements {
+				switch ele1.Key {
+				case "puzzle_center", "puzzle_left", "puzzle_right",
+					"puzzle_top_center", "puzzle_top_left", "puzzle_top_right",
+					"puzzle_bot_center", "puzzle_bot_left", "puzzle_bot_right",
+					"puzzle_float_center", "puzzle_float_left", "puzzle_float_right":
+					ele1.Border.Style = ui.ThinBorderWhite
+				}
 			}
 		}
-		UpdateDialogView(rearrangePzl)
-		data.PuzzleSetViewAllowEnd = false
+	}
+	switch data.AdventureViewZoomLevel {
+	case 0:
+		AdventureViewZoomZero(key, true)
+	case 1:
+		AdventureViewZoomOne(key, true)
+	case 2:
+		AdventureViewZoomTwo(key, true)
+	}
+	UpdateDialogView(rearrangePzl)
+	ui.OpenDialogInStack(key)
+}
+
+func Zoom(key string, rearrange, in bool) func() {
+	return func() {
+		if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+			switch data.AdventureViewZoomLevel {
+			case 0:
+				if in {
+					AdventureViewZoomOne(key, rearrange)
+				}
+			case 1:
+				if in {
+					AdventureViewZoomTwo(key, rearrange)
+				} else {
+					AdventureViewZoomZero(key, rearrange)
+				}
+			case 2:
+				if !in {
+					AdventureViewZoomOne(key, rearrange)
+				}
+			}
+		}
+	}
+}
+
+func ConfirmRearrangeAdventure() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+
+		ui.Dispose(constants.DialogRearrangeAdventureSet)
+	}
+}
+
+var keepTheseKeys1 = []string{
+	"puzzle_center", "puzzle_left", "puzzle_right",
+	"puzzle_top_center", "puzzle_top_left", "puzzle_top_right",
+	"puzzle_bot_center", "puzzle_bot_left", "puzzle_bot_right",
+	"puzzle_float_center", "puzzle_float_left", "puzzle_float_right",
+}
+
+func AdventureViewZoomZero(key string, rearrange bool) {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+		dialog := ui.Dialogs[key]
+		pzlView := dialog.Get("puzzle_set_view")
+		var keepTheseKeys []string
+		data.AdventureViewZoomLevel = 0
 		data.PuzzleSetViewIsMoving = false
 		data.PuzzleSetViewIndex = data.CurrPuzzleSet.PuzzleIndex
-		data.PuzzleSetViewPuzzles = make([]int, len(data.CurrPuzzleSet.Puzzles))
-		for i := range data.PuzzleSetViewPuzzles {
-			data.PuzzleSetViewPuzzles[i] = i
+		pzlCoords := data.CurrPuzzleSet.CurrPuzzle.Grid
+		for grid, i := range data.CurrPuzzleSet.PuzzGrid {
+			pzl := data.CurrPuzzleSet.Puzzles[i]
+			col := pzl.Metadata.PrimaryColor
+
+			// positions
+			pos0 := pixel.V(float64(grid.X*8), float64(grid.Y*5))
+			if grid.X < 0 {
+				pos0.X += 1.
+			}
+			if grid.Y < 0 {
+				pos0.Y += 1.
+			}
+			if pzlCoords == grid { // move camera here
+				pzlView.ViewPort.CamPos = pos0
+			}
+
+			// small, zoom level 0
+			z0Key := fmt.Sprintf("z0_%d_%d", grid.X, grid.Y)
+			z0ec := ui.ElementConstructor{
+				Key:         z0Key,
+				SprKey:      "white_level_preview",
+				Batch:       constants.UIBatch,
+				Position:    pos0,
+				ElementType: ui.SpriteElement,
+			}
+			z0Ele := ui.CreateSpriteElement(z0ec)
+			z0Ele.Object.Mask = col
+			pzlView.Elements = append(pzlView.Elements, z0Ele)
+			keepTheseKeys = append(keepTheseKeys, z0Key)
+			ResetAdventureView(key, keepTheseKeys, 0)
 		}
-		pzlView := rearrangePzl.Get("puzzle_set_view")
-		CreatePuzzlePreview(pzlView.Get("puzzle_center"), data.PuzzleSetViewIndex)
-		CreatePuzzlePreview(pzlView.Get("puzzle_left"), data.PuzzleSetViewIndex-1)
-		CreatePuzzlePreview(pzlView.Get("puzzle_right"), data.PuzzleSetViewIndex+1)
-		ResetPuzzleSetView(rearrangePzl)
-		PuzzleSetViewNameAndNum(rearrangePzl, data.PuzzleSetViewIndex)
-		ui.OpenDialogInStack(constants.DialogRearrangePuzzleSet)
 	}
+}
+
+func AdventureViewZoomOne(key string, rearrange bool) {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+		dialog := ui.Dialogs[key]
+		pzlView := dialog.Get("puzzle_set_view")
+		var keepTheseKeys []string
+		data.AdventureViewZoomLevel = 1
+		data.PuzzleSetViewIsMoving = false
+		data.PuzzleSetViewIndex = data.CurrPuzzleSet.PuzzleIndex
+		pzlCoords := data.CurrPuzzleSet.CurrPuzzle.Grid
+		for grid, i := range data.CurrPuzzleSet.PuzzGrid {
+			pzl := data.CurrPuzzleSet.Puzzles[i]
+			col := pzl.Metadata.PrimaryColor
+
+			// positions
+			pos1 := pixel.V(float64(grid.X*29)+0.5, float64(grid.Y*17)+0.5)
+			if grid.X < 0 {
+				pos1.X += 1.
+			}
+			if grid.Y < 0 {
+				pos1.Y += 1.
+			}
+			if pzlCoords == grid { // move camera here
+				pzlView.ViewPort.CamPos = pos1
+			}
+
+			// medium, zoom level 1
+			z1Key := fmt.Sprintf("z1_%d_%d", grid.X, grid.Y)
+			pic := CreatePuzzlePreviewMedium(pzl)
+			pSpr := pixel.NewSprite(pic, pic.Bounds())
+			z1ec := ui.ElementConstructor{
+				Key:         z1Key,
+				Batch:       constants.UIBatch,
+				Position:    pos1,
+				ElementType: ui.SpriteElement,
+			}
+			z1Ele := ui.CreatePixelSpriteElement(z1ec, pSpr)
+			z1Ele.Object.Mask = col
+			z1Ele.Object.Hidden = data.AdventureViewZoomLevel != 1
+			pzlView.Elements = append(pzlView.Elements, z1Ele)
+			z1BKey := fmt.Sprintf("z1b_%d_%d", grid.X, grid.Y)
+			z1Bec := ui.ElementConstructor{
+				Key:         z1BKey,
+				SprKey:      "white_level_preview_border",
+				Batch:       constants.UIBatch,
+				Position:    pos1,
+				ElementType: ui.SpriteElement,
+			}
+			z1BEle := ui.CreateSpriteElement(z1Bec)
+			z1BEle.Object.Hidden = data.AdventureViewZoomLevel != 1
+			pzlView.Elements = append(pzlView.Elements, z1BEle)
+			keepTheseKeys = append(keepTheseKeys, z1Key)
+			keepTheseKeys = append(keepTheseKeys, z1BKey)
+			ResetAdventureView(key, keepTheseKeys, 1)
+		}
+	}
+}
+
+func AdventureViewZoomTwo(key string, rearrange bool) {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+		dialog := ui.Dialogs[key]
+		pzlView := dialog.Get("puzzle_set_view")
+		data.AdventureViewZoomLevel = 2
+		data.PuzzleSetViewIsMoving = false
+		data.PuzzleSetViewIndex = data.CurrPuzzleSet.PuzzleIndex
+		pzlCoords := data.CurrPuzzleSet.CurrPuzzle.Grid
+
+		CreatePuzzlePreview(pzlView.Get("puzzle_center"), data.PuzzleSetViewIndex)
+		CreatePuzzlePreview(pzlView.Get("puzzle_left"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X - 1, Y: pzlCoords.Y}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_right"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X + 1, Y: pzlCoords.Y}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_top_center"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X, Y: pzlCoords.Y + 1}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_top_left"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X - 1, Y: pzlCoords.Y + 1}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_top_right"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X + 1, Y: pzlCoords.Y + 1}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_bot_center"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X, Y: pzlCoords.Y - 1}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_bot_left"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X - 1, Y: pzlCoords.Y - 1}))
+		CreatePuzzlePreview(pzlView.Get("puzzle_bot_right"), data.CurrPuzzleSet.GetGrid(world.Coords{X: pzlCoords.X + 1, Y: pzlCoords.Y - 1}))
+
+		pzlView.ViewPort.CamPos = pzlView.Get("puzzle_center").Object.Pos
+
+		ResetAdventureView(key, nil, 2)
+	}
+}
+
+func ResetAdventureView(key string, keepTheseKeys []string, zoom int) {
+	if data.Editor != nil && data.CurrPuzzleSet != nil && !data.PuzzleSetViewIsMoving {
+		dialog := ui.Dialogs[key]
+		pzlView := dialog.Get("puzzle_set_view")
+		for i := len(pzlView.Elements) - 1; i >= 0; i-- {
+			ele := pzlView.Elements[i]
+			// remove extra elements
+			if util.ContainsStr(ele.Key, keepTheseKeys1) {
+				if zoom != 2 { // dispose of puzzle view
+					ui.DisposeSubElements(ele.Elements)
+					ele.Object.Hidden = true
+				}
+			} else if !util.ContainsStr(ele.Key, keepTheseKeys) {
+				if i < len(pzlView.Elements)+1 {
+					pzlView.Elements = append(pzlView.Elements[:i], pzlView.Elements[i+1:]...)
+				} else if i == 0 {
+					pzlView.Elements = []*ui.Element{}
+				} else {
+					pzlView.Elements = pzlView.Elements[:i]
+				}
+				ui.DisposeSubElements(ele.Elements)
+				myecs.Manager.DisposeEntity(ele.Entity)
+			}
+		}
+	}
+}
+
+// rearrange puzzles (sequence)
+
+func OpenRearrangePuzzlesDialog() {
+	ui.NewDialog(ui.DialogConstructors[constants.DialogRearrangePuzzleSet])
+	rearrangePzl := ui.Dialogs[constants.DialogRearrangePuzzleSet]
+	for _, e := range rearrangePzl.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmRearrangedPuzzles
+		case "rearrange_next":
+			ele.OnHold = PuzzleSetViewNextPuzzle(rearrangePzl)
+			ele.OnClick = PuzzleSetViewNextPuzzle(rearrangePzl)
+		case "rearrange_prev":
+			ele.OnHold = PuzzleSetViewPrevPuzzle(rearrangePzl)
+			ele.OnClick = PuzzleSetViewPrevPuzzle(rearrangePzl)
+		case "rearrange_swap_next":
+			ele.OnHold = PuzzleSetViewSwapNext(rearrangePzl)
+			ele.OnClick = PuzzleSetViewSwapNext(rearrangePzl)
+		case "rearrange_swap_prev":
+			ele.OnHold = PuzzleSetViewSwapPrev(rearrangePzl)
+			ele.OnClick = PuzzleSetViewSwapPrev(rearrangePzl)
+		case "rearrange_end":
+			ele.OnHold = PuzzleSetViewSwapEnd(rearrangePzl)
+			ele.OnClick = PuzzleSetViewSwapEnd(rearrangePzl)
+		case "rearrange_begin":
+			ele.OnHold = PuzzleSetViewSwapToBegin(rearrangePzl)
+			ele.OnClick = PuzzleSetViewSwapToBegin(rearrangePzl)
+		case "cancel":
+			ele.OnClick = DisposeDialog(constants.DialogRearrangePuzzleSet)
+		}
+	}
+	UpdateDialogView(rearrangePzl)
+	data.PuzzleSetViewAllowEnd = false
+	data.PuzzleSetViewIsMoving = false
+	data.PuzzleSetViewIndex = data.CurrPuzzleSet.PuzzleIndex
+	data.PuzzleSetViewPuzzles = make([]int, len(data.CurrPuzzleSet.Puzzles))
+	for i := range data.PuzzleSetViewPuzzles {
+		data.PuzzleSetViewPuzzles[i] = i
+	}
+	pzlView := rearrangePzl.Get("puzzle_set_view")
+	CreatePuzzlePreview(pzlView.Get("puzzle_center"), data.PuzzleSetViewIndex)
+	CreatePuzzlePreview(pzlView.Get("puzzle_left"), data.PuzzleSetViewIndex-1)
+	CreatePuzzlePreview(pzlView.Get("puzzle_right"), data.PuzzleSetViewIndex+1)
+	ResetPuzzleSetView(rearrangePzl)
+	PuzzleSetViewNameAndNum(rearrangePzl, data.PuzzleSetViewIndex)
+	ui.OpenDialogInStack(constants.DialogRearrangePuzzleSet)
 }
 
 func ConfirmRearrangedPuzzles() {

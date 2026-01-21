@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
+	"golang.org/x/image/colornames"
 )
 
 func PuzzleSetViewNextPuzzle(dlg *ui.Dialog) func() {
@@ -595,8 +596,12 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			case data.BlockLadder, data.BlockLadderTurf,
 				data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 				key = constants.PreviewLadder
-			case data.BlockPhase, data.BlockBarrier:
+			case data.BlockPhase:
 				key = constants.PreviewPhase
+			case data.BlockBarrier:
+				if !tile.Metadata.Toggle {
+					key = constants.PreviewPhase
+				}
 			case data.BlockHideout:
 				key = constants.PreviewHideout
 			case data.BlockLiquid:
@@ -685,4 +690,24 @@ func ResetPuzzleSetView(dlg *ui.Dialog) {
 	left.Object.Hidden = data.PuzzleSetViewIndex <= 0
 	center.Object.Hidden = data.PuzzleSetViewIndex >= len(data.PuzzleSetViewPuzzles)
 	right.Object.Hidden = data.PuzzleSetViewIndex >= len(data.PuzzleSetViewPuzzles)-1
+}
+
+func CreatePuzzlePreviewMedium(pzl *data.Puzzle) *pixel.PictureData {
+	pic := pixel.MakePictureData(pixel.R(0, 0, float64(pzl.Metadata.Width), float64(pzl.Metadata.Height)))
+	for y, row := range pzl.Tiles.T {
+		for x, tile := range row {
+			switch tile.Block {
+			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike,
+				data.BlockBedrock, data.BlockLadder, data.BlockLadderTurf,
+				data.BlockLadderCracked, data.BlockLadderCrackedTurf,
+				data.BlockPhase, data.BlockLiquid:
+				pic.Pix[y*28+x] = colornames.White
+			case data.BlockBarrier:
+				if !tile.Metadata.Toggle {
+					pic.Pix[y*28+x] = colornames.White
+				}
+			}
+		}
+	}
+	return pic
 }

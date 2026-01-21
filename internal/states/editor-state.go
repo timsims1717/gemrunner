@@ -3,14 +3,13 @@ package states
 import (
 	"fmt"
 	"gemrunner/internal/constants"
-	"gemrunner/internal/content"
 	"gemrunner/internal/data"
+	"gemrunner/internal/load"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
-	"gemrunner/pkg/options"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/world"
@@ -107,13 +106,13 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
 	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		//dKey := constants.DialogPuzzleSettings
-		//load.ReloadDialog(dKey)
-		//systems.CustomizeEditorDialog(dKey)
-		//systems.UpdateDialogView(ui.Dialogs[dKey])
-		constants.Configuration.Graphics.Resolution++
-		constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
-		content.UpdateConfiguration()
+		dKey := constants.DialogRearrangeAdventureSet
+		load.ReloadDialog(dKey)
+		systems.CustomizeEditorDialog(dKey)
+		systems.UpdateDialogView(ui.Dialogs[dKey])
+		//constants.Configuration.Graphics.Resolution++
+		//constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
+		//content.UpdateConfiguration()
 	}
 	if data.DebugInput.Get("switchWorld").JustPressed() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode++
@@ -175,7 +174,7 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	if data.CurrLevel == nil {
 		// draw border
 		data.BorderView.Canvas.Clear(constants.ColorBlack)
-		systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas)
+		systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas, false)
 		img.Clear()
 		data.BorderView.Draw(data.ScreenView.Canvas)
 		// draw puzzle

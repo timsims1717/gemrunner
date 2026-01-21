@@ -149,6 +149,12 @@ var (
 		B: 255,
 		A: 0,
 	}
+	ColorDisable = color.RGBA{
+		R: 91,
+		G: 91,
+		B: 91,
+		A: 127,
+	}
 
 	Player1Color = ColorBlue
 	Player2Color = ColorGreen

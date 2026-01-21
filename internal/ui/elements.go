@@ -49,7 +49,7 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 		Down:        element.Down,
 	}
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
-		if dlg.Open && dlg.Active && !dlg.Lock {
+		if dlg.Open && dlg.Active && !dlg.Lock && !b.Disabled {
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
 				dlg.Click = true
@@ -125,7 +125,7 @@ func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport
 		Down:        element.Down,
 	}
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
-		if dlg.Open && dlg.Active && !dlg.Lock && !dlg.Click {
+		if dlg.Open && dlg.Active && !dlg.Lock && !dlg.Click && !x.Disabled {
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
 				SetChecked(x, !x.Checked)
@@ -316,7 +316,7 @@ func CreateDropdownElement(element ElementConstructor, dlg *Dialog, parent *Elem
 	var dropdownQuick bool
 	var dropdownTimer *timing.Timer
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, svp, func(hvc *data.HoverClick) {
-		if dlg.Open && dlg.Active && !dlg.Lock {
+		if dlg.Open && dlg.Active && !dlg.Lock && !d.Disabled {
 			dropdownTimer.Update()
 			click := hvc.Input.Get("click")
 			if hvc.ViewHover {
@@ -346,7 +346,7 @@ func CreateDropdownElement(element ElementConstructor, dlg *Dialog, parent *Elem
 	}))
 	// dropdown button behavior
 	b.Entity.AddComponent(myecs.Update, data.NewFn(func() {
-		if dlg.Open && dlg.Active && !dlg.Lock {
+		if dlg.Open && dlg.Active && !dlg.Lock && !d.Disabled {
 			if d.Checked {
 				b.Sprite.Key = cSprKey
 				sc.Object.Hidden = false
@@ -481,7 +481,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 
 	flashTimer := timing.New(0.53)
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, ivp, func(hvc *data.HoverClick) {
-		if !dlg.Open {
+		if !dlg.Open || i.Disabled {
 			i.CaretObj.Hidden = true
 			return
 		}
@@ -1060,7 +1060,7 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 	barClick := false
 	// slider behavior
 	e.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, vp, func(hvc *data.HoverClick) {
-		if dlg.Open && dlg.Active && !dlg.Lock && (parent == nil || !parent.Object.Hidden) {
+		if dlg.Open && dlg.Active && !dlg.Lock && (parent == nil || !parent.Object.Hidden) && !s.Disabled {
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
 				b.Entity.AddComponent(myecs.Drawable, b.Sprite2)
@@ -1222,6 +1222,28 @@ func CreateSpriteElement(element ElementConstructor) *Element {
 	return s
 }
 
+func CreatePixelSpriteElement(element ElementConstructor, spr *pixel.Sprite) *Element {
+	obj := object.New()
+	obj.Pos = element.Position
+	obj.Layer = 99
+	obj.SetRect(spr.Frame())
+	e := myecs.Manager.NewEntity()
+	e.AddComponent(myecs.Object, obj).
+		AddComponent(myecs.Drawable, spr)
+	s := &Element{
+		Key:         element.Key,
+		SpriteP:     spr,
+		Object:      obj,
+		Entity:      e,
+		ElementType: SpriteElement,
+		Left:        element.Left,
+		Right:       element.Right,
+		Up:          element.Up,
+		Down:        element.Down,
+	}
+	return s
+}
+
 func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Element {
 	tf := typeface.NewOld("main", typeface.NewAlign(typeface.Left, typeface.Top), 1, 0.0625, 0, 0)
 	tf.SetPos(element.Position)
@@ -1244,4 +1266,12 @@ func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Eleme
 		Down:        element.Down,
 	}
 	return t
+}
+
+func (e *Element) Disable(disabled bool) {
+	e.Disabled = disabled
+	switch e.ElementType {
+	case ButtonElement:
+		e.Entity.AddComponent(myecs.Drawable, e.Sprite)
+	}
 }

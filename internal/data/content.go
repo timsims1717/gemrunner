@@ -36,6 +36,8 @@ var (
 	RearrangeRightX       = constants.TileSize * 8
 	RearrangeFloatX       = constants.TileSize * -16
 
+	AdventureViewZoomLevel = 1
+
 	Players       []Player
 	MenuInputUsed = pxginput.KeyboardMouse
 	MainJoystick  = -1
@@ -74,6 +76,7 @@ type PuzzleSetMetadata struct {
 	Filename   string     `json:"filename"`
 	Author     string     `json:"author"`
 	Adventure  bool       `json:"adventure"`
+	Continuity int        `json:"continuity"`
 	NumPlayers int        `json:"numPlayers"`
 	NumPuzzles int        `json:"numPuzzles"`
 	Favorite   bool       `json:"favorite"`
@@ -92,3 +95,11 @@ type Player struct {
 	Keyboard  bool
 	Gamepad   pixelgl.Joystick
 }
+
+type Continuity int
+
+const (
+	ContinuityOnComplete = iota
+	NoContinuity
+	ContinuityAlwaysOn
+)

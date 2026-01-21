@@ -1,5 +1,9 @@
 package world
 
+import (
+	"fmt"
+)
+
 // Coords is a convenience struct for passing tile coordinates
 type Coords struct {
 	X int
@@ -28,4 +32,8 @@ func (a Coords) Neighbors() []Coords {
 		{a.X - 1, a.Y},
 		{a.X - 1, a.Y + 1},
 	}
+}
+
+func (a Coords) String() string {
+	return fmt.Sprintf("%d,%d", a.X, a.Y)
 }

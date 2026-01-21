@@ -27,7 +27,10 @@ func CollisionSystem() {
 			var enemyL, enemyR, enemyU, enemyD bool
 			enemyL, enemyR, enemyU, enemyD = enemyCollision(ch, px, py)
 			if pTile == nil {
-				outsideOfMap(ch, px, py)
+				//outsideOfMap(ch, px, py)
+				ch.Flags.OutsideMap = true
+				ch.LastTile = pTile
+				return
 			} else { // check each direction for collision
 				wallCollisions(ch, pTile, pLeft, pRight, enemyL, enemyR, chPos)
 				ceilingCollisions(ch, pTile, pUp, enemyU, chPos)
@@ -38,6 +41,12 @@ func CollisionSystem() {
 					setCollisionFlags(ch)
 					enemyL, enemyR, enemyU, enemyD = enemyCollision(ch, x, y)
 					tile := data.CurrLevel.Get(x, y)
+					if tile == nil {
+						//outsideOfMap(ch, px, py)
+						ch.Flags.OutsideMap = true
+						ch.LastTile = pTile
+						return
+					}
 					left := data.CurrLevel.Get(x-1, y)
 					right := data.CurrLevel.Get(x+1, y)
 					up := data.CurrLevel.Get(x, y+1)
@@ -71,11 +80,13 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 	// for left and right, we stop the character if the next tile is solid and either
 	//   if they run into the tile
 	//   or if they are on a ladder (so they stay in the center of the ladder)
-	if ch.State == data.OnLadder || ch.State == data.Falling {
-		ch.Flags.LeftWall = left.IsSolid() || left.Block == data.BlockLiquid || enemyLeft
-		ch.Flags.RightWall = right.IsSolid() || right.Block == data.BlockLiquid || enemyRight
+	if left == nil && ch.Player > -1 && data.CurrLevel.Continuity {
+		_, okL := tile.Transitions[data.Left]
+		ch.Flags.LeftWall = !okL
 	} else {
-		if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
+		if ch.State == data.OnLadder || ch.State == data.Falling {
+			ch.Flags.LeftWall = left.IsSolid() || left.Block == data.BlockLiquid || enemyLeft
+		} else if chPos.X-ch.Object.HalfWidth <= tile.Object.Pos.X-world.HalfSize {
 			if left.IsSolid() || left.Block == data.BlockLiquid {
 				ch.Flags.LeftWall = true
 				ch.Object.Pos.X = tile.Object.Pos.X - world.HalfSize + ch.Object.HalfWidth
@@ -84,7 +95,14 @@ func wallCollisions(ch *data.Dynamic, tile, left, right *data.Tile, enemyLeft, e
 				ch.Object.Pos.X = ch.Object.LastPos.X
 			}
 		}
-		if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
+	}
+	if right == nil && ch.Player > -1 && data.CurrLevel.Continuity {
+		_, okR := tile.Transitions[data.Right]
+		ch.Flags.RightWall = !okR
+	} else {
+		if ch.State == data.OnLadder || ch.State == data.Falling {
+			ch.Flags.RightWall = right.IsSolid() || right.Block == data.BlockLiquid || enemyRight
+		} else if chPos.X+ch.Object.HalfWidth >= tile.Object.Pos.X+world.HalfSize {
 			if right.IsSolid() || right.Block == data.BlockLiquid {
 				ch.Flags.RightWall = true
 				ch.Object.Pos.X = tile.Object.Pos.X + world.HalfSize - ch.Object.HalfWidth
@@ -101,12 +119,17 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPo
 	if ch.Flags.Thrown || ch.Flags.LongJump || ch.Flags.ItemAction == data.Drilling {
 		return
 	}
-	if chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
-		if up.IsSolid() || up.Block == data.BlockLiquid {
-			ch.Flags.Ceiling = true
-			ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
-		} else if enemyUp && ch.Object.Pos.Y > ch.Object.LastPos.Y {
-			ch.Flags.Ceiling = true
+	if up == nil && ch.Player > -1 && data.CurrLevel.Continuity {
+		_, okU := tile.Transitions[data.Up]
+		ch.Flags.Ceiling = !okU
+	} else {
+		if chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
+			if up.IsSolid() || up.Block == data.BlockLiquid {
+				ch.Flags.Ceiling = true
+				ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
+			} else if enemyUp && ch.Object.Pos.Y > ch.Object.LastPos.Y {
+				ch.Flags.Ceiling = true
+			}
 		}
 	}
 }
@@ -115,27 +138,32 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 	standOn, _ := standOnSystem(ch.Object.ID, down)
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
-	if ch.Flags.NoLadders {
-		if (standOnBelow || down.IsSolid() || down.IsRunnable()) && touchingFloor {
-			ch.Flags.Floor = true
-		}
+	if touchingFloor && down == nil && ch.Player > -1 && data.CurrLevel.Continuity {
+		_, okD := tile.Transitions[data.Down]
+		ch.Flags.Floor = !okD
 	} else {
-		if enemyDown && ch.State == data.Falling && touchingFloor {
-			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
-		} else if enemyDown && ch.State == data.OnLadder {
-			if touchingFloor {
-				ch.Flags.Climbed = false
-				ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
-			} else {
+		if ch.Flags.NoLadders {
+			if (standOnBelow || down.IsSolid() || down.IsRunnable()) && touchingFloor {
 				ch.Flags.Floor = true
 			}
-		} else if ((down.IsSolid() ||
-			(down.IsLadder() && (ch.State != data.Flying && ch.State != data.OnLadder && ch.State != data.Leaping)) ||
-			standOnBelow) &&
-			touchingFloor) ||
-			(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {
-			ch.Flags.Floor = true
-			ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+		} else {
+			if enemyDown && ch.State == data.Falling && touchingFloor {
+				ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+			} else if enemyDown && ch.State == data.OnLadder {
+				if touchingFloor {
+					ch.Flags.Climbed = false
+					ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+				} else {
+					ch.Flags.Floor = true
+				}
+			} else if ((down.IsSolid() ||
+				(down.IsLadder() && (ch.State != data.Flying && ch.State != data.OnLadder && ch.State != data.Leaping)) ||
+				standOnBelow) &&
+				touchingFloor) ||
+				(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {
+				ch.Flags.Floor = true
+				ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
+			}
 		}
 	}
 }

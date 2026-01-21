@@ -1,9 +1,11 @@
 package data
 
 import (
+	"fmt"
 	"gemrunner/internal/constants"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
+	"gemrunner/pkg/debug"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
@@ -40,12 +42,16 @@ var (
 
 type LevelSession struct {
 	PlayerStats [constants.MaxPlayers]*PlayerStats `json:"playerStats"`
-	Levels      LevelCompletion                    `json:"levels"`
+
+	LevelArray    []LevelCompletion       `json:"levels"`
+	LevelMap      map[int]LevelCompletion `json:"-"`
+	GemsCollected []world.Coords          `json:"-"`
 
 	LevelStart   time.Time     `json:"-"`
 	TimePlayed   time.Duration `json:"-"`
 	TotalTime    time.Duration `json:"totalTime"`
 	PuzzleIndex  int           `json:"puzzleIndex"`
+	StartCoords  *world.Coords `json:"startCoords"`
 	PuzzleFile   string        `json:"puzzleFile"`
 	Filename     string        `json:"filename"`
 	TotalGems    int           `json:"totalGems"`
@@ -59,28 +65,30 @@ type LevelSession struct {
 }
 
 type LevelCompletion struct {
-	Index     int            `json:"index"`
-	GemScore  int            `json:"gemScore"`
-	Completed bool           `json:"completed"`
-	Changed   []world.Coords `json:"changed"`
+	Index         int            `json:"index"`
+	GemsCollected []world.Coords `json:"gemsCollected"`
+	Completed     bool           `json:"completed"`
+	Continuity    bool           `json:"continuity"`
 }
 
 type Level struct {
-	Tiles     *Tiles
-	Enemies   []*Dynamic
-	Players   [constants.MaxPlayers]*Dynamic
-	PControls [constants.MaxPlayers]Controller
-	PLoc      [constants.MaxPlayers]*mgl32.Vec2
-	Start     bool
-	Failed    bool
-	Complete  bool
-	ExitIndex int
-	DoorsOpen bool
+	Tiles       *Tiles
+	Enemies     []*Dynamic
+	Players     [constants.MaxPlayers]*Dynamic
+	PControls   [constants.MaxPlayers]Controller
+	PLoc        [constants.MaxPlayers]*mgl32.Vec2
+	Start       bool
+	Failed      bool
+	Complete    bool
+	ExitIndex   int
+	StartCoords *world.Coords
+	DoorsOpen   bool
 
 	FakePlayer        *Dynamic
 	FakePlayerDir     Direction
 	FakePlayerCounter int
 
+	Continuity  bool
 	Recording   bool
 	SaveRecord  bool
 	LevelReplay *LevelReplay
@@ -95,11 +103,20 @@ type Level struct {
 	Metadata PuzzleMetadata
 }
 
+type LevelTransition struct {
+	ExitIndex int
+	ExitTile  world.Coords
+}
+
 type PuzzleSet struct {
 	Puzzles  []*Puzzle         `json:"puzzles"`
 	Metadata PuzzleSetMetadata `json:"puzzleSetMetadata"`
+	HasGrid  bool              `json:"hasGrid"`
 
-	CurrPuzzle *Puzzle `json:"-"`
+	CurrPuzzle *Puzzle              `json:"-"`
+	PuzzGrid   map[world.Coords]int `json:"-"`
+	GridMin    world.Coords         `json:"-"`
+	GridMax    world.Coords         `json:"-"`
 
 	Elapsed float32 `json:"-"`
 
@@ -108,7 +125,8 @@ type PuzzleSet struct {
 }
 
 type Puzzle struct {
-	Tiles *Tiles `json:"tiles"`
+	Tiles *Tiles       `json:"tiles"`
+	Grid  world.Coords `json:"grid"`
 
 	WrenchTiles []*Tile `json:"-"`
 
@@ -267,14 +285,21 @@ type Selection struct {
 func CreatePuzzleSet() *PuzzleSet {
 	pzSet := &PuzzleSet{}
 	pzSet.SetToFirst()
+	pzSet.SetUpGrid()
+	pzSet.NeedToSave = false
 	return pzSet
 }
 
 func (set *PuzzleSet) AppendNew() {
 	pzl := CreateBlankPuzzle()
+	grid := set.GetAvailableGridCoords()
+	pzl.Grid = grid
 	set.Puzzles = append(set.Puzzles, pzl)
 	set.CurrPuzzle = pzl
 	set.PuzzleIndex = len(set.Puzzles) - 1
+	set.PuzzGrid[grid] = set.PuzzleIndex
+	set.UpdateGridMaxMin()
+	set.NeedToSave = true
 }
 
 func (set *PuzzleSet) Insert(pzl *Puzzle, i int) {
@@ -282,6 +307,9 @@ func (set *PuzzleSet) Insert(pzl *Puzzle, i int) {
 		if pzl == nil {
 			pzl = CreateBlankPuzzle()
 		}
+		grid := set.GetAvailableGridCoords()
+		pzl.Grid = grid
+		set.PuzzGrid[grid] = i
 		set.Puzzles = append(append(set.Puzzles[:i+1], set.Puzzles[i:]...))
 		set.Puzzles[i] = pzl
 		set.CurrPuzzle = pzl
@@ -289,6 +317,21 @@ func (set *PuzzleSet) Insert(pzl *Puzzle, i int) {
 	} else {
 		set.Append(pzl)
 	}
+	set.UpdateGridMaxMin()
+	set.NeedToSave = true
+}
+
+func (set *PuzzleSet) InsertGrid(pzl *Puzzle, grid world.Coords) {
+	if pzl == nil {
+		pzl = CreateBlankPuzzle()
+	}
+	pzl.Grid = grid
+	set.Puzzles = append(set.Puzzles, pzl)
+	set.CurrPuzzle = pzl
+	set.PuzzleIndex = len(set.Puzzles) - 1
+	set.PuzzGrid[grid] = set.PuzzleIndex
+	set.UpdateGridMaxMin()
+	set.NeedToSave = true
 }
 
 func (set *PuzzleSet) Delete(i int) {
@@ -298,7 +341,14 @@ func (set *PuzzleSet) Delete(i int) {
 			set.Puzzles = []*Puzzle{pzl}
 			set.CurrPuzzle = pzl
 			set.PuzzleIndex = 0
+			set.HasGrid = false
+			set.SetUpGrid()
+			set.NeedToSave = true
 		} else {
+			pzl := set.Puzzles[i]
+			if index, ok := set.PuzzGrid[pzl.Grid]; ok && index == i {
+				delete(set.PuzzGrid, pzl.Grid)
+			}
 			set.Puzzles = append(set.Puzzles[:i], set.Puzzles[i+1:]...)
 			if set.PuzzleIndex == i {
 				set.PuzzleIndex = i - 1
@@ -307,6 +357,8 @@ func (set *PuzzleSet) Delete(i int) {
 				}
 				set.CurrPuzzle = set.Puzzles[set.PuzzleIndex]
 			}
+			set.SetUpGrid()
+			set.NeedToSave = true
 		}
 	}
 }
@@ -316,25 +368,32 @@ func (set *PuzzleSet) Append(pzl *Puzzle) {
 		set.AppendNew()
 		return
 	}
+	grid := set.GetAvailableGridCoords()
+	pzl.Grid = grid
 	set.Puzzles = append(set.Puzzles, pzl)
 	set.CurrPuzzle = pzl
 	set.PuzzleIndex = len(set.Puzzles) - 1
-}
-
-func (set *PuzzleSet) Replace(i int, pzl *Puzzle) {
-	if i > -1 && len(set.Puzzles) > i {
-		set.Puzzles[i] = pzl
-		set.CurrPuzzle = pzl
-		set.PuzzleIndex = i
-	}
+	set.PuzzGrid[grid] = set.PuzzleIndex
+	set.UpdateGridMaxMin()
+	set.NeedToSave = true
 }
 
 func (set *PuzzleSet) SetToFirst() {
 	if len(set.Puzzles) == 0 {
 		set.Puzzles = append(set.Puzzles, CreateBlankPuzzle())
+		set.UpdateGridMaxMin()
 	}
 	set.CurrPuzzle = set.Puzzles[0]
 	set.PuzzleIndex = 0
+}
+
+func (set *PuzzleSet) SetToCoords(c world.Coords) {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	if i, ok := set.PuzzGrid[c]; ok {
+		set.SetTo(i)
+	}
 }
 
 func (set *PuzzleSet) SetTo(i int) {
@@ -358,6 +417,90 @@ func (set *PuzzleSet) Prev() {
 		set.PuzzleIndex = len(set.Puzzles) - 1
 	}
 	set.CurrPuzzle = set.Puzzles[set.PuzzleIndex]
+}
+
+func (set *PuzzleSet) Up() {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	pzl := set.Puzzles[set.PuzzleIndex]
+	grid := pzl.Grid
+	for {
+		grid.Y++
+		if i, ok := set.PuzzGrid[grid]; ok {
+			set.SetTo(i)
+			return
+		}
+		if grid.Y > set.GridMax.Y {
+			grid.Y = set.GridMin.Y - 1
+		}
+		if grid.Y == pzl.Grid.Y {
+			return
+		}
+	}
+}
+
+func (set *PuzzleSet) Down() {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	pzl := set.Puzzles[set.PuzzleIndex]
+	grid := pzl.Grid
+	for {
+		grid.Y--
+		if i, ok := set.PuzzGrid[grid]; ok {
+			set.SetTo(i)
+			return
+		}
+		if grid.Y < set.GridMin.Y {
+			grid.Y = set.GridMax.Y + 1
+		}
+		if grid.Y == pzl.Grid.Y {
+			return
+		}
+	}
+}
+
+func (set *PuzzleSet) Right() {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	pzl := set.Puzzles[set.PuzzleIndex]
+	grid := pzl.Grid
+	for {
+		grid.X++
+		if i, ok := set.PuzzGrid[grid]; ok {
+			set.SetTo(i)
+			return
+		}
+		if grid.X > set.GridMax.X {
+			grid.X = set.GridMin.X - 1
+		}
+		if grid.X == pzl.Grid.X {
+			return
+		}
+	}
+}
+
+func (set *PuzzleSet) Left() {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	pzl := set.Puzzles[set.PuzzleIndex]
+	grid := pzl.Grid
+	for {
+		grid.X--
+		if i, ok := set.PuzzGrid[grid]; ok {
+			set.SetTo(i)
+			return
+		}
+		if grid.X < set.GridMin.X {
+			grid.X = set.GridMax.X + 1
+		}
+		if grid.X == pzl.Grid.X {
+			return
+		}
+	}
 }
 
 func CreateBlankPuzzle() *Puzzle {
@@ -437,4 +580,149 @@ func (p *Puzzle) NumPlayers() int {
 		}
 	}
 	return numPlayers
+}
+
+func (set *PuzzleSet) SetUpGrid() {
+	if !set.HasGrid {
+		if debug.Verbose {
+			fmt.Printf("INFO: puzzle set grid init\n")
+		}
+		set.GridMin = world.Coords{}
+		set.GridMax = world.Coords{}
+		set.PuzzGrid = make(map[world.Coords]int)
+		dx := 1
+		dy := 0
+		segLen := 1
+		segPass := 0
+		grid := world.Coords{}
+		for i, pzl := range set.Puzzles {
+			pzl.Grid = grid
+			set.PuzzGrid[grid] = i
+			// set max/min
+			if grid.X < set.GridMin.X {
+				set.GridMin.X = grid.X
+			}
+			if grid.Y < set.GridMin.Y {
+				set.GridMin.Y = grid.Y
+			}
+			if grid.X > set.GridMax.X {
+				set.GridMax.X = grid.X
+			}
+			if grid.Y > set.GridMax.Y {
+				set.GridMax.Y = grid.Y
+			}
+			// make next step
+			grid.X += dx
+			grid.Y += dy
+			segPass++
+			if segPass == segLen { // done w/segment
+				segPass = 0
+				// rotate
+				dx, dy = dy, -dx
+				if dy == 0 { // increase segment length
+					segLen++
+				}
+			}
+		}
+		set.NeedToSave = true
+		set.HasGrid = true
+	} else {
+		set.PuzzGrid = make(map[world.Coords]int)
+		set.GridMin = world.Coords{}
+		set.GridMax = world.Coords{}
+		for i, pzl := range set.Puzzles {
+			set.PuzzGrid[pzl.Grid] = i
+			// set max/min
+			if pzl.Grid.X < set.GridMin.X {
+				set.GridMin.X = pzl.Grid.X
+			}
+			if pzl.Grid.Y < set.GridMin.Y {
+				set.GridMin.Y = pzl.Grid.Y
+			}
+			if pzl.Grid.X > set.GridMax.X {
+				set.GridMax.X = pzl.Grid.X
+			}
+			if pzl.Grid.Y > set.GridMax.Y {
+				set.GridMax.Y = pzl.Grid.Y
+			}
+		}
+	}
+}
+
+func (set *PuzzleSet) GetAvailableGridCoords() world.Coords {
+	if !set.HasGrid {
+		set.SetUpGrid()
+	}
+	set.GridMin = world.Coords{}
+	set.GridMax = world.Coords{}
+	dx := 1
+	dy := 0
+	segLen := 1
+	segPass := 0
+	grid := world.Coords{}
+	for {
+		_, ok := set.PuzzGrid[grid]
+		if !ok {
+			return grid
+		}
+		// set max/min
+		if grid.X < set.GridMin.X {
+			set.GridMin.X = grid.X
+		}
+		if grid.Y < set.GridMin.Y {
+			set.GridMin.Y = grid.Y
+		}
+		if grid.X > set.GridMax.X {
+			set.GridMax.X = grid.X
+		}
+		if grid.Y > set.GridMax.Y {
+			set.GridMax.Y = grid.Y
+		}
+		// make next step
+		grid.X += dx
+		grid.Y += dy
+		segPass++
+		if segPass == segLen { // done w/segment
+			segPass = 0
+			// rotate
+			dx, dy = dy, -dx
+			if dy == 0 { // increase segment length
+				segLen++
+			}
+		}
+	}
+}
+
+func (set *PuzzleSet) UpdateGridMaxMin() {
+	set.GridMin = world.Coords{}
+	set.GridMax = world.Coords{}
+	for grid := range set.PuzzGrid {
+		// set max/min
+		if grid.X < set.GridMin.X {
+			set.GridMin.X = grid.X
+		}
+		if grid.Y < set.GridMin.Y {
+			set.GridMin.Y = grid.Y
+		}
+		if grid.X > set.GridMax.X {
+			set.GridMax.X = grid.X
+		}
+		if grid.Y > set.GridMax.Y {
+			set.GridMax.Y = grid.Y
+		}
+	}
+}
+
+func (set *PuzzleSet) GetGrid(grid world.Coords) int {
+	if i, ok := set.PuzzGrid[grid]; ok {
+		return i
+	}
+	return -1
+}
+
+func (set *PuzzleSet) GetGridPuzzle(grid world.Coords) *Puzzle {
+	if i, ok := set.PuzzGrid[grid]; ok {
+		return set.Puzzles[i]
+	}
+	return nil
 }

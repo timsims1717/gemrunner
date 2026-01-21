@@ -19,7 +19,7 @@ import (
 func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.LevelReplay) *data.Dynamic {
 	player := data.NewDynamic(tile)
 	player.Layer = 27 - pIndex*2
-	obj := object.New().WithID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
+	obj := object.New().WithFixedID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	obj.Layer = player.Layer
 	PlayerPortal(obj.Layer+1, pos)

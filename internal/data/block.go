@@ -344,6 +344,7 @@ var toID = map[string]Block{
 	constants.TileDoorHidden:        BlockDoorHidden,
 	constants.TileDoorVisible:       BlockDoorVisible,
 	constants.TileDoorLocked:        BlockDoorLocked,
+	"gem_yellow":                    BlockGem,
 	constants.ItemGem:               BlockGem,
 	constants.ItemKey:               BlockKey,
 	constants.CharDemon:             BlockDemon,

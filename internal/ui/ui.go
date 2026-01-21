@@ -105,6 +105,7 @@ type Element struct {
 	Key      string
 	Sprite   *img.Sprite
 	Sprite2  *img.Sprite
+	SpriteP  *pixel.Sprite
 	Delay    float64
 	HelpText string
 	Object   *object.Object
@@ -118,6 +119,7 @@ type Element struct {
 	Right    string
 	Up       string
 	Down     string
+	Disabled bool
 
 	ElementType ElementType
 

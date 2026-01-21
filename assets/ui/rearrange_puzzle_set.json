@@ -1,6 +1,6 @@
 {
   "key":"rearrange_puzzle_set",
-  "width":14,
+  "width":16,
   "height":9,
   "elements":[
     {
@@ -13,7 +13,7 @@
         "A":1
       },
       "pos":{
-        "X":-108,
+        "X":-124,
         "Y":64
       },
       "type":"text",
@@ -29,7 +29,7 @@
       "batchKey":"ui",
       "helpText":"Cancel",
       "pos":{
-        "X":100,
+        "X":116,
         "Y":-60
       },
       "type":"button",
@@ -43,7 +43,7 @@
       "batchKey":"ui",
       "helpText":"Confirm",
       "pos":{
-        "X":80,
+        "X":96,
         "Y":-60
       },
       "type":"button",
@@ -58,7 +58,7 @@
       "batchKey":"ui",
       "helpText":"Next Puzzle",
       "pos":{
-        "X":97,
+        "X":113,
         "Y":36
       },
       "type":"button",
@@ -72,7 +72,7 @@
       "batchKey":"ui",
       "helpText":"Swap with Next Puzzle",
       "pos":{
-        "X":97,
+        "X":113,
         "Y":4
       },
       "type":"button",
@@ -87,7 +87,7 @@
       "batchKey":"ui",
       "helpText":"Send Puzzle to End",
       "pos":{
-        "X":97,
+        "X":113,
         "Y":-28
       },
       "type":"button",
@@ -102,7 +102,7 @@
       "batchKey":"ui",
       "helpText":"Previous Puzzle",
       "pos":{
-        "X":-97,
+        "X":-113,
         "Y":36
       },
       "type":"button",
@@ -116,7 +116,7 @@
       "batchKey":"ui",
       "helpText":"Swap with Previous Puzzle",
       "pos":{
-        "X":-97,
+        "X":-113,
         "Y":4
       },
       "type":"button",
@@ -131,7 +131,7 @@
       "batchKey":"ui",
       "helpText":"Send Puzzle to Start",
       "pos":{
-        "X":-97,
+        "X":-113,
         "Y":-28
       },
       "type":"button",
@@ -141,7 +141,7 @@
     },
     {
       "key":"puzzle_set_view",
-      "width":176,
+      "width":208,
       "height":96,
       "helpText":"Puzzles",
       "pos":{

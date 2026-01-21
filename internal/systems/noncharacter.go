@@ -11,12 +11,12 @@ import (
 )
 
 func DynamicSystem() {
-	for _, result := range myecs.Manager.Query(myecs.IsDynamic) {
-		obj, okO := result.Components[myecs.Object].(*object.Object)
-		d, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
-		isControlled := result.Entity.HasComponent(myecs.Controller)
-		if okO && okC && !obj.Hidden && !isControlled && data.CurrLevel.Start {
-			if reanimator.FrameSwitch {
+	if reanimator.FrameSwitch {
+		for _, result := range myecs.Manager.Query(myecs.IsDynamic) {
+			obj, okO := result.Components[myecs.Object].(*object.Object)
+			d, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+			isControlled := result.Entity.HasComponent(myecs.Controller)
+			if okO && okC && !obj.Hidden && !isControlled && data.CurrLevel.Start {
 				d.ACounter++
 				if !result.Entity.HasComponent(myecs.Parent) {
 					currPos := d.Object.Pos

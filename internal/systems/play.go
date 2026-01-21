@@ -8,6 +8,7 @@ import (
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/world"
 	"time"
 )
 
@@ -39,7 +40,7 @@ func PlaySystem() {
 		if p == nil {
 			continue
 		}
-		if p.State != data.Dead {
+		if p.State != data.Dead && p.State != data.Waiting {
 			allDead = false
 		}
 	}
@@ -48,6 +49,12 @@ func PlaySystem() {
 		Restart()
 	}
 	if data.CurrLevel.Complete {
+		data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex] = data.LevelCompletion{
+			Index:         data.CurrLevelSess.PuzzleIndex,
+			GemsCollected: data.CurrLevelSess.GemsCollected,
+			Completed:     true,
+			Continuity:    data.CurrLevelSess.PuzzleSet.Metadata.Adventure && data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity,
+		}
 		if data.CurrLevel.Recording && data.CurrLevel.SaveRecord {
 			go content.SaveReplay(data.CurrLevel.LevelReplay)
 		}
@@ -56,12 +63,14 @@ func PlaySystem() {
 			if data.CurrPuzzleSet.PuzzleIndex == len(data.CurrPuzzleSet.Puzzles)-1 {
 				SetComplete()
 			} else {
+				data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
 				NextLevel()
 			}
 		} else {
 			if data.CurrLevel.ExitIndex > len(data.CurrPuzzleSet.Puzzles)-1 {
 				SetComplete()
 			} else {
+				data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
 				GoToLevel(data.CurrLevel.ExitIndex)
 			}
 		}
@@ -126,6 +135,7 @@ func DropScore() {
 			stats.LGems = 0
 		}
 	}
+	data.CurrLevelSess.GemsCollected = []world.Coords{}
 }
 
 func UpdateScore() {
@@ -139,4 +149,5 @@ func UpdateScore() {
 			stats.LGems = 0
 		}
 	}
+	data.CurrLevelSess.GemsCollected = []world.Coords{}
 }

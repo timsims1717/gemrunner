@@ -19,17 +19,19 @@ const (
 
 // Editor Dialogs
 const (
-	DialogOpenPuzzle          = "open_puzzle"
-	DialogChangeName          = "change_name"
-	DialogNoPlayersInPuzzle   = "no_players"
-	DialogUnableToSave        = "unable_to_save"
-	DialogUnableToSaveConfirm = "unable_to_save_confirm"
-	DialogChangeWorld         = "change_world"
-	DialogAreYouSureDelete    = "are_you_sure_delete"
-	DialogPuzzleSettings      = "puzzle_settings"
-	DialogPuzzleSetSettings   = "puzzle_set_settings"
-	DialogCombineSets         = "combine_sets"
-	DialogRearrangePuzzleSet  = "rearrange_puzzle_set"
+	DialogOpenPuzzle            = "open_puzzle"
+	DialogAddPuzzle             = "add_puzzle"
+	DialogChangeName            = "change_name"
+	DialogNoPlayersInPuzzle     = "no_players"
+	DialogUnableToSave          = "unable_to_save"
+	DialogUnableToSaveConfirm   = "unable_to_save_confirm"
+	DialogChangeWorld           = "change_world"
+	DialogAreYouSureDelete      = "are_you_sure_delete"
+	DialogPuzzleSettings        = "puzzle_settings"
+	DialogPuzzleSetSettings     = "puzzle_set_settings"
+	DialogCombineSets           = "combine_sets"
+	DialogRearrangePuzzleSet    = "rearrange_puzzle_set"
+	DialogRearrangeAdventureSet = "rearrange_adventure_set"
 
 	DialogEditorPanelTop     = "editor_panel_top"
 	DialogEditorPanelLeft    = "editor_panel_left"
@@ -64,7 +66,9 @@ var DialogKeys = []string{
 	DialogPuzzleSettings,
 	DialogPuzzleSetSettings,
 	DialogRearrangePuzzleSet,
+	DialogRearrangeAdventureSet,
 	DialogNoPlayersInPuzzle,
+	DialogAddPuzzle,
 
 	DialogBarrier,
 	DialogItemOptions,
@@ -92,6 +96,7 @@ var InGameDialogs = []string{
 
 var EditorDialogs = []string{
 	DialogOpenPuzzle,
+	DialogAddPuzzle,
 	DialogChangeName,
 	DialogPuzzleSettings,
 	DialogPuzzleSetSettings,

@@ -1,6 +1,9 @@
 package data
 
-import "github.com/bytearena/ecs"
+import (
+	"gemrunner/pkg/world"
+	"github.com/bytearena/ecs"
+)
 
 type Controller interface {
 	GetActions() Actions
@@ -83,13 +86,14 @@ func (a Actions) Copy() Actions {
 }
 
 type LevelReplay struct {
-	PuzzleSet  string        `json:"puzzleSet"`
-	Filename   string        `json:"filename"`
-	ReplayFile string        `json:"replayFile"`
-	PuzzleNum  int           `json:"puzzle"`
-	Seed       int64         `json:"seed"`
-	Frames     []ReplayFrame `json:"replayFrames"`
-	FrameIndex int           `json:"-"`
+	PuzzleSet   string        `json:"puzzleSet"`
+	Filename    string        `json:"filename"`
+	ReplayFile  string        `json:"replayFile"`
+	PuzzleNum   int           `json:"puzzle"`
+	StartCoords *world.Coords `json:"startCoords"`
+	Seed        int64         `json:"seed"`
+	Frames      []ReplayFrame `json:"replayFrames"`
+	FrameIndex  int           `json:"-"`
 }
 
 type ReplayFrame struct {

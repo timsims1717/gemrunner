@@ -30,9 +30,11 @@ func InGameSystem() {
 		data.CurrLevel.FrameChange = false
 	}
 	wereDoorsOpen := data.CurrLevel.DoorsOpen
-	data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
-	if !wereDoorsOpen && data.CurrLevel.DoorsOpen {
-		sfx.SoundPlayer.PlaySound(constants.SFXDoorsOpen, 0.)
+	if !wereDoorsOpen {
+		data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
+		if data.CurrLevel.DoorsOpen {
+			sfx.SoundPlayer.PlaySound(constants.SFXDoorsOpen, 0.)
+		}
 	}
 	if data.CurrLevel.FakePlayer != nil && debug.ShowDebug {
 		debug.AddLine(constants.ColorRed, imdraw.RoundEndShape, data.CurrLevel.FakePlayer.Object.Pos, data.CurrLevel.FakePlayer.Object.Pos, 3.)

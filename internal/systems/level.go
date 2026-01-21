@@ -36,19 +36,28 @@ func LevelInit(record bool) {
 	data.CurrLevel.SaveRecord = constants.Configuration.Gameplay.AlwaysRecord
 	if data.CurrLevel.Recording {
 		data.CurrLevel.LevelReplay = &data.LevelReplay{
-			PuzzleSet:  data.CurrPuzzleSet.Metadata.Name,
-			Filename:   data.CurrPuzzleSet.Metadata.Filename,
-			ReplayFile: content.ReplayFile(data.CurrPuzzleSet.Metadata.Name, data.CurrPuzzleSet.PuzzleIndex),
-			PuzzleNum:  data.CurrPuzzleSet.PuzzleIndex,
-			Seed:       levelSeed,
+			PuzzleSet:   data.CurrPuzzleSet.Metadata.Name,
+			Filename:    data.CurrPuzzleSet.Metadata.Filename,
+			ReplayFile:  content.ReplayFile(data.CurrPuzzleSet.Metadata.Name, data.CurrPuzzleSet.PuzzleIndex),
+			PuzzleNum:   data.CurrPuzzleSet.PuzzleIndex,
+			StartCoords: data.CurrLevelSess.StartCoords,
+			Seed:        levelSeed,
 		}
 		data.CurrLevel.ReplayFrame = data.ReplayFrame{}
 	} else if data.CurrReplay != nil {
 		data.CurrReplay.FrameIndex = 0
+		data.CurrLevelSess.StartCoords = data.CurrReplay.StartCoords
 	}
 
-	for _, row := range data.CurrLevel.Tiles.T {
-		for _, tile := range row {
+	var gemsCollected []world.Coords
+	if completion, ok := data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex]; ok {
+		data.CurrLevel.DoorsOpen = completion.Completed
+		data.CurrLevel.Continuity = completion.Continuity || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn
+		gemsCollected = completion.GemsCollected
+	}
+
+	for y, row := range data.CurrLevel.Tiles.T {
+		for x, tile := range row {
 			obj := object.New()
 			obj.Pos = world.MapToWorld(tile.Coords)
 			obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
@@ -95,7 +104,9 @@ func LevelInit(record bool) {
 				FlyCharacter(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
 			case data.BlockGem:
-				CreateGem(obj.Pos, tile)
+				if !world.CoordsIn(tile.Coords, gemsCollected) {
+					CreateGem(obj.Pos, tile)
+				}
 				tile.Block = data.BlockEmpty
 			case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
 				CreateDoor(obj.Pos, tile)
@@ -152,6 +163,14 @@ func LevelInit(record bool) {
 				//	tile.Entity.AddComponent(myecs.Animated, anim)
 			case data.BlockLiquid:
 				tile.Object.Layer = 30
+			}
+			AddLevelTransition(tile, x, y)
+		}
+	}
+	if data.CurrLevelSess.StartCoords != nil && (data.CurrLevel.DoorsOpen || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn) {
+		if t := data.CurrLevel.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y); t != nil && !t.IsSolid() {
+			for _, p := range data.CurrLevel.Players {
+				p.Object.SetPos(t.Object.Pos)
 			}
 		}
 	}
@@ -221,6 +240,105 @@ func LevelDispose() {
 			myecs.Manager.DisposeEntity(data.CurrLevel.FakePlayer.Entity)
 		}
 		data.CurrLevel = nil
+	}
+}
+
+func AddLevelTransition(tile *data.Tile, x, y int) {
+	// level transitions
+	tile.Transitions = make(map[data.Direction]*data.LevelTransition)
+	if data.CurrPuzzleSet.Metadata.Adventure && data.CurrPuzzleSet.Metadata.Continuity != data.NoContinuity {
+		var ht *data.Tile
+		var hi int
+		var hc bool
+		var hd data.Direction
+		if x == 0 {
+			hd = data.Left
+			l := data.CurrLevel.Puzzle.Grid
+			l.X--
+			if left := data.CurrLevelSess.PuzzleSet.GetGridPuzzle(l); left != nil {
+				hi = data.CurrLevelSess.PuzzleSet.GetGrid(l)
+				m := left.Metadata.Height
+				n := data.CurrLevel.Puzzle.Metadata.Height
+				if m == n { // levels are the same height
+					ht = left.Get(left.Metadata.Width-1, y)
+				} else if m < n { // next level is shorter than this one
+					ht = left.Get(left.Metadata.Width-1, y-(n-m)/2)
+				} else { // next level is taller
+					ht = left.Get(left.Metadata.Width-1, y+(n-m)/2)
+				}
+			}
+		} else if x == data.CurrLevel.Metadata.Width-1 {
+			hd = data.Right
+			r := data.CurrLevel.Puzzle.Grid
+			r.X++
+			if right := data.CurrLevelSess.PuzzleSet.GetGridPuzzle(r); right != nil {
+				hi = data.CurrLevelSess.PuzzleSet.GetGrid(r)
+				m := right.Metadata.Height
+				n := data.CurrLevel.Puzzle.Metadata.Height
+				if m == n { // levels are the same width
+					ht = right.Get(0, y)
+				} else if m < n { // next level is shorter than this one
+					ht = right.Get(0, y-(n-m)/2)
+				} else { // next level is taller
+					ht = right.Get(0, y+(n-m)/2)
+				}
+			}
+		}
+		if lc, ok := data.CurrLevelSess.LevelMap[hi]; ok {
+			hc = lc.Completed
+		}
+		if ht != nil && (!ht.IsSolid() || (ht.Block == data.BlockBarrier && ht.Metadata.Toggle != hc)) {
+			tile.Transitions[hd] = &data.LevelTransition{
+				ExitIndex: hi,
+				ExitTile:  ht.Coords,
+			}
+		}
+		var vt *data.Tile
+		var vi int
+		var vc bool
+		var vd data.Direction
+		if y == 0 {
+			vd = data.Down
+			b := data.CurrLevel.Puzzle.Grid
+			b.Y--
+			if below := data.CurrLevelSess.PuzzleSet.GetGridPuzzle(b); below != nil {
+				vi = data.CurrLevelSess.PuzzleSet.GetGrid(b)
+				m := below.Metadata.Width
+				n := data.CurrLevel.Puzzle.Metadata.Width
+				if m == n { // levels are the same width
+					vt = below.Get(x, below.Metadata.Height-1)
+				} else if m < n { // next level is less wide than this one
+					vt = below.Get(x-(n-m)/2, below.Metadata.Height-1)
+				} else { // next level is wider
+					vt = below.Get(x+(n-m)/2, below.Metadata.Height-1)
+				}
+			}
+		} else if y == data.CurrLevel.Metadata.Height-1 {
+			vd = data.Up
+			a := data.CurrLevel.Puzzle.Grid
+			a.Y++
+			if above := data.CurrLevelSess.PuzzleSet.GetGridPuzzle(a); above != nil {
+				vi = data.CurrLevelSess.PuzzleSet.GetGrid(a)
+				m := above.Metadata.Width
+				n := data.CurrLevel.Puzzle.Metadata.Width
+				if m == n { // levels are the same width
+					vt = above.Get(x, 0)
+				} else if m < n { // next level is less wide than this one
+					vt = above.Get(x-(n-m)/2, 0)
+				} else { // next level is wider
+					vt = above.Get(x+(n-m)/2, 0)
+				}
+			}
+		}
+		if lc, ok := data.CurrLevelSess.LevelMap[vi]; ok {
+			vc = lc.Completed
+		}
+		if vt != nil && (!vt.IsSolid() || (vt.Block == data.BlockBarrier && vt.Metadata.Toggle != vc)) {
+			tile.Transitions[vd] = &data.LevelTransition{
+				ExitIndex: vi,
+				ExitTile:  vt.Coords,
+			}
+		}
 	}
 }
 
