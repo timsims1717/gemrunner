@@ -20,6 +20,10 @@ uniform float uRedDoodad;
 uniform float uGreenDoodad;
 uniform float uBlueDoodad;
 
+uniform float uRedGoop;
+uniform float uGreenGoop;
+uniform float uBlueGoop;
+
 uniform float uRedLiquidPrimary;
 uniform float uGreenLiquidPrimary;
 uniform float uBlueLiquidPrimary;
@@ -51,6 +55,8 @@ void main() {
         col = vec4(uRedLiquidPrimary, uGreenLiquidPrimary, uBlueLiquidPrimary, col.a);
     } else if (col.r == 1. && col.b == 0. && col.g == 0.) {
         col = vec4(uRedLiquidSecondary, uGreenLiquidSecondary, uBlueLiquidSecondary, col.a);
+    } else if (col.r == 0. && col.b == 0. && col.g == 1.) {
+        col = vec4(uRedGoop, uGreenGoop, uBlueGoop, col.a);
     }
     fragColor = col;
 }

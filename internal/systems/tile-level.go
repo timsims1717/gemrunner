@@ -41,23 +41,7 @@ func TileSystem() {
 								tile.Flags.Regen = true
 								tile.Counter = 0
 								AddMask(tile, "regen_mask", false, false)
-								// Crush any characters here
-								for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-									_, okCO := resultC.Components[myecs.Object].(*object.Object)
-									ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-									if okCO && okC && ch.State != data.Dead {
-										x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-										chTile := data.CurrLevel.Get(x, y)
-										if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-											(chTile.Coords.Y == tile.Coords.Y) {
-											ch.Object.Pos.X = tile.Object.Pos.X
-											ch.Object.Pos.Y = tile.Object.Pos.Y
-											ch.Flags.Death = death.Crushed
-											ch.State = data.Hit
-											sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
-										}
-									}
-								}
+								CrushCharacters(tile)
 							}
 						} else {
 							tile.Block = data.BlockEmpty
@@ -115,23 +99,7 @@ func TileSystem() {
 							tile.Flags.Regen = true
 							tile.Counter = 0
 							AddMask(tile, "close_fangs_mask", false, false)
-							// Crush any characters here
-							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-								_, okCO := resultC.Components[myecs.Object].(*object.Object)
-								ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-								if okCO && okC && ch.State != data.Dead {
-									x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-									chTile := data.CurrLevel.Get(x, y)
-									if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-										(chTile.Coords.Y == tile.Coords.Y) {
-										ch.Object.Pos.X = tile.Object.Pos.X
-										ch.Object.Pos.Y = tile.Object.Pos.Y
-										ch.Flags.Death = death.Crushed
-										ch.State = data.Hit
-										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
-									}
-								}
-							}
+							CrushCharacters(tile)
 						}
 					}
 				} else {
@@ -237,23 +205,7 @@ func TileSystem() {
 						AddMaskWithTrigger(tile, "phase_1_mask", false, true, func() {
 							RemoveMask(tile)
 						})
-						// Crush any characters here
-						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-							_, okCO := resultC.Components[myecs.Object].(*object.Object)
-							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-							if okCO && okC && ch.State != data.Dead {
-								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-								chTile := data.CurrLevel.Get(x, y)
-								if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-									(chTile.Coords.Y == tile.Coords.Y) {
-									ch.Object.Pos.X = tile.Object.Pos.X
-									ch.Object.Pos.Y = tile.Object.Pos.Y
-									ch.Flags.Death = death.Crushed
-									ch.State = data.Hit
-									sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
-								}
-							}
-						}
+						CrushCharacters(tile)
 					} else {
 						tile.Counter = 0
 						tile.Flags.Collapse = true
@@ -276,23 +228,7 @@ func TileSystem() {
 								RemoveMask(tile)
 								tile.Counter = 0
 							})
-							// Crush any characters here
-							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-								_, okCO := resultC.Components[myecs.Object].(*object.Object)
-								ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-								if okCO && okC && ch.State != data.Dead {
-									x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-									chTile := data.CurrLevel.Get(x, y)
-									if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-										(chTile.Coords.Y == tile.Coords.Y) {
-										ch.Object.Pos.X = tile.Object.Pos.X
-										ch.Object.Pos.Y = tile.Object.Pos.Y
-										ch.Flags.Death = death.Crushed
-										ch.State = data.Hit
-										sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
-									}
-								}
-							}
+							CrushCharacters(tile)
 						} else {
 							tile.Flags.Collapse = true
 							tile.Flags.Cracked = false
@@ -356,6 +292,27 @@ func TileSystem() {
 			}
 		}
 	}
+}
+
+func CrushCharacters(tile *data.Tile) {
+	// Crush any characters here
+	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+		_, okCO := resultC.Components[myecs.Object].(*object.Object)
+		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+		if okCO && okC && ch.State != data.Dead {
+			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			chTile := data.CurrLevel.Get(x, y)
+			if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+				(chTile.Coords.Y == tile.Coords.Y) {
+				ch.Object.Pos.X = tile.Object.Pos.X
+				ch.Object.Pos.Y = tile.Object.Pos.Y
+				ch.Flags.Death = death.Crushed
+				ch.State = data.Hit
+				sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
+			}
+		}
+	}
+	tile.Flags.Occupied = nil
 }
 
 // AddMask creates a new mask animation for the tile and sets the correct layers

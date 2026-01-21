@@ -63,7 +63,7 @@ func (t *Tile) SpriteString() string {
 		colSuffixTrans = constants.SprColorOrange
 	}
 	switch t.Block {
-	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout,
+	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout, BlockGoop,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
@@ -227,6 +227,7 @@ func (t *Tile) IsEmpty() bool {
 		t.Block == BlockPhase ||
 		t.Block == BlockBarrier ||
 		t.Block == BlockCracked ||
+		t.Block == BlockGoop ||
 		t.Block == BlockSpike)
 }
 
@@ -241,6 +242,7 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
+			t.Block == BlockGoop ||
 			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
 }
 
@@ -256,6 +258,7 @@ func (t *Tile) IsRunnable() bool {
 			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
+			t.Block == BlockGoop ||
 			t.Block == BlockSpike))
 }
 
@@ -272,6 +275,7 @@ func (t *Tile) IsBlock() bool {
 			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
+			t.Block == BlockGoop ||
 			t.Block == BlockSpike) &&
 			(t.Flags.Regen ||
 				!(t.Flags.Collapse && t.Counter > constants.CollapseCounter && !t.Flags.BareFangs)))

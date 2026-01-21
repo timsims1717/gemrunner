@@ -23,6 +23,7 @@ var (
 	SelectedPrimaryColor   pixel.RGBA
 	SelectedSecondaryColor pixel.RGBA
 	SelectedDoodadColor    pixel.RGBA
+	SelectedGoopColor      pixel.RGBA
 	SelectedTextColor      pixel.RGBA
 	SelectedShadowColor    pixel.RGBA
 
@@ -55,6 +56,7 @@ type PuzzleMetadata struct {
 	PrimaryColor         pixel.RGBA `json:"primaryColor"`
 	SecondaryColor       pixel.RGBA `json:"secondaryColor"`
 	DoodadColor          pixel.RGBA `json:"doodadColor"`
+	GoopColor            pixel.RGBA `json:"goopColor"`
 	LiquidPrimaryColor   pixel.RGBA `json:"liquidColor1"`
 	LiquidSecondaryColor pixel.RGBA `json:"liquidColor2"`
 	ShaderMode           int        `json:"shader"`

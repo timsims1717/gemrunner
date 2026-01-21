@@ -12,6 +12,7 @@ type Block int
 const (
 	BlockTurf = iota
 	BlockBedrock
+	BlockGoop
 	BlockFall
 	BlockCracked
 	BlockClose
@@ -102,6 +103,8 @@ func (b Block) String() string {
 		return constants.TileLadderExitTurf
 	case BlockBedrock:
 		return constants.TileBedrock
+	case BlockGoop:
+		return constants.TileGoop
 	case BlockPhase:
 		return constants.TilePhase
 	case BlockBarrier:
@@ -244,7 +247,7 @@ func (b Block) SpriteString() string {
 		}
 	}
 	switch b {
-	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout,
+	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout, BlockGoop,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
 		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
 			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
@@ -306,6 +309,7 @@ func (b Block) SpriteString() string {
 var toID = map[string]Block{
 	constants.TileTurf:              BlockTurf,
 	constants.TileBedrock:           BlockBedrock,
+	constants.TileGoop:              BlockGoop,
 	constants.TileFall:              BlockFall,
 	constants.TileCracked:           BlockCracked,
 	constants.TileClose:             BlockClose,

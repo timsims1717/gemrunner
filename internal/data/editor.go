@@ -180,20 +180,20 @@ func ModeFromSprString(s string) EditorMode {
 var BlockList = []Block{
 	BlockTurf,
 	BlockBedrock,
+	BlockGoop,
 	BlockFall,
 	BlockCracked,
 	BlockClose,
 	BlockPhase,
 	BlockBarrier,
-	BlockSpike,
 
 	BlockLadder,
 	BlockLadderCracked,
 	BlockLadderExit,
 	BlockBar,
 	BlockHideout,
+	BlockSpike,
 	BlockLiquid,
-	BlockEmpty,
 	BlockEmpty,
 
 	BlockTransporter,

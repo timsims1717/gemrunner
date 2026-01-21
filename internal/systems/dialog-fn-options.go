@@ -14,6 +14,13 @@ import (
 
 func OpenOptions() {
 	options := ui.Dialogs[constants.DialogOptions]
+	fr := constants.Configuration.Gameplay.FrameRate
+	var sliderValue int
+	if fr <= 40 {
+		sliderValue = fr/5 - 1
+	} else {
+		sliderValue = (fr + 30) / 10
+	}
 	for _, e := range options.Elements {
 		ele := e
 		switch ele.Key {
@@ -29,9 +36,9 @@ func OpenOptions() {
 				ele1 := e1
 				switch ele1.Key {
 				case "game_speed_value":
-					ui.SetText(ele1, strconv.Itoa(constants.Configuration.Gameplay.FrameRate/5))
+					ui.SetText(ele1, strconv.Itoa(sliderValue))
 				case "game_speed_slider":
-					ui.SetSliderValue(ele1, constants.Configuration.Gameplay.FrameRate/5)
+					ui.SetSliderValue(ele1, sliderValue)
 				case "timer_check":
 					ui.SetChecked(ele1, constants.Configuration.Gameplay.ShowTimer)
 				case "screen_shake_check":
@@ -80,6 +87,13 @@ func OpenOptions() {
 
 func ResetOptions() {
 	options := ui.Dialogs[constants.DialogOptions]
+	fr := constants.Configuration.Gameplay.FrameRate
+	var sliderValue int
+	if fr <= 40 {
+		sliderValue = (fr - 5) / 5
+	} else {
+		sliderValue = (fr + 30) / 10
+	}
 	for _, e := range options.Elements {
 		ele := e
 		switch ele.Key {
@@ -100,9 +114,9 @@ func ResetOptions() {
 					ele1 := e1
 					switch ele1.Key {
 					case "game_speed_value":
-						ui.SetText(ele1, strconv.Itoa(constants.Configuration.Gameplay.FrameRate/5))
+						ui.SetText(ele1, strconv.Itoa(sliderValue))
 					case "game_speed_slider":
-						ui.SetSliderValue(ele1, constants.Configuration.Gameplay.FrameRate/5)
+						ui.SetSliderValue(ele1, sliderValue)
 					case "timer_check":
 						ui.SetChecked(ele1, constants.Configuration.Gameplay.ShowTimer)
 					case "screen_shake_check":
@@ -163,7 +177,14 @@ func ConfirmOptions() {
 				ele1 := e1
 				switch ele1.Key {
 				case "game_speed_slider":
-					constants.Configuration.Gameplay.FrameRate = ele1.IntValue * 5
+					sv := ele1.IntValue
+					var fr int
+					if sv <= 8 {
+						fr = (sv + 1) * 5
+					} else {
+						fr = sv*10 - 30
+					}
+					constants.Configuration.Gameplay.FrameRate = fr
 				case "timer_check":
 					constants.Configuration.Gameplay.ShowTimer = ele1.Checked
 				case "screen_shake_check":

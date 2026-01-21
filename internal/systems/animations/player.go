@@ -22,6 +22,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 
 	wall := reanimator.NewBatchAnimationFrame("wall", batch, fmt.Sprintf("%s_run", sprPre), 2, reanimator.Hold)
 	run := reanimator.NewBatchAnimation("run", batch, fmt.Sprintf("%s_run", sprPre), reanimator.Loop)
+	goop := reanimator.NewBatchAnimation("goop", batch, fmt.Sprintf("%s_goop", sprPre), reanimator.Loop)
 	climb := reanimator.NewBatchAnimation("climb", batch, fmt.Sprintf("%s_climb", sprPre), reanimator.Loop)
 
 	slide := reanimator.NewBatchSprite("slide", batch, fmt.Sprintf("%s_slide", sprPre), reanimator.Hold)
@@ -195,11 +196,28 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Object.Layer = ch.Layer
 		})
 	}
+	// offsets
+	idle.Offset.Y--
+	breath.Offset.Y--
+	run.Offset.Y--
+	goop.Offset.Y--
+	wall.Offset.Y--
+	jump.Offset.Y--
+	landing.Offset.Y--
+	dig.Offset.Y--
+	throw.Offset.Y--
+	donDisguise.Offset.Y--
+	drillStart.Offset.Y--
+	drilling.Offset.Y--
+	flamethrower.Offset.Y--
+	hit.Offset.Y--
+
 	tree := reanimator.New().
 		AddAnimation(regen).
 		AddAnimation(idle).
 		AddAnimation(breath).
 		AddAnimation(run).
+		AddAnimation(goop).
 		AddAnimation(wall).
 		AddAnimation(fall).
 		AddAnimation(jump).
@@ -294,6 +312,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||
 						(ch.Actions.Right() && (ch.Flags.RightWall || ch.Flags.EnemyR)) {
 						return "wall"
+					} else if ch.Flags.Goop {
+						return "goop"
 					} else {
 						return "run"
 					}

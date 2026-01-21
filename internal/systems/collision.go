@@ -145,6 +145,7 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 		if ch.Flags.NoLadders {
 			if (standOnBelow || down.IsSolid() || down.IsRunnable()) && touchingFloor {
 				ch.Flags.Floor = true
+				ch.Flags.Goop = down.Block == data.BlockGoop
 			}
 		} else {
 			if enemyDown && ch.State == data.Falling && touchingFloor {
@@ -155,6 +156,7 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 					ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
 				} else {
 					ch.Flags.Floor = true
+					ch.Flags.Goop = down.Block == data.BlockGoop
 				}
 			} else if ((down.IsSolid() ||
 				(down.IsLadder() && (ch.State != data.Flying && ch.State != data.OnLadder && ch.State != data.Leaping)) ||
@@ -162,6 +164,7 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, ch
 				touchingFloor) ||
 				(down != nil && down.IsLadder() && !tile.IsLadder() && ch.State == data.OnLadder && !touchingFloor && ch.Actions.Up()) {
 				ch.Flags.Floor = true
+				ch.Flags.Goop = down != nil && down.Block == data.BlockGoop
 				ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
 			}
 		}

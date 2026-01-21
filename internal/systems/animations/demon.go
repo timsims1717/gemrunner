@@ -19,6 +19,13 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	})
 	chase := reanimator.NewBatchSprite("chase", batch, "demon_chase", reanimator.Hold)
 	run := reanimator.NewBatchAnimation("run", batch, "demon_run", reanimator.Loop)
+	goop := reanimator.NewBatchAnimation("goop", batch, "demon_goop", reanimator.Loop)
+	goop.SetTrigger(0, func() {
+		f := float64(int(ch.Object.Pos.X))
+		if ch.Object.Pos.X-0.75 < f {
+			ch.Object.Pos.X = f
+		}
+	})
 	climb := reanimator.NewBatchAnimation("climb", batch, "demon_climb", reanimator.Loop)
 	climb.SetTriggerAll(func() {
 		climb.Freeze = !ch.Flags.Climbed
@@ -176,10 +183,21 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	climbingOut.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
 	})
+	// offsets
+	idle.Offset.Y--
+	regen.Offset.Y--
+	run.Offset.Y--
+	goop.Offset.Y--
+	chase.Offset.Y--
+	jump.Offset.Y--
+	attack.Offset.Y--
+	hit.Offset.Y--
+
 	tree := reanimator.New().
 		AddAnimation(regen).
 		AddAnimation(idle).
 		AddAnimation(run).
+		AddAnimation(goop).
 		AddAnimation(chase).
 		AddAnimation(fall).
 		AddAnimation(jump).
@@ -250,6 +268,8 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 					if (ch.Actions.Left() && (ch.Flags.LeftWall || ch.Flags.EnemyL)) ||
 						(ch.Actions.Right() && (ch.Flags.RightWall || ch.Flags.EnemyR)) {
 						return "chase"
+					} else if ch.Flags.Goop {
+						return "goop"
 					} else {
 						return "run"
 					}

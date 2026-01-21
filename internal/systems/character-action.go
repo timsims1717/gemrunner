@@ -154,10 +154,18 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	//	}
 	//}
 	if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
-		ch.Object.Pos.X -= ch.Vars.WalkSpeed
+		if ch.Flags.Goop {
+			ch.Object.Pos.X -= ch.Vars.GoopSpeed
+		} else {
+			ch.Object.Pos.X -= ch.Vars.WalkSpeed
+		}
 		ch.Object.Flip = true
 	} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
-		ch.Object.Pos.X += ch.Vars.WalkSpeed
+		if ch.Flags.Goop {
+			ch.Object.Pos.X += ch.Vars.GoopSpeed
+		} else {
+			ch.Object.Pos.X += ch.Vars.WalkSpeed
+		}
 		ch.Object.Flip = false
 	}
 }

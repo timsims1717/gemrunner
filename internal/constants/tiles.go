@@ -53,6 +53,8 @@ const (
 	TileTurf        = "turf"
 	TileBar         = "bar"
 	TileHideout     = "hideout"
+	TileGoop        = "goop"
+	TileGoopTop     = "goop_top"
 	TileEmpty       = "empty"
 
 	TileTransporter     = "transporter"

@@ -60,6 +60,7 @@ func NewDynamic(tile *Tile) *Dynamic {
 
 type Vars struct {
 	WalkSpeed    float64
+	GoopSpeed    float64
 	BarSpeed     float64
 	LeapSpeed    float64
 	ClimbSpeed   float64
@@ -168,6 +169,7 @@ type Flags struct {
 	HighJump     bool
 	LongJump     bool
 	Landing      bool
+	Goop         bool
 	JumpR        bool
 	JumpL        bool
 	Thrown       bool
@@ -206,6 +208,7 @@ const (
 func PlayerVars() Vars {
 	return Vars{
 		WalkSpeed:    constants.PlayerWalkSpeed - constants.SpeedMod,
+		GoopSpeed:    constants.PlayerGoopSpeed - constants.SpeedMod,
 		BarSpeed:     constants.PlayerBarSpeed - constants.SpeedMod,
 		LeapSpeed:    constants.PlayerLeapSpeed - constants.SpeedMod,
 		ClimbSpeed:   constants.PlayerClimbSpeed - constants.SpeedMod,
@@ -224,6 +227,7 @@ func PlayerVars() Vars {
 func DemonVars() Vars {
 	return Vars{
 		WalkSpeed:    constants.DemonWalkSpeed - constants.SpeedMod,
+		GoopSpeed:    constants.DemonGoopSpeed - constants.SpeedMod,
 		BarSpeed:     constants.DemonBarSpeed - constants.SpeedMod,
 		LeapSpeed:    constants.DemonLeapSpeed - constants.SpeedMod,
 		ClimbSpeed:   constants.DemonClimbSpeed - constants.SpeedMod,

@@ -36,7 +36,7 @@ func CustomizeWorldDialog() {
 								if o, okO := ele2.Entity.GetComponentData(myecs.Object); okO {
 									if obj, okO1 := o.(*object.Object); okO1 {
 										switch ele2.Key {
-										case "primary_text", "secondary_text", "doodad_text":
+										case "primary_text", "secondary_text", "doodad_text", "goop_text":
 											obj.Hidden = !ele.Checked
 										}
 									}
@@ -46,7 +46,8 @@ func CustomizeWorldDialog() {
 									if obj, okO1 := o.(*object.Object); okO1 {
 										if strings.Contains(ele2.Key, "check_primary") ||
 											strings.Contains(ele2.Key, "check_secondary") ||
-											strings.Contains(ele2.Key, "check_doodad") {
+											strings.Contains(ele2.Key, "check_doodad") ||
+											strings.Contains(ele2.Key, "check_goop") {
 											obj.Hidden = !ele.Checked
 										}
 									}
@@ -56,7 +57,8 @@ func CustomizeWorldDialog() {
 									if obj, okO1 := o.(*object.Object); okO1 {
 										if strings.Contains(ele2.Key, "color_primary") ||
 											strings.Contains(ele2.Key, "color_secondary") ||
-											strings.Contains(ele2.Key, "color_doodad") {
+											strings.Contains(ele2.Key, "color_doodad") ||
+											strings.Contains(ele2.Key, "color_goop") {
 											obj.Hidden = !ele.Checked
 										}
 									}
@@ -145,6 +147,7 @@ func CustomizeWorldDialog() {
 								data.SelectedPrimaryColor = pixel.ToRGBA(constants.WorldPrimary[index])
 								data.SelectedSecondaryColor = pixel.ToRGBA(constants.WorldSecondary[index])
 								data.SelectedDoodadColor = pixel.ToRGBA(constants.WorldDoodad[index])
+								data.SelectedGoopColor = pixel.ToRGBA(constants.WorldGoopColor[index])
 							}
 							for _, de := range dialog.Elements {
 								if de.ElementType == ui.ContainerElement {
@@ -164,6 +167,7 @@ func CustomizeWorldDialog() {
 										pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 										sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 										dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+										gc := pixel.ToRGBA(constants.WorldGoopColor[data.SelectedWorldIndex])
 										lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
 										lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 										de.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
@@ -175,6 +179,9 @@ func CustomizeWorldDialog() {
 										de.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 										de.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 										de.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+										de.ViewPort.Canvas.SetUniform("uRedGoop", float32(gc.R))
+										de.ViewPort.Canvas.SetUniform("uGreenGoop", float32(gc.G))
+										de.ViewPort.Canvas.SetUniform("uBlueGoop", float32(gc.B))
 										de.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 										de.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 										de.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -255,7 +262,8 @@ func CustomizeWorldDialog() {
 			} else if ele.ElementType == ui.CheckboxElement {
 				if strings.Contains(ele.Key, "check_primary") ||
 					strings.Contains(ele.Key, "check_secondary") ||
-					strings.Contains(ele.Key, "check_doodad") {
+					strings.Contains(ele.Key, "check_doodad") ||
+					strings.Contains(ele.Key, "check_goop") {
 					ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
 						if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
 							click := hvc.Input.Get("click")
@@ -268,12 +276,15 @@ func CustomizeWorldDialog() {
 									worldDialogCustomShadersSecondary()
 								} else if strings.Contains(ele.Key, "check_doodad") {
 									worldDialogCustomShadersDoodad()
+								} else if strings.Contains(ele.Key, "check_goop") {
+									worldDialogCustomShadersGoop()
 								}
 								for _, ele2 := range dialog.Elements {
 									if ele2.ElementType == ui.CheckboxElement {
 										if ((strings.Contains(ele2.Key, "check_primary") && strings.Contains(ele.Key, "check_primary")) ||
 											(strings.Contains(ele2.Key, "check_secondary") && strings.Contains(ele.Key, "check_secondary")) ||
-											(strings.Contains(ele2.Key, "check_doodad") && strings.Contains(ele.Key, "check_doodad"))) &&
+											(strings.Contains(ele2.Key, "check_doodad") && strings.Contains(ele.Key, "check_doodad")) ||
+											(strings.Contains(ele2.Key, "check_goop") && strings.Contains(ele.Key, "check_goop"))) &&
 											ele2.Key != ele.Key {
 											ui.SetChecked(ele2, false)
 										}
@@ -301,16 +312,20 @@ func OpenChangeWorldDialog() {
 		data.SelectedPrimaryColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor
 		data.SelectedSecondaryColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor
 		data.SelectedDoodadColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor
+		data.SelectedGoopColor = data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor
 		for _, ele := range changeWorld.Elements {
 			if strings.Contains(ele.Key, "color_primary") ||
 				strings.Contains(ele.Key, "color_secondary") ||
 				strings.Contains(ele.Key, "color_doodad") ||
+				strings.Contains(ele.Key, "color_goop") ||
 				strings.Contains(ele.Key, "check_primary") ||
 				strings.Contains(ele.Key, "check_secondary") ||
 				strings.Contains(ele.Key, "check_doodad") ||
+				strings.Contains(ele.Key, "check_goop") ||
 				strings.Contains(ele.Key, "primary_text") ||
 				strings.Contains(ele.Key, "secondary_text") ||
-				strings.Contains(ele.Key, "doodad_text") {
+				strings.Contains(ele.Key, "doodad_text") ||
+				strings.Contains(ele.Key, "goop_text") {
 				ele.Object.Hidden = !data.CustomWorldSelected
 			}
 			switch ele.ElementType {
@@ -345,6 +360,7 @@ func OpenChangeWorldDialog() {
 					pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 					sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 					dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+					gc := pixel.ToRGBA(constants.WorldGoopColor[data.SelectedWorldIndex])
 					lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
 					lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 					ele.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
@@ -356,6 +372,9 @@ func OpenChangeWorldDialog() {
 					ele.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 					ele.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 					ele.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+					ele.ViewPort.Canvas.SetUniform("uRedGoop", float32(gc.R))
+					ele.ViewPort.Canvas.SetUniform("uGreenGoop", float32(gc.G))
+					ele.ViewPort.Canvas.SetUniform("uBlueGoop", float32(gc.B))
 					ele.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 					ele.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 					ele.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -386,6 +405,7 @@ func ConfirmChangeWorld() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor = data.SelectedPrimaryColor
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor = data.SelectedSecondaryColor
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor = data.SelectedDoodadColor
+		data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor = data.SelectedGoopColor
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite = constants.WorldSprites[data.SelectedWorldIndex]
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid = constants.WorldLiquids[data.SelectedWorldIndex]
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
@@ -416,6 +436,9 @@ func worldDialogShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uRedGoop", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uGreenGoop", float32(0))
+					e2.ViewPort.Canvas.SetUniform("uBlueGoop", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
 					e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
@@ -435,6 +458,9 @@ func worldDialogShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uRedGoop", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uGreenGoop", float32(0))
+			e1.ViewPort.Canvas.SetUniform("uBlueGoop", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
 			e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
@@ -456,6 +482,7 @@ func worldDialogNormalShaders() {
 					pc := pixel.ToRGBA(constants.WorldPrimary[i])
 					sc := pixel.ToRGBA(constants.WorldSecondary[i])
 					dc := pixel.ToRGBA(constants.WorldDoodad[i])
+					gc := pixel.ToRGBA(constants.WorldGoopColor[i])
 					lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[i])
 					lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[i])
 					e2.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
@@ -467,6 +494,9 @@ func worldDialogNormalShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+					e2.ViewPort.Canvas.SetUniform("uRedGoop", float32(gc.R))
+					e2.ViewPort.Canvas.SetUniform("uGreenGoop", float32(gc.G))
+					e2.ViewPort.Canvas.SetUniform("uBlueGoop", float32(gc.B))
 					e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 					e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -480,6 +510,7 @@ func worldDialogNormalShaders() {
 			pc := pixel.ToRGBA(constants.WorldPrimary[data.SelectedWorldIndex])
 			sc := pixel.ToRGBA(constants.WorldSecondary[data.SelectedWorldIndex])
 			dc := pixel.ToRGBA(constants.WorldDoodad[data.SelectedWorldIndex])
+			gc := pixel.ToRGBA(constants.WorldGoopColor[data.SelectedWorldIndex])
 			lpc := pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
 			lsc := pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 			e1.ViewPort.Canvas.SetUniform("uRedPrimary", float32(pc.R))
@@ -491,6 +522,9 @@ func worldDialogNormalShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(dc.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(dc.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(dc.B))
+			e1.ViewPort.Canvas.SetUniform("uRedGoop", float32(gc.R))
+			e1.ViewPort.Canvas.SetUniform("uGreenGoop", float32(gc.G))
+			e1.ViewPort.Canvas.SetUniform("uBlueGoop", float32(gc.B))
 			e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -516,6 +550,9 @@ func worldDialogCustomShaders() {
 					e2.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.SelectedDoodadColor.R))
 					e2.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.SelectedDoodadColor.G))
 					e2.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.SelectedDoodadColor.B))
+					e2.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.SelectedGoopColor.R))
+					e2.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.SelectedGoopColor.G))
+					e2.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.SelectedGoopColor.B))
 					//e2.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 					//e2.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 					//e2.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -534,6 +571,9 @@ func worldDialogCustomShaders() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.SelectedDoodadColor.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.SelectedDoodadColor.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.SelectedDoodadColor.B))
+			e1.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.SelectedGoopColor.R))
+			e1.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.SelectedGoopColor.G))
+			e1.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.SelectedGoopColor.B))
 			//e1.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(lpc.R))
 			//e1.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(lpc.G))
 			//e1.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(lpc.B))
@@ -597,6 +637,25 @@ func worldDialogCustomShadersDoodad() {
 			e1.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.SelectedDoodadColor.R))
 			e1.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.SelectedDoodadColor.G))
 			e1.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.SelectedDoodadColor.B))
+		}
+	}
+}
+
+func worldDialogCustomShadersGoop() {
+	changeWorld := ui.Dialogs[constants.DialogChangeWorld]
+	for _, e1 := range changeWorld.Elements {
+		if e1.ElementType == ui.ScrollElement {
+			for _, e2 := range e1.Elements {
+				if e2.ElementType == ui.ContainerElement {
+					e2.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.SelectedGoopColor.R))
+					e2.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.SelectedGoopColor.G))
+					e2.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.SelectedGoopColor.B))
+				}
+			}
+		} else if e1.ElementType == ui.ContainerElement {
+			e1.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.SelectedGoopColor.R))
+			e1.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.SelectedGoopColor.G))
+			e1.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.SelectedGoopColor.B))
 		}
 	}
 }
@@ -689,6 +748,35 @@ func changeSelectedColor(key string) {
 		data.SelectedDoodadColor = pixel.ToRGBA(constants.ColorGray)
 	case "burnt_check_doodad":
 		data.SelectedDoodadColor = pixel.ToRGBA(constants.ColorBurnt)
+
+	case "red_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorRed)
+	case "orange_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorOrange)
+	case "green_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorGreen)
+	case "cyan_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorCyan)
+	case "blue_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorBlue)
+	case "purple_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorPurple)
+	case "pink_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorPink)
+	case "yellow_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorYellow)
+	case "gold_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorGold)
+	case "brown_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorBrown)
+	case "tan_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorTan)
+	case "light_gray_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorLightGray)
+	case "gray_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorGray)
+	case "burnt_check_goop":
+		data.SelectedGoopColor = pixel.ToRGBA(constants.ColorBurnt)
 
 	case "white_check_color":
 		data.SelectedTextColor = pixel.ToRGBA(constants.ColorWhite)
@@ -840,5 +928,33 @@ func updateColorCheckboxWorld(x *ui.Element) {
 		ui.SetChecked(x, data.SelectedDoodadColor == pixel.ToRGBA(constants.ColorGray))
 	case "burnt_check_doodad":
 		ui.SetChecked(x, data.SelectedDoodadColor == pixel.ToRGBA(constants.ColorBurnt))
+	case "red_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorRed))
+	case "orange_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorOrange))
+	case "green_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorGreen))
+	case "cyan_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorCyan))
+	case "blue_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorBlue))
+	case "purple_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorPurple))
+	case "pink_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorPink))
+	case "yellow_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorYellow))
+	case "gold_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorGold))
+	case "brown_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorBrown))
+	case "tan_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorTan))
+	case "light_gray_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorLightGray))
+	case "gray_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorGray))
+	case "burnt_check_goop":
+		ui.SetChecked(x, data.SelectedGoopColor == pixel.ToRGBA(constants.ColorBurnt))
 	}
 }

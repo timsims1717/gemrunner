@@ -47,11 +47,17 @@ func InGameSystem() {
 
 func PlayerMetaInput() {
 	if data.P1Input.Get("speedUp").JustPressed() {
+		if constants.Configuration.Gameplay.FrameRate >= 40 {
+			constants.Configuration.Gameplay.FrameRate += constants.FrameRateInt
+		}
 		constants.Configuration.Gameplay.FrameRate += constants.FrameRateInt
 		if constants.Configuration.Gameplay.FrameRate > constants.FrameRateMax {
 			constants.Configuration.Gameplay.FrameRate = constants.FrameRateMax
 		}
 	} else if data.P1Input.Get("speedDown").JustPressed() {
+		if constants.Configuration.Gameplay.FrameRate > 40 {
+			constants.Configuration.Gameplay.FrameRate -= constants.FrameRateInt
+		}
 		constants.Configuration.Gameplay.FrameRate -= constants.FrameRateInt
 		if constants.Configuration.Gameplay.FrameRate < constants.FrameRateMin {
 			constants.Configuration.Gameplay.FrameRate = constants.FrameRateMin

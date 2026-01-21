@@ -589,7 +589,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			pos := pixel.V(posX, posY)
 			var key string
 			switch tile.Block {
-			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike:
+			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike, data.BlockGoop:
 				key = constants.PreviewTurf
 			case data.BlockBedrock:
 				key = constants.PreviewBedrock
@@ -700,11 +700,11 @@ func CreatePuzzlePreviewMedium(pzl *data.Puzzle) *pixel.PictureData {
 			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike,
 				data.BlockBedrock, data.BlockLadder, data.BlockLadderTurf,
 				data.BlockLadderCracked, data.BlockLadderCrackedTurf,
-				data.BlockPhase, data.BlockLiquid:
-				pic.Pix[y*28+x] = colornames.White
+				data.BlockPhase, data.BlockLiquid, data.BlockGoop:
+				pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
 			case data.BlockBarrier:
 				if !tile.Metadata.Toggle {
-					pic.Pix[y*28+x] = colornames.White
+					pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
 				}
 			}
 		}

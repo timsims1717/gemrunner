@@ -178,6 +178,9 @@ func CustomizeEditorDialog(key string) {
 							case data.BlockHideout:
 								beEx.Key = constants.TileHideout
 								beEx.Offset.Y = 0
+							case data.BlockGoop:
+								beEx.Key = constants.TileGoop
+								beEx.Offset.Y = 0
 							case data.BlockLiquid:
 								beEx.Key = constants.TileLiquidUFG
 								beEx.Offset.Y = 0
@@ -230,6 +233,8 @@ func CustomizeEditorDialog(key string) {
 							sprs = append(sprs, img.NewSprite(constants.TileClose, constants.TileBatch))
 						case data.BlockHideout:
 							sprs = append(sprs, img.NewSprite(constants.TileHideout, constants.TileBatch))
+						case data.BlockGoop:
+							sprs = append(sprs, img.NewSprite(constants.TileGoop, constants.TileBatch))
 						case data.BlockLiquid:
 							sprs = append(sprs, img.NewSprite(constants.TileLiquidUFG, constants.TileBatch))
 						}
@@ -323,6 +328,9 @@ func editorPanels() {
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedGoop", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenGoop", float32(0))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueGoop", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
 	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
@@ -340,6 +348,9 @@ func editorPanels() {
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedGoop", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenGoop", float32(0))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueGoop", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
 	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))
@@ -357,6 +368,9 @@ func editorPanels() {
 	blockSelect.ViewPort.Canvas.SetUniform("uRedDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uRedGoop", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uGreenGoop", float32(0))
+	blockSelect.ViewPort.Canvas.SetUniform("uBlueGoop", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(0))
 	blockSelect.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(0))

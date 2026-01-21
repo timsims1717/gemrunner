@@ -163,7 +163,7 @@ func NeedsUpdate(tile *data.Tile) bool {
 	case data.BlockTurf, data.BlockBedrock,
 		data.BlockFall, data.BlockCracked, data.BlockClose, data.BlockPhase, data.BlockBarrier,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf,
-		data.BlockSpike, data.BlockHideout, data.BlockLiquid:
+		data.BlockSpike, data.BlockHideout, data.BlockLiquid, data.BlockGoop:
 		return true
 	default:
 		if data.Editor != nil && data.Editor.Mode == data.ModeWrench {
@@ -179,7 +179,7 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 	var sprs []*spriteChanger
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
-	case data.BlockTurf, data.BlockBedrock,
+	case data.BlockTurf, data.BlockBedrock, data.BlockGoop,
 		data.BlockFall, data.BlockCracked, data.BlockClose,
 		data.BlockLadderTurf, data.BlockLadderCrackedTurf, data.BlockLadderExitTurf:
 		if data.EditorDraw {
@@ -263,6 +263,8 @@ func GetBlockSpritesEditor(tile *data.Tile) []*spriteChanger {
 		sprs = append(sprs, newSprChanger(constants.TilePhase, constants.TileBatch))
 	case data.BlockBarrier:
 		sprs = append(sprs, newSprChanger(constants.TileBarrier, constants.TileBatch))
+	case data.BlockGoop:
+		sprs = append(sprs, newSprChanger(GetGoopSprite(tile), constants.TileBatch))
 	}
 	return sprs
 }
@@ -279,8 +281,29 @@ func GetBlockSprites(tile *data.Tile) []*spriteChanger {
 		if tile.Metadata.ShowCrack {
 			sprs = append(sprs, newSprChanger(constants.TileCrackedShow, constants.TileBatch))
 		}
+	} else if tile.Block == data.BlockGoop {
+		sprs = append(sprs, newSprChanger(GetGoopSprite(tile), constants.TileBatch))
 	}
 	return sprs
+}
+
+func GetGoopSprite(tile *data.Tile) string {
+	// check position to get correct sprite
+	top := true
+	var a *data.Tile
+	if tile.Live {
+		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+	} else {
+		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+	}
+	if a.IsBlock() || a.Block == data.BlockLiquid {
+		top = false
+	}
+	if top {
+		return constants.TileGoopTop
+	} else {
+		return constants.TileGoop
+	}
 }
 
 func GetLiquidSprites(tile *data.Tile) []*spriteChanger {

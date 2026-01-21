@@ -297,6 +297,33 @@ var (
 		WorldBasalt:    ColorOrange,
 	}
 
+	WorldGoopColor = map[int]color.RGBA{
+		WorldMoss:      ColorOrange,
+		WorldJungle:    ColorYellow,
+		WorldBrick:     ColorGray,
+		WorldBeam:      ColorCyan,
+		WorldSlime:     ColorGreen, //
+		WorldFungus:    ColorLightGray,
+		WorldBeach:     ColorGray,
+		WorldRedRock:   ColorLightGray,
+		WorldIce:       ColorGold,   //
+		WorldSnow:      ColorOrange, //
+		WorldBubblegum: ColorYellow,
+		WorldCrystal:   ColorOrange,
+		WorldAbyss:     ColorLightGray,
+		WorldReef:      ColorLightGray,
+		WorldGravelPit: ColorGold,
+		WorldSpire:     ColorOrange,
+		WorldSandstone: ColorGray,
+		WorldDunes:     ColorGray,
+		WorldDark:      ColorPurple,
+		WorldDungeon:   ColorLightGray,
+		WorldGilded:    ColorGreen,
+		WorldIvy:       ColorBrown,
+		WorldLava:      ColorBrown,
+		WorldBasalt:    ColorRed,
+	}
+
 	WorldMusic = map[int]string{
 		WorldMoss:      TrackJungle,
 		WorldJungle:    TrackJungle,

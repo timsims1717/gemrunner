@@ -514,6 +514,7 @@ func CreateBlankPuzzle() *Puzzle {
 		PrimaryColor:         pixel.ToRGBA(constants.WorldPrimary[worldNum]),
 		SecondaryColor:       pixel.ToRGBA(constants.WorldSecondary[worldNum]),
 		DoodadColor:          pixel.ToRGBA(constants.WorldDoodad[worldNum]),
+		GoopColor:            pixel.ToRGBA(constants.WorldGoopColor[worldNum]),
 		WorldLiquid:          constants.WorldLiquids[worldNum],
 		LiquidPrimaryColor:   pixel.ToRGBA(constants.WorldLiquidPrimary[worldNum]),
 		LiquidSecondaryColor: pixel.ToRGBA(constants.WorldLiquidSecondary[worldNum]),
