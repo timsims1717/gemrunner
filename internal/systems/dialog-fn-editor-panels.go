@@ -51,7 +51,7 @@ func OnOpenCrackTileOptions() {
 			case "cracked_tile_regenerate_check":
 				ui.SetChecked(ele, firstTile.Metadata.Regenerate)
 			case "cracked_tile_show_check":
-				ui.SetChecked(ele, firstTile.Metadata.ShowCrack)
+				ui.SetChecked(ele, firstTile.Metadata.Toggle)
 			case "cracked_tile_enemy_check":
 				ui.SetChecked(ele, firstTile.Metadata.EnemyCrack)
 			case "cracked_tile_title":
@@ -86,7 +86,7 @@ func ConfirmCrackTileOptions() {
 		}
 		for _, tile := range data.CurrPuzzleSet.CurrPuzzle.WrenchTiles {
 			tile.Metadata.Regenerate = regen
-			tile.Metadata.ShowCrack = show
+			tile.Metadata.Toggle = show
 			tile.Metadata.EnemyCrack = enemy
 			tile.Metadata.Changed = true
 		}

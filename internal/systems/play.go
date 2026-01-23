@@ -60,19 +60,11 @@ func PlaySystem() {
 		}
 		UpdateScore()
 		if data.CurrLevel.ExitIndex == -1 {
-			if data.CurrPuzzleSet.PuzzleIndex == len(data.CurrPuzzleSet.Puzzles)-1 {
-				SetComplete()
-			} else {
-				data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
-				NextLevel()
-			}
+			data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
+			GoToLevel(data.CurrLevelSess.PuzzleIndex + 1)
 		} else {
-			if data.CurrLevel.ExitIndex > len(data.CurrPuzzleSet.Puzzles)-1 {
-				SetComplete()
-			} else {
-				data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
-				GoToLevel(data.CurrLevel.ExitIndex)
-			}
+			data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
+			GoToLevel(data.CurrLevel.ExitIndex)
 		}
 	}
 }
@@ -94,23 +86,17 @@ func GoToLevel(i int) {
 	record := data.CurrLevel.Recording
 	LevelDispose()
 	ClearTemp()
-	data.CurrPuzzleSet.SetTo(i)
-	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
-	PuzzleInit()
-	LevelInit(record)
-	UpdateViews()
-	data.EditorDraw = false
-	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
-	reanimator.Reset()
-	sfx.MusicPlayer.GetStream("game").RepeatTrack(data.CurrLevel.Metadata.MusicTrack)
-	go content.SaveSaveGame()
-}
-
-func NextLevel() {
-	record := data.CurrLevel.Recording
-	LevelDispose()
-	ClearTemp()
-	data.CurrPuzzleSet.Next()
+	for {
+		if i >= len(data.CurrPuzzleSet.Puzzles) {
+			SetComplete()
+			return
+		}
+		data.CurrPuzzleSet.SetTo(i)
+		if data.CurrPuzzleSet.CurrPuzzle.NumPlayers() > 0 {
+			break
+		}
+		i++
+	}
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
 	PuzzleInit()
 	LevelInit(record)

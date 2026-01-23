@@ -88,10 +88,28 @@ func (s *playState) Update(win *pixelgl.Window) {
 				player.SmallBombs++
 			}
 		}
+		data.DebugInput.Get("debugTest").Consume()
 	}
 	if data.DebugInput.Get("debugInv").JustPressed() {
-		data.CurrLevel.DoorsOpen = true
-		data.CurrLevel.Continuity = data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity
+		systems.OpenDoors()
+		data.DebugInput.Get("debugInv").Consume()
+	}
+	if data.DebugInput.Get("ctrl").Pressed() {
+		if data.DebugInput.Get("debugLevelUp").JustPressed() {
+			systems.GoToLevelUp()
+			data.DebugInput.Get("debugLevelUp").Consume()
+		} else if data.DebugInput.Get("debugLevelDown").JustPressed() {
+			systems.GoToLevelDown()
+			data.DebugInput.Get("debugLevelDown").Consume()
+		}
+		if data.DebugInput.Get("debugLevelLeft").JustPressed() {
+			systems.GoToLevelLeft()
+			data.DebugInput.Get("debugLevelLeft").Consume()
+		}
+		if data.DebugInput.Get("debugLevelRight").JustPressed() {
+			systems.GoToLevelRight()
+			data.DebugInput.Get("debugLevelRight").Consume()
+		}
 	}
 
 	if reanimator.FRate != constants.Configuration.Gameplay.FrameRate {

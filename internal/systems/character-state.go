@@ -13,7 +13,7 @@ import (
 )
 
 func CharacterStateSystem() {
-	if reanimator.FrameSwitch {
+	if reanimator.FrameSwitch && data.CurrLevel != nil {
 		for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
 			_, okO := result.Components[myecs.Object].(*object.Object)
 			ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
@@ -57,6 +57,8 @@ func CharacterStateSystem() {
 							} else {
 								ch.Object.Pos.X += 1
 							}
+							ch.NextTile = below
+							ch.NextTile.Flags.Occupied = true
 						} else {
 							ch.State = data.Falling
 							ch.Object.Pos.X = tile.Object.Pos.X
@@ -163,9 +165,10 @@ func CharacterStateSystem() {
 						tile.Block == data.BlockTurf &&
 						tile.Flags.Collapse && ch.Enemy > -1 {
 						ch.State = data.InHole
-						tile.Flags.Occupied = ch
+						tile.Flags.Occupied = true
 						ch.NextTile = tile
 						ch.Object.Pos = tile.Object.Pos
+						DropItem(ch)
 					}
 					if tile != nil {
 						ch.Object.Pos.X = tile.Object.Pos.X
@@ -259,20 +262,24 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Tripping:
+					if tile.Coords == ch.NextTile.Coords {
+						DropItem(ch)
+					}
 					if ch.Flags.NextStep {
 						ch.State = data.InHole
-						tile.Flags.Occupied = ch
-						ch.NextTile = tile
 						ch.Object.Pos = tile.Object.Pos
+						DropItem(ch)
 					}
 				case data.InHole:
 					if ch.Flags.NextStep {
 						ch.State = data.ClimbingOut
 					} else if ch.ACounter > constants.DemonInHoleCounter {
-						if ch.Actions.Left() || ch.Actions.Right() {
-							if ch.Actions.Left() {
+						if above := data.CurrLevel.Get(x, y+1); !above.Flags.Collapse {
+							if aboveL := data.CurrLevel.Get(x-1, y+1); !aboveL.Flags.Collapse &&
+								ch.Actions.Left() {
 								ch.Flags.JumpL = true
-							} else {
+							} else if aboveR := data.CurrLevel.Get(x+1, y+1); !aboveR.Flags.Collapse &&
+								ch.Actions.Right() {
 								ch.Flags.JumpR = true
 							}
 						}
@@ -316,22 +323,21 @@ func CharacterStateSystem() {
 					ch.Flags.NextStep = false
 					ch.Flags.Death = death.None
 					sfx.SoundPlayer.KillSound(ch.SFX)
-					if ch.Enemy > -1 &&
-						ch.Options.Regen {
+					if ch.Enemy > -1 && ch.Options.Regen {
 						var t *data.Tile
 						if len(ch.Options.LinkedTiles) > 0 {
-							t = GetRandomRegenTileFromList(ch.Options.LinkedTiles)
+							t = GetRandomRegenTileFromList(ch.Options.LinkedTiles, ch.Flags.LastRegen)
 						} else { // pick a random empty tile
 							t = GetRandomRegenTile()
 						}
 						if t != nil {
+							ch.Flags.LastRegen = &t.Coords
 							tile = t
 							ch.Object.SetPos(t.Object.Pos)
 							if ch.Options.RegenFlip {
 								ch.Object.Flip = random.Level.Intn(2) == 0
 							}
-							ch.State = data.Regen
-							ch.Flags.Regen = true
+							ch.State = data.Waiting
 						}
 					} else if ch.Player > -1 &&
 						ch.Options.Regen &&
@@ -345,11 +351,14 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Waiting:
-					if ch.Actions.Any() {
+					if ch.Player > -1 && ch.Actions.Any() {
 						ch.State = data.Regen
 						sfx.SoundPlayer.PlaySound(constants.SFXRegen, 0.)
 						ch.Flags.Regen = true
 						PlayerPortal(ch.Object.Layer+1, tile.Object.Pos)
+					} else if ch.Enemy > -1 && !EnemyOnTile(tile) {
+						ch.State = data.Regen
+						ch.Flags.Regen = true
 					}
 				}
 				UpdateInventory(ch)
@@ -358,7 +367,11 @@ func CharacterStateSystem() {
 					ch.State != data.Attack &&
 					ch.State != data.DoingAction {
 					if ch.Actions.PickUp {
-						PickUpOrDropItem(ch, ch.Player)
+						if ch.Player > -1 {
+							PickUpOrDropItem(ch, ch.Player)
+						} else if ch.Enemy > -1 {
+							PickUpOrDropGem(ch, ch.Enemy)
+						}
 					}
 					if ch.Actions.DigLeft && Dig(ch, true) {
 					} else if ch.Actions.DigRight && Dig(ch, false) {
@@ -406,7 +419,7 @@ func CharacterStateSystem() {
 }
 
 func OutsideMapSystem() {
-	if reanimator.FrameSwitch && data.CurrLevel.Continuity {
+	if reanimator.FrameSwitch && data.CurrLevel != nil && data.CurrLevel.Continuity {
 		for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
 			_, okO := result.Components[myecs.Object].(*object.Object)
 			ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)

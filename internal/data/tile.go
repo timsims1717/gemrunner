@@ -223,7 +223,7 @@ func (t *Tile) IsEmpty() bool {
 		t.Block == BlockBar ||
 		t.Block == BlockTurf ||
 		t.Block == BlockBedrock ||
-		t.Block == BlockFall ||
+		//t.Block == BlockFall ||
 		t.Block == BlockPhase ||
 		t.Block == BlockBarrier ||
 		t.Block == BlockCracked ||
@@ -232,11 +232,11 @@ func (t *Tile) IsEmpty() bool {
 }
 
 func (t *Tile) IsSolid() bool {
-	return t == nil || (!(t.Flags.Collapse && t.Flags.Occupied == nil) &&
+	return t == nil || (!(t.Flags.Collapse && !t.Flags.Occupied) &&
 		!t.IsLadder() &&
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
-			t.Block == BlockFall ||
+			//t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
@@ -247,13 +247,13 @@ func (t *Tile) IsSolid() bool {
 }
 
 func (t *Tile) IsRunnable() bool {
-	return t == nil || (!(t.Flags.Collapse && t.Flags.Occupied == nil) &&
+	return t == nil || (!(t.Flags.Collapse && !t.Flags.Occupied) &&
 		(t.Block == BlockTurf ||
 			t.Block == BlockBedrock ||
 			t.Block == BlockLadderTurf ||
 			t.Block == BlockLadderCrackedTurf ||
 			t.Block == BlockLadderExitTurf ||
-			t.Block == BlockFall ||
+			//t.Block == BlockFall ||
 			t.Block == BlockPhase ||
 			t.Block == BlockBarrier ||
 			t.Block == BlockCracked ||
@@ -303,11 +303,29 @@ func (t *Tile) IsLadder() bool {
 	}
 }
 
+func (t *Tile) IsPath() bool {
+	return !(t == nil ||
+		t.Block == BlockTurf ||
+		t.Block == BlockBedrock ||
+		t.Block == BlockPhase ||
+		t.Block == BlockBarrier ||
+		t.Block == BlockCracked ||
+		t.Block == BlockGoop ||
+		t.Block == BlockSpike) || t.IsLadder()
+}
+
 func (t *Tile) CanDig() bool {
 	if t == nil {
 		return false
 	}
 	return !t.Flags.Collapse && t.Block == BlockTurf
+}
+
+func (t *Tile) CanBeBuried() bool {
+	if t == nil {
+		return false
+	}
+	return t.Block == BlockGem || t.Block == BlockSmallBomb || t.Block == BlockSmallBombLit
 }
 
 // a* implementation
@@ -362,15 +380,15 @@ func (t *Tile) PathEstimatedCost(to astar.Pather) float64 {
 }
 
 type TileFlags struct {
-	Cracked     bool     `json:"-"`
-	Collapse    bool     `json:"-"`
-	BareFangs   bool     `json:"-"`
-	Regen       bool     `json:"-"`
-	PhaseChange bool     `json:"-"`
-	LCracked    bool     `json:"-"`
-	LCollapse   bool     `json:"-"`
-	Using       bool     `json:"-"`
-	Occupied    *Dynamic `json:"-"`
+	Cracked     bool `json:"-"`
+	Collapse    bool `json:"-"`
+	BareFangs   bool `json:"-"`
+	Regen       bool `json:"-"`
+	PhaseChange bool `json:"-"`
+	LCracked    bool `json:"-"`
+	LCollapse   bool `json:"-"`
+	Using       bool `json:"-"`
+	Occupied    bool `json:"-"`
 }
 
 func DefaultFlags() TileFlags {
@@ -379,13 +397,13 @@ func DefaultFlags() TileFlags {
 
 type TileMetadata struct {
 	Flipped     bool           `json:"flipped,omitempty"`
+	Buried      bool           `json:"buried,omitempty"`
 	EnemyCrack  bool           `json:"enemyCrack,omitempty"`
 	Regenerate  bool           `json:"regenerate,omitempty"`
 	RegenDelay  int            `json:"regenDelay,omitempty"`
 	Timer       int            `json:"timer,omitempty"`
 	LinkedTiles []world.Coords `json:"linkedTiles,regenTiles,omitempty"`
 	Phase       int            `json:"phase,omitempty"`
-	ShowCrack   bool           `json:"showCrack,omitempty"`
 	Toggle      bool           `json:"toggle,omitempty"`
 	Changed     bool           `json:"-"`
 	ExitIndex   int            `json:"exitIndex,omitempty"`
@@ -394,23 +412,24 @@ type TileMetadata struct {
 
 func DefaultMetadata() TileMetadata {
 	return TileMetadata{
+		EnemyCrack: true,
 		Regenerate: true,
+		RegenDelay: 0,
 		Timer:      5,
 		ExitIndex:  -1,
-		RegenDelay: 0,
 	}
 }
 
 func CopyMetadata(m TileMetadata) TileMetadata {
 	cm := TileMetadata{
 		Flipped:     m.Flipped,
+		Buried:      m.Buried,
 		EnemyCrack:  m.EnemyCrack,
 		Regenerate:  m.Regenerate,
 		RegenDelay:  m.RegenDelay,
 		Timer:       m.Timer,
 		LinkedTiles: nil,
 		Phase:       m.Phase,
-		ShowCrack:   m.ShowCrack,
 		Toggle:      m.Toggle,
 		ExitIndex:   m.ExitIndex,
 		Color:       m.Color,

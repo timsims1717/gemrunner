@@ -2,8 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/random"
 	"gemrunner/pkg/debug"
+	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
@@ -39,6 +42,11 @@ func (lr *LRChase) GetActions() data.Actions {
 	actions := data.NewAction()
 	if data.CurrLevel == nil || lr.Ch == nil {
 		return actions
+	}
+	if lr.Ch.State == data.Grounded && reanimator.FrameSwitch {
+		if random.Level.Intn(constants.PickUpGemChance) == 0 {
+			actions.PickUp = true
+		}
 	}
 	lr.Target = PickClosestPlayerYFirst(lr.Ch)
 	//if lr.Timer.Done() || lr.Target == nil {
@@ -120,7 +128,7 @@ func (lr *LRChase) GetActions() data.Actions {
 func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions {
 	sx := startX
 	bestScore := 10000
-	actions.Direction = data.NoDirection
+	var bestDir data.Direction
 	var left, right int
 	var bestSeries []world.Coords
 
@@ -168,7 +176,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 		currScore, series := lr.scanDown(sx, startX, sy)
 		if currScore < bestScore {
 			bestScore = currScore
-			actions.Direction = data.Down
+			bestDir = data.Down
 			if debug.ShowDebug {
 				bestSeries = series
 			}
@@ -179,7 +187,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 		currScore, series := lr.scanUp(sx, startX, sy)
 		if currScore < bestScore {
 			bestScore = currScore
-			actions.Direction = data.Up
+			bestDir = data.Up
 			if debug.ShowDebug {
 				bestSeries = series
 			}
@@ -204,7 +212,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 			currScore, series := lr.scanDown(sx, startX, sy)
 			if currScore < bestScore {
 				bestScore = currScore
-				actions.Direction = currDir
+				bestDir = currDir
 				if debug.ShowDebug {
 					bestSeries = series
 				}
@@ -215,7 +223,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 			currScore, series := lr.scanUp(sx, startX, sy)
 			if currScore < bestScore {
 				bestScore = currScore
-				actions.Direction = currDir
+				bestDir = currDir
 				if debug.ShowDebug {
 					bestSeries = series
 				}
@@ -230,6 +238,7 @@ func (lr *LRChase) scanFloor(startX, sy int, actions data.Actions) data.Actions 
 	if debug.ShowDebug {
 		debugSeries(bestSeries, colornames.Yellow)
 	}
+	actions.Direction = bestDir
 	return actions
 }
 
@@ -238,22 +247,26 @@ func (lr *LRChase) scanDown(x, startX, startY int) (int, []world.Coords) {
 	y := startY
 	_, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
 	for y > 0 && !data.CurrLevel.Get(x, y-1).IsSolid() { // can move down
-		if x > 0 { // not at left edge, check left side
-			nextBelow := data.CurrLevel.Get(x-1, y-1)
-			nextTile := data.CurrLevel.Get(x-1, y)
-			if y <= py && (nextBelow.IsSolid() ||
-				nextBelow.IsLadder() ||
-				nextTile.Block == data.BlockBar) { // can move left and below or level with runner
-				break
+		if !data.CurrLevel.Get(x, y).IsEmpty() {
+			if x > 0 { // not at left edge, check left side
+				nextBelow := data.CurrLevel.Get(x-1, y-1)
+				nextTile := data.CurrLevel.Get(x-1, y)
+				if y <= py && (nextBelow.IsSolid() ||
+					nextBelow.IsLadder() ||
+					nextTile.Block == data.BlockBar ||
+					nextTile.IsLadder()) { // can move left and below or level with runner
+					break
+				}
 			}
-		}
-		if x < data.CurrLevel.Metadata.Width-1 { // not at right edge, check right side
-			nextBelow := data.CurrLevel.Get(x+1, y-1)
-			nextTile := data.CurrLevel.Get(x+1, y)
-			if y <= py && (nextBelow.IsSolid() ||
-				nextBelow.IsLadder() ||
-				nextTile.Block == data.BlockBar) { // can move right and below or level with runner
-				break
+			if x < data.CurrLevel.Metadata.Width-1 { // not at right edge, check right side
+				nextBelow := data.CurrLevel.Get(x+1, y-1)
+				nextTile := data.CurrLevel.Get(x+1, y)
+				if y <= py && (nextBelow.IsSolid() ||
+					nextBelow.IsLadder() ||
+					nextTile.Block == data.BlockBar ||
+					nextTile.IsLadder()) { // can move right and below or level with runner
+					break
+				}
 			}
 		}
 		y--
@@ -269,9 +282,9 @@ func (lr *LRChase) scanDown(x, startX, startY int) (int, []world.Coords) {
 	// score
 	if y == py {
 		return util.Abs(startX - x), series
-	} else if y < py {
+	} else if y < py { // enemy below player
 		return py - y + 200, series
-	} else {
+	} else { // enemy above player
 		return y - py + 100, series
 	}
 }
@@ -287,7 +300,8 @@ func (lr *LRChase) scanUp(x, startX, startY int) (int, []world.Coords) {
 			nextTile := data.CurrLevel.Get(x-1, y)
 			if y >= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
-				nextTile.Block == data.BlockBar) { // can move left and above or level with runner
+				nextTile.Block == data.BlockBar ||
+				nextTile.IsLadder()) { // can move left and above or level with runner
 				break
 			}
 		}
@@ -296,7 +310,8 @@ func (lr *LRChase) scanUp(x, startX, startY int) (int, []world.Coords) {
 			nextTile := data.CurrLevel.Get(x+1, y)
 			if y >= py && (nextBelow.IsSolid() ||
 				nextBelow.IsLadder() ||
-				nextTile.Block == data.BlockBar) { // can move right and above or level with runner
+				nextTile.Block == data.BlockBar ||
+				nextTile.IsLadder()) { // can move right and above or level with runner
 				break
 			}
 		}
@@ -312,9 +327,9 @@ func (lr *LRChase) scanUp(x, startX, startY int) (int, []world.Coords) {
 	// score
 	if y == py {
 		return util.Abs(startX - x), series
-	} else if y < py {
+	} else if y < py { // enemy below player
 		return py - y + 200, series
-	} else {
+	} else { // enemy above player
 		return y - py + 100, series
 	}
 }

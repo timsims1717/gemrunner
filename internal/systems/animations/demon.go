@@ -110,9 +110,6 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	tripping.SetTriggerAll(func() {
 		switch tripping.Step {
 		case 5:
-			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tile := data.CurrLevel.Get(x, y-1)
-			tile.Flags.Occupied = ch
 			if ch.Object.Flip {
 				ch.Object.Pos.X -= 2
 			} else {
@@ -169,7 +166,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		case 5, 6:
 			xD = 8
 			yD = 13
-			ch.NextTile.Flags.Occupied = nil
+			ch.NextTile.Flags.Occupied = false
 		}
 		if ch.Object.Flip {
 			xD = -xD
@@ -223,7 +220,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 			switch ch.State {
 			case data.Regen:
 				return "regen"
-			case data.Dead:
+			case data.Dead, data.Waiting:
 				return "none"
 			case data.Hit:
 				switch ch.Flags.Death {

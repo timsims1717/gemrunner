@@ -96,28 +96,29 @@ const (
 	CrackedCounter  = 16
 	DrillCounter    = -8
 	FlamethrowerCnt = 8
-	RegenCounter    = 128
+	RegenCounter    = 176
 	RegenACounter   = 7
 	CollapseCounter = 7
 	ThrownCounter   = 8
 	ThrownVSpeed    = 0.9
 	ThrownHSpeed    = 3.1
 	SmashDistance   = TileSize * 3
-	BombFuse        = 24
+	BombFuse        = 32
 	ItemRegen       = 16
 	SpeedMod        = 0.001
 	TextTimer       = 16
 	TextProxDist    = 48
 	TextProxBuffer  = 48
-	BobInterval     = 16
+	TextBobInterval = 16
 	FakePlayerR     = 16
+	PickUpGemChance = 50
 
 	// Player Constants
 	PlayerWalkSpeed       = 3
 	PlayerGoopSpeed       = 1
 	PlayerBarSpeed        = 2.75
 	PlayerLeapSpeed       = 4
-	PlayerClimbSpeed      = 2.25
+	PlayerClimbSpeed      = 1.75
 	PlayerSlideSpeed      = 2.75
 	PlayerGravity         = 3
 	PlayerHighJumpSpeed   = 1.5
@@ -130,7 +131,7 @@ const (
 	SmallBombInv          = 4
 
 	// Demon Constants
-	DemonWalkSpeed       = 1.5
+	DemonWalkSpeed       = 1.4
 	DemonGoopSpeed       = 0.5
 	DemonBarSpeed        = 1.25
 	DemonLeapSpeed       = 1.5
@@ -143,7 +144,7 @@ const (
 	DemonLongJumpVSpeed  = 0.8
 	DemonLongJumpHSpeed  = 1.7
 	DemonLongJumpCounter = 16
-	DemonInHoleCounter   = 32
+	DemonInHoleCounter   = 56
 
 	// Fly Constants
 	FlySpeed = 2

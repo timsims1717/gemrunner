@@ -13,6 +13,9 @@ import (
 )
 
 func TileSystem() {
+	if data.CurrLevel == nil {
+		return
+	}
 	for _, result := range myecs.Manager.Query(myecs.IsTile) {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
@@ -57,7 +60,7 @@ func TileSystem() {
 				for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 					_, okCO := resultC.Components[myecs.Object].(*object.Object)
 					ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-					if okCO && okC && ch.State == data.Grounded {
+					if okCO && okC && !ch.Flags.Ignore && ch.State == data.Grounded {
 						x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 						chTile := data.CurrLevel.Get(x, y)
 						if chTile != nil && chTile.Coords.X == tile.Coords.X &&
@@ -78,7 +81,7 @@ func TileSystem() {
 						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 							_, okCO := resultC.Components[myecs.Object].(*object.Object)
 							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-							if okCO && okC &&
+							if okCO && okC && !ch.Flags.Ignore &&
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
 									tile.Metadata.EnemyCrack) {
 								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -141,7 +144,7 @@ func TileSystem() {
 						}
 					}
 				}
-			case data.BlockCracked, data.BlockFall:
+			case data.BlockCracked:
 				if !tile.Flags.Collapse && !tile.Flags.Regen {
 					if tile.Block == data.BlockCracked && tile.Flags.Cracked {
 						if reanimator.FrameSwitch {
@@ -159,7 +162,7 @@ func TileSystem() {
 						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 							_, okCO := resultC.Components[myecs.Object].(*object.Object)
 							ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-							if okCO && okC && ch.State == data.Grounded &&
+							if okCO && okC && !ch.Flags.Ignore && ch.State == data.Grounded &&
 								((ch.Player > -1 && ch.Player < constants.MaxPlayers) ||
 									tile.Metadata.EnemyCrack) {
 								x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -179,9 +182,32 @@ func TileSystem() {
 									} else if tile.Block == data.BlockFall {
 										tile.Flags.Collapse = true
 										tile.Flags.Cracked = false
+										ch.State = data.Falling
 										AddMask(tile, "collapse_mask", false, false)
 									}
 								}
+							}
+						}
+					}
+				}
+			case data.BlockFall:
+				if !tile.Flags.Collapse && !tile.Flags.Regen {
+					for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+						_, okCO := resultC.Components[myecs.Object].(*object.Object)
+						ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+						if okCO && okC && !ch.Flags.Ignore {
+							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+							chTile := data.CurrLevel.Get(x, y)
+							if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+								chTile.Coords.Y == tile.Coords.Y+1 &&
+								ch.Object.Pos.Y <= chTile.Object.Pos.Y {
+								tile.Counter = 0
+								tile.Update = true
+								tile.Flags.Regen = false
+								tile.Flags.Collapse = true
+								tile.Flags.Cracked = false
+								ch.State = data.Falling
+								AddMask(tile, "collapse_mask", false, false)
 							}
 						}
 					}
@@ -274,7 +300,7 @@ func TileSystem() {
 					for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 						_, okCO := resultC.Components[myecs.Object].(*object.Object)
 						ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-						if okCO && okC {
+						if okCO && okC && !ch.Flags.Ignore {
 							x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 							chTile := data.CurrLevel.Get(x, y)
 							if chTile != nil && chTile.Coords.X == tile.Coords.X &&
@@ -308,11 +334,13 @@ func CrushCharacters(tile *data.Tile) {
 				ch.Object.Pos.Y = tile.Object.Pos.Y
 				ch.Flags.Death = death.Crushed
 				ch.State = data.Hit
-				sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
+				if !ch.Flags.Ignore {
+					sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
+				}
 			}
 		}
 	}
-	tile.Flags.Occupied = nil
+	tile.Flags.Occupied = false
 }
 
 // AddMask creates a new mask animation for the tile and sets the correct layers

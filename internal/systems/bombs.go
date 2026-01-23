@@ -23,6 +23,9 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 14
+	if tile.Metadata.Buried {
+		obj.Layer = 9
+	}
 	e := myecs.Manager.NewEntity()
 	theBomb := &data.Bomb{
 		Item:   &data.BasicItem{},
@@ -120,7 +123,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	e.AddComponent(myecs.Drawable, theBomb.Draws)
 	e.AddComponent(myecs.Animated, theBomb.Item.Anim)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, theBomb)
 	e.AddComponent(myecs.Bomb, theBomb)
 	e.AddComponent(myecs.Item, theBomb.Item)
 }
@@ -163,15 +166,18 @@ func LightBomb(theBomb *data.Bomb, tile *data.Tile) {
 		myecs.Manager.DisposeEntity(theBomb.Item.Entity)
 	}
 	theBomb.Item.Delay = constants.BombFuse + (constants.ItemRegen * (theBomb.Item.Metadata.RegenDelay + 2))
-	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, theBomb.Prefix, theBomb.Big, false, 0)
+	CreateLitBomb(tile.Object.Pos, theBomb.LitKey, theBomb.Prefix, theBomb.Big, false, false, 0)
 }
 
-func CreateLitBomb(pos pixel.Vec, key, prefix string, big, regenerate bool, regenDelay int) {
+func CreateLitBomb(pos pixel.Vec, key, prefix string, big, regenerate, buried bool, regenDelay int) {
 	counter := 0
 	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 30
+	if buried {
+		obj.Layer = 9
+	}
 	waiting := false
 	regen := false
 	var symbolSprite *img.Sprite
@@ -259,6 +265,7 @@ func CreateExplosion(pos pixel.Vec, big bool, fuseSound *uuid.UUID) {
 	var coords []world.Coords
 	x, y := world.WorldToMap(pos.X, pos.Y)
 
+	// gather blast radius
 	for n := y - 2; n < y+3; n++ {
 		if n == y {
 			for m := x - 2; m < x+3; m++ {
@@ -274,6 +281,7 @@ func CreateExplosion(pos pixel.Vec, big bool, fuseSound *uuid.UUID) {
 	}
 	var blownCoords []world.Coords
 	for _, c := range coords {
+		// create explosion
 		key := "exp_end"
 		r := 0.
 		flip := false
@@ -333,8 +341,9 @@ func CreateExplosion(pos pixel.Vec, big bool, fuseSound *uuid.UUID) {
 	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 		_, okCO := resultC.Components[myecs.Object].(*object.Object)
 		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-		if okCO && okC && ch.State != data.Dead &&
+		if okCO && okC && !ch.Flags.Ignore && ch.State != data.Dead &&
 			ch.State != data.Hit && ch.State != data.Waiting &&
+			ch.State != data.InHiding &&
 			ch.Flags.ItemAction != data.TransportIn {
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			if world.CoordsIn(world.NewCoords(chX, chY), blownCoords) {
@@ -447,14 +456,14 @@ func DestroyTile(tile *data.Tile, x, y int, big bool) bool {
 						}
 					}
 				}
-			} else {
-				tX := c.X
-				tY := c.Y
-				t1 := data.CurrLevel.Get(tX, y)
-				t2 := data.CurrLevel.Get(x, tY)
-				if t1.Block == data.BlockBedrock && t2.Block == data.BlockBedrock {
-					return false
-				}
+			} else { // the tile is kitty corner to explosion
+				//tX := c.X
+				//tY := c.Y
+				//t1 := data.CurrLevel.Get(tX, y)
+				//t2 := data.CurrLevel.Get(x, tY)
+				//if t1.Block == data.BlockBedrock && t2.Block == data.BlockBedrock {
+				//	return false
+				//}
 			}
 		}
 		if tile.Block == data.BlockTurf || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockClose {

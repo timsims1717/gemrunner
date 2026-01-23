@@ -29,7 +29,7 @@ func FloatingTextSystem() {
 				// bob
 				if tf.Bob && !tf.Text.Obj.Hidden {
 					tf.BobCounter++
-					if tf.BobCounter%constants.BobInterval == 0 {
+					if tf.BobCounter%constants.TextBobInterval == 0 {
 						if tf.Text.Obj.Offset.Y == 0. {
 							tf.Text.Obj.Offset.Y = 1.
 							tf.Shadow.Obj.Offset.Y = 1.
@@ -109,7 +109,7 @@ func FloatingTextEditorSystem() {
 			if reanimator.FrameSwitch {
 				if tf.Bob && !tf.Text.Obj.Hidden {
 					tf.BobCounter++
-					if tf.BobCounter%constants.BobInterval == 0 {
+					if tf.BobCounter%constants.TextBobInterval == 0 {
 						if tf.Text.Obj.Offset.Y == 0. {
 							tf.Text.Obj.Offset.Y = 1.
 							tf.Shadow.Obj.Offset.Y = 1.

@@ -113,10 +113,16 @@ func DropItem(ch *data.Dynamic) bool {
 		return false
 	}
 	// set the object's new position
-	tile := data.CurrLevel.Get(world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y))
+	x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+	if ch.State == data.InHole {
+		y++
+	}
+	tile := data.CurrLevel.Get(x, y)
+	if tile == nil || tile.IsSolid() {
+		return false
+	}
 	ch.Inventory.Object.Hidden = false
-	ch.Inventory.Object.Pos = tile.Object.Pos
-	ch.Inventory.Object.PostPos = tile.Object.Pos
+	ch.Inventory.Object.SetPos(tile.Object.Pos)
 	// set the object's pickup data
 	ch.Inventory.PickUp.Inventory = -1
 	ch.Inventory = nil
@@ -151,11 +157,12 @@ func PlaceSmallBomb(ch *data.Dynamic) bool {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers {
 		if ch.State == data.OnLadder ||
 			ch.State == data.Grounded ||
-			ch.State == data.Flying {
+			ch.State == data.Flying ||
+			ch.Flags.ItemAction == data.Hidden {
 			ch.Flags.BombBuff = 0
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tile := data.CurrLevel.Get(x, y)
-			CreateLitBomb(tile.Object.Pos, constants.ItemSmallBombLit, "small", false, false, 0)
+			CreateLitBomb(tile.Object.Pos, constants.ItemSmallBombLit, "small", false, false, false, 0)
 			ch.SmallBombs--
 		}
 	}
@@ -180,7 +187,8 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 					digTile = data.CurrLevel.Get(x+1, y-1)
 				}
 				if sideTile != nil && digTile != nil {
-					if !sideTile.IsLadder() && !sideTile.IsSolid() && digTile.CanDig() {
+					if !sideTile.IsLadder() && !sideTile.IsSolid() &&
+						sideTile.Block != data.BlockBar && digTile.CanDig() {
 						// set action
 						ch.State = data.DoingAction
 						ch.Flags.ItemAction = data.MagicDig
@@ -255,7 +263,7 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 				}
 				oldTile := ch.StoredBlocks[0]
 				if oldTile != nil && sideTile != nil && digTile != nil {
-					if !sideTile.IsLadder() && !sideTile.IsSolid() && digTile.IsEmpty() {
+					if !sideTile.IsLadder() && !sideTile.IsSolid() {
 						// set action
 						ch.State = data.DoingAction
 						ch.Flags.ItemAction = data.MagicPlace
@@ -302,4 +310,60 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 		}
 	}
 	return false
+}
+
+// PickUpOrDropGem returns whether a Gem was dropped or picked up
+func PickUpOrDropGem(ch *data.Dynamic, e int) {
+	if e < 0 {
+		return
+	}
+	if ch.Inventory != nil {
+		cx, cy := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		chCoords := world.Coords{X: cx, Y: cy}
+		for _, result := range myecs.Manager.Query(myecs.IsGem) {
+			obj, okO := result.Components[myecs.Object].(*object.Object)
+			if okO && !obj.Hidden && obj.ID != ch.Inventory.Object.ID {
+				x, y := world.WorldToMap(obj.Pos.X+obj.Offset.X, obj.Pos.Y+obj.Offset.Y)
+				dropCoords := world.Coords{X: x, Y: y}
+				if chCoords == dropCoords {
+					return
+				}
+			}
+		}
+		DropItem(ch)
+		//sfx.SoundPlayer.PlaySound(constants.SFXDrop, 1.)
+		ch.Flags.PickUpBuff = 0
+	} else {
+		item := PickUpGem(ch, e)
+		ch.Flags.PickUpBuff = 0
+		if item != nil {
+			ch.Inventory = item
+			//sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
+		}
+	}
+}
+
+// PickUpGem returns whether an item was picked up
+func PickUpGem(ch *data.Dynamic, e int) *data.BasicItem {
+	cx, cy := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+	chCoords := world.Coords{X: cx, Y: cy}
+	for _, result := range myecs.Manager.Query(myecs.IsGem) {
+		obj, okO := result.Components[myecs.Object].(*object.Object)
+		i, okI := result.Entity.GetComponentData(myecs.Item)
+		if okO && okI && !obj.Hidden &&
+			obj.ID != ch.Object.ID {
+			x, y := world.WorldToMap(obj.Pos.X+obj.Offset.X, obj.Pos.Y+obj.Offset.Y)
+			pickUpCoords := world.Coords{X: x, Y: y}
+			if chCoords == pickUpCoords {
+				if item, ok2 := i.(*data.BasicItem); ok2 {
+					ch.Actions.Action = false
+					ch.Flags.ActionBuff = 0
+					obj.Hidden = true
+					ch.Flags.PickUpBuff = 0
+					return item
+				}
+			}
+		}
+	}
+	return nil
 }

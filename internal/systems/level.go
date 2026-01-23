@@ -125,14 +125,14 @@ func LevelInit(record bool) {
 				tile.Block = data.BlockEmpty
 			case data.BlockBigBombLit:
 				key := tile.Block.SpriteString()
-				CreateLitBomb(obj.Pos, key, "big", true, tile.Metadata.Regenerate, tile.Metadata.RegenDelay)
+				CreateLitBomb(obj.Pos, key, "big", true, tile.Metadata.Regenerate, false, tile.Metadata.RegenDelay)
 				tile.Block = data.BlockEmpty
 			case data.BlockSmallBomb:
 				CreateBomb(obj.Pos, tile, "small", false)
 				tile.Block = data.BlockEmpty
 			case data.BlockSmallBombLit:
 				key := tile.Block.SpriteString()
-				CreateLitBomb(obj.Pos, key, "small", false, tile.Metadata.Regenerate, tile.Metadata.RegenDelay)
+				CreateLitBomb(obj.Pos, key, "small", false, tile.Metadata.Regenerate, tile.Metadata.Buried, tile.Metadata.RegenDelay)
 				tile.Block = data.BlockEmpty
 			case data.BlockJetpack:
 				CreateJetpack(obj.Pos, tile)
@@ -164,13 +164,19 @@ func LevelInit(record bool) {
 			case data.BlockLiquid:
 				tile.Object.Layer = 30
 			}
+			if tile.Metadata.Buried {
+				tile.Block = data.BlockTurf
+				tile.Metadata = data.DefaultMetadata()
+			}
 			AddLevelTransition(tile, x, y)
 		}
 	}
 	if data.CurrLevelSess.StartCoords != nil && (data.CurrLevel.DoorsOpen || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn) {
 		if t := data.CurrLevel.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y); t != nil && !t.IsSolid() {
 			for _, p := range data.CurrLevel.Players {
-				p.Object.SetPos(t.Object.Pos)
+				if p != nil {
+					p.Object.SetPos(t.Object.Pos)
+				}
 			}
 		}
 	}
@@ -358,7 +364,7 @@ func CreateFakePlayer() {
 	ch := data.NewDynamic(tile)
 	ch.Layer = 0
 	e := myecs.Manager.NewEntity()
-	obj := object.New().WithID("fake_player").SetPos(tile.Object.Pos)
+	obj := object.New().WithFixedID("fake_player").SetPos(tile.Object.Pos)
 	obj.Pos = world.MapToWorld(tile.Coords)
 	obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
 	obj.Layer = 0
@@ -367,6 +373,7 @@ func CreateFakePlayer() {
 	ch.State = data.Grounded
 	ch.Vars = data.DemonVars()
 	ch.Control = controllers.NewRandomWalk(ch, e)
+	ch.Flags.Ignore = true
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
 		AddComponent(myecs.Dynamic, ch).
@@ -392,13 +399,20 @@ func GetBestRegenTile(tiles []*data.Tile) *data.Tile {
 	return tiles[random.Level.Intn(len(tiles))]
 }
 
-func GetRandomRegenTileFromList(coords []world.Coords) *data.Tile {
+func GetRandomRegenTileFromList(coords []world.Coords, exclude *world.Coords) *data.Tile {
 	var tiles []*data.Tile
+	in := false
 	for _, c := range coords {
-		tile := data.CurrLevel.Get(c.X, c.Y)
-		if !SomethingOnTile(tile) {
+		if exclude == nil || c != *exclude {
+			tile := data.CurrLevel.Get(c.X, c.Y)
 			tiles = append(tiles, tile)
+		} else if exclude != nil && c == *exclude {
+			in = true
 		}
+	}
+	if in && len(tiles) == 0 {
+		tile := data.CurrLevel.Get(exclude.X, exclude.Y)
+		tiles = append(tiles, tile)
 	}
 	return GetBestRegenTile(tiles)
 }
@@ -409,7 +423,7 @@ func GetRandomRegenTile() *data.Tile {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok && tile.Live {
-			if tile.IsEmpty() && !SomethingOnTile(tile) && tile.Block != data.BlockDemonRegen {
+			if tile.IsEmpty() && tile.Block != data.BlockDemonRegen {
 				tiles = append(tiles, tile)
 			}
 		}
@@ -430,6 +444,21 @@ func DistanceToClosestPlayer(tile *data.Tile) int {
 		}
 	}
 	return dist
+}
+
+func EnemyOnTile(tile *data.Tile) bool {
+	for _, result := range myecs.Manager.Query(myecs.IsEnemy) {
+		obj, ok := result.Components[myecs.Object].(*object.Object)
+		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+		if ok && okC {
+			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+			if ch.State != data.Dead && ch.State != data.Waiting &&
+				x == tile.Coords.X && y == tile.Coords.Y {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func SomethingOnTile(tile *data.Tile) bool {

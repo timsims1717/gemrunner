@@ -629,6 +629,9 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 				data.BlockLever, data.BlockButton:
 				key = constants.PreviewTool
 			}
+			if tile.Metadata.Buried {
+				key = constants.PreviewTurf
+			}
 			if key != "" {
 				ec := ui.ElementConstructor{
 					Key:         key,
@@ -704,6 +707,10 @@ func CreatePuzzlePreviewMedium(pzl *data.Puzzle) *pixel.PictureData {
 				pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
 			case data.BlockBarrier:
 				if !tile.Metadata.Toggle {
+					pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
+				}
+			default:
+				if tile.Metadata.Buried {
 					pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
 				}
 			}

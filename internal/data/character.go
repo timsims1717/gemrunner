@@ -188,6 +188,8 @@ type Flags struct {
 	DigRightBuff int
 	ItemAction   ItemAction
 	OutsideMap   bool
+	LastRegen    *world.Coords
+	Ignore       bool
 }
 
 type CharacterOptions struct {

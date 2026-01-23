@@ -43,7 +43,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.Le
 	e.AddComponent(myecs.Drawable, player.Anims)
 	e.AddComponent(myecs.Dynamic, player)
 	e.AddComponent(myecs.Player, player.Player)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, player)
 	return player
 }
 
@@ -114,7 +114,8 @@ func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	e.AddComponent(myecs.Dynamic, demon)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, demon.Control)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, demon)
+	e.AddComponent(myecs.Enemy, demon.Enemy)
 	demon.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, demon)
 	return demon
@@ -134,6 +135,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if ok {
 		enemy := bg.(*data.Dynamic)
 		if (enemy.State == data.Grounded ||
+			enemy.State == data.Tripping ||
 			enemy.State == data.OnLadder ||
 			enemy.State == data.Leaping ||
 			enemy.State == data.Flying ||
@@ -182,7 +184,8 @@ func FlyCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	e.AddComponent(myecs.Dynamic, fly)
 	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
 	e.AddComponent(myecs.Controller, fly.Control)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, fly)
+	e.AddComponent(myecs.Enemy, fly.Enemy)
 	fly.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, fly)
 	return fly

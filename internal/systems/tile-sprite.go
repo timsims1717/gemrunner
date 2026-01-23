@@ -177,6 +177,9 @@ func NeedsUpdate(tile *data.Tile) bool {
 // returns the list and whether there are any animations
 func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 	var sprs []*spriteChanger
+	if tile.Metadata.Buried && data.EditorDraw {
+		sprs = append(sprs, newSprChanger(data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBatch))
+	}
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
 	case data.BlockTurf, data.BlockBedrock, data.BlockGoop,
@@ -278,7 +281,7 @@ func GetBlockSprites(tile *data.Tile) []*spriteChanger {
 	spr := newSprChanger(GetBlockSprite(tile), constants.TileBatch)
 	sprs = append(sprs, spr)
 	if tile.Block == data.BlockCracked && !tile.Flags.Collapse {
-		if tile.Metadata.ShowCrack {
+		if tile.Metadata.Toggle {
 			sprs = append(sprs, newSprChanger(constants.TileCrackedShow, constants.TileBatch))
 		}
 	} else if tile.Block == data.BlockGoop {
@@ -486,7 +489,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 					}
 				case 1:
 					offset.X = 4
-					if tile.Metadata.ShowCrack &&
+					if tile.Metadata.Toggle &&
 						(tile.Block == data.BlockCracked ||
 							tile.Block == data.BlockLadderCrackedTurf ||
 							tile.Block == data.BlockLadderCracked) {
@@ -557,7 +560,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	} else {
 		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
-	if a.IsBlock() || a.Block == data.BlockLiquid {
+	if a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockLiquid {
 		top = false
 	}
 	var b *data.Tile
@@ -566,7 +569,7 @@ func GetBlockSprite(tile *data.Tile) string {
 	} else {
 		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
-	if b.IsBlock() || b.Block == data.BlockHideout {
+	if b.IsBlock() || b.Metadata.Buried || b.Block == data.BlockHideout {
 		bottom = false
 	}
 	var sKey string
@@ -599,7 +602,7 @@ func GetPhaseSprite(tile *data.Tile, isSelect bool) string {
 	} else {
 		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
-	if a.IsBlock() || a.Block == data.BlockLiquid {
+	if a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockLiquid {
 		top = false
 	}
 	var sKey string
@@ -620,7 +623,7 @@ func GetSpikeSprite(tile *data.Tile) string {
 	} else {
 		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
-	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) || b.Block == data.BlockHideout {
+	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) || b.Metadata.Buried || b.Block == data.BlockHideout {
 		bottom = false
 	}
 	var sKey string
@@ -641,7 +644,7 @@ func GetHideoutSprite(tile *data.Tile) string {
 	} else {
 		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
-	if a == nil || a.IsBlock() || a.Block == data.BlockHideout {
+	if a == nil || a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockHideout {
 		top = false
 	}
 	var sKey string

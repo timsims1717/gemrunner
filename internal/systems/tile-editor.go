@@ -12,11 +12,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 			// add to puzzle
 			tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 			if !tile.Update {
-				if tile.Block != block {
-					tile.Metadata = data.DefaultMetadata()
-					RemoveLinkedTiles(tile)
-				}
-				tile.Metadata.Color = data.Editor.PaletteColor
+				oldBlock := tile.Block
 				switch block {
 				case data.BlockTurf:
 					if tile.IsLadder() {
@@ -30,6 +26,10 @@ func SetBlock(coords world.Coords, block data.Block) {
 						default:
 							tile.Block = block
 						}
+					} else if tile.Metadata.Buried {
+						tile.Block = block
+					} else if tile.CanBeBuried() {
+						tile.Metadata.Buried = true
 					} else {
 						tile.Block = block
 					}
@@ -120,6 +120,20 @@ func SetBlock(coords world.Coords, block data.Block) {
 					tile.Block = block
 				default:
 					tile.Block = block
+				}
+				if tile.Block != oldBlock {
+					tile.Metadata = data.DefaultMetadata()
+					RemoveLinkedTiles(tile)
+					if tile.CanBeBuried() {
+						if oldBlock == data.BlockTurf {
+							tile.Metadata.Buried = true
+						} else {
+							tile.Metadata.Buried = false
+						}
+					}
+				}
+				if block != data.BlockTurf {
+					tile.Metadata.Color = data.Editor.PaletteColor
 				}
 			}
 			data.Editor.LastTiles[tile.Block] = tile

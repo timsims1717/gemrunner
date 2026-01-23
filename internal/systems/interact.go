@@ -13,7 +13,7 @@ func TouchSystem() {
 			for _, result1 := range myecs.Manager.Query(myecs.IsDynamic) {
 				objC, okOC := result1.Components[myecs.Object].(*object.Object)
 				ch, okCh := result1.Components[myecs.Dynamic].(*data.Dynamic)
-				if okOC && okCh && !objC.Hidden && obj.ID != objC.ID {
+				if okOC && okCh && !ch.Flags.Ignore && !objC.Hidden && obj.ID != objC.ID {
 					// the object's rectangle contains the player's position
 					if obj.Rect.Moved(obj.Pos).Contains(objC.Pos) {
 						// it's touching

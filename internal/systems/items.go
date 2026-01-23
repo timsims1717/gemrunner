@@ -82,6 +82,9 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 10, 10))
 	obj.Layer = 11
+	if tile.Metadata.Buried {
+		obj.Layer = 9
+	}
 	gemShimmer := false
 	batch := img.Batchers[constants.TileBatch]
 	color := tile.Metadata.Color
@@ -103,13 +106,23 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 				return "gem"
 			}
 		}).SetDefault("gem").Finish()
-	myecs.Manager.NewEntity().
-		AddComponent(myecs.Object, obj).
+	e := myecs.Manager.NewEntity()
+	gem := &data.BasicItem{
+		Name:     "Gem",
+		Object:   obj,
+		Sprite:   img.NewSprite(key, constants.TileBatch),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		Entity:   e,
+		Metadata: tile.Metadata,
+		Origin:   tile.Coords,
+	}
+	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
 		AddComponent(myecs.Drawable, anim).
 		AddComponent(myecs.Animated, anim).
 		AddComponent(myecs.Gem, struct{}{}).
 		AddComponent(myecs.OnTouch, CollectGem(color, tile.Coords)).
+		AddComponent(myecs.Item, gem).
 		AddComponent(myecs.LvlElement, struct{}{})
 }
 
@@ -247,7 +260,7 @@ func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
 	//e.AddComponent(myecs.Drawable, jumpBoots.Sprite)
 	e.AddComponent(myecs.PickUp, jumpBoots.PickUp)
 	e.AddComponent(myecs.Action, jumpBoots.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, jumpBoots)
 	e.AddComponent(myecs.Item, jumpBoots)
 	DefaultRegen(jumpBoots)
 	DefaultAnim(jumpBoots)
@@ -324,7 +337,7 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.OnTouch, data.NewInteract(BoxBonk))
 	e.AddComponent(myecs.PickUp, box.PickUp)
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, box)
 	e.AddComponent(myecs.Item, box)
 	dyn := data.NewDynamic(tile)
 	dyn.Object = obj
@@ -408,7 +421,7 @@ func CreateKey(pos pixel.Vec, tile *data.Tile) {
 	//e.AddComponent(myecs.Drawable, theKey.Sprite)
 	e.AddComponent(myecs.PickUp, theKey.PickUp)
 	e.AddComponent(myecs.Action, theKey.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, theKey)
 	e.AddComponent(myecs.Item, theKey)
 	theKey.Entity = e
 	theKey.Metadata.Regenerate = true
@@ -484,7 +497,7 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Animated, jetpack.Anim)
 	e.AddComponent(myecs.PickUp, jetpack.PickUp)
 	e.AddComponent(myecs.Action, jetpack.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, jetpack)
 	e.AddComponent(myecs.Item, jetpack)
 	jetpack.Delay = constants.ItemRegen * (jetpack.Metadata.RegenDelay + 2)
 	e.AddComponent(myecs.Update, data.NewFn(func() {
@@ -659,7 +672,7 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Animated, disguise.Item.Anim)
 	e.AddComponent(myecs.PickUp, disguise.Item.PickUp)
 	e.AddComponent(myecs.Action, disguise.Item.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, disguise)
 	e.AddComponent(myecs.Item, disguise.Item)
 	disguise.Item.Delay = constants.ItemRegen * (disguise.Item.Metadata.RegenDelay + 2)
 	e.AddComponent(myecs.Update, data.NewFn(func() {
@@ -789,7 +802,7 @@ func CreateDrill(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Drawable, drill.Sprite)
 	e.AddComponent(myecs.PickUp, drill.PickUp)
 	e.AddComponent(myecs.Action, drill.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, drill)
 	e.AddComponent(myecs.Item, drill)
 	DefaultRegen(drill)
 }
@@ -876,7 +889,7 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Animated, flamethrower.Anim)
 	e.AddComponent(myecs.PickUp, flamethrower.PickUp)
 	e.AddComponent(myecs.Action, flamethrower.Action)
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, flamethrower)
 	e.AddComponent(myecs.Item, flamethrower)
 	flamethrower.Delay = constants.ItemRegen * (flamethrower.Metadata.RegenDelay + 2)
 	e.AddComponent(myecs.Update, data.NewFn(func() {
@@ -1007,7 +1020,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
 								_, okCO := resultC.Components[myecs.Object].(*object.Object)
 								ch2, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-								if okCO && okC && ch2.State != data.Dead && ch2.State != data.Hit && ch2.State != data.Waiting {
+								if okCO && okC && !ch.Flags.Ignore && ch2.State != data.Dead && ch2.State != data.Hit && ch2.State != data.Waiting {
 									chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
 									ch2Coords := world.NewCoords(chX, chY)
 									if ch2Coords == firstTile.Coords ||
@@ -1160,7 +1173,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 		trans.Item.Action = EnterTransporter(trans)
 		e.AddComponent(myecs.OnTouch, trans.Item.Action)
 	}
-	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.LvlElement, trans)
 }
 
 func EnterTransporter(trans *data.Transporter) *data.Interact {
