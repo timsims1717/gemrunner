@@ -13,6 +13,9 @@ func SetBlock(coords world.Coords, block data.Block) {
 			tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 			if !tile.Update {
 				oldBlock := tile.Block
+				oldMetadata := data.CopyMetadata(tile.Metadata)
+				tile.Metadata = data.DefaultMetadata()
+				RemoveLinkedTiles(tile)
 				switch block {
 				case data.BlockTurf:
 					if tile.IsLadder() {
@@ -29,6 +32,7 @@ func SetBlock(coords world.Coords, block data.Block) {
 					} else if tile.Metadata.Buried {
 						tile.Block = block
 					} else if tile.CanBeBuried() {
+						tile.Metadata = data.CopyMetadata(oldMetadata)
 						tile.Metadata.Buried = true
 					} else {
 						tile.Block = block
@@ -118,12 +122,13 @@ func SetBlock(coords world.Coords, block data.Block) {
 						}
 					}
 					tile.Block = block
+				case data.BlockGoopBucket:
+					tile.Metadata.Timer = -1
+					tile.Block = block
 				default:
 					tile.Block = block
 				}
 				if tile.Block != oldBlock {
-					tile.Metadata = data.DefaultMetadata()
-					RemoveLinkedTiles(tile)
 					if tile.CanBeBuried() {
 						if oldBlock == data.BlockTurf {
 							tile.Metadata.Buried = true

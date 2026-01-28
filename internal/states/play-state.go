@@ -141,11 +141,11 @@ func (s *playState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystemPre()
 		systems.TileSpriteSystem()
 		systems.FloatingTextSystem()
+		systems.AnimationSystem()
 	} else {
 
 	}
 	// object systems
-	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
 	systems.EffectsSystem()

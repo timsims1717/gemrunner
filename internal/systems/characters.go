@@ -28,6 +28,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.Le
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 	SetAsPlayer(player, e, pIndex, replay)
 	player.Object = obj
+	player.Type = "player"
 	player.Entity = e
 	player.Player = pIndex
 	player.Vars = data.PlayerVars()
@@ -98,6 +99,7 @@ func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	demon.Layer = 29
 	obj.Layer = demon.Layer
 	demon.Object = obj
+	demon.Type = "demon"
 	demon.Anims = reanimator.NewSet().Add(animations.DemonAnimation(demon))
 	demon.State = data.Regen
 	demon.Flags.Regen = true
@@ -116,6 +118,7 @@ func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	e.AddComponent(myecs.Controller, demon.Control)
 	e.AddComponent(myecs.LvlElement, demon)
 	e.AddComponent(myecs.Enemy, demon.Enemy)
+	e.AddComponent(myecs.StandOn, struct{}{})
 	demon.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, demon)
 	return demon
@@ -135,6 +138,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	if ok {
 		enemy := bg.(*data.Dynamic)
 		if (enemy.State == data.Grounded ||
+			enemy.State == data.OnBar ||
 			enemy.State == data.Tripping ||
 			enemy.State == data.OnLadder ||
 			enemy.State == data.Leaping ||
@@ -142,6 +146,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 			enemy.State == data.InHole) &&
 			(ch.State == data.Grounded ||
 				ch.State == data.OnLadder ||
+				ch.State == data.OnBar ||
 				ch.State == data.Leaping ||
 				ch.State == data.Jumping ||
 				(ch.State == data.Falling && (enemy.Flags.Flying || enemy.State == data.InHole)) ||
@@ -164,6 +169,7 @@ func FlyCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
 	fly.Layer = 29
 	obj.Layer = fly.Layer
 	fly.State = data.Flying
+	fly.Type = "fly"
 	fly.Options.RegenFlip = true
 	fly.Options.Flying = true
 	fly.Flags.Flying = true

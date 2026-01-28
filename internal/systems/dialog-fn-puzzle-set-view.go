@@ -589,7 +589,8 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			pos := pixel.V(posX, posY)
 			var key string
 			switch tile.Block {
-			case data.BlockTurf, data.BlockCracked, data.BlockFall, data.BlockSpike, data.BlockGoop:
+			case data.BlockTurf, data.BlockCracked, data.BlockFall,
+				data.BlockSpike, data.BlockGoop, data.BlockLadderExitTurf:
 				key = constants.PreviewTurf
 			case data.BlockBedrock:
 				key = constants.PreviewBedrock
@@ -624,6 +625,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			case data.BlockBigBomb, data.BlockBigBombLit,
 				data.BlockJetpack, data.BlockDisguise,
 				data.BlockDrill, data.BlockFlamethrower,
+				data.BlockGoopBucket,
 				data.BlockJumpBoots, data.BlockBox,
 				data.BlockTransporter, data.BlockTransporterExit,
 				data.BlockLever, data.BlockButton:

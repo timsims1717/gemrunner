@@ -66,28 +66,28 @@ func DrawFancyBorder(bord *ui.Border, obj *object.Object, level bool) {
 }
 
 func DrawFancyBorderSection(x, y int, bord *ui.Border, obj *object.Object, level bool) {
-	if level && data.CurrLevel != nil && data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen {
+	if level && data.CurrLevel != nil {
 		if x == 0 && y > 0 && y <= bord.Height {
 			if t := data.CurrLevel.Get(x, y-1); !t.IsSolid() {
-				if _, ok := t.Transitions[data.Left]; ok {
+				if trans, ok := t.Transitions[data.Left]; ok && (trans.Complete || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
 					return
 				}
 			}
 		} else if x == bord.Width+1 && y > 0 && y <= bord.Height {
 			if t := data.CurrLevel.Get(x-2, y-1); !t.IsSolid() {
-				if _, ok := t.Transitions[data.Right]; ok {
+				if trans, ok := t.Transitions[data.Right]; ok && (trans.Complete || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
 					return
 				}
 			}
 		} else if y == 0 && x > 0 && x <= bord.Width {
 			if t := data.CurrLevel.Get(x-1, y); !t.IsSolid() {
-				if _, ok := t.Transitions[data.Down]; ok {
+				if trans, ok := t.Transitions[data.Down]; ok && (trans.Complete || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
 					return
 				}
 			}
 		} else if y == bord.Height+1 && x > 0 && x <= bord.Width {
 			if t := data.CurrLevel.Get(x-1, y-2); !t.IsSolid() {
-				if _, ok := t.Transitions[data.Up]; ok {
+				if trans, ok := t.Transitions[data.Up]; ok && (trans.Complete || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
 					return
 				}
 			}

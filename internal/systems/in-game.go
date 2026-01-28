@@ -37,7 +37,7 @@ func InGameSystem() {
 		}
 	}
 	if data.CurrLevel.FakePlayer != nil && debug.ShowDebug {
-		debug.AddLine(constants.ColorRed, imdraw.RoundEndShape, data.CurrLevel.FakePlayer.Object.Pos, data.CurrLevel.FakePlayer.Object.Pos, 3.)
+		debug.AddLine(constants.ColorRed, imdraw.RoundEndShape, data.CurrLevel.FakePlayer.Object.Pos, data.CurrLevel.FakePlayer.Object.Pos, 4.)
 	}
 	PlayerMetaInput()
 	UpdatePlayerInv()

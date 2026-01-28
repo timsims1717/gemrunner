@@ -146,6 +146,9 @@ func LevelInit(record bool) {
 			case data.BlockFlamethrower:
 				CreateFlamethrower(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
+			case data.BlockGoopBucket:
+				CreateGoopBucket(obj.Pos, tile)
+				tile.Block = data.BlockEmpty
 			case data.BlockTransporter:
 				CreateTransporter(obj.Pos, tile)
 				tile.Block = data.BlockEmpty
@@ -296,8 +299,11 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 		if lc, ok := data.CurrLevelSess.LevelMap[hi]; ok {
 			hc = lc.Completed
 		}
-		if ht != nil && (!ht.IsSolid() || (ht.Block == data.BlockBarrier && ht.Metadata.Toggle != hc)) {
+		if ht != nil && (!ht.IsSolid() ||
+			(ht.Block == data.BlockLadderExitTurf && hc) ||
+			(ht.Block == data.BlockBarrier && ht.Metadata.Toggle != hc)) {
 			tile.Transitions[hd] = &data.LevelTransition{
+				Complete:  hc,
 				ExitIndex: hi,
 				ExitTile:  ht.Coords,
 			}
@@ -342,8 +348,11 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 		if lc, ok := data.CurrLevelSess.LevelMap[vi]; ok {
 			vc = lc.Completed
 		}
-		if vt != nil && (!vt.IsSolid() || (vt.Block == data.BlockBarrier && vt.Metadata.Toggle != vc)) {
+		if vt != nil && (!vt.IsSolid() ||
+			(vt.Block == data.BlockLadderExitTurf && vc) ||
+			(vt.Block == data.BlockBarrier && vt.Metadata.Toggle != vc)) {
 			tile.Transitions[vd] = &data.LevelTransition{
+				Complete:  vc,
 				ExitIndex: vi,
 				ExitTile:  vt.Coords,
 			}

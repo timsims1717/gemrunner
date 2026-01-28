@@ -49,6 +49,9 @@ func PlaySystem() {
 		Restart()
 	}
 	if data.CurrLevel.Complete {
+		if completion, ok := data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex]; ok {
+			data.CurrLevelSess.GemsCollected = append(data.CurrLevelSess.GemsCollected, completion.GemsCollected...)
+		}
 		data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex] = data.LevelCompletion{
 			Index:         data.CurrLevelSess.PuzzleIndex,
 			GemsCollected: data.CurrLevelSess.GemsCollected,

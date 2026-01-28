@@ -31,6 +31,7 @@ type Dynamic struct {
 	MoveType MoveType
 	Player   int
 	Enemy    int
+	Type     string
 	Color    ItemColor
 	Layer    int
 
@@ -110,8 +111,10 @@ const (
 	Drilling
 	Hiding
 	FireFlamethrower
+	ThrowingGoop
 	TransportIn
 	TransportExit
+	PickUpGem
 )
 
 func (s CharacterState) String() string {

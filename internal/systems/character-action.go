@@ -237,11 +237,11 @@ func onBar(ch *data.Dynamic, tile, below *data.Tile) {
 	ch.LastTile = tile
 	if ch.Actions.Down() && (!ch.Flags.Floor || below.IsLadder()) { // drop down
 		ch.Object.Pos.Y -= ch.Vars.Gravity
-	} else if ch.Actions.Left() && !ch.Flags.LeftWall { // go left
+	} else if ch.Actions.Left() && !(ch.Flags.LeftWall || ch.Flags.EnemyL) { // go left
 		ch.Object.Pos.X -= ch.Vars.BarSpeed
 		ch.Object.Flip = true
 		ch.Flags.Climbed = true
-	} else if ch.Actions.Right() && !ch.Flags.RightWall { // go right
+	} else if ch.Actions.Right() && !(ch.Flags.RightWall || ch.Flags.EnemyR) { // go right
 		ch.Object.Pos.X += ch.Vars.BarSpeed
 		ch.Object.Flip = false
 		ch.Flags.Climbed = true

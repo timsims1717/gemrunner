@@ -104,6 +104,7 @@ type Level struct {
 }
 
 type LevelTransition struct {
+	Complete  bool
 	ExitIndex int
 	ExitTile  world.Coords
 }

@@ -86,6 +86,10 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	hit.SetEndTrigger(func() {
 		ch.Flags.Death = death.None
 	})
+	pickup := reanimator.NewBatchAnimation("pickup", batch, "demon_pickup", reanimator.Tran)
+	pickup.SetEndTrigger(func() {
+		ch.Flags.ItemAction = data.NoItemAction
+	})
 	drown := reanimator.NewBatchAnimation("drown", batch, "demon_hit", reanimator.Tran)
 	drown.SetEndTrigger(func() {
 		ch.Flags.Death = death.None
@@ -129,22 +133,25 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	})
 	tripping.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
+		ch.ACounter = 0
 	})
 	inHole := reanimator.NewBatchSprite("in_hole", batch, "demon_in_hole", reanimator.Hold)
-	holeLookFore := reanimator.NewBatchAnimationCustom("hole_look_fore", batch, "demon_hole_look", []int{0, 1, 1, 0, 0, 0}, reanimator.Tran)
+	holeLookFore := reanimator.NewBatchAnimationCustom("hole_look_fore", batch, "demon_hole_look", []int{0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0}, reanimator.Tran)
 	holeLookFore.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
 		ch.Flags.JumpL = false
 		ch.Flags.JumpR = false
+		ch.ACounter = 0
 	})
-	holeLookBack := reanimator.NewBatchAnimationCustom("hole_look_back", batch, "demon_hole_look", []int{0, 1, 1, 1, 1, 0}, reanimator.Tran)
-	holeLookBack.SetTrigger(5, func() {
+	holeLookBack := reanimator.NewBatchAnimationCustom("hole_look_back", batch, "demon_hole_look", []int{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0}, reanimator.Tran)
+	holeLookBack.SetTrigger(7, func() {
 		ch.Object.Flip = !ch.Object.Flip
 	})
 	holeLookBack.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
 		ch.Flags.JumpL = false
 		ch.Flags.JumpR = false
+		ch.ACounter = 0
 	})
 	climbingOut := reanimator.NewBatchAnimation("climb_out", batch, "demon_climb_out", reanimator.Tran)
 	climbingOut.SetTriggerAll(func() {
@@ -175,6 +182,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		ch.Object.Pos.X = ch.NextTile.Object.Pos.X + xD
 		ch.Object.Pos.Y = ch.NextTile.Object.Pos.Y + yD
 		ch.Flags.NoCollision = true
+		climbingOut.Freeze = ch.Flags.Ceiling
 		//ch.Object.Update()
 	})
 	climbingOut.SetEndTrigger(func() {
@@ -189,6 +197,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	jump.Offset.Y--
 	attack.Offset.Y--
 	hit.Offset.Y--
+	pickup.Offset.Y--
 
 	tree := reanimator.New().
 		AddAnimation(regen).
@@ -205,6 +214,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(leapTo).
 		AddAnimation(bar).
 		AddAnimation(hit).
+		AddAnimation(pickup).
 		AddAnimation(drown).
 		AddAnimation(crush).
 		AddAnimation(attack).
@@ -251,6 +261,8 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 				//	return "hiding"
 				//case data.FireFlamethrower:
 				//	return "flamethrower"
+				case data.PickUpGem:
+					return "pickup"
 				case data.TransportIn:
 					return "trans_in"
 				case data.TransportExit:

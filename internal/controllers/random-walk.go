@@ -28,9 +28,16 @@ func (rw *RandomWalk) GetActions() data.Actions {
 	actions := data.NewAction()
 	change := false
 	if reanimator.FrameSwitch {
-		r := random.Level.Intn(100)
-		if r < 1 {
+		if random.Level.Intn(100) == 0 {
 			change = true
+		}
+		if random.Level.Intn(1000) == 0 {
+			x := random.Level.Intn(data.CurrLevel.Metadata.Width)
+			y := random.Level.Intn(data.CurrLevel.Metadata.Height)
+			tile := data.CurrLevel.Get(x, y)
+			if tile.IsEmpty() {
+				rw.Ch.Object.SetPos(tile.Object.Pos)
+			}
 		}
 	}
 	if rw.Ch.Flags.RightWall && rw.Direction == data.Right {
@@ -53,14 +60,31 @@ func (rw *RandomWalk) GetActions() data.Actions {
 		u := !rw.Ch.Flags.Ceiling && currTile.IsLadder()
 		d := !belowTile.IsSolid()
 		rn := random.Level.Intn(4)
-		if rn == 0 && l {
-			rw.Direction = data.Left
-		} else if rn == 1 && r {
-			rw.Direction = data.Right
-		} else if rn == 2 && u {
-			rw.Direction = data.Up
-		} else if rn == 3 && d {
-			rw.Direction = data.Down
+		rno := rn
+		for {
+			switch rn {
+			case 0:
+				if l {
+					rw.Direction = data.Left
+				}
+			case 1:
+				if r {
+					rw.Direction = data.Right
+				}
+			case 2:
+				if u {
+					rw.Direction = data.Up
+				}
+			case 3:
+				if d {
+					rw.Direction = data.Down
+				}
+			}
+			rn++
+			rn %= 4
+			if rn == rno {
+				break
+			}
 		}
 	}
 	actions.Direction = rw.Direction

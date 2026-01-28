@@ -143,6 +143,12 @@ var (
 		B: 27,
 		A: 255,
 	}
+	ColorLime = color.RGBA{
+		R: 105,
+		G: 210,
+		B: 0,
+		A: 255,
+	}
 	ColorClear = color.RGBA{
 		R: 255,
 		G: 255,
@@ -197,20 +203,20 @@ var (
 		WorldSlime:     TileSetTree,
 		WorldFungus:    TileSetDirt,
 		WorldBeach:     TileSetShell,
-		WorldRedRock:   TileSetStone,
+		WorldRedRock:   TileSetGravel,
 		WorldIce:       TileSetIce,
 		WorldSnow:      TileSetRock,
 		WorldBubblegum: TileSetBubble,
 		WorldCrystal:   TileSetCrystal,
 		WorldAbyss:     TileSetSlate,
 		WorldReef:      TileSetShell,
-		WorldGravelPit: TileSetGravel,
+		WorldGravelPit: TileSetBubble,
 		WorldSpire:     TileSetMetal,
 		WorldSandstone: TileSetSlate,
 		WorldDunes:     TileSetDirt,
 		WorldDark:      TileSetGravel,
 		WorldDungeon:   TileSetBrick,
-		WorldGilded:    TileSetBubble,
+		WorldGilded:    TileSetStone,
 		WorldIvy:       TileSetCrystal,
 		WorldLava:      TileSetIce,
 		WorldBasalt:    TileSetStone,
@@ -254,7 +260,7 @@ var (
 		WorldRedRock:   ColorYellow,
 		WorldIce:       ColorLightGray,
 		WorldSnow:      ColorCyan,
-		WorldBubblegum: ColorRed,
+		WorldBubblegum: ColorOrange,
 		WorldCrystal:   ColorPink,
 		WorldAbyss:     ColorBlue,
 		WorldReef:      ColorPurple,
@@ -264,7 +270,7 @@ var (
 		WorldDunes:     ColorTan,
 		WorldDark:      ColorGray,
 		WorldDungeon:   ColorBlue,
-		WorldGilded:    ColorGray,
+		WorldGilded:    ColorBrown,
 		WorldIvy:       ColorGold,
 		WorldLava:      ColorRed,
 		WorldBasalt:    ColorOrange,
@@ -300,13 +306,13 @@ var (
 	WorldGoopColor = map[int]color.RGBA{
 		WorldMoss:      ColorOrange,
 		WorldJungle:    ColorYellow,
-		WorldBrick:     ColorGray,
+		WorldBrick:     ColorLime,
 		WorldBeam:      ColorCyan,
-		WorldSlime:     ColorGreen, //
+		WorldSlime:     ColorLime, //
 		WorldFungus:    ColorLightGray,
 		WorldBeach:     ColorGray,
 		WorldRedRock:   ColorLightGray,
-		WorldIce:       ColorGold,   //
+		WorldIce:       ColorLime,   //
 		WorldSnow:      ColorOrange, //
 		WorldBubblegum: ColorYellow,
 		WorldCrystal:   ColorOrange,
@@ -318,8 +324,8 @@ var (
 		WorldDunes:     ColorGray,
 		WorldDark:      ColorPurple,
 		WorldDungeon:   ColorLightGray,
-		WorldGilded:    ColorGreen,
-		WorldIvy:       ColorBrown,
+		WorldGilded:    ColorLime,
+		WorldIvy:       ColorOrange,
 		WorldLava:      ColorBrown,
 		WorldBasalt:    ColorRed,
 	}

@@ -114,7 +114,7 @@ func DropItem(ch *data.Dynamic) bool {
 	}
 	// set the object's new position
 	x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-	if ch.State == data.InHole {
+	if ch.State == data.InHole || ch.State == data.Tripping {
 		y++
 	}
 	tile := data.CurrLevel.Get(x, y)
@@ -157,8 +157,7 @@ func PlaceSmallBomb(ch *data.Dynamic) bool {
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers {
 		if ch.State == data.OnLadder ||
 			ch.State == data.Grounded ||
-			ch.State == data.Flying ||
-			ch.Flags.ItemAction == data.Hidden {
+			ch.State == data.Flying {
 			ch.Flags.BombBuff = 0
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tile := data.CurrLevel.Get(x, y)
@@ -338,6 +337,8 @@ func PickUpOrDropGem(ch *data.Dynamic, e int) {
 		ch.Flags.PickUpBuff = 0
 		if item != nil {
 			ch.Inventory = item
+			ch.State = data.DoingAction
+			ch.Flags.ItemAction = data.PickUpGem
 			//sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
 		}
 	}

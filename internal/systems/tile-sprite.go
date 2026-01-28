@@ -512,24 +512,26 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 					offset.Y = -4
 				}
 			}
-		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower:
+		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket:
 			yOffset := 0.
 			if tile.Metadata.Regenerate {
 				sprs = append(sprs, newSprChanger(constants.UIRegenerate, constants.UIBatch).WithOffset(pixel.V(-4, 4)))
 				yOffset = -4
 			}
 			timer := tile.Metadata.Timer
-			if timer == 0 {
-				sprs = append(sprs, newSprChanger(constants.UIInfinity, constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
-			} else if timer < 10 {
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
-			} else if timer < 100 {
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
-			} else if timer < 1000 {
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/100), constants.UIBatch).WithOffset(pixel.V(-6, yOffset)))
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%100/10), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
-				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(6, yOffset)))
+			if timer > -1 {
+				if timer == 0 {
+					sprs = append(sprs, newSprChanger(constants.UIInfinity, constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+				} else if timer < 10 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumber, timer), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+				} else if timer < 100 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/10), constants.UIBatch).WithOffset(pixel.V(-3, yOffset)))
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(3, yOffset)))
+				} else if timer < 1000 {
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer/100), constants.UIBatch).WithOffset(pixel.V(-6, yOffset)))
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%100/10), constants.UIBatch).WithOffset(pixel.V(0, yOffset)))
+					sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, timer%10), constants.UIBatch).WithOffset(pixel.V(6, yOffset)))
+				}
 			}
 		case data.BlockBigBomb, data.BlockBigBombLit, data.BlockSmallBomb, data.BlockSmallBombLit:
 			if tile.Metadata.Regenerate {

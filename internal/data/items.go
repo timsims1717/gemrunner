@@ -74,6 +74,9 @@ const (
 	NonPlayerBrown
 	NonPlayerGray
 	NonPlayerCyan
+	NonPlayerLime
+	NonPlayerPink
+	NonPlayerBurnt
 	NonPlayerRed
 	PlayerBlue
 	PlayerGreen
@@ -93,6 +96,12 @@ func (ic ItemColor) String() string {
 		return "gray"
 	case NonPlayerCyan:
 		return "cyan"
+	case NonPlayerLime:
+		return "lime"
+	case NonPlayerPink:
+		return "pink"
+	case NonPlayerBurnt:
+		return "burnt"
 	case PlayerBlue:
 		return "blue"
 	case PlayerGreen:
@@ -117,6 +126,12 @@ func (ic ItemColor) SpriteString() string {
 		return "_gray"
 	case NonPlayerCyan:
 		return "_cyan"
+	case NonPlayerLime:
+		return "_lime"
+	case NonPlayerPink:
+		return "_pink"
+	case NonPlayerBurnt:
+		return "_burnt"
 	case PlayerBlue:
 		return "_blue"
 	case PlayerGreen:

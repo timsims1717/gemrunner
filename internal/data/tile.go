@@ -42,6 +42,12 @@ func (t *Tile) SpriteString() string {
 		colSuffixKey = constants.SprColorGray
 	case NonPlayerCyan:
 		colSuffixKey = constants.SprColorCyan
+	case NonPlayerLime:
+		colSuffixKey = constants.SprColorLime
+	case NonPlayerPink:
+		colSuffixKey = constants.SprColorPink
+	case NonPlayerBurnt:
+		colSuffixKey = constants.SprColorBurnt
 	case NonPlayerRed:
 		colSuffixKey = constants.SprColorRed
 		colSuffixTrans = constants.SprColorRed
@@ -117,6 +123,8 @@ func (t *Tile) SpriteString() string {
 		return constants.ItemDrill + colSuffixTools
 	case BlockFlamethrower:
 		return constants.ItemFlamethrower + colSuffixTools
+	case BlockGoopBucket:
+		return constants.ItemGoopBucket + colSuffixTools
 	case BlockBigBomb:
 		return constants.ItemBigBomb + colSuffixTools
 	case BlockBigBombLit:
@@ -246,6 +254,19 @@ func (t *Tile) IsSolid() bool {
 			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
 }
 
+func (t *Tile) IsSolidPath() bool {
+	return t == nil || (!t.IsLadder() &&
+		(t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
+			//t.Block == BlockFall ||
+			t.Block == BlockPhase ||
+			t.Block == BlockBarrier ||
+			t.Block == BlockCracked ||
+			t.Block == BlockSpike ||
+			t.Block == BlockGoop ||
+			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
+}
+
 func (t *Tile) IsRunnable() bool {
 	return t == nil || (!(t.Flags.Collapse && !t.Flags.Occupied) &&
 		(t.Block == BlockTurf ||
@@ -342,7 +363,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	if !PlayerAbove && d != nil && (d.IsEmpty() || d.IsLadder()) {
 		neighbors = append(neighbors, d)
 	}
-	notFalling := d.IsSolid() || d.IsLadder() || t.IsLadder()
+	notFalling := d.IsSolidPath() || d.IsLadder() || t.IsLadder()
 	// Left
 	l := CurrLevel.Get(t.Coords.X-1, t.Coords.Y)
 	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
@@ -350,7 +371,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(l.Ladder || lb == nil || lb.IsSolid()) {
 	//	neighbors = append(neighbors, l)
 	//}
-	if notFalling && !l.IsSolid() {
+	if notFalling && !l.IsSolidPath() {
 		neighbors = append(neighbors, l)
 	}
 	// Right
@@ -360,12 +381,12 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 	//	(r.Ladder || rb == nil || rb.IsSolid()) {
 	//	neighbors = append(neighbors, r)
 	//}
-	if notFalling && !r.IsSolid() {
+	if notFalling && !r.IsSolidPath() {
 		neighbors = append(neighbors, r)
 	}
 	// Up
 	u := CurrLevel.Get(t.Coords.X, t.Coords.Y+1)
-	if PlayerAbove && notFalling && !u.IsSolid() && t.IsLadder() {
+	if PlayerAbove && notFalling && !u.IsSolidPath() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}
 	return neighbors

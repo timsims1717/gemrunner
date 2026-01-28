@@ -128,7 +128,8 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 
 func CollectGem(color data.ItemColor, c world.Coords) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if p < 0 || p >= constants.MaxPlayers || (ch.Color != color && color > data.NonPlayerRed) {
+		if p < 0 || p >= constants.MaxPlayers ||
+			(ch.Color != color && color > data.NonPlayerRed) {
 			return
 		}
 		data.CurrLevelSess.PlayerStats[p].LScore += 1
@@ -930,184 +931,433 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 			return // can't do it if leaping off ladders or bar
 		}
 		firstTile := data.CurrLevel.Get(x2, y)
-		if firstTile != nil && firstTile.Block != data.BlockBedrock {
-			// change the player's state to flamethrower action
-			ch.State = data.DoingAction
-			ch.Flags.ItemAction = data.FireFlamethrower
-			ch.Object.SetPos(tile.Object.Pos)
-			// set the flamethrower vars
-			flamethrower.Using = true
-			flamethrower.Counter = 0
-			flamethrower.Uses++
-			// create flame animations
-			secondTile := data.CurrLevel.Get(x3, y)
-			thirdTile := data.CurrLevel.Get(x4, y)
-			firstFlame := "flames_l"
-			secondFlame := "flames_m"
-			thirdFlame := "flames_r"
-			obj1 := object.New()
-			obj1.Layer = 34
-			obj1.Pos = firstTile.Object.Pos
-			obj1.SetRect(pixel.R(0, 0, 16, 16))
-			obj1.Flip = flip
-			e1 := myecs.Manager.NewEntity()
-			a1 := reanimator.NewBatchAnimation(firstFlame, img.Batchers[constants.TileBatch], firstFlame, reanimator.Tran)
-			a1.SetEndTrigger(func() {
-				myecs.Manager.DisposeEntity(e1)
-			})
-			anim1 := reanimator.NewSimple(a1)
-			e1.AddComponent(myecs.Object, obj1)
-			e1.AddComponent(myecs.Drawable, anim1)
-			e1.AddComponent(myecs.Animated, anim1)
-			e1.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-			if secondTile != nil {
-				obj2 := object.New()
-				obj2.Layer = 34
-				obj2.Pos = secondTile.Object.Pos
-				obj2.SetRect(pixel.R(0, 0, 16, 16))
-				obj2.Flip = flip
-				e2 := myecs.Manager.NewEntity()
-				a2 := reanimator.NewBatchAnimation(secondFlame, img.Batchers[constants.TileBatch], secondFlame, reanimator.Tran)
-				a2.SetEndTrigger(func() {
-					myecs.Manager.DisposeEntity(e2)
-				})
-				anim2 := reanimator.NewSimple(a2)
-				e2.AddComponent(myecs.Object, obj2)
-				e2.AddComponent(myecs.Drawable, anim2)
-				e2.AddComponent(myecs.Animated, anim2)
-				e2.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-				if thirdTile != nil {
-					obj3 := object.New()
-					obj3.Layer = 34
-					obj3.Pos = thirdTile.Object.Pos
-					obj3.SetRect(pixel.R(0, 0, 16, 16))
-					obj3.Flip = flip
-					e3 := myecs.Manager.NewEntity()
-					a3 := reanimator.NewBatchAnimation(thirdFlame, img.Batchers[constants.TileBatch], thirdFlame, reanimator.Tran)
-					a3.SetEndTrigger(func() {
-						myecs.Manager.DisposeEntity(e3)
-					})
-					anim3 := reanimator.NewSimple(a3)
-					e3.AddComponent(myecs.Object, obj3)
-					e3.AddComponent(myecs.Drawable, anim3)
-					e3.AddComponent(myecs.Animated, anim3)
-					e3.AddComponent(myecs.Temp, myecs.ClearFlag(false))
-				}
-			}
-			// flamethrower sound
-			sfx.SoundPlayer.PlaySound(constants.SFXFlamethrower, 0.)
-			entity.AddComponent(myecs.Update, data.NewFn(func() {
-				if flamethrower.Using {
-					if reanimator.FrameSwitch {
-						flamethrower.Counter++
-						if flamethrower.Counter > constants.FlamethrowerCnt {
-							flamethrower.Using = false
-							flamethrower.Counter = 0
-							ch.Flags.ItemAction = data.NoItemAction
-							if flamethrower.Metadata.Timer > 0 && flamethrower.Uses >= flamethrower.Metadata.Timer {
-								DropItem(ch)
-								flamethrower.Uses = 0
-								if flamethrower.Metadata.Regenerate {
-									// remove the pickup component
-									flamethrower.Entity.RemoveComponent(myecs.PickUp)
-									flamethrower.Waiting = true
-								} else {
-									myecs.Manager.DisposeEntity(flamethrower.Entity)
-								}
+		if firstTile == nil || firstTile.Block == data.BlockBedrock {
+			return // can't do it if directly facing bedrock
+		}
+		// change the player's state to flamethrower action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.FireFlamethrower
+		ch.Object.SetPos(tile.Object.Pos)
+		// set the flamethrower vars
+		flamethrower.Using = true
+		flamethrower.Counter = 0
+		flamethrower.Uses++
+		// create flame animations
+		secondTile := data.CurrLevel.Get(x3, y)
+		thirdTile := data.CurrLevel.Get(x4, y)
+		CreateFlames(firstTile, secondTile, thirdTile, flip)
+		// flamethrower sound
+		sfx.SoundPlayer.PlaySound(constants.SFXFlamethrower, 0.)
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if flamethrower.Using {
+				if reanimator.FrameSwitch {
+					flamethrower.Counter++
+					if flamethrower.Counter > constants.FlamethrowerCnt {
+						flamethrower.Using = false
+						flamethrower.Counter = 0
+						ch.Flags.ItemAction = data.NoItemAction
+						if flamethrower.Metadata.Timer > 0 && flamethrower.Uses >= flamethrower.Metadata.Timer {
+							DropItem(ch)
+							flamethrower.Uses = 0
+							if flamethrower.Metadata.Regenerate {
+								// remove the pickup component
+								flamethrower.Entity.RemoveComponent(myecs.PickUp)
+								flamethrower.Waiting = true
+							} else {
+								myecs.Manager.DisposeEntity(flamethrower.Entity)
 							}
-						} else {
-							// kill players and enemies
-							for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-								_, okCO := resultC.Components[myecs.Object].(*object.Object)
-								ch2, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-								if okCO && okC && !ch.Flags.Ignore && ch2.State != data.Dead && ch2.State != data.Hit && ch2.State != data.Waiting {
-									chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
-									ch2Coords := world.NewCoords(chX, chY)
-									if ch2Coords == firstTile.Coords ||
-										(secondTile != nil && ch2Coords == secondTile.Coords) ||
-										(thirdTile != nil && ch2Coords == thirdTile.Coords) {
-										tile2 := data.CurrLevel.Get(chX, chY)
-										ch2.Object.Pos.X = tile2.Object.Pos.X
-										ch2.Object.Pos.Y = tile2.Object.Pos.Y
-										ch2.Flags.Death = death.Exploded
-										ch2.State = data.Hit
-										ch2.Object.Layer = 35
-									}
-								}
-							}
-							if flamethrower.Counter == 2 {
-								// light bombs
-								for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
-									objB, okO := resultB.Components[myecs.Object].(*object.Object)
-									b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
-									if okO && okB && !objB.Hidden && !b.Item.Waiting && !b.Item.Regen {
-										chX, chY := world.WorldToMap(objB.Pos.X, objB.Pos.Y)
-										bCoords := world.NewCoords(chX, chY)
-										if bCoords == firstTile.Coords ||
-											(secondTile != nil && bCoords == secondTile.Coords) ||
-											(thirdTile != nil && bCoords == thirdTile.Coords) {
-											tileB := data.CurrLevel.Get(chX, chY)
-											objB.Pos.X = tileB.Object.Pos.X
-											objB.Pos.Y = tileB.Object.Pos.Y
-											LightBomb(b, tileB)
-										}
-									}
-								}
-								// destroy turf
-								if firstTile.Block == data.BlockTurf ||
-									firstTile.Block == data.BlockCracked ||
-									firstTile.Block == data.BlockFall ||
-									firstTile.Block == data.BlockClose {
-									firstTile.Flags.Collapse = true
-									firstTile.Counter = constants.CollapseCounter
-								}
-								if secondTile != nil &&
-									(secondTile.Block == data.BlockTurf ||
-										secondTile.Block == data.BlockCracked ||
-										secondTile.Block == data.BlockFall ||
-										secondTile.Block == data.BlockClose) {
-									secondTile.Flags.Collapse = true
-									secondTile.Counter = constants.CollapseCounter
-								}
-								if thirdTile != nil &&
-									secondTile.Block != data.BlockBedrock &&
-									(thirdTile.Block == data.BlockTurf ||
-										thirdTile.Block == data.BlockCracked ||
-										thirdTile.Block == data.BlockFall ||
-										thirdTile.Block == data.BlockClose) {
-									thirdTile.Flags.Collapse = true
-									thirdTile.Counter = constants.CollapseCounter
+						}
+					} else {
+						// kill players and enemies
+						for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+							_, okCO := resultC.Components[myecs.Object].(*object.Object)
+							ch2, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+							if okCO && okC && !ch.Flags.Ignore && ch2.State != data.Dead && ch2.State != data.Hit && ch2.State != data.Waiting {
+								chX, chY := world.WorldToMap(ch2.Object.Pos.X, ch2.Object.Pos.Y)
+								ch2Coords := world.NewCoords(chX, chY)
+								if ch2Coords == firstTile.Coords ||
+									(secondTile != nil && ch2Coords == secondTile.Coords) ||
+									(thirdTile != nil && ch2Coords == thirdTile.Coords) {
+									tile2 := data.CurrLevel.Get(chX, chY)
+									ch2.Object.Pos.X = tile2.Object.Pos.X
+									ch2.Object.Pos.Y = tile2.Object.Pos.Y
+									ch2.Flags.Death = death.Exploded
+									ch2.State = data.Hit
+									ch2.Object.Layer = 35
 								}
 							}
 						}
-					}
-				} else if flamethrower.Waiting {
-					if reanimator.FrameSwitch {
-						flamethrower.Counter++
-					}
-					if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
-						flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
-						flamethrower.Regen = true
-						flamethrower.Waiting = false
-						flamethrower.Entity.AddComponent(myecs.Update, data.NewFn(func() {
-							if flamethrower.Waiting {
-								if reanimator.FrameSwitch {
-									flamethrower.Counter++
-								}
-								if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
-									flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
-									flamethrower.Regen = true
-									flamethrower.Waiting = false
-									flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+						if flamethrower.Counter == 2 {
+							// light bombs
+							for _, resultB := range myecs.Manager.Query(myecs.IsBomb) {
+								objB, okO := resultB.Components[myecs.Object].(*object.Object)
+								b, okB := resultB.Components[myecs.Bomb].(*data.Bomb)
+								if okO && okB && !objB.Hidden && !b.Item.Waiting && !b.Item.Regen {
+									chX, chY := world.WorldToMap(objB.Pos.X, objB.Pos.Y)
+									bCoords := world.NewCoords(chX, chY)
+									if bCoords == firstTile.Coords ||
+										(secondTile != nil && bCoords == secondTile.Coords) ||
+										(thirdTile != nil && bCoords == thirdTile.Coords) {
+										tileB := data.CurrLevel.Get(chX, chY)
+										objB.Pos.X = tileB.Object.Pos.X
+										objB.Pos.Y = tileB.Object.Pos.Y
+										LightBomb(b, tileB)
+									}
 								}
 							}
-						}))
-						flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+							// destroy turf
+							if firstTile.Block == data.BlockTurf ||
+								firstTile.Block == data.BlockCracked ||
+								firstTile.Block == data.BlockFall ||
+								firstTile.Block == data.BlockClose {
+								firstTile.Flags.Collapse = true
+								firstTile.Counter = constants.CollapseCounter
+							}
+							if secondTile != nil &&
+								(secondTile.Block == data.BlockTurf ||
+									secondTile.Block == data.BlockCracked ||
+									secondTile.Block == data.BlockFall ||
+									secondTile.Block == data.BlockClose) {
+								secondTile.Flags.Collapse = true
+								secondTile.Counter = constants.CollapseCounter
+							}
+							if thirdTile != nil &&
+								secondTile.Block != data.BlockBedrock &&
+								(thirdTile.Block == data.BlockTurf ||
+									thirdTile.Block == data.BlockCracked ||
+									thirdTile.Block == data.BlockFall ||
+									thirdTile.Block == data.BlockClose) {
+								thirdTile.Flags.Collapse = true
+								thirdTile.Counter = constants.CollapseCounter
+							}
+						}
 					}
 				}
-			}))
+			} else if flamethrower.Waiting {
+				if reanimator.FrameSwitch {
+					flamethrower.Counter++
+				}
+				if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
+					flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					flamethrower.Regen = true
+					flamethrower.Waiting = false
+					flamethrower.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+						if flamethrower.Waiting {
+							if reanimator.FrameSwitch {
+								flamethrower.Counter++
+							}
+							if flamethrower.Counter > flamethrower.Delay && data.CurrLevel.FrameChange {
+								flamethrower.Object.Pos = world.MapToWorld(flamethrower.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+								flamethrower.Regen = true
+								flamethrower.Waiting = false
+								flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+							}
+						}
+					}))
+					flamethrower.Entity.AddComponent(myecs.PickUp, flamethrower.PickUp)
+				}
+			}
+		}))
+	})
+}
+
+func CreateFlames(firstTile, secondTile, thirdTile *data.Tile, flip bool) {
+	firstFlame := "flames_l"
+	secondFlame := "flames_m"
+	thirdFlame := "flames_r"
+	obj1 := object.New()
+	obj1.Layer = 34
+	obj1.Pos = firstTile.Object.Pos
+	obj1.SetRect(pixel.R(0, 0, 16, 16))
+	obj1.Flip = flip
+	e1 := myecs.Manager.NewEntity()
+	a1 := reanimator.NewBatchAnimation(firstFlame, img.Batchers[constants.TileBatch], firstFlame, reanimator.Tran)
+	a1.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(e1)
+	})
+	anim1 := reanimator.NewSimple(a1)
+	e1.AddComponent(myecs.Object, obj1)
+	e1.AddComponent(myecs.Drawable, anim1)
+	e1.AddComponent(myecs.Animated, anim1)
+	e1.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	if secondTile != nil {
+		obj2 := object.New()
+		obj2.Layer = 34
+		obj2.Pos = secondTile.Object.Pos
+		obj2.SetRect(pixel.R(0, 0, 16, 16))
+		obj2.Flip = flip
+		e2 := myecs.Manager.NewEntity()
+		a2 := reanimator.NewBatchAnimation(secondFlame, img.Batchers[constants.TileBatch], secondFlame, reanimator.Tran)
+		a2.SetEndTrigger(func() {
+			myecs.Manager.DisposeEntity(e2)
+		})
+		anim2 := reanimator.NewSimple(a2)
+		e2.AddComponent(myecs.Object, obj2)
+		e2.AddComponent(myecs.Drawable, anim2)
+		e2.AddComponent(myecs.Animated, anim2)
+		e2.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+		if thirdTile != nil {
+			obj3 := object.New()
+			obj3.Layer = 34
+			obj3.Pos = thirdTile.Object.Pos
+			obj3.SetRect(pixel.R(0, 0, 16, 16))
+			obj3.Flip = flip
+			e3 := myecs.Manager.NewEntity()
+			a3 := reanimator.NewBatchAnimation(thirdFlame, img.Batchers[constants.TileBatch], thirdFlame, reanimator.Tran)
+			a3.SetEndTrigger(func() {
+				myecs.Manager.DisposeEntity(e3)
+			})
+			anim3 := reanimator.NewSimple(a3)
+			e3.AddComponent(myecs.Object, obj3)
+			e3.AddComponent(myecs.Drawable, anim3)
+			e3.AddComponent(myecs.Animated, anim3)
+			e3.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+		}
+	}
+}
+
+func CreateGoopBucket(pos pixel.Vec, tile *data.Tile) {
+	key := tile.SpriteString()
+	obj := object.New().WithID(key).SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Layer = 12
+	e := myecs.Manager.NewEntity()
+	goopBucket := &data.BasicItem{
+		Name:     "Goop Bucket",
+		Object:   obj,
+		Sprite:   img.NewSprite(key, constants.TileBatch),
+		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		Entity:   e,
+		Metadata: tile.Metadata,
+		Origin:   tile.Coords,
+	}
+	goopBucket.Action = GoopBucketAction(goopBucket)
+
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Drawable, goopBucket.Sprite)
+	e.AddComponent(myecs.PickUp, goopBucket.PickUp)
+	e.AddComponent(myecs.Action, goopBucket.Action)
+	e.AddComponent(myecs.LvlElement, goopBucket)
+	e.AddComponent(myecs.Item, goopBucket)
+	DefaultRegen(goopBucket)
+	goopBucket.Delay = constants.ItemRegen * (goopBucket.Metadata.RegenDelay + 2)
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		if goopBucket.Waiting {
+			if reanimator.FrameSwitch {
+				goopBucket.Counter++
+			}
+			if goopBucket.Counter > goopBucket.Delay && data.CurrLevel.FrameChange {
+				goopBucket.Object.Pos = world.MapToWorld(goopBucket.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+				goopBucket.Regen = true
+				goopBucket.Waiting = false
+				goopBucket.Object.Hidden = false
+				goopBucket.Entity.AddComponent(myecs.PickUp, goopBucket.PickUp)
+			}
+		}
+	}))
+}
+
+func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+		if ch.State == data.Falling || ch.State == data.Jumping || ch.State == data.OnBar {
+			return
+		}
+		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		x2 := x + 1
+		x3 := x + 2
+		x4 := x + 3
+		flip := false
+		if ch.Object.Flip {
+			x2 = x - 1
+			x3 = x - 2
+			x4 = x - 3
+			flip = true
+		}
+		tile := data.CurrLevel.Get(x, y)
+		if ch.State == data.Leaping && !tile.IsLadder() && tile.Block != data.BlockBar {
+			return // can't do it if leaping off ladders or bar
+		}
+		firstTile := data.CurrLevel.Get(x2, y)
+		if firstTile.IsSolid() || firstTile.Block == data.BlockLiquid {
+			return // can't do it if facing a wall
+		}
+		// change the player's state to goop bucket action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.ThrowingGoop
+		ch.Object.SetPos(tile.Object.Pos)
+		// set the goop bucket vars
+		goopBucket.Using = true
+		goopBucket.Counter = 0
+		// create goop animations
+		secondTile := data.CurrLevel.Get(x3, y)
+		thirdTile := data.CurrLevel.Get(x4, y)
+		// goop sound
+		//sfx.SoundPlayer.PlaySound(constants.SFXFlamethrower, 0.)
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if goopBucket.Using {
+				if reanimator.FrameSwitch {
+					goopBucket.Counter++
+					if goopBucket.Counter > constants.GoopBucketCnt {
+						goopBucket.Using = false
+						MakeGoopThrow(firstTile, secondTile, thirdTile, flip)
+						goopBucket.Counter = 0
+						DropItem(ch)
+						goopBucket.Uses = 0
+						goopBucket.Object.Hidden = true
+						if goopBucket.Metadata.Regenerate {
+							// remove the pickup component
+							goopBucket.Entity.RemoveComponent(myecs.PickUp)
+							goopBucket.Waiting = true
+						} else {
+							myecs.Manager.DisposeEntity(goopBucket.Entity)
+						}
+					}
+				}
+			} else if goopBucket.Waiting {
+				if reanimator.FrameSwitch {
+					goopBucket.Counter++
+				}
+				if goopBucket.Counter > goopBucket.Delay && data.CurrLevel.FrameChange {
+					goopBucket.Object.Pos = world.MapToWorld(goopBucket.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					goopBucket.Regen = true
+					goopBucket.Waiting = false
+					goopBucket.Object.Hidden = false
+					entity.AddComponent(myecs.PickUp, goopBucket.PickUp)
+					// smoke animation
+					e := myecs.Manager.NewEntity()
+					obj := object.New()
+					obj.Pos = goopBucket.Object.Pos
+					obj.Layer = 33
+					smoke := reanimator.NewBatchAnimation("smoke", img.Batchers[constants.TileBatch], "smoke_regen_anim", reanimator.Tran)
+					smoke.SetEndTrigger(func() {
+						goopBucket.Regen = false
+						myecs.Manager.DisposeEntity(e)
+					})
+					anim := reanimator.NewSimple(smoke)
+					e.AddComponent(myecs.Object, obj).
+						AddComponent(myecs.Animated, anim).
+						AddComponent(myecs.Drawable, anim).
+						AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				}
+			}
+		}))
+	})
+}
+
+func MakeGoopThrow(firstTile, secondTile, thirdTile *data.Tile, flip bool) {
+	firstGoop := "goop_throw_l"
+	secondGoop := "goop_throw_m"
+	thirdGoop := "goop_throw_r"
+	obj1 := object.New()
+	obj1.Layer = 34
+	obj1.Pos = firstTile.Object.Pos
+	obj1.SetRect(pixel.R(0, 0, 16, 16))
+	obj1.Flip = flip
+	e1 := myecs.Manager.NewEntity()
+	a1 := reanimator.NewBatchAnimation(firstGoop, img.Batchers[constants.TileBatch], firstGoop, reanimator.Tran)
+	a1.SetEndTrigger(func() {
+		CreateFallingGoop(firstTile, flip)
+		myecs.Manager.DisposeEntity(e1)
+	})
+	anim1 := reanimator.NewSimple(a1)
+	e1.AddComponent(myecs.Object, obj1)
+	e1.AddComponent(myecs.Drawable, anim1)
+	e1.AddComponent(myecs.Animated, anim1)
+	e1.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	if secondTile != nil && !secondTile.IsSolid() && secondTile.Block != data.BlockLiquid {
+		obj2 := object.New()
+		obj2.Layer = 34
+		obj2.Pos = secondTile.Object.Pos
+		obj2.SetRect(pixel.R(0, 0, 16, 16))
+		obj2.Flip = flip
+		e2 := myecs.Manager.NewEntity()
+		a2 := reanimator.NewBatchAnimation(secondGoop, img.Batchers[constants.TileBatch], secondGoop, reanimator.Tran)
+		a2.SetEndTrigger(func() {
+			CreateFallingGoop(secondTile, flip)
+			myecs.Manager.DisposeEntity(e2)
+		})
+		anim2 := reanimator.NewSimple(a2)
+		e2.AddComponent(myecs.Object, obj2)
+		e2.AddComponent(myecs.Drawable, anim2)
+		e2.AddComponent(myecs.Animated, anim2)
+		e2.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+		if thirdTile != nil && !thirdTile.IsSolid() && thirdTile.Block != data.BlockLiquid {
+			obj3 := object.New()
+			obj3.Layer = 34
+			obj3.Pos = thirdTile.Object.Pos
+			obj3.SetRect(pixel.R(0, 0, 16, 16))
+			obj3.Flip = flip
+			e3 := myecs.Manager.NewEntity()
+			a3 := reanimator.NewBatchAnimation(thirdGoop, img.Batchers[constants.TileBatch], thirdGoop, reanimator.Tran)
+			a3.SetEndTrigger(func() {
+				CreateFallingGoop(thirdTile, flip)
+				myecs.Manager.DisposeEntity(e3)
+			})
+			anim3 := reanimator.NewSimple(a3)
+			e3.AddComponent(myecs.Object, obj3)
+			e3.AddComponent(myecs.Drawable, anim3)
+			e3.AddComponent(myecs.Animated, anim3)
+			e3.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+		}
+	}
+}
+
+func CreateFallingGoop(tile *data.Tile, flip bool) {
+	obj := object.New()
+	obj.Layer = 34
+	obj.Pos = tile.Object.Pos
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Flip = flip
+	d := data.NewDynamic(tile)
+	e := myecs.Manager.NewEntity()
+	fall := reanimator.NewBatchAnimation("goop_fall", img.Batchers[constants.TileBatch], "goop_fall", reanimator.Loop)
+	land := reanimator.NewBatchAnimation("goop_land", img.Batchers[constants.TileBatch], "goop_land", reanimator.Tran)
+	land.Offset.Y--
+	land.SetTrigger(3, func() {
+		x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+		lt := data.CurrLevel.Get(x, y-1)
+		if lt != nil {
+			switch lt.Block {
+			case data.BlockTurf, data.BlockBedrock, data.BlockClose,
+				data.BlockCracked, data.BlockFall, data.BlockPhase, data.BlockSpike:
+				lt.Block = data.BlockGoop
+				lt.Flags.Collapse = false
+				lt.Counter = 0
+				lt.Flags.Cracked = false
+			}
 		}
 	})
+	land.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(e)
+	})
+	anim := reanimator.New().
+		AddAnimation(fall).
+		AddAnimation(land).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if d.Flags.Floor {
+				return "goop_land"
+			} else {
+				return "goop_fall"
+			}
+		}).SetDefault("flamethrower").Finish()
+	anim.Update()
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Drawable, anim)
+	e.AddComponent(myecs.Animated, anim)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	d.Object = obj
+	d.Entity = e
+	d.Flags.NoLadders = true
+	e.AddComponent(myecs.Dynamic, d)
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+		lt := data.CurrLevel.Get(x, y)
+		if lt != nil && lt.Block == data.BlockLiquid {
+			myecs.Manager.DisposeEntity(e)
+		}
+	}))
 }
 
 func CreateTransporter(pos pixel.Vec, tile *data.Tile) {

@@ -89,13 +89,15 @@ const (
 	FrameRateMin    = 10
 	FrameRateInt    = 5
 	FrameCycle      = 8
-	NormalGravity   = 1.75
+	NormalGravity   = 2.5
 	MaxPlayers      = 4
 	WaitToSwitch    = 3
 	ButtonBuffer    = 3
 	CrackedCounter  = 16
+	FangsCounter    = 40
 	DrillCounter    = -8
 	FlamethrowerCnt = 8
+	GoopBucketCnt   = 7
 	RegenCounter    = 176
 	RegenACounter   = 7
 	CollapseCounter = 7
@@ -117,10 +119,10 @@ const (
 	PlayerWalkSpeed       = 3
 	PlayerGoopSpeed       = 1
 	PlayerBarSpeed        = 2.75
-	PlayerLeapSpeed       = 4
+	PlayerLeapSpeed       = 3
 	PlayerClimbSpeed      = 1.75
 	PlayerSlideSpeed      = 2.75
-	PlayerGravity         = 3
+	PlayerGravity         = 4
 	PlayerHighJumpSpeed   = 1.5
 	PlayerHighJumpHSpeed  = 2.25
 	PlayerHighJumpCounter = 12
@@ -133,10 +135,10 @@ const (
 	// Demon Constants
 	DemonWalkSpeed       = 1.4
 	DemonGoopSpeed       = 0.5
-	DemonBarSpeed        = 1.25
-	DemonLeapSpeed       = 1.5
-	DemonClimbSpeed      = 1.
-	DemonSlideSpeed      = 1.25
+	DemonBarSpeed        = 1.45
+	DemonLeapSpeed       = 1.4
+	DemonClimbSpeed      = 0.9
+	DemonSlideSpeed      = 1.8
 	DemonGravity         = NormalGravity
 	DemonHighJumpSpeed   = 0.9
 	DemonHighJumpHSpeed  = 1.75

@@ -70,7 +70,7 @@
       "spriteKey":"white_square",
       "batchKey":"ui",
       "pos":{
-        "X":-32,
+        "X":-40,
         "Y":22
       },
       "type":"sprite"
@@ -82,95 +82,7 @@
       "batchKey":"ui",
       "helpText":"Default",
       "pos":{
-        "X":-32,
-        "Y":22
-      },
-      "type":"checkbox"
-    },
-    {
-      "key":"yellow_color",
-      "spriteKey":"yellow_square",
-      "batchKey":"ui",
-      "pos":{
-        "X":-16,
-        "Y":22
-      },
-      "type":"sprite"
-    },
-    {
-      "key":"yellow_check_color",
-      "spriteKey":"checkbox_color_false",
-      "spriteKey2":"checkbox_color_true",
-      "batchKey":"ui",
-      "helpText":"Yellow",
-      "pos":{
-        "X":-16,
-        "Y":22
-      },
-      "type":"checkbox"
-    },
-    {
-      "key":"brown_color",
-      "spriteKey":"brown_square",
-      "batchKey":"ui",
-      "pos":{
-        "X":0,
-        "Y":22
-      },
-      "type":"sprite"
-    },
-    {
-      "key":"brown_check_color",
-      "spriteKey":"checkbox_color_false",
-      "spriteKey2":"checkbox_color_true",
-      "batchKey":"ui",
-      "helpText":"Brown",
-      "pos":{
-        "X":0,
-        "Y":22
-      },
-      "type":"checkbox"
-    },
-    {
-      "key":"gray_color",
-      "spriteKey":"gray_square",
-      "batchKey":"ui",
-      "pos":{
-        "X":16,
-        "Y":22
-      },
-      "type":"sprite"
-    },
-    {
-      "key":"gray_check_color",
-      "spriteKey":"checkbox_color_false",
-      "spriteKey2":"checkbox_color_true",
-      "batchKey":"ui",
-      "helpText":"Gray",
-      "pos":{
-        "X":16,
-        "Y":22
-      },
-      "type":"checkbox"
-    },
-    {
-      "key":"cyan_color",
-      "spriteKey":"cyan_square",
-      "batchKey":"ui",
-      "pos":{
-        "X":32,
-        "Y":22
-      },
-      "type":"sprite"
-    },
-    {
-      "key":"cyan_check_color",
-      "spriteKey":"checkbox_color_false",
-      "spriteKey2":"checkbox_color_true",
-      "batchKey":"ui",
-      "helpText":"Cyan",
-      "pos":{
-        "X":32,
+        "X":-40,
         "Y":22
       },
       "type":"checkbox"
@@ -180,8 +92,8 @@
       "spriteKey":"blue_square",
       "batchKey":"ui",
       "pos":{
-        "X":-32,
-        "Y":6
+        "X":-24,
+        "Y":22
       },
       "type":"sprite"
     },
@@ -192,8 +104,8 @@
       "batchKey":"ui",
       "helpText":"Blue (Player 1)",
       "pos":{
-        "X":-32,
-        "Y":6
+        "X":-24,
+        "Y":22
       },
       "type":"checkbox"
     },
@@ -202,8 +114,8 @@
       "spriteKey":"green_square",
       "batchKey":"ui",
       "pos":{
-        "X":-16,
-        "Y":6
+        "X":-8,
+        "Y":22
       },
       "type":"sprite"
     },
@@ -214,8 +126,8 @@
       "batchKey":"ui",
       "helpText":"Green (Player 2)",
       "pos":{
-        "X":-16,
-        "Y":6
+        "X":-8,
+        "Y":22
       },
       "type":"checkbox"
     },
@@ -224,8 +136,8 @@
       "spriteKey":"purple_square",
       "batchKey":"ui",
       "pos":{
-        "X":0,
-        "Y":6
+        "X":8,
+        "Y":22
       },
       "type":"sprite"
     },
@@ -236,8 +148,8 @@
       "batchKey":"ui",
       "helpText":"Purple (Player 3)",
       "pos":{
-        "X":0,
-        "Y":6
+        "X":8,
+        "Y":22
       },
       "type":"checkbox"
     },
@@ -246,8 +158,8 @@
       "spriteKey":"orange_square",
       "batchKey":"ui",
       "pos":{
-        "X":16,
-        "Y":6
+        "X":24,
+        "Y":22
       },
       "type":"sprite"
     },
@@ -258,8 +170,8 @@
       "batchKey":"ui",
       "helpText":"Orange (Player 4)",
       "pos":{
-        "X":16,
-        "Y":6
+        "X":24,
+        "Y":22
       },
       "type":"checkbox"
     },
@@ -268,8 +180,8 @@
       "spriteKey":"red_square",
       "batchKey":"ui",
       "pos":{
-        "X":32,
-        "Y":6
+        "X":40,
+        "Y":22
       },
       "type":"sprite"
     },
@@ -280,7 +192,139 @@
       "batchKey":"ui",
       "helpText":"Red (Enemy)",
       "pos":{
-        "X":32,
+        "X":40,
+        "Y":22
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"gray_color",
+      "spriteKey":"light_gray_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":-40,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"gray_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Gray",
+      "pos":{
+        "X":-40,
+        "Y":6
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"cyan_color",
+      "spriteKey":"cyan_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":-24,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"cyan_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Cyan",
+      "pos":{
+        "X":-24,
+        "Y":6
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"lime_color",
+      "spriteKey":"lime_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":-8,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"lime_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Lime",
+      "pos":{
+        "X":-8,
+        "Y":6
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"pink_color",
+      "spriteKey":"pink_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":8,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"pink_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Pink",
+      "pos":{
+        "X":8,
+        "Y":6
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"yellow_color",
+      "spriteKey":"yellow_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":24,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"yellow_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Yellow",
+      "pos":{
+        "X":24,
+        "Y":6
+      },
+      "type":"checkbox"
+    },
+    {
+      "key":"burnt_color",
+      "spriteKey":"burnt_square",
+      "batchKey":"ui",
+      "pos":{
+        "X":40,
+        "Y":6
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"burnt_check_color",
+      "spriteKey":"checkbox_color_false",
+      "spriteKey2":"checkbox_color_true",
+      "batchKey":"ui",
+      "helpText":"Burnt",
+      "pos":{
+        "X":40,
         "Y":6
       },
       "type":"checkbox"

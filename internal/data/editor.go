@@ -227,9 +227,9 @@ var BlockList = []Block{
 	BlockBox,
 	BlockJetpack,
 	BlockDisguise,
+	BlockGoopBucket,
 	BlockDrill,
 	BlockFlamethrower,
-	BlockEmpty,
 	BlockEmpty,
 
 	BlockReeds,

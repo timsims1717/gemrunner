@@ -17,7 +17,7 @@ var (
 			"up":        pxginput.NewWithButtons(pixelgl.KeyKP8, pixelgl.ButtonDpadUp).AddAxis(pixelgl.AxisLeftY, false),
 			"down":      pxginput.NewWithButtons(pixelgl.KeyKP5, pixelgl.ButtonDpadDown).AddAxis(pixelgl.AxisLeftY, true),
 			"pickUp":    pxginput.NewWithButtons(pixelgl.KeyKP1, pixelgl.ButtonB),
-			"action":    pxginput.NewWithButtons(pixelgl.KeyKP0, pixelgl.ButtonA),
+			"action":    pxginput.NewWithButtons(pixelgl.KeyKP2, pixelgl.ButtonA),
 			"bomb":      pxginput.NewWithButtons(pixelgl.KeyKP3, pixelgl.ButtonY),
 			"digLeft":   pxginput.New().AddKey(pixelgl.KeyKP7).AddAxis(pixelgl.AxisLeftTrigger, true),
 			"digRight":  pxginput.New().AddKey(pixelgl.KeyKP9).AddAxis(pixelgl.AxisRightTrigger, true),

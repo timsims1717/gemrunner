@@ -93,6 +93,9 @@ const (
 	SprColorPurple = "_purple"
 	SprColorOrange = "_orange"
 	SprColorRed    = "_red"
+	SprColorLime   = "_lime"
+	SprColorPink   = "_pink"
+	SprColorBurnt  = "_burnt"
 
 	ItemJumpBoots    = "jump_boots"
 	ItemBox          = "box"
@@ -100,6 +103,7 @@ const (
 	ItemDisguise     = "disguise"
 	ItemDrill        = "drill"
 	ItemFlamethrower = "flamethrower"
+	ItemGoopBucket   = "goop_bucket"
 
 	ItemBigBomb      = "big_bomb"
 	ItemBigBombLit   = "big_bomb_lit"

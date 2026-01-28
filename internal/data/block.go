@@ -52,6 +52,7 @@ const (
 	BlockDisguise
 	BlockDrill
 	BlockFlamethrower
+	BlockGoopBucket
 
 	BlockBigBomb
 	BlockBigBombLit
@@ -141,6 +142,8 @@ func (b Block) String() string {
 		return constants.ItemDrill
 	case BlockFlamethrower:
 		return constants.ItemFlamethrower
+	case BlockGoopBucket:
+		return constants.ItemGoopBucket
 	case BlockBigBomb:
 		return constants.ItemBigBomb
 	case BlockBigBombLit:
@@ -225,6 +228,12 @@ func (b Block) SpriteString() string {
 			colSuffixKey = constants.SprColorGray
 		case NonPlayerCyan:
 			colSuffixKey = constants.SprColorCyan
+		case NonPlayerLime:
+			colSuffixKey = constants.SprColorLime
+		case NonPlayerPink:
+			colSuffixKey = constants.SprColorPink
+		case NonPlayerBurnt:
+			colSuffixKey = constants.SprColorBurnt
 		case NonPlayerRed:
 			colSuffixKey = constants.SprColorRed
 			colSuffixTrans = constants.SprColorRed
@@ -285,6 +294,8 @@ func (b Block) SpriteString() string {
 		return constants.ItemDrill + colSuffixTools
 	case BlockFlamethrower:
 		return constants.ItemFlamethrower + colSuffixTools
+	case BlockGoopBucket:
+		return constants.ItemGoopBucket + colSuffixTools
 	case BlockBigBomb:
 		return constants.ItemBigBomb + colSuffixTools
 	case BlockSmallBomb:
@@ -335,6 +346,7 @@ var toID = map[string]Block{
 	constants.ItemDisguise:          BlockDisguise,
 	constants.ItemDrill:             BlockDrill,
 	constants.ItemFlamethrower:      BlockFlamethrower,
+	constants.ItemGoopBucket:        BlockGoopBucket,
 	"bomb":                          BlockBigBomb,
 	"bomb_lit":                      BlockBigBombLit,
 	constants.ItemBigBomb:           BlockBigBomb,

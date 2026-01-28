@@ -93,13 +93,12 @@ func NewSimple(anim *Anim) *Tree {
 	t := &Tree{
 		Elements: map[string]*Anim{},
 		update:   true,
-		Default:  anim.Key,
 	}
 	t.AddAnimation(anim)
 	t.SetChooseFn(func() string {
 		return anim.Key
 	})
-	t.Update()
+	t.update = true
 	return t
 }
 
@@ -117,7 +116,7 @@ func (t *Tree) SetDefault(def string) *Tree {
 }
 
 func (t *Tree) Finish() *Tree {
-	t.Update()
+	t.update = true
 	return t
 }
 

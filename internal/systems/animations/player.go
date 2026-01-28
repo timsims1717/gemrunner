@@ -37,14 +37,16 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	landingFrames := []int{5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 7}
 	landing := reanimator.NewBatchAnimationCustom("landing", batch, fmt.Sprintf("%s_regen", sprPre), landingFrames, reanimator.Tran)
 
-	leapOnI := []int{1, 2}
-	leapOffI := []int{2, 0, 1, 2}
-	leapToI := []int{2, 0, 1, 2, 2}
-	leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
+	//leapOnI := []int{1, 2}
+	//leapOffI := []int{2, 0, 1, 2}
+	//leapToI := []int{2, 0, 1, 2, 2}
+	//leapOn := reanimator.NewBatchAnimationCustom("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), leapOnI, reanimator.Tran)
+	//leapOff := reanimator.NewBatchAnimationCustom("leap_off", batch, fmt.Sprintf("%s_leap", sprPre), leapOffI, reanimator.Tran)
+	//leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
 
-	leapOff := reanimator.NewBatchAnimationCustom("leap_off", batch, fmt.Sprintf("%s_leap", sprPre), leapOffI, reanimator.Tran)
-
-	leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
+	leapOn := reanimator.NewBatchAnimation("leap_on", batch, fmt.Sprintf("%s_leap", sprPre), reanimator.Tran)
+	leapOff := reanimator.NewBatchAnimation("leap_off", batch, fmt.Sprintf("%s_leap_off", sprPre), reanimator.Tran)
+	//leapTo := reanimator.NewBatchAnimationCustom("leap_to", batch, fmt.Sprintf("%s_leap", sprPre), leapToI, reanimator.Tran)
 
 	throw := reanimator.NewBatchAnimation("throw", batch, fmt.Sprintf("%s_throw", sprPre), reanimator.Tran)
 
@@ -73,6 +75,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 
 	flameframes := []int{0, 1, 2, 3, 3, 2, 1, 0}
 	flamethrower := reanimator.NewBatchAnimationCustom("flamethrower", batch, fmt.Sprintf("%s_flamethrower", sprPre), flameframes, reanimator.Loop)
+
+	goopThrow := reanimator.NewBatchAnimation("goop_throw", batch, fmt.Sprintf("%s_goop_throw", sprPre), reanimator.Tran)
 
 	hiding := reanimator.NewBatchAnimation("hiding", batch, fmt.Sprintf("%s_hiding", sprPre), reanimator.Tran)
 	inHiding := reanimator.NewBatchSprite("in_hiding", batch, fmt.Sprintf("%s_in_hiding", sprPre), reanimator.Hold)
@@ -120,6 +124,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Flags.Landing = false
 		})
 		leapOn.SetEndTrigger(func() {
+			ch.Flags.LeapTo = false
 			ch.Flags.LeapOn = false
 			ch.ACounter = 0
 		})
@@ -127,11 +132,14 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			ch.Flags.LeapOff = false
 			ch.ACounter = 0
 		})
-		leapTo.SetEndTrigger(func() {
-			ch.Flags.LeapTo = false
-			ch.ACounter = 0
-		})
+		//leapTo.SetEndTrigger(func() {
+		//	ch.Flags.LeapTo = false
+		//	ch.ACounter = 0
+		//})
 		throw.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+		})
+		goopThrow.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
 		})
 		donDisguise.SetEndTrigger(func() {
@@ -210,6 +218,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	drillStart.Offset.Y--
 	drilling.Offset.Y--
 	flamethrower.Offset.Y--
+	goopThrow.Offset.Y--
 	hit.Offset.Y--
 
 	tree := reanimator.New().
@@ -228,7 +237,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(bar).
 		AddAnimation(leapOn).
 		AddAnimation(leapOff).
-		AddAnimation(leapTo).
+		//AddAnimation(leapTo).
 		AddAnimation(throw).
 		AddAnimation(jetpack).
 		AddAnimation(jetpackUp).
@@ -237,6 +246,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(drillStart).
 		AddAnimation(drilling).
 		AddAnimation(flamethrower).
+		AddAnimation(goopThrow).
 		AddAnimation(hiding).
 		AddAnimation(inHiding).
 		AddAnimation(hit).
@@ -297,6 +307,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "hiding"
 				case data.FireFlamethrower:
 					return "flamethrower"
+				case data.ThrowingGoop:
+					return "goop_throw"
 				case data.TransportIn:
 					return "trans_in"
 				case data.TransportExit:
@@ -344,10 +356,10 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			case data.Leaping:
 				if ch.Flags.LeapOff {
 					return "leap_off"
-				} else if ch.Flags.LeapOn {
+				} else if ch.Flags.LeapOn || ch.Flags.LeapTo {
 					return "leap_on"
-				} else if ch.Flags.LeapTo {
-					return "leap_to"
+					//} else if ch.Flags.LeapTo {
+					//	return "leap_to"
 				}
 			}
 			return "fall"

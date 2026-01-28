@@ -108,6 +108,7 @@ var EditorDialogs = []string{
 	DialogBarrier,
 	DialogCrackedTiles,
 	DialogBomb,
+	DialogItemOptions,
 	DialogPalette,
 	DialogEditorPanelLeft,
 	DialogEditorPanelTop,

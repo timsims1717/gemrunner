@@ -85,6 +85,12 @@ func OnConfirmPaletteOptions() {
 					data.Editor.PaletteColor = data.NonPlayerGray
 				case "cyan_check_color":
 					data.Editor.PaletteColor = data.NonPlayerCyan
+				case "lime_check_color":
+					data.Editor.PaletteColor = data.NonPlayerLime
+				case "pink_check_color":
+					data.Editor.PaletteColor = data.NonPlayerPink
+				case "burnt_check_color":
+					data.Editor.PaletteColor = data.NonPlayerBurnt
 				case "blue_check_color":
 					data.Editor.PaletteColor = data.PlayerBlue
 				case "green_check_color":

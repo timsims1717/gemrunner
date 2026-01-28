@@ -49,7 +49,7 @@ func CharacterStateSystem() {
 					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 						ch.State = data.OnLadder
 						ch.Object.Pos.X = tile.Object.Pos.X
-					} else if !ch.Flags.Floor && below != nil && !below.IsLadder() {
+					} else if !ch.Flags.Floor && (below != nil || data.CurrLevel.Continuity) && !below.IsLadder() {
 						if ch.Enemy > -1 && below.Block == data.BlockTurf && below.Flags.Collapse {
 							ch.State = data.Tripping
 							if ch.Object.Flip {
@@ -61,7 +61,9 @@ func CharacterStateSystem() {
 							ch.NextTile.Flags.Occupied = true
 						} else {
 							ch.State = data.Falling
-							ch.Object.Pos.X = tile.Object.Pos.X
+							if tile != nil {
+								ch.Object.Pos.X = tile.Object.Pos.X
+							}
 						}
 					}
 				case data.OnLadder:
@@ -165,6 +167,7 @@ func CharacterStateSystem() {
 						tile.Block == data.BlockTurf &&
 						tile.Flags.Collapse && ch.Enemy > -1 {
 						ch.State = data.InHole
+						ch.ACounter = 0
 						tile.Flags.Occupied = true
 						ch.NextTile = tile
 						ch.Object.Pos = tile.Object.Pos
@@ -264,6 +267,15 @@ func CharacterStateSystem() {
 				case data.Tripping:
 					if tile.Coords == ch.NextTile.Coords {
 						DropItem(ch)
+						if !tile.Flags.Collapse {
+							ch.Object.Pos.X = tile.Object.Pos.X
+							ch.Object.Pos.Y = tile.Object.Pos.Y
+							ch.Flags.Death = death.Crushed
+							ch.State = data.Hit
+							if !ch.Flags.Ignore {
+								sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
+							}
+						}
 					}
 					if ch.Flags.NextStep {
 						ch.State = data.InHole
@@ -274,11 +286,11 @@ func CharacterStateSystem() {
 					if ch.Flags.NextStep {
 						ch.State = data.ClimbingOut
 					} else if ch.ACounter > constants.DemonInHoleCounter {
-						if above := data.CurrLevel.Get(x, y+1); !above.Flags.Collapse {
-							if aboveL := data.CurrLevel.Get(x-1, y+1); !aboveL.Flags.Collapse &&
+						if above := data.CurrLevel.Get(x, y+1); !above.IsSolidPath() && !above.IsSolid() {
+							if aboveL := data.CurrLevel.Get(x-1, y+1); !aboveL.IsSolidPath() && !aboveL.IsSolid() &&
 								ch.Actions.Left() {
 								ch.Flags.JumpL = true
-							} else if aboveR := data.CurrLevel.Get(x+1, y+1); !aboveR.Flags.Collapse &&
+							} else if aboveR := data.CurrLevel.Get(x+1, y+1); !aboveR.IsSolidPath() && !aboveR.IsSolid() &&
 								ch.Actions.Right() {
 								ch.Flags.JumpR = true
 							}
@@ -322,6 +334,8 @@ func CharacterStateSystem() {
 					ch.Flags.Flying = false
 					ch.Flags.NextStep = false
 					ch.Flags.Death = death.None
+					ch.ACounter = 0
+					ch.Control.ClearPrev()
 					sfx.SoundPlayer.KillSound(ch.SFX)
 					if ch.Enemy > -1 && ch.Options.Regen {
 						var t *data.Tile
@@ -365,6 +379,7 @@ func CharacterStateSystem() {
 				if ch.State != data.Dead &&
 					ch.State != data.Hit &&
 					ch.State != data.Attack &&
+					ch.State != data.Tripping &&
 					ch.State != data.DoingAction {
 					if ch.Actions.PickUp {
 						if ch.Player > -1 {
@@ -419,7 +434,7 @@ func CharacterStateSystem() {
 }
 
 func OutsideMapSystem() {
-	if reanimator.FrameSwitch && data.CurrLevel != nil && data.CurrLevel.Continuity {
+	if reanimator.FrameSwitch && data.CurrLevel != nil {
 		for _, result := range myecs.Manager.Query(myecs.IsCharacter) {
 			_, okO := result.Components[myecs.Object].(*object.Object)
 			ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
@@ -432,7 +447,7 @@ func OutsideMapSystem() {
 						lastTile := ch.LastTile
 						if lastTile != nil {
 							if x < lastTile.Coords.X {
-								if t, ok := lastTile.Transitions[data.Left]; ok {
+								if t, ok := lastTile.Transitions[data.Left]; ok && (t.Complete || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -440,7 +455,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if x > lastTile.Coords.X {
-								if t, ok := lastTile.Transitions[data.Right]; ok {
+								if t, ok := lastTile.Transitions[data.Right]; ok && (t.Complete || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -448,7 +463,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if y < lastTile.Coords.Y {
-								if t, ok := lastTile.Transitions[data.Down]; ok {
+								if t, ok := lastTile.Transitions[data.Down]; ok && (t.Complete || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -456,7 +471,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if y > lastTile.Coords.Y {
-								if t, ok := lastTile.Transitions[data.Up]; ok {
+								if t, ok := lastTile.Transitions[data.Up]; ok && (t.Complete || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex

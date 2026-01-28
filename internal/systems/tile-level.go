@@ -31,6 +31,8 @@ func TileSystem() {
 						tile.Flags.Collapse = false
 						tile.Flags.Cracked = false
 						tile.Counter = 0
+						// Remove any lingering crushed characters here
+						RemoveCharacters(tile)
 					}
 				} else if tile.Flags.Collapse && tile.Block != data.BlockClose { // this tile has collapsed
 					if reanimator.FrameSwitch {
@@ -96,7 +98,7 @@ func TileSystem() {
 							}
 						}
 					} else {
-						if tile.Counter > constants.CrackedCounter {
+						if tile.Counter > constants.FangsCounter {
 							tile.Flags.Collapse = false
 							tile.Flags.BareFangs = false
 							tile.Flags.Regen = true
@@ -337,6 +339,23 @@ func CrushCharacters(tile *data.Tile) {
 				if !ch.Flags.Ignore {
 					sfx.SoundPlayer.PlaySound(constants.SFXCrush, 0.)
 				}
+			}
+		}
+	}
+	tile.Flags.Occupied = false
+}
+
+func RemoveCharacters(tile *data.Tile) {
+	// Remove any crushed characters here
+	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
+		_, okCO := resultC.Components[myecs.Object].(*object.Object)
+		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
+		if okCO && okC && ch.State != data.Dead {
+			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+			chTile := data.CurrLevel.Get(x, y)
+			if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+				(chTile.Coords.Y == tile.Coords.Y) {
+				ch.Flags.Death = death.None
 			}
 		}
 	}
