@@ -109,12 +109,14 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 	e := myecs.Manager.NewEntity()
 	gem := &data.BasicItem{
 		Name:     "Gem",
+		Key:      key,
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
 		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
 		Entity:   e,
 		Metadata: tile.Metadata,
 		Origin:   tile.Coords,
+		Layer:    11,
 	}
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
@@ -141,12 +143,16 @@ func CollectGem(color data.ItemColor, c world.Coords) *data.Interact {
 }
 
 func CreateDoor(pos pixel.Vec, tile *data.Tile) {
-	obj := object.New().WithID(tile.SpriteString())
+	key := tile.SpriteString()
+	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 8, 8))
 	obj.Layer = 9
 	door := &data.Door{
-		Item: &data.BasicItem{},
+		Item: &data.BasicItem{
+			Key:   key,
+			Layer: 9,
+		},
 	}
 	door.Item.Object = obj
 	door.Item.Color = tile.Metadata.Color
@@ -158,18 +164,19 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 		door.DoorType = data.Hidden
 	case data.BlockDoorVisible:
 		door.DoorType = data.Hidden
-		e.AddComponent(myecs.Drawable, img.NewSprite(tile.SpriteString(), constants.TileBatch))
+		e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
 	case data.BlockDoorLocked:
 		door.DoorType = data.Locked
-		e.AddComponent(myecs.Drawable, img.NewSprite(tile.SpriteString(), constants.TileBatch))
+		e.AddComponent(myecs.Drawable, img.NewSprite(key, constants.TileBatch))
 	}
-	var interaction *data.Interact
-	switch door.Item.Color {
-	case data.PlayerBlue, data.PlayerGreen, data.PlayerPurple, data.PlayerOrange:
-		interaction = EnterPlayerDoor(door.Item.Color, tile.Metadata.ExitIndex)
-	default:
-		interaction = EnterDoor(tile.Metadata.ExitIndex)
-	}
+	interaction := EnterDoor(door.Item.Color, tile.Metadata.ExitIndex)
+	//var interaction *data.Interact
+	//switch door.Item.Color {
+	//case data.PlayerBlue, data.PlayerGreen, data.PlayerPurple, data.PlayerOrange:
+	//	interaction = EnterPlayerDoor(door.Item.Color, tile.Metadata.ExitIndex)
+	//default:
+	//	interaction = EnterDoor(tile.Metadata.ExitIndex)
+	//}
 	door.Item.Entity = e
 	var anim *reanimator.Anim
 	if door.DoorType == data.Locked {
@@ -215,9 +222,23 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.LvlElement, struct{}{})
 }
 
-func EnterDoor(exitIndex int) *data.Interact {
+//func EnterPlayerDoor(exitIndex int) *data.Interact {
+//	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+//		if p < 0 || p >= constants.MaxPlayers {
+//			return
+//		}
+//		data.CurrLevelSess.PlayerStats[p].LScore += 12
+//		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
+//		data.CurrLevel.Open = true
+//		data.CurrLevel.ExitIndex = exitIndex
+//	})
+//}
+
+func EnterDoor(color data.ItemColor, exitIndex int) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if p < 0 || p >= constants.MaxPlayers {
+		if p < 0 || p >= constants.MaxPlayers ||
+			(color > data.NonPlayerRed && ch.Color != color) ||
+			ch.Actions.Direction != data.Up {
 			return
 		}
 		data.CurrLevelSess.PlayerStats[p].LScore += 12
@@ -227,33 +248,23 @@ func EnterDoor(exitIndex int) *data.Interact {
 	})
 }
 
-func EnterPlayerDoor(color data.ItemColor, exitIndex int) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if p < 0 || p >= constants.MaxPlayers || ch.Color != color {
-			return
-		}
-		data.CurrLevelSess.PlayerStats[p].LScore += 12
-		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
-		data.CurrLevel.Complete = true
-		data.CurrLevel.ExitIndex = exitIndex
-	})
-}
-
-func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateJumpBoots(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	jumpBoots := &data.BasicItem{
 		Name:     "Jump Boots",
+		Key:      key,
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	jumpBoots.Metadata = data.CopyMetadata(metadata)
 	jumpBoots.Metadata.Timer = -1
 	jumpBoots.Action = Jump()
 	e.AddComponent(myecs.Object, obj)
@@ -265,6 +276,7 @@ func CreateJumpBoots(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Item, jumpBoots)
 	DefaultRegen(jumpBoots)
 	DefaultAnim(jumpBoots)
+	return jumpBoots
 }
 
 func Jump() *data.Interact {
@@ -312,8 +324,7 @@ func Jump() *data.Interact {
 	})
 }
 
-func CreateBox(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateBox(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
@@ -322,13 +333,16 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	e := myecs.Manager.NewEntity()
 	box := &data.BasicItem{
 		Name:     "Box",
+		Key:      key,
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	box.Metadata = data.CopyMetadata(metadata)
 	box.Metadata.Timer = -1
 	e.AddComponent(myecs.Object, box.Object)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -340,13 +354,15 @@ func CreateBox(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.Action, data.NewInteract(BoxAction))
 	e.AddComponent(myecs.LvlElement, box)
 	e.AddComponent(myecs.Item, box)
-	dyn := data.NewDynamic(tile)
+	dyn := data.NewDynamic()
+	dyn.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
 	dyn.Object = obj
 	dyn.Entity = e
 	dyn.Flags.NoLadders = true
 	e.AddComponent(myecs.Dynamic, dyn)
 	DefaultRegen(box)
 	DefaultAnim(box)
+	return box
 }
 
 func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
@@ -399,23 +415,26 @@ func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	}
 }
 
-func CreateKey(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateKey(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 8, 14))
 	obj.Layer = 14
-	color := tile.Metadata.Color
+	color := metadata.Color
 	theKey := &data.BasicItem{
 		Name:   fmt.Sprintf("Key (%s)", color),
+		Key:    key,
 		Object: obj,
 		Sprite: img.NewSprite(key, constants.TileBatch),
-		PickUp: data.NewPickUp(5, tile.Metadata.Color),
+		PickUp: data.NewPickUp(5, metadata.Color),
 		Action: KeyAction(color),
 		Color:  color,
-		Origin: tile.Coords,
+		Origin: coords,
+		Layer:  14,
 	}
+	theKey.Metadata = data.CopyMetadata(metadata)
 	theKey.Metadata.Timer = -1
+	theKey.Metadata.Regenerate = false
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
@@ -425,9 +444,9 @@ func CreateKey(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.LvlElement, theKey)
 	e.AddComponent(myecs.Item, theKey)
 	theKey.Entity = e
-	theKey.Metadata.Regenerate = true
 	DefaultRegen(theKey)
 	DefaultAnim(theKey)
+	return theKey
 }
 
 func KeyAction(color data.ItemColor) *data.Interact {
@@ -459,20 +478,22 @@ func KeyUnlock(chPos pixel.Vec, color data.ItemColor) bool {
 	return false
 }
 
-func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateJetpack(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	jetpack := &data.BasicItem{
 		Name:     "Jetpack",
+		Key:      key,
 		Object:   obj,
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	jetpack.Metadata = data.CopyMetadata(metadata)
 	jetpack.Action = JetpackAction(jetpack)
 	jpa := reanimator.NewBatchAnimation("jetpack", img.Batchers[constants.TileBatch], key, reanimator.Loop)
 	jpr := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "jetpack_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6}, reanimator.Tran)
@@ -514,6 +535,7 @@ func CreateJetpack(pos pixel.Vec, tile *data.Tile) {
 			}
 		}
 	}))
+	return jetpack
 }
 
 func JetpackAction(jetpack *data.BasicItem) *data.Interact {
@@ -608,22 +630,24 @@ func JetpackAction(jetpack *data.BasicItem) *data.Interact {
 	})
 }
 
-func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateDisguise(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
-	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	disguise := &data.Disguise{
 		Item: &data.BasicItem{
 			Name:     "Disguise",
+			Key:      key,
 			Object:   obj,
-			PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+			PickUp:   data.NewPickUp(5, metadata.Color),
 			Entity:   e,
-			Metadata: tile.Metadata,
-			Origin:   tile.Coords,
+			Metadata: metadata,
+			Origin:   coords,
+			Layer:    12,
 		},
 	}
+	obj.Layer = disguise.Item.Layer
+	disguise.Item.Metadata = data.CopyMetadata(metadata)
 	disguise.Item.Action = DonDisguise(disguise)
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "disguise_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
@@ -689,6 +713,7 @@ func CreateDisguise(pos pixel.Vec, tile *data.Tile) {
 			}
 		}
 	}))
+	return disguise.Item
 }
 
 func DonDisguise(disguise *data.Disguise) *data.Interact {
@@ -781,21 +806,23 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 	})
 }
 
-func CreateDrill(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateDrill(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	drill := &data.BasicItem{
 		Name:     "Drill",
+		Key:      key,
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	drill.Metadata = data.CopyMetadata(metadata)
 	drill.Metadata.Timer = -1
 	drill.Action = UseDrill(drill)
 	e.AddComponent(myecs.Object, obj)
@@ -806,6 +833,7 @@ func CreateDrill(pos pixel.Vec, tile *data.Tile) {
 	e.AddComponent(myecs.LvlElement, drill)
 	e.AddComponent(myecs.Item, drill)
 	DefaultRegen(drill)
+	return drill
 }
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
@@ -851,20 +879,22 @@ func UseDrill(drill *data.BasicItem) *data.Interact {
 	})
 }
 
-func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateFlamethrower(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	flamethrower := &data.BasicItem{
 		Name:     "Flamethrower",
+		Key:      key,
 		Object:   obj,
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	flamethrower.Metadata = data.CopyMetadata(metadata)
 	flamethrower.Action = FlamethrowerAction(flamethrower)
 	fta := reanimator.NewBatchAnimation("flamethrower", img.Batchers[constants.TileBatch], key, reanimator.Loop)
 	ftr := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], "flamethrower_regen", []int{0, 1, 2, 3, 3, 4, 5, 6, 6}, reanimator.Tran)
@@ -906,6 +936,7 @@ func CreateFlamethrower(pos pixel.Vec, tile *data.Tile) {
 			}
 		}
 	}))
+	return flamethrower
 }
 
 func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
@@ -1116,21 +1147,23 @@ func CreateFlames(firstTile, secondTile, thirdTile *data.Tile, flip bool) {
 	}
 }
 
-func CreateGoopBucket(pos pixel.Vec, tile *data.Tile) {
-	key := tile.SpriteString()
+func CreateGoopBucket(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Layer = 12
 	e := myecs.Manager.NewEntity()
 	goopBucket := &data.BasicItem{
 		Name:     "Goop Bucket",
+		Key:      key,
 		Object:   obj,
 		Sprite:   img.NewSprite(key, constants.TileBatch),
-		PickUp:   data.NewPickUp(5, tile.Metadata.Color),
+		PickUp:   data.NewPickUp(5, metadata.Color),
 		Entity:   e,
-		Metadata: tile.Metadata,
-		Origin:   tile.Coords,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
 	}
+	goopBucket.Metadata = data.CopyMetadata(metadata)
 	goopBucket.Action = GoopBucketAction(goopBucket)
 
 	e.AddComponent(myecs.Object, obj)
@@ -1156,6 +1189,7 @@ func CreateGoopBucket(pos pixel.Vec, tile *data.Tile) {
 			}
 		}
 	}))
+	return goopBucket
 }
 
 func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
@@ -1309,7 +1343,8 @@ func CreateFallingGoop(tile *data.Tile, flip bool) {
 	obj.Pos = tile.Object.Pos
 	obj.SetRect(pixel.R(0, 0, 16, 16))
 	obj.Flip = flip
-	d := data.NewDynamic(tile)
+	d := data.NewDynamic()
+	d.LastTile = tile
 	e := myecs.Manager.NewEntity()
 	fall := reanimator.NewBatchAnimation("goop_fall", img.Batchers[constants.TileBatch], "goop_fall", reanimator.Loop)
 	land := reanimator.NewBatchAnimation("goop_land", img.Batchers[constants.TileBatch], "goop_land", reanimator.Tran)
@@ -1360,8 +1395,8 @@ func CreateFallingGoop(tile *data.Tile, flip bool) {
 	}))
 }
 
-func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
-	obj := object.New().WithID(tile.SpriteString())
+func CreateTransporter(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
+	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 8, 8))
 	obj.Layer = 9
@@ -1369,17 +1404,20 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 	trans := &data.Transporter{
 		Item: &data.BasicItem{
 			Name:     "Transporter",
+			Key:      key,
 			Object:   obj,
-			Sprite:   img.NewSprite(tile.SpriteString(), constants.TileBatch),
+			Sprite:   img.NewSprite(key, constants.TileBatch),
 			Entity:   e,
-			Color:    tile.Metadata.Color,
-			Metadata: tile.Metadata,
-			Origin:   tile.Coords,
+			Color:    metadata.Color,
+			Metadata: metadata,
+			Origin:   coords,
+			Layer:    9,
 		},
 	}
+	trans.Item.Metadata = data.CopyMetadata(metadata)
 
-	if len(tile.Metadata.LinkedTiles) > 0 {
-		trans.Dest = data.CurrLevel.Get(tile.Metadata.LinkedTiles[0].X, tile.Metadata.LinkedTiles[0].Y)
+	if len(metadata.LinkedTiles) > 0 {
+		trans.Dest = data.CurrLevel.Get(metadata.LinkedTiles[0].X, metadata.LinkedTiles[0].Y)
 	}
 	if trans.Dest != nil && trans.Dest.Block != data.BlockTransporterExit {
 		trans.Dest = nil
@@ -1424,6 +1462,7 @@ func CreateTransporter(pos pixel.Vec, tile *data.Tile) {
 		e.AddComponent(myecs.OnTouch, trans.Item.Action)
 	}
 	e.AddComponent(myecs.LvlElement, trans)
+	return trans.Item
 }
 
 func EnterTransporter(trans *data.Transporter) *data.Interact {

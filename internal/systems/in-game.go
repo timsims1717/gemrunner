@@ -34,6 +34,9 @@ func InGameSystem() {
 		data.CurrLevel.DoorsOpen = len(myecs.Manager.Query(myecs.IsGem)) < 1
 		if data.CurrLevel.DoorsOpen {
 			sfx.SoundPlayer.PlaySound(constants.SFXDoorsOpen, 0.)
+			if data.CurrLevelSess.Metadata.Continuity != data.NoContinuity {
+				data.CurrLevel.Continuity = true
+			}
 		}
 	}
 	if data.CurrLevel.FakePlayer != nil && debug.ShowDebug {
@@ -189,6 +192,7 @@ func UpdatePlayerInv() {
 						ele.Object.Hidden = true
 						ele.Sprite.Key = ""
 					} else {
+						ele.Object.Hidden = true
 						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
 							if sa, okSA := draw.([]interface{}); okSA && len(sa) > 1 {
 								if saSpr, ok2 := sa[1].(*img.Sprite); ok2 {

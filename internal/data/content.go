@@ -101,7 +101,7 @@ type Player struct {
 type Continuity int
 
 const (
-	ContinuityOnComplete = iota
+	ContinuityOnDoorsOpen = iota
 	NoContinuity
 	ContinuityAlwaysOn
 )

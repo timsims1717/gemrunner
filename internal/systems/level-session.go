@@ -54,3 +54,7 @@ func LevelSessionInit() {
 func LevelSessionDispose() {
 	data.CurrLevelSess = nil
 }
+
+func LevelTransitionSystem() {
+
+}

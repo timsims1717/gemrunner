@@ -4,10 +4,12 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/content"
 	"gemrunner/internal/data"
+	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
 	"time"
 )
@@ -55,19 +57,35 @@ func PlaySystem() {
 		data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex] = data.LevelCompletion{
 			Index:         data.CurrLevelSess.PuzzleIndex,
 			GemsCollected: data.CurrLevelSess.GemsCollected,
-			Completed:     true,
+			Completed:     data.CurrLevel.DoorsOpen,
 			Continuity:    data.CurrLevelSess.PuzzleSet.Metadata.Adventure && data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity,
 		}
 		if data.CurrLevel.Recording && data.CurrLevel.SaveRecord {
 			go content.SaveReplay(data.CurrLevel.LevelReplay)
 		}
-		UpdateScore()
-		if data.CurrLevel.ExitIndex == -1 {
-			data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
-			GoToLevel(data.CurrLevelSess.PuzzleIndex + 1)
+		UpdateScoreAndInv()
+		data.CurrLevelSess.LastPuzzle = data.CurrLevelSess.PuzzleIndex
+		data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
+		exitIndex := data.CurrLevel.ExitIndex
+		if exitIndex == -1 {
+			exitIndex = data.CurrLevelSess.PuzzleIndex + 1
+		}
+
+		if data.CurrLevelSess.PuzzleSet.Metadata.Adventure {
+			next := data.CurrLevelSess.PuzzleSet.Puzzles[exitIndex]
+			if next.Grid == data.CurrLevel.Puzzle.Grid {
+				// go to the same puzzle
+				GoToLevel(exitIndex)
+			} else if util.Abs(next.Grid.X-data.CurrLevel.Puzzle.Grid.X)+
+				util.Abs(next.Grid.Y-data.CurrLevel.Puzzle.Grid.Y) == 1 {
+				// next puzzle is next to this one
+				GoToLevel(exitIndex)
+			} else {
+				// next puzzle is "far away"
+				ui.OpenDialogInStack(constants.DialogAdventureTrans)
+			}
 		} else {
-			data.CurrLevelSess.StartCoords = data.CurrLevel.StartCoords
-			GoToLevel(data.CurrLevel.ExitIndex)
+			GoToLevel(exitIndex)
 		}
 	}
 }
@@ -127,15 +145,27 @@ func DropScore() {
 	data.CurrLevelSess.GemsCollected = []world.Coords{}
 }
 
-func UpdateScore() {
+func UpdateScoreAndInv() {
 	data.CurrLevelSess.TotalTime = data.CurrLevelSess.TotalTime + data.CurrLevelSess.TimePlayed
 	data.CurrLevelSess.LevelStart = time.Now()
-	for _, stats := range data.CurrLevelSess.PlayerStats {
+	for i, stats := range data.CurrLevelSess.PlayerStats {
 		if stats != nil {
 			stats.Score += stats.LScore
 			stats.Gems += stats.LGems
 			stats.LScore = 0
 			stats.LGems = 0
+		}
+		if p := data.CurrLevel.Players[i]; p != nil {
+			stats.CurrBombs = p.SmallBombs
+			if p.Inventory != nil {
+				stats.Inventory = p.Inventory
+				stats.Inventory.Entity.RemoveComponent(myecs.Temp)
+			} else {
+				if stats.Inventory != nil && stats.Inventory.Entity != nil {
+					stats.Inventory.Entity.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+				}
+				stats.Inventory = nil
+			}
 		}
 	}
 	data.CurrLevelSess.GemsCollected = []world.Coords{}

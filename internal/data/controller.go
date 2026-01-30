@@ -54,19 +54,19 @@ func NewAction() Actions {
 }
 
 func (a Actions) Up() bool {
-	return a.Direction == Up || (a.PrevDirection == Up && a.Direction != Down)
+	return a.Direction == Up || (a.PrevDirection == Up && a.Direction != Down && a.Direction != NoDirection)
 }
 
 func (a Actions) Down() bool {
-	return a.Direction == Down || (a.PrevDirection == Down && a.Direction != Up)
+	return a.Direction == Down || (a.PrevDirection == Down && a.Direction != Up && a.Direction != NoDirection)
 }
 
 func (a Actions) Left() bool {
-	return a.Direction == Left || (a.PrevDirection == Left && a.Direction != Right)
+	return a.Direction == Left || (a.PrevDirection == Left && a.Direction != Right && a.Direction != NoDirection)
 }
 
 func (a Actions) Right() bool {
-	return a.Direction == Right || (a.PrevDirection == Right && a.Direction != Left)
+	return a.Direction == Right || (a.PrevDirection == Right && a.Direction != Left && a.Direction != NoDirection)
 }
 
 func (a Actions) Any() bool {

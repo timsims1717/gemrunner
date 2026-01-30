@@ -29,6 +29,7 @@ var (
 	CurrLevel     *Level
 	CurrPuzzleSet *PuzzleSet
 	CurrReplay    *LevelReplay
+	LevelTrans    bool
 
 	CurrSelect *Selection
 	ClipSelect *Selection
@@ -51,6 +52,7 @@ type LevelSession struct {
 	TimePlayed   time.Duration `json:"-"`
 	TotalTime    time.Duration `json:"totalTime"`
 	PuzzleIndex  int           `json:"puzzleIndex"`
+	LastPuzzle   int           `json:"lastPuzzle"`
 	StartCoords  *world.Coords `json:"startCoords"`
 	PuzzleFile   string        `json:"puzzleFile"`
 	Filename     string        `json:"filename"`
@@ -104,7 +106,7 @@ type Level struct {
 }
 
 type LevelTransition struct {
-	Complete  bool
+	Open      bool
 	ExitIndex int
 	ExitTile  world.Coords
 }

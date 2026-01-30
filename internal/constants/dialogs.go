@@ -8,13 +8,14 @@ const (
 
 	DialogOptions = "options_menu"
 
-	DialogPauseMenu   = "pause_menu"
-	DialogPlayer1Inv  = "player1_inv"
-	DialogPlayer2Inv  = "player2_inv"
-	DialogPlayer3Inv  = "player3_inv"
-	DialogPlayer4Inv  = "player4_inv"
-	DialogPuzzleTitle = "puzzle_title"
-	DialogPuzzleTimer = "puzzle_timer"
+	DialogPauseMenu      = "pause_menu"
+	DialogPlayer1Inv     = "player1_inv"
+	DialogPlayer2Inv     = "player2_inv"
+	DialogPlayer3Inv     = "player3_inv"
+	DialogPlayer4Inv     = "player4_inv"
+	DialogPuzzleTitle    = "puzzle_title"
+	DialogPuzzleTimer    = "puzzle_timer"
+	DialogAdventureTrans = "adventure_set_transition"
 )
 
 // Editor Dialogs
@@ -58,6 +59,7 @@ var DialogKeys = []string{
 	DialogPlayer4Inv,
 	DialogPuzzleTitle,
 	DialogPuzzleTimer,
+	DialogAdventureTrans,
 
 	DialogPlayLocal,
 

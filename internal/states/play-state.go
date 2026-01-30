@@ -143,7 +143,9 @@ func (s *playState) Update(win *pixelgl.Window) {
 		systems.FloatingTextSystem()
 		systems.AnimationSystem()
 	} else {
-
+		if data.LevelTrans {
+			systems.LevelTransitionSystem()
+		}
 	}
 	// object systems
 	systems.ParentSystem()

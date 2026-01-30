@@ -103,6 +103,9 @@ func PickUpAndDropItem(ch *data.Dynamic, p int) {
 	}
 	if item != nil {
 		ch.Inventory = item
+		if item.Object.Layer != item.Layer {
+			item.Object.Layer = item.Layer
+		}
 		sfx.SoundPlayer.PlaySound(constants.SFXItem, 0.)
 	}
 }
@@ -187,7 +190,9 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 				}
 				if sideTile != nil && digTile != nil {
 					if !sideTile.IsLadder() && !sideTile.IsSolid() &&
-						sideTile.Block != data.BlockBar && digTile.CanDig() {
+						sideTile.Block != data.BlockHideout &&
+						sideTile.Block != data.BlockBar &&
+						digTile.CanDig() {
 						// set action
 						ch.State = data.DoingAction
 						ch.Flags.ItemAction = data.MagicDig

@@ -3,14 +3,12 @@ package states
 import (
 	"fmt"
 	"gemrunner/internal/constants"
-	"gemrunner/internal/content"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/systems"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/debug"
 	"gemrunner/pkg/img"
-	"gemrunner/pkg/options"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/timing"
@@ -61,9 +59,25 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 		//load.ReloadDialog(dKey)
 		//systems.CustomizeMainDialog(win, dKey)
 		//systems.UpdateDialogView(ui.Dialogs[dKey])
-		constants.Configuration.Graphics.Resolution++
-		constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
-		content.UpdateConfiguration()
+
+		//constants.Configuration.Graphics.Resolution++
+		//constants.Configuration.Graphics.Resolution %= len(options.Resolutions)
+		//content.UpdateConfiguration()
+
+		//err := content.LoadReplay("Mad Monks Revenge_11_2026.01.29.11.14.15.replay")
+		//if err != nil {
+		//	panic(err)
+		//}
+		//err = systems.OpenPuzzleSet(data.CurrReplay.PuzzleSet + constants.PuzzleExt)
+		//if err != nil {
+		//	panic(err)
+		//}
+		//data.CurrPuzzleSet.SetTo(data.CurrReplay.PuzzleNum)
+		//if data.CurrPuzzleSet.Metadata.NumPlayers < 1 {
+		//	data.CurrPuzzleSet.Metadata.NumPlayers = data.CurrPuzzleSet.CurrPuzzle.NumPlayers()
+		//}
+		//systems.PuzzleInit()
+		//state.SwitchState(constants.PlayStateKey)
 	}
 	if data.DebugInput.Get("camUp").JustPressed() || data.DebugInput.Get("camUp").Repeated() {
 		data.ScreenView.CamPos.Y += 1000 * timing.DT

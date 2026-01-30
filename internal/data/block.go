@@ -317,7 +317,7 @@ func (b Block) SpriteString() string {
 	}
 }
 
-var toID = map[string]Block{
+var blockToID = map[string]Block{
 	constants.TileTurf:              BlockTurf,
 	constants.TileBedrock:           BlockBedrock,
 	constants.TileGoop:              BlockGoop,
@@ -405,11 +405,13 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 			if err != nil {
 				return err
 			}
-			*b = toID[constants.TileLadderMiddle]
+			*b = blockToID[constants.TileLadderMiddle]
+			return nil
 		}
 		*b = Block(ji)
+		return nil
 	}
-	*b = toID[j]
+	*b = blockToID[j]
 	return nil
 }
 
@@ -419,6 +421,6 @@ func (b *Block) UnmarshalJSON(bts []byte) error {
 //	if err != nil {
 //		return err
 //	}
-//	*b = toID[j]
+//	*b = blockToID[j]
 //	return nil
 //}

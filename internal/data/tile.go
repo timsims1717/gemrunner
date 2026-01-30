@@ -324,6 +324,21 @@ func (t *Tile) IsLadder() bool {
 	}
 }
 
+func (t *Tile) IsSolidLevelTrans(doorsOpen bool) bool {
+	return t == nil || (!(t.Flags.Collapse) &&
+		(t.Metadata.Buried ||
+			t.Block == BlockTurf ||
+			t.Block == BlockBedrock ||
+			t.Block == BlockFall ||
+			t.Block == BlockPhase ||
+			(t.Block == BlockBarrier && t.Metadata.Toggle == doorsOpen) ||
+			t.Block == BlockCracked ||
+			t.Block == BlockClose ||
+			t.Block == BlockSpike ||
+			t.Block == BlockGoop ||
+			(t.Block == BlockLadderExitTurf && !doorsOpen)))
+}
+
 func (t *Tile) IsPath() bool {
 	return !(t == nil ||
 		t.Block == BlockTurf ||
@@ -339,7 +354,7 @@ func (t *Tile) CanDig() bool {
 	if t == nil {
 		return false
 	}
-	return !t.Flags.Collapse && t.Block == BlockTurf
+	return !t.Flags.Collapse && (t.Block == BlockTurf || (t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen))
 }
 
 func (t *Tile) CanBeBuried() bool {
@@ -428,7 +443,7 @@ type TileMetadata struct {
 	Toggle      bool           `json:"toggle,omitempty"`
 	Changed     bool           `json:"-"`
 	ExitIndex   int            `json:"exitIndex,omitempty"`
-	Color       ItemColor      `json:"itemColor"`
+	Color       ItemColor      `json:"itemColor,omitempty"`
 }
 
 func DefaultMetadata() TileMetadata {

@@ -66,18 +66,6 @@ func (lr *LRChase) GetActions() data.Actions {
 		return actions
 	}
 	x, y := world.WorldToMap(lr.Ch.Object.Pos.X, lr.Ch.Object.Pos.Y)
-	if lr.Ch.Actions.PrevDirection == data.Up && y > lr.lastY {
-		pos := lr.Ch.Object.Pos
-		pos.Y += 0.5
-		_, dy := world.WorldToMap(lr.Ch.Object.Pos.X, lr.Ch.Object.Pos.Y)
-		if dy-1 == lr.lastY {
-			y = lr.lastY
-		} else {
-			lr.lastY = y
-		}
-	} else {
-		lr.lastY = y
-	}
 	px, py := world.WorldToMap(lr.Target.Object.Pos.X, lr.Target.Object.Pos.Y)
 	// picked a player
 	// if in hole, treat as if above current pos
@@ -137,6 +125,21 @@ func (lr *LRChase) GetActions() data.Actions {
 			}
 			return actions
 		}
+	}
+
+	// change y to previous if enemy is climbing up
+	if lr.Ch.State == data.OnLadder && !lr.Ch.Flags.Ceiling &&
+		lr.Ch.Actions.PrevDirection == data.Up && y > lr.lastY {
+		pos := lr.Ch.Object.Pos
+		pos.Y += 0.5
+		_, dy := world.WorldToMap(lr.Ch.Object.Pos.X, lr.Ch.Object.Pos.Y)
+		if dy-1 == lr.lastY {
+			y = lr.lastY
+		} else {
+			lr.lastY = y
+		}
+	} else {
+		lr.lastY = y
 	}
 
 	return lr.scanFloor(x, y, py, actions)

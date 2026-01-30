@@ -16,8 +16,10 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.LevelReplay) *data.Dynamic {
-	player := data.NewDynamic(tile)
+func PlayerCharacter(pos pixel.Vec, pIndex int, replay *data.LevelReplay) *data.Dynamic {
+	player := data.NewDynamic()
+	coords := world.NewCoords(world.WorldToMap(pos.X, pos.Y))
+	player.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
 	player.Layer = 27 - pIndex*2
 	obj := object.New().WithFixedID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
@@ -36,7 +38,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, tile *data.Tile, replay *data.Le
 	player.Flags.Regen = true
 	player.Options.Regen = true
 	player.Options.StoredCount = 12
-	player.Options.LinkedTiles = []world.Coords{world.NewCoords(world.WorldToMap(pos.X, pos.Y))}
+	player.Options.LinkedTiles = []world.Coords{coords}
 	dsg := animations.PlayerAnimation(player, "disguise", false)
 	dsg.Dependent = true
 	player.Anims.Set = append(player.Anims.Set, dsg)
@@ -91,9 +93,10 @@ func SetAsPlayer(ch *data.Dynamic, e *ecs.Entity, p int, replay *data.LevelRepla
 	data.CurrLevel.PControls[p] = ch.Control
 }
 
-func DemonCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
-	metadata := tile.Metadata
-	demon := data.NewDynamic(tile)
+func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
+	demon := data.NewDynamic()
+	coords := world.NewCoords(world.WorldToMap(pos.X, pos.Y))
+	demon.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
 	obj := object.New().WithID("demon").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	demon.Layer = 29
@@ -160,9 +163,10 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 	}
 }
 
-func FlyCharacter(pos pixel.Vec, tile *data.Tile) *data.Dynamic {
-	metadata := tile.Metadata
-	fly := data.NewDynamic(tile)
+func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
+	fly := data.NewDynamic()
+	coords := world.NewCoords(world.WorldToMap(pos.X, pos.Y))
+	fly.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
 	obj := object.New().WithID("fly").SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 12))
 	obj.Flip = metadata.Flipped

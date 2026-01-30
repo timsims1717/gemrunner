@@ -38,7 +38,7 @@ type Dynamic struct {
 	SFX *uuid.UUID
 }
 
-func NewDynamic(tile *Tile) *Dynamic {
+func NewDynamic() *Dynamic {
 	return &Dynamic{
 		Anims:   reanimator.NewSet(),
 		Player:  -1,
@@ -54,8 +54,8 @@ func NewDynamic(tile *Tile) *Dynamic {
 		Options: CharacterOptions{
 			Regen: false,
 		},
-		AnInt:    -1,
-		LastTile: tile,
+		AnInt: -1,
+		//LastTile: tile,
 	}
 }
 

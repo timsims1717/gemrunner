@@ -20,7 +20,9 @@ func TileSystem() {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok && data.CurrLevel.Start && tile.Live {
-			if tile.Block == data.BlockClose || tile.Block == data.BlockCracked || tile.Block == data.BlockFall || tile.Block == data.BlockTurf {
+			if tile.Block == data.BlockClose || tile.Block == data.BlockCracked ||
+				tile.Block == data.BlockFall || tile.Block == data.BlockTurf ||
+				(tile.Block == data.BlockLadderExitTurf && !data.CurrLevel.DoorsOpen) {
 				if tile.Flags.Regen { // this tile is regenerating
 					if reanimator.FrameSwitch {
 						tile.Counter++
@@ -47,6 +49,7 @@ func TileSystem() {
 								tile.Counter = 0
 								AddMask(tile, "regen_mask", false, false)
 								CrushCharacters(tile)
+								BuryItems(tile)
 							}
 						} else {
 							tile.Block = data.BlockEmpty
@@ -105,6 +108,7 @@ func TileSystem() {
 							tile.Counter = 0
 							AddMask(tile, "close_fangs_mask", false, false)
 							CrushCharacters(tile)
+							BuryItems(tile)
 						}
 					}
 				} else {
@@ -234,6 +238,7 @@ func TileSystem() {
 							RemoveMask(tile)
 						})
 						CrushCharacters(tile)
+						BuryItems(tile)
 					} else {
 						tile.Counter = 0
 						tile.Flags.Collapse = true
@@ -257,6 +262,7 @@ func TileSystem() {
 								tile.Counter = 0
 							})
 							CrushCharacters(tile)
+							BuryItems(tile)
 						} else {
 							tile.Flags.Collapse = true
 							tile.Flags.Cracked = false
@@ -325,13 +331,13 @@ func TileSystem() {
 func CrushCharacters(tile *data.Tile) {
 	// Crush any characters here
 	for _, resultC := range myecs.Manager.Query(myecs.IsCharacter) {
-		_, okCO := resultC.Components[myecs.Object].(*object.Object)
+		_, okO := resultC.Components[myecs.Object].(*object.Object)
 		ch, okC := resultC.Components[myecs.Dynamic].(*data.Dynamic)
-		if okCO && okC && ch.State != data.Dead {
+		if okO && okC && ch.State != data.Dead {
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			chTile := data.CurrLevel.Get(x, y)
 			if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-				(chTile.Coords.Y == tile.Coords.Y) {
+				chTile.Coords.Y == tile.Coords.Y {
 				ch.Object.Pos.X = tile.Object.Pos.X
 				ch.Object.Pos.Y = tile.Object.Pos.Y
 				ch.Flags.Death = death.Crushed
@@ -343,6 +349,24 @@ func CrushCharacters(tile *data.Tile) {
 		}
 	}
 	tile.Flags.Occupied = false
+}
+
+func BuryItems(tile *data.Tile) {
+	// Bury any items here
+	for _, resultC := range myecs.Manager.Query(myecs.IsItem) {
+		_, okO := resultC.Components[myecs.Object].(*object.Object)
+		item, okI := resultC.Components[myecs.Item].(*data.BasicItem)
+		if okO && okI {
+			x, y := world.WorldToMap(item.Object.Pos.X, item.Object.Pos.Y)
+			chTile := data.CurrLevel.Get(x, y)
+			if chTile != nil && chTile.Coords.X == tile.Coords.X &&
+				chTile.Coords.Y == tile.Coords.Y {
+				item.Object.Pos.X = tile.Object.Pos.X
+				item.Object.Pos.Y = tile.Object.Pos.Y
+				item.Object.Layer = 9
+			}
+		}
+	}
 }
 
 func RemoveCharacters(tile *data.Tile) {

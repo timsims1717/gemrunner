@@ -79,7 +79,12 @@ func LevelInit(record bool) {
 
 				}
 			case data.BlockBarrier:
-				if tile.Metadata.Toggle {
+				if tile.Metadata.Regenerate {
+					if tile.Metadata.Toggle != data.CurrLevel.DoorsOpen {
+						tile.Flags.Collapse = true
+						tile.Counter = 10
+					}
+				} else if tile.Metadata.Toggle {
 					tile.Flags.Collapse = true
 					tile.Counter = 10
 				}
@@ -95,63 +100,66 @@ func LevelInit(record bool) {
 				} else if tile.Block == data.BlockPlayer4 {
 					i = 3
 				}
-				PlayerCharacter(obj.Pos, i, tile, data.CurrReplay)
-				tile.Block = data.BlockEmpty
+				PlayerCharacter(obj.Pos, i, data.CurrReplay)
+				tile.ToEmpty()
 			case data.BlockDemon:
-				DemonCharacter(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
+				DemonCharacter(obj.Pos, tile.Metadata)
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockFly:
-				FlyCharacter(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
+				FlyCharacter(obj.Pos, tile.Metadata)
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockGem:
 				if !world.CoordsIn(tile.Coords, gemsCollected) {
 					CreateGem(obj.Pos, tile)
 				}
-				tile.Block = data.BlockEmpty
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:
 				CreateDoor(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockJumpBoots:
-				CreateJumpBoots(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockBox:
-				CreateBox(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockKey:
-				CreateKey(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockBigBomb:
-				CreateBomb(obj.Pos, tile, "big", true)
-				tile.Block = data.BlockEmpty
+				tile.ToEmpty()
 			case data.BlockBigBombLit:
 				key := tile.Block.SpriteString()
 				CreateLitBomb(obj.Pos, key, "big", true, tile.Metadata.Regenerate, false, tile.Metadata.RegenDelay)
-				tile.Block = data.BlockEmpty
-			case data.BlockSmallBomb:
-				CreateBomb(obj.Pos, tile, "small", false)
-				tile.Block = data.BlockEmpty
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockSmallBombLit:
 				key := tile.Block.SpriteString()
 				CreateLitBomb(obj.Pos, key, "small", false, tile.Metadata.Regenerate, tile.Metadata.Buried, tile.Metadata.RegenDelay)
-				tile.Block = data.BlockEmpty
-			case data.BlockJetpack:
-				CreateJetpack(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockDisguise:
-				CreateDisguise(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockDrill:
-				CreateDrill(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockFlamethrower:
-				CreateFlamethrower(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockGoopBucket:
-				CreateGoopBucket(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
-			case data.BlockTransporter:
-				CreateTransporter(obj.Pos, tile)
-				tile.Block = data.BlockEmpty
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
+			case data.BlockJumpBoots, data.BlockBox, data.BlockKey,
+				data.BlockBigBomb, data.BlockSmallBomb, data.BlockJetpack,
+				data.BlockDisguise, data.BlockDrill, data.BlockFlamethrower,
+				data.BlockGoopBucket, data.BlockTransporter:
+				CreateItem(tile.Block, obj.Pos, tile.SpriteString(), tile.Metadata, tile.Coords)
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockTransporterExit:
 				CreateTransporterExit(obj.Pos, tile)
 				//case data.BlockGear:
@@ -167,18 +175,30 @@ func LevelInit(record bool) {
 			case data.BlockLiquid:
 				tile.Object.Layer = 30
 			}
-			if tile.Metadata.Buried {
-				tile.Block = data.BlockTurf
-				tile.Metadata = data.DefaultMetadata()
-			}
 			AddLevelTransition(tile, x, y)
 		}
 	}
-	if data.CurrLevelSess.StartCoords != nil && (data.CurrLevel.DoorsOpen || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn) {
-		if t := data.CurrLevel.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y); t != nil && !t.IsSolid() {
-			for _, p := range data.CurrLevel.Players {
-				if p != nil {
+	if data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity {
+		var t *data.Tile
+		if data.CurrLevelSess.StartCoords != nil {
+			t = data.CurrLevel.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y)
+		}
+		for i, p := range data.CurrLevel.Players {
+			if p != nil {
+				if t != nil && !t.IsSolid() {
 					p.Object.SetPos(t.Object.Pos)
+				}
+				p.SmallBombs = data.CurrLevelSess.PlayerStats[i].CurrBombs
+				inv := data.CurrLevelSess.PlayerStats[i].Inventory
+				if inv != nil {
+					if inv.Entity == nil || inv.Object == nil { // create item
+						item := CreateItem(inv.Block, pixel.ZV, inv.Key, inv.Metadata, inv.Origin)
+						p.Inventory = item
+						p.Inventory.PickUp.Inventory = i
+					} else {
+						p.Inventory = inv
+						p.Inventory.Entity.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+					}
 				}
 			}
 		}
@@ -260,8 +280,9 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 	tile.Transitions = make(map[data.Direction]*data.LevelTransition)
 	if data.CurrPuzzleSet.Metadata.Adventure && data.CurrPuzzleSet.Metadata.Continuity != data.NoContinuity {
 		var ht *data.Tile
-		var hi int
-		var hc bool
+		hi := -1
+		var hx, hy int
+		var ho, hc bool
 		var hd data.Direction
 		if x == 0 {
 			hd = data.Left
@@ -271,13 +292,15 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 				hi = data.CurrLevelSess.PuzzleSet.GetGrid(l)
 				m := left.Metadata.Height
 				n := data.CurrLevel.Puzzle.Metadata.Height
+				hx = left.Metadata.Width - 1
 				if m == n { // levels are the same height
-					ht = left.Get(left.Metadata.Width-1, y)
+					hy = y
 				} else if m < n { // next level is shorter than this one
-					ht = left.Get(left.Metadata.Width-1, y-(n-m)/2)
+					hy = y - (n-m)/2
 				} else { // next level is taller
-					ht = left.Get(left.Metadata.Width-1, y+(n-m)/2)
+					hy = y + (n-m)/2
 				}
+				ht = left.Get(hx, hy)
 			}
 		} else if x == data.CurrLevel.Metadata.Width-1 {
 			hd = data.Right
@@ -287,30 +310,34 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 				hi = data.CurrLevelSess.PuzzleSet.GetGrid(r)
 				m := right.Metadata.Height
 				n := data.CurrLevel.Puzzle.Metadata.Height
+				hx = 0
 				if m == n { // levels are the same width
-					ht = right.Get(0, y)
+					hy = y
 				} else if m < n { // next level is shorter than this one
-					ht = right.Get(0, y-(n-m)/2)
+					hy = y - (n-m)/2
 				} else { // next level is taller
-					ht = right.Get(0, y+(n-m)/2)
+					hy = y + (n-m)/2
 				}
+				ht = right.Get(hx, hy)
 			}
 		}
 		if lc, ok := data.CurrLevelSess.LevelMap[hi]; ok {
+			ho = data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn ||
+				hi == data.CurrLevelSess.LastPuzzle ||
+				(lc.Completed && data.CurrLevel.DoorsOpen)
 			hc = lc.Completed
 		}
-		if ht != nil && (!ht.IsSolid() ||
-			(ht.Block == data.BlockLadderExitTurf && hc) ||
-			(ht.Block == data.BlockBarrier && ht.Metadata.Toggle != hc)) {
+		if ht != nil && !ht.IsSolidLevelTrans(hc) {
 			tile.Transitions[hd] = &data.LevelTransition{
-				Complete:  hc,
+				Open:      ho,
 				ExitIndex: hi,
-				ExitTile:  ht.Coords,
+				ExitTile:  world.Coords{X: hx, Y: hy},
 			}
 		}
 		var vt *data.Tile
-		var vi int
-		var vc bool
+		vi := -1
+		var vx, vy int
+		var vo, vc bool
 		var vd data.Direction
 		if y == 0 {
 			vd = data.Down
@@ -320,13 +347,15 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 				vi = data.CurrLevelSess.PuzzleSet.GetGrid(b)
 				m := below.Metadata.Width
 				n := data.CurrLevel.Puzzle.Metadata.Width
+				vy = below.Metadata.Height - 1
 				if m == n { // levels are the same width
-					vt = below.Get(x, below.Metadata.Height-1)
+					vx = x
 				} else if m < n { // next level is less wide than this one
-					vt = below.Get(x-(n-m)/2, below.Metadata.Height-1)
+					vx = x - (n-m)/2
 				} else { // next level is wider
-					vt = below.Get(x+(n-m)/2, below.Metadata.Height-1)
+					vx = x + (n-m)/2
 				}
+				vt = below.Get(vx, vy)
 			}
 		} else if y == data.CurrLevel.Metadata.Height-1 {
 			vd = data.Up
@@ -336,25 +365,28 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 				vi = data.CurrLevelSess.PuzzleSet.GetGrid(a)
 				m := above.Metadata.Width
 				n := data.CurrLevel.Puzzle.Metadata.Width
+				vy = 0
 				if m == n { // levels are the same width
-					vt = above.Get(x, 0)
+					vx = x
 				} else if m < n { // next level is less wide than this one
-					vt = above.Get(x-(n-m)/2, 0)
+					vx = x - (n-m)/2
 				} else { // next level is wider
-					vt = above.Get(x+(n-m)/2, 0)
+					vx = x + (n-m)/2
 				}
+				vt = above.Get(vx, vy)
 			}
 		}
 		if lc, ok := data.CurrLevelSess.LevelMap[vi]; ok {
+			vo = data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn ||
+				vi == data.CurrLevelSess.LastPuzzle ||
+				(lc.Completed && data.CurrLevel.DoorsOpen)
 			vc = lc.Completed
 		}
-		if vt != nil && (!vt.IsSolid() ||
-			(vt.Block == data.BlockLadderExitTurf && vc) ||
-			(vt.Block == data.BlockBarrier && vt.Metadata.Toggle != vc)) {
+		if vt != nil && !vt.IsSolidLevelTrans(vc) {
 			tile.Transitions[vd] = &data.LevelTransition{
-				Complete:  vc,
+				Open:      vo,
 				ExitIndex: vi,
-				ExitTile:  vt.Coords,
+				ExitTile:  world.Coords{X: vx, Y: vy},
 			}
 		}
 	}
@@ -370,7 +402,8 @@ func CreateFakePlayer() {
 		y := random.Level.Intn(data.CurrLevel.Metadata.Height)
 		tile = data.CurrLevel.Get(x, y)
 	}
-	ch := data.NewDynamic(tile)
+	ch := data.NewDynamic()
+	ch.LastTile = tile
 	ch.Layer = 0
 	e := myecs.Manager.NewEntity()
 	obj := object.New().WithFixedID("fake_player").SetPos(tile.Object.Pos)

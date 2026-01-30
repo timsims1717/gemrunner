@@ -18,26 +18,30 @@ import (
 	"math"
 )
 
-func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
-	obj := object.New().WithID(tile.SpriteString())
+func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords, prefix string, big bool) *data.BasicItem {
+	obj := object.New().WithID(key)
 	obj.Pos = pos
 	obj.SetRect(pixel.R(0, 0, 14, 16))
 	obj.Layer = 14
-	if tile.Metadata.Buried {
+	if metadata.Buried {
 		obj.Layer = 9
 	}
 	e := myecs.Manager.NewEntity()
 	theBomb := &data.Bomb{
-		Item:   &data.BasicItem{},
+		Item: &data.BasicItem{
+			Layer: 14,
+		},
 		Prefix: prefix,
 		Big:    big,
 	}
 	theBomb.Item.Object = obj
+	theBomb.Item.Key = key
 	theBomb.Item.Entity = e
-	theBomb.Item.Metadata = tile.Metadata
+	theBomb.Item.Metadata = metadata
 	theBomb.Item.Metadata.Timer = -1
-	theBomb.Item.Origin = tile.Coords
-	theBomb.Item.Color = tile.Metadata.Color
+	theBomb.Item.Origin = coords
+	theBomb.Item.Color = metadata.Color
+	theBomb.Item.Metadata = data.CopyMetadata(metadata)
 	regenA := reanimator.NewBatchAnimationCustom("regen", img.Batchers[constants.TileBatch], fmt.Sprintf("%s_bomb_regen_anim", prefix), []int{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 6}, reanimator.Tran)
 	regenA.SetTriggerAll(func() {
 		switch regenA.Step {
@@ -61,7 +65,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	})
 	theBomb.Item.Anim = reanimator.New().
 		AddAnimation(regenA).
-		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], tile.SpriteString(), reanimator.Hold)).
+		AddAnimation(reanimator.NewBatchSprite("bomb", img.Batchers[constants.TileBatch], key, reanimator.Hold)).
 		AddNull("none").
 		SetChooseFn(func() string {
 			if theBomb.Item.Waiting {
@@ -84,7 +88,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 		regenKey = constants.ItemSmallBombRegen
 		symOff = pixel.V(0, -4)
 	}
-	if tile.Metadata.Regenerate {
+	if metadata.Regenerate {
 		theBomb.SymSpr = img.NewSprite(regenKey, constants.TileBatch).WithOffset(symOff)
 	}
 	if theBomb.SymSpr != nil {
@@ -93,7 +97,7 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	theBomb.Item.Name = name
 	theBomb.LitKey = litKey
 	if big {
-		theBomb.Item.PickUp = data.NewPickUp(5, tile.Metadata.Color)
+		theBomb.Item.PickUp = data.NewPickUp(5, metadata.Color)
 		theBomb.Item.Action = BombAction(theBomb)
 		e.AddComponent(myecs.PickUp, theBomb.Item.PickUp)
 		e.AddComponent(myecs.Action, theBomb.Item.Action)
@@ -126,13 +130,14 @@ func CreateBomb(pos pixel.Vec, tile *data.Tile, prefix string, big bool) {
 	e.AddComponent(myecs.LvlElement, theBomb)
 	e.AddComponent(myecs.Bomb, theBomb)
 	e.AddComponent(myecs.Item, theBomb.Item)
+	return theBomb.Item
 }
 
 func CollectSmallBomb(theBomb *data.Bomb) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if p < 0 || p >= constants.MaxPlayers ||
 			(ch.Color != theBomb.Item.Color && theBomb.Item.Color > data.NonPlayerRed) ||
-			data.CurrLevel.Players[p].SmallBombs >= data.CurrLevelSess.PlayerStats[p].Bombs+data.CurrLevelSess.PlayerStats[p].LBombs ||
+			data.CurrLevel.Players[p].SmallBombs >= data.CurrLevelSess.PlayerStats[p].MaxBombs+data.CurrLevelSess.PlayerStats[p].LBombs ||
 			theBomb.Item.Waiting || theBomb.Item.Regen || theBomb.Item.Object.Hidden {
 			return
 		}

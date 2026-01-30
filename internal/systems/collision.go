@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"fmt"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
@@ -91,7 +90,7 @@ func leftWallCollisions(ch *data.Dynamic, tile, left *data.Tile, enemyLeft bool,
 	//   or if they are on a ladder (so they stay in the center of the ladder)
 	if left == nil && ch.Player > -1 {
 		trans, okL := tile.Transitions[data.Left]
-		if okL && (data.CurrLevel.Continuity || trans.Complete) {
+		if okL && (data.CurrLevel.Continuity || trans.Open) {
 			ch.Flags.LeftWall = false
 			return
 		}
@@ -115,7 +114,7 @@ func rightWallCollisions(ch *data.Dynamic, tile, right *data.Tile, enemyRight bo
 	//   or if they are on a ladder (so they stay in the center of the ladder)
 	if right == nil && ch.Player > -1 {
 		trans, okR := tile.Transitions[data.Right]
-		if okR && (data.CurrLevel.Continuity || trans.Complete) {
+		if okR && (data.CurrLevel.Continuity || trans.Open) {
 			ch.Flags.RightWall = false
 			return
 		}
@@ -140,22 +139,19 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPo
 	}
 	if up == nil && ch.Player > -1 {
 		trans, okU := tile.Transitions[data.Up]
-		if okU && (data.CurrLevel.Continuity || trans.Complete) {
+		if okU && (data.CurrLevel.Continuity || trans.Open) {
 			ch.Flags.Ceiling = false
 			return
 		}
 	}
 	if chPos.Y+ch.Object.HalfHeight >= tile.Object.Pos.Y+world.HalfSize {
-		if ch.State == data.ClimbingOut {
-			fmt.Println("fart")
-		}
 		if up.IsSolid() || up.Block == data.BlockLiquid {
 			ch.Flags.Ceiling = true
-			ch.Flags.Climbed = ch.Actions.Direction != data.Up
+			ch.Flags.Climbed = SetClimbed(ch)
 			ch.Object.Pos.Y = tile.Object.Pos.Y + world.HalfSize - ch.Object.HalfHeight
 		} else if enemyUp && ch.Object.Pos.Y > ch.Object.LastPos.Y {
 			ch.Flags.Ceiling = true
-			ch.Flags.Climbed = ch.Actions.Direction != data.Up
+			ch.Flags.Climbed = SetClimbed(ch)
 			ch.Object.Pos.Y = ch.Object.LastPos.Y
 		} else if ch.State == data.ClimbingOut {
 			if enemyUp {
@@ -165,13 +161,20 @@ func ceilingCollisions(ch *data.Dynamic, tile, up *data.Tile, enemyUp bool, chPo
 	}
 }
 
+func SetClimbed(ch *data.Dynamic) bool {
+	if ch.State == data.OnBar {
+		return ch.Actions.Left() || ch.Actions.Right()
+	}
+	return false
+}
+
 func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, enemyDown bool, chPos pixel.Vec) {
 	standOn, _ := standOnSystem(ch.Object.ID, ch.Player, ch.Enemy, down)
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if touchingFloor && down == nil && ch.Player > -1 {
 		trans, okD := tile.Transitions[data.Down]
-		if okD && (data.CurrLevel.Continuity || trans.Complete) && ch.Actions.Down() {
+		if okD && (data.CurrLevel.Continuity || trans.Open) && ch.Actions.Down() {
 			ch.Flags.Floor = false
 			return
 		}

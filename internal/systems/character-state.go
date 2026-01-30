@@ -113,10 +113,10 @@ func CharacterStateSystem() {
 							ch.State = data.OnLadder
 						}
 					} else if ch.Flags.Floor || below.IsRunnable() { // reached the bottom
-						if ch.Actions.Direction == data.Left { // run to the left
+						if ch.Actions.Direction == data.Left && !ch.Flags.LeftWall { // run to the left
 							ch.State = data.Grounded
 							ch.Object.Flip = true
-						} else if ch.Actions.Direction == data.Right { // run to the right
+						} else if ch.Actions.Direction == data.Right && !ch.Flags.RightWall { // run to the right
 							ch.State = data.Grounded
 							ch.Object.Flip = false
 						} else if ch.Actions.Direction == data.Down {
@@ -447,7 +447,7 @@ func OutsideMapSystem() {
 						lastTile := ch.LastTile
 						if lastTile != nil {
 							if x < lastTile.Coords.X {
-								if t, ok := lastTile.Transitions[data.Left]; ok && (t.Complete || data.CurrLevel.Continuity) {
+								if t, ok := lastTile.Transitions[data.Left]; ok && (t.Open || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -455,7 +455,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if x > lastTile.Coords.X {
-								if t, ok := lastTile.Transitions[data.Right]; ok && (t.Complete || data.CurrLevel.Continuity) {
+								if t, ok := lastTile.Transitions[data.Right]; ok && (t.Open || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -463,7 +463,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if y < lastTile.Coords.Y {
-								if t, ok := lastTile.Transitions[data.Down]; ok && (t.Complete || data.CurrLevel.Continuity) {
+								if t, ok := lastTile.Transitions[data.Down]; ok && (t.Open || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex
@@ -471,7 +471,7 @@ func OutsideMapSystem() {
 									return
 								}
 							} else if y > lastTile.Coords.Y {
-								if t, ok := lastTile.Transitions[data.Up]; ok && (t.Complete || data.CurrLevel.Continuity) {
+								if t, ok := lastTile.Transitions[data.Up]; ok && (t.Open || data.CurrLevel.Continuity) {
 									sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 									data.CurrLevel.Complete = true
 									data.CurrLevel.ExitIndex = t.ExitIndex

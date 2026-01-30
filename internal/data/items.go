@@ -1,6 +1,8 @@
 package data
 
 import (
+	"bytes"
+	"encoding/json"
 	"gemrunner/internal/constants"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
@@ -33,22 +35,25 @@ func NewPickUp(p int, color ItemColor) *PickUp {
 }
 
 type BasicItem struct {
-	Name     string
-	Object   *object.Object
-	Entity   *ecs.Entity
-	Sprite   *img.Sprite
-	Anim     *reanimator.Tree
-	PickUp   *PickUp
-	Action   *Interact
-	Color    ItemColor
-	Metadata TileMetadata
-	Origin   world.Coords
-	Using    bool
-	Regen    bool
-	Waiting  bool
-	Counter  int
-	Delay    int
-	Uses     int
+	Name     string           `json:"name"`
+	Key      string           `json:"key"`
+	Object   *object.Object   `json:"-"`
+	Entity   *ecs.Entity      `json:"-"`
+	Sprite   *img.Sprite      `json:"-"`
+	Anim     *reanimator.Tree `json:"-"`
+	PickUp   *PickUp          `json:"-"`
+	Action   *Interact        `json:"-"`
+	Color    ItemColor        `json:"color"`
+	Metadata TileMetadata     `json:"metadata"`
+	Origin   world.Coords     `json:"origin"`
+	Block    Block            `json:"block"`
+	Layer    int              `json:"layer"`
+	Using    bool             `json:"-"`
+	Regen    bool             `json:"-"`
+	Waiting  bool             `json:"-"`
+	Counter  int              `json:"-"`
+	Delay    int              `json:"-"`
+	Uses     int              `json:"uses"`
 }
 
 type Door struct {
@@ -145,6 +150,45 @@ func (ic ItemColor) SpriteString() string {
 	default:
 		return "_yellow"
 	}
+}
+
+var colorToID = map[string]ItemColor{
+	"default": ColorDefault,
+	"yellow":  NonPlayerYellow,
+	"brown":   NonPlayerBrown,
+	"gray":    NonPlayerGray,
+	"cyan":    NonPlayerCyan,
+	"lime":    NonPlayerLime,
+	"pink":    NonPlayerPink,
+	"burnt":   NonPlayerBurnt,
+	"red":     NonPlayerRed,
+	"blue":    PlayerBlue,
+	"green":   PlayerGreen,
+	"purple":  PlayerPurple,
+	"orange":  PlayerOrange,
+}
+
+func (ic ItemColor) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`"`)
+	buffer.WriteString(ic.String())
+	buffer.WriteString(`"`)
+	return buffer.Bytes(), nil
+}
+
+func (ic *ItemColor) UnmarshalJSON(bts []byte) error {
+	var j string
+	err := json.Unmarshal(bts, &j)
+	if err != nil {
+		var ji int
+		err = json.Unmarshal(bts, &ji)
+		if err != nil {
+			return err
+		}
+		*ic = ItemColor(ji)
+		return nil
+	}
+	*ic = colorToID[j]
+	return nil
 }
 
 type DoorType int
