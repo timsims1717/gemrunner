@@ -250,6 +250,7 @@ func OpenPuzzleSetFile(filename string) error {
 		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
 	}
 	data.CurrPuzzleSet.SetUpGrid()
+	data.CurrPuzzleSet.SetUpUUIDs()
 	return nil
 }
 
@@ -272,6 +273,7 @@ func OpenPuzzleSetFileRt(filename string) (*data.PuzzleSet, error) {
 		fmt.Printf("INFO: loaded puzzle set from %s\n", pzlFName)
 	}
 	rtPzlSet.SetUpGrid()
+	rtPzlSet.SetUpUUIDs()
 	return rtPzlSet, nil
 }
 

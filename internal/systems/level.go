@@ -2,7 +2,6 @@ package systems
 
 import (
 	"gemrunner/internal/constants"
-	"gemrunner/internal/content"
 	"gemrunner/internal/controllers"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
@@ -16,48 +15,17 @@ import (
 	"github.com/gopxl/pixel"
 )
 
-func LevelInit(record bool) {
-	if data.CurrPuzzleSet.CurrPuzzle == nil {
-		panic("no puzzle loaded to start level")
-	}
-	LevelDispose()
-	PuzzleViewInit()
-	data.CurrLevel = &data.Level{}
-	data.CurrLevel.Tiles = data.CurrPuzzleSet.CurrPuzzle.CopyTiles()
-	data.CurrLevel.Metadata = data.CurrPuzzleSet.CurrPuzzle.Metadata
-	data.CurrLevel.Puzzle = data.CurrPuzzleSet.CurrPuzzle
-	FloatingTextStartLevel()
-	SetPuzzleTitle()
-	UpdatePuzzleTimer()
-	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
-	levelSeed := random.RandomSeed()
-	random.SetLevelSeed(levelSeed)
-	data.CurrLevel.Recording = data.CurrReplay == nil && record
-	data.CurrLevel.SaveRecord = constants.Configuration.Gameplay.AlwaysRecord
-	if data.CurrLevel.Recording {
-		data.CurrLevel.LevelReplay = &data.LevelReplay{
-			PuzzleSet:   data.CurrPuzzleSet.Metadata.Name,
-			Filename:    data.CurrPuzzleSet.Metadata.Filename,
-			ReplayFile:  content.ReplayFile(data.CurrPuzzleSet.Metadata.Name, data.CurrPuzzleSet.PuzzleIndex),
-			PuzzleNum:   data.CurrPuzzleSet.PuzzleIndex,
-			StartCoords: data.CurrLevelSess.StartCoords,
-			Seed:        levelSeed,
-		}
-		data.CurrLevel.ReplayFrame = data.ReplayFrame{}
-	} else if data.CurrReplay != nil {
-		data.CurrReplay.FrameIndex = 0
-		data.CurrLevelSess.StartCoords = data.CurrReplay.StartCoords
-	}
-
+func InitLevelTiles(level *data.Level) {
 	var gemsCollected []world.Coords
 	if completion, ok := data.CurrLevelSess.LevelMap[data.CurrLevelSess.PuzzleIndex]; ok {
-		data.CurrLevel.DoorsOpen = completion.Completed
-		data.CurrLevel.Continuity = completion.Continuity || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn
+		level.DoorsOpen = completion.Completed
+		level.Continuity = completion.Continuity || data.CurrLevelSess.PuzzleSet.Metadata.Continuity == data.ContinuityAlwaysOn
 		gemsCollected = completion.GemsCollected
 	}
 
-	for y, row := range data.CurrLevel.Tiles.T {
+	for y, row := range level.Tiles.T {
 		for x, tile := range row {
+			tile.Coords = world.NewCoords(x, y)
 			obj := object.New()
 			obj.Pos = world.MapToWorld(tile.Coords)
 			obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
@@ -80,7 +48,7 @@ func LevelInit(record bool) {
 				}
 			case data.BlockBarrier:
 				if tile.Metadata.Regenerate {
-					if tile.Metadata.Toggle != data.CurrLevel.DoorsOpen {
+					if tile.Metadata.Toggle != level.DoorsOpen {
 						tile.Flags.Collapse = true
 						tile.Counter = 10
 					}
@@ -178,12 +146,15 @@ func LevelInit(record bool) {
 			AddLevelTransition(tile, x, y)
 		}
 	}
+}
+
+func InitContinuity(level *data.Level) {
 	if data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity {
 		var t *data.Tile
 		if data.CurrLevelSess.StartCoords != nil {
-			t = data.CurrLevel.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y)
+			t = level.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y)
 		}
-		for i, p := range data.CurrLevel.Players {
+		for i, p := range level.Players {
 			if p != nil {
 				if t != nil && !t.IsSolid() {
 					p.Object.SetPos(t.Object.Pos)
@@ -203,7 +174,41 @@ func LevelInit(record bool) {
 			}
 		}
 	}
-	CreateFakePlayer()
+}
+
+func CreateFakePlayer(level *data.Level) {
+	if level == nil {
+		return
+	}
+	tile := GetRandomRegenTile()
+	if tile == nil {
+		x := random.Level.Intn(level.Metadata.Width)
+		y := random.Level.Intn(level.Metadata.Height)
+		tile = level.Get(x, y)
+	}
+	ch := data.NewDynamic()
+	ch.LastTile = tile
+	ch.Layer = 0
+	e := myecs.Manager.NewEntity()
+	obj := object.New().WithFixedID("fake_player").SetPos(tile.Object.Pos)
+	obj.Pos = world.MapToWorld(tile.Coords)
+	obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
+	obj.Layer = 0
+	obj.SetRect(pixel.R(0., 0., 16., 16.))
+	ch.Object = obj
+	ch.State = data.Grounded
+	ch.Vars = data.DemonVars()
+	ch.Control = controllers.NewRandomWalk(ch, e)
+	ch.Flags.Ignore = true
+	e.AddComponent(myecs.Object, obj).
+		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
+		AddComponent(myecs.Dynamic, ch).
+		AddComponent(myecs.Controller, ch.Control)
+	ch.Entity = e
+	level.FakePlayer = ch
+}
+
+func InitLevelDialogs(level *data.Level) {
 	for p := 0; p < constants.MaxPlayers; p++ {
 		if p < data.CurrPuzzleSet.Metadata.NumPlayers {
 			var dlgKey string
@@ -217,62 +222,83 @@ func LevelInit(record bool) {
 			case 3:
 				dlgKey = constants.DialogPlayer4Inv
 			}
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrLevel.Puzzle.Metadata.PrimaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrLevel.Puzzle.Metadata.SecondaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrLevel.Puzzle.Metadata.DoodadColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedGoop", float32(data.CurrLevel.Puzzle.Metadata.GoopColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.CurrLevel.Puzzle.Metadata.GoopColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.CurrLevel.Puzzle.Metadata.GoopColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrLevel.Puzzle.Metadata.LiquidPrimaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrLevel.Puzzle.Metadata.LiquidSecondaryColor.B))
-			data.CurrLevel.PLoc[p] = &mgl32.Vec2{}
-			data.CurrLevel.PLoc[p][0] = float32(data.CurrLevel.Players[p].Object.Pos.X)
-			data.CurrLevel.PLoc[p][1] = float32(data.CurrLevel.Players[p].Object.Pos.Y)
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(level.Puzzle.Metadata.PrimaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(level.Puzzle.Metadata.PrimaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(level.Puzzle.Metadata.PrimaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(level.Puzzle.Metadata.SecondaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(level.Puzzle.Metadata.SecondaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(level.Puzzle.Metadata.SecondaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(level.Puzzle.Metadata.DoodadColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(level.Puzzle.Metadata.DoodadColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(level.Puzzle.Metadata.DoodadColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedGoop", float32(level.Puzzle.Metadata.GoopColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenGoop", float32(level.Puzzle.Metadata.GoopColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueGoop", float32(level.Puzzle.Metadata.GoopColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.B))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.R))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.G))
+			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.B))
+			level.PLoc[p] = &mgl32.Vec2{}
+			level.PLoc[p][0] = float32(level.Players[p].Object.Pos.X)
+			level.PLoc[p][1] = float32(level.Players[p].Object.Pos.Y)
 		} else {
-			data.CurrLevel.PLoc[p] = &mgl32.Vec2{}
-			data.CurrLevel.PLoc[p][0] = -1
-			data.CurrLevel.PLoc[p][1] = -1
+			level.PLoc[p] = &mgl32.Vec2{}
+			level.PLoc[p][0] = -1
+			level.PLoc[p][1] = -1
 		}
 	}
-	UpdatePuzzleShaders()
-	ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
 }
 
-func LevelDispose() {
-	if data.CurrLevel != nil {
-		for _, row := range data.CurrLevel.Tiles.T {
-			for _, tile := range row {
+func DisposeCurrLevel() {
+	DisposeLevel(data.CurrLevel)
+	data.CurrLevel = nil
+	if data.CurrentPlayArea != nil {
+		DisposeLevel(data.CurrentPlayArea.Level)
+		data.CurrentPlayArea.Level = nil
+	}
+}
+
+func DisposeLevel(level *data.Level) {
+	if level == nil {
+		return
+	}
+	for _, row := range level.Tiles.T {
+		for _, tile := range row {
+			if tile != nil {
 				if tile.FloatingText != nil {
 					myecs.Manager.DisposeEntity(tile.FloatingText.Entity)
 					myecs.Manager.DisposeEntity(tile.FloatingText.ShEntity)
+					data.RemoveFloatingText(tile)
 				}
-				myecs.Manager.DisposeEntity(tile.Entity)
+				if tile.Entity != nil {
+					myecs.Manager.DisposeEntity(tile.Entity)
+					tile.Entity = nil
+				}
 			}
 		}
-		for _, player := range data.CurrLevel.Players {
-			if player != nil {
-				sfx.SoundPlayer.KillSound(player.SFX)
-				myecs.Manager.DisposeEntity(player.Entity)
-			}
-		}
-		for _, enemy := range data.CurrLevel.Enemies {
-			myecs.Manager.DisposeEntity(enemy.Entity)
-		}
-		if data.CurrLevel.FakePlayer != nil {
-			myecs.Manager.DisposeEntity(data.CurrLevel.FakePlayer.Entity)
-		}
-		data.CurrLevel = nil
 	}
+	for i, player := range level.Players {
+		if player != nil {
+			sfx.SoundPlayer.KillSound(player.SFX)
+			myecs.Manager.DisposeEntity(player.Entity)
+		}
+		level.Players[i] = nil
+	}
+	for _, enemy := range level.Enemies {
+		myecs.Manager.DisposeEntity(enemy.Entity)
+	}
+	level.Enemies = []*data.Dynamic{}
+	if level.FakePlayer != nil {
+		myecs.Manager.DisposeEntity(level.FakePlayer.Entity)
+		level.FakePlayer = nil
+	}
+	for _, entity := range level.AllEntities {
+		myecs.Manager.DisposeEntity(entity)
+	}
+	level.AllEntities = []*ecs.Entity{}
+	level = nil
 }
 
 func AddLevelTransition(tile *data.Tile, x, y int) {
@@ -390,38 +416,6 @@ func AddLevelTransition(tile *data.Tile, x, y int) {
 			}
 		}
 	}
-}
-
-func CreateFakePlayer() {
-	if data.CurrLevel == nil {
-		return
-	}
-	tile := GetRandomRegenTile()
-	if tile == nil {
-		x := random.Level.Intn(data.CurrLevel.Metadata.Width)
-		y := random.Level.Intn(data.CurrLevel.Metadata.Height)
-		tile = data.CurrLevel.Get(x, y)
-	}
-	ch := data.NewDynamic()
-	ch.LastTile = tile
-	ch.Layer = 0
-	e := myecs.Manager.NewEntity()
-	obj := object.New().WithFixedID("fake_player").SetPos(tile.Object.Pos)
-	obj.Pos = world.MapToWorld(tile.Coords)
-	obj.Pos = obj.Pos.Add(pixel.V(world.TileSize*0.5, world.TileSize*0.5))
-	obj.Layer = 0
-	obj.SetRect(pixel.R(0., 0., 16., 16.))
-	ch.Object = obj
-	ch.State = data.Grounded
-	ch.Vars = data.DemonVars()
-	ch.Control = controllers.NewRandomWalk(ch, e)
-	ch.Flags.Ignore = true
-	e.AddComponent(myecs.Object, obj).
-		AddComponent(myecs.Temp, myecs.ClearFlag(false)).
-		AddComponent(myecs.Dynamic, ch).
-		AddComponent(myecs.Controller, ch.Control)
-	ch.Entity = e
-	data.CurrLevel.FakePlayer = ch
 }
 
 func GetBestRegenTile(tiles []*data.Tile) *data.Tile {

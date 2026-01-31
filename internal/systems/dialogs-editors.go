@@ -97,7 +97,7 @@ func CustomizeEditorDialog(key string) {
 					case constants.DialogChangeName:
 						ele.OnClick = ChangeName
 					case constants.DialogOpenPuzzle:
-						ele.OnClick = OnOpenPuzzle
+						ele.OnClick = OnOpenPuzzleSet
 					}
 				case "bomb_regenerate_delay_minus":
 					ele.OnClick = func() {

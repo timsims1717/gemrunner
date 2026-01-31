@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/viewport"
@@ -23,7 +24,7 @@ type Dialog struct {
 	Key          string
 	Pos          pixel.Vec
 	ViewPort     *viewport.ViewPort
-	Border       *Border
+	Border       *data.Border
 	BorderVP     *viewport.ViewPort
 	BorderObject *object.Object
 	BorderEntity *ecs.Entity
@@ -77,7 +78,7 @@ func NewDialog(dc *DialogConstructor) {
 		bObj := object.New()
 		bObj.Layer = 99
 		//bObj.Pos = dc.Pos
-		bord := &Border{
+		bord := &data.Border{
 			Width:  int(dc.Width),
 			Height: int(dc.Height),
 		}

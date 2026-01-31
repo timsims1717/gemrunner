@@ -15,15 +15,6 @@ func UpdateViews() {
 	data.ScreenView.PortPos = viewport.MainCamera.CamPos
 	data.ScreenView.CamPos = pixel.V(options.CurrResolution.X*0.5, options.CurrResolution.Y*0.5)
 
-	width := float64(constants.PuzzleWidth)
-	height := float64(constants.PuzzleHeight)
-	if data.CurrLevel != nil {
-		width = float64(data.CurrLevel.Metadata.Width)
-		height = float64(data.CurrLevel.Metadata.Height)
-	} else if data.CurrPuzzleSet != nil {
-		width = float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Width)
-		height = float64(data.CurrPuzzleSet.CurrPuzzle.Metadata.Height)
-	}
 	wRatio := viewport.MainCamera.Rect.W() / (constants.PuzzleWidth * world.TileSize)
 	hRatio := viewport.MainCamera.Rect.H() / (constants.PuzzleHeight * world.TileSize)
 	maxRatio := wRatio
@@ -37,31 +28,10 @@ func UpdateViews() {
 		constants.PickedRatio += 1
 	}
 
-	if data.PuzzleView != nil {
-		data.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
-		data.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
-		//data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
-		//data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
-		data.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	for _, fp := range data.AllPlayAreas {
+		UpdatePlayAreaView(fp)
 	}
-	if data.BorderView != nil {
-		data.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(width+1), world.TileSize*(height+1)))
-		data.BorderView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
-		data.BorderView.PortPos = viewport.MainCamera.PostCamPos
-		data.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
-	}
-	if data.PuzzleViewNoShader != nil {
-		data.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
-		data.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
-		data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
-		data.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
-	}
-	if data.WorldView != nil {
-		data.WorldView.PortPos = viewport.MainCamera.PostCamPos
-		xWidth := width * world.TileSize * constants.PickedRatio
-		yHeight := height * world.TileSize * constants.PickedRatio
-		data.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
-	}
+
 	data.CursorObj.Sca = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	data.CursorObj.Offset = pixel.V(9, -9).Scaled(constants.PickedRatio)
 	for _, dialog := range ui.Dialogs {
@@ -80,7 +50,47 @@ func UpdateViews() {
 			//data.Editor.BlockSelect.PortPos.Y -= (panel.ViewPort.Canvas.Bounds().H()*0.5 - constants.BlockSelectHeight*world.TileSize*0.5 - world.HalfSize) * data.Editor.BlockSelect.PortSize.Y
 		}
 	}
-	SetMainBorder(int(width), int(height))
+	SetMainBorder(constants.PuzzleWidth, constants.PuzzleHeight)
+	//SetMainBorder(int(width), int(height))
+	//viewport.MainCamera.CamPos.Y -= world.TileSize * 2
+}
+
+func UpdatePlayAreaView(fp *data.PlayArea) {
+	width := float64(constants.PuzzleWidth)
+	height := float64(constants.PuzzleHeight)
+	if fp.Level != nil {
+		width = float64(fp.Level.Metadata.Width)
+		height = float64(fp.Level.Metadata.Height)
+	} else if fp.Puzzle != nil {
+		width = float64(fp.Puzzle.Metadata.Width)
+		height = float64(fp.Puzzle.Metadata.Height)
+	}
+
+	if fp.PuzzleView != nil {
+		fp.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		fp.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
+		//data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
+		//data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
+		fp.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
+	if fp.BorderView != nil {
+		fp.BorderView.SetRect(pixel.R(0, 0, world.TileSize*(width+1), world.TileSize*(height+1)))
+		fp.BorderView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		fp.BorderView.PortPos = viewport.MainCamera.PostCamPos
+		fp.BorderView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
+	if fp.PuzzleViewNoShader != nil {
+		fp.PuzzleViewNoShader.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		fp.PuzzleViewNoShader.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
+		fp.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
+		fp.PuzzleViewNoShader.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
+	if fp.WorldView != nil {
+		fp.WorldView.PortPos = viewport.MainCamera.PostCamPos
+		xWidth := width * world.TileSize * constants.PickedRatio
+		yHeight := height * world.TileSize * constants.PickedRatio
+		fp.WorldView.SetRect(pixel.R(0, 0, xWidth, yHeight))
+	}
 	//viewport.MainCamera.CamPos.Y -= world.TileSize * 2
 }
 

@@ -16,9 +16,6 @@ import (
 )
 
 func EditorInit() {
-	// initialize imDraw
-	data.IMDraw = imdraw.New(nil)
-
 	// initialize editor panel
 	data.NewEditor()
 	//data.Editor.PosTop = true
@@ -34,68 +31,68 @@ func EditorInit() {
 	}
 }
 
-func UpdateEditorShaders() {
-	if data.Editor == nil {
+func UpdateEditorShaders(puzzle *data.Puzzle) {
+	if data.Editor == nil || puzzle == nil {
 		return
 	}
 	// set editor panel shader uniforms
 	editorPanelLeft := ui.Dialogs[constants.DialogEditorPanelLeft]
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
+	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
 	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
+	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
 	// set editor select shader uniforms
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBluePrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.PrimaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.SecondaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueDoodad", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.DoodadColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueGoop", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.GoopColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidPrimary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidSecondary", float32(data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
+	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
+	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
+	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
 }
 
 func ChangeWorldToNext() {
@@ -120,8 +117,8 @@ func ChangeWorldTo(world int) {
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid = constants.WorldLiquids[world]
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor = pixel.ToRGBA(constants.WorldLiquidSecondary[world])
-	UpdateEditorShaders()
-	UpdatePuzzleShaders()
+	UpdateEditorShaders(data.CurrPuzzleSet.CurrPuzzle)
+	UpdatePuzzleShaders(data.CurrentPlayArea)
 }
 
 func ChangeWorldShader(shaderMode int) {
@@ -130,7 +127,7 @@ func ChangeWorldShader(shaderMode int) {
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX = constants.ShaderXs[shaderMode]
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY = constants.ShaderYs[shaderMode]
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom = constants.ShaderCustom[shaderMode]
-	UpdateWorldShaders()
+	UpdateWorldShaders(data.CurrentPlayArea)
 }
 
 func UpdateEditorModeHotKey() {
@@ -191,7 +188,7 @@ func PuzzleEditSystem() {
 	if data.Editor.SelectTimer != nil {
 		data.Editor.SelectTimer.Update()
 	}
-	projPos := data.PuzzleView.ProjectWorld(data.MenuInput.World)
+	projPos := data.CurrentPlayArea.PuzzleView.ProjectWorld(data.MenuInput.World)
 	x, y := world.WorldToMap(projPos.X, projPos.Y)
 	coords := world.Coords{X: x, Y: y}
 	// special check for a weird bug
@@ -540,13 +537,13 @@ func PuzzleEditSystem() {
 							switch lt.Block {
 							case data.BlockDemon, data.BlockDemonRegen,
 								data.BlockFly, data.BlockFlyRegen:
-								data.IMDraw.Color = constants.ColorOrange
+								data.CurrentPlayArea.IMDraw.Color = constants.ColorOrange
 							case data.BlockTransporter, data.BlockTransporterExit:
-								data.IMDraw.Color = constants.ColorCyan
+								data.CurrentPlayArea.IMDraw.Color = constants.ColorCyan
 							default:
 								break modeLabel
 							}
-							data.IMDraw.EndShape = imdraw.RoundEndShape
+							data.CurrentPlayArea.IMDraw.EndShape = imdraw.RoundEndShape
 							tile := data.CurrPuzzleSet.CurrPuzzle.Get(coords.X, coords.Y)
 							match := false
 							switch tile.Block {
@@ -564,12 +561,12 @@ func PuzzleEditSystem() {
 								match = lt.Block == data.BlockTransporter
 							}
 							if match {
-								data.IMDraw.Push(lt.Object.Pos, tile.Object.Pos)
-								data.IMDraw.Line(2)
+								data.CurrentPlayArea.IMDraw.Push(lt.Object.Pos, tile.Object.Pos)
+								data.CurrentPlayArea.IMDraw.Line(2)
 								break modeLabel
 							}
-							data.IMDraw.Push(lt.Object.Pos, projPos)
-							data.IMDraw.Line(2)
+							data.CurrentPlayArea.IMDraw.Push(lt.Object.Pos, projPos)
+							data.CurrentPlayArea.IMDraw.Line(2)
 						}
 					}
 				}
@@ -826,14 +823,14 @@ func PuzzleEditSystem() {
 			switch tile.Block {
 			case data.BlockDemon, data.BlockDemonRegen,
 				data.BlockFly, data.BlockFlyRegen:
-				data.IMDraw.Color = constants.ColorOrange
+				data.CurrentPlayArea.IMDraw.Color = constants.ColorOrange
 			case data.BlockTransporter, data.BlockTransporterExit:
-				data.IMDraw.Color = constants.ColorCyan
+				data.CurrentPlayArea.IMDraw.Color = constants.ColorCyan
 			}
-			data.IMDraw.EndShape = imdraw.RoundEndShape
+			data.CurrentPlayArea.IMDraw.EndShape = imdraw.RoundEndShape
 			for _, rt := range tile.Metadata.LinkedTiles {
-				data.IMDraw.Push(tile.Object.Pos, world.MapToWorld(rt).Add(pixel.V(world.HalfSize, world.HalfSize)))
-				data.IMDraw.Line(2)
+				data.CurrentPlayArea.IMDraw.Push(tile.Object.Pos, world.MapToWorld(rt).Add(pixel.V(world.HalfSize, world.HalfSize)))
+				data.CurrentPlayArea.IMDraw.Line(2)
 			}
 		}
 	}
@@ -939,10 +936,10 @@ func CreateSquareSelect(a, b world.Coords) {
 	posA.Y++
 	posB.X--
 	posB.Y--
-	data.IMDraw.Color = constants.ColorWhite
-	data.IMDraw.EndShape = imdraw.RoundEndShape
-	data.IMDraw.Push(posA, pixel.V(posA.X, posB.Y), posB, pixel.V(posB.X, posA.Y))
-	data.IMDraw.Polygon(2)
+	data.CurrentPlayArea.IMDraw.Color = constants.ColorWhite
+	data.CurrentPlayArea.IMDraw.EndShape = imdraw.RoundEndShape
+	data.CurrentPlayArea.IMDraw.Push(posA, pixel.V(posA.X, posB.Y), posB, pixel.V(posB.X, posA.Y))
+	data.CurrentPlayArea.IMDraw.Polygon(2)
 }
 
 func CreateSelection(a, b world.Coords) {

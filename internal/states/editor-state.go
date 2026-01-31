@@ -30,8 +30,8 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 	ui.ClearDialogStack()
 	systems.DisposeEditor()
 	systems.DisposeEditorDialogs()
-	//systems.DisposeInGameDialogs()
-	systems.PuzzleDispose()
+	systems.DisposeInGameDialogs()
+	systems.DisposePuzzle(data.CurrentPlayArea.Puzzle)
 	data.CurrPuzzleSet = nil
 }
 
@@ -45,8 +45,12 @@ func (s *editorState) Load(win *pixelgl.Window) {
 		data.CurrPuzzleSet = data.CreatePuzzleSet()
 	}
 	data.CurrPuzzleSet.SetToFirst()
+	if data.CurrentPlayArea == nil {
+		data.CurrentPlayArea = systems.CreatePlayArea()
+	}
 	systems.EditorInit()
-	systems.PuzzleInit()
+	systems.SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
+	systems.InitPuzzle(data.CurrentPlayArea)
 	systems.UpdateViews()
 	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
@@ -58,7 +62,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText("Editor State")
 	debug.AddText(fmt.Sprintf("Editor Mode: %s", data.Editor.Mode.String()))
 	debug.AddIntCoords("World", int(data.MenuInput.World.X), int(data.MenuInput.World.Y))
-	inPos := data.PuzzleView.ProjectWorld(data.MenuInput.World)
+	inPos := data.CurrentPlayArea.PuzzleView.ProjectWorld(data.MenuInput.World)
 	debug.AddIntCoords("Puzzle View In", int(inPos.X), int(inPos.Y))
 
 	x, y := world.WorldToMap(inPos.X, inPos.Y)
@@ -127,7 +131,6 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	if reanimator.FrameSwitch {
 		data.Editor.FrameCount++
 	}
-	//systems.AnimationTransitionSystem()
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	if !ui.DialogStackOpen {
@@ -135,7 +138,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 		systems.TileSpriteSystemPre()
 		systems.UpdateEditorModeHotKey()
 		systems.PuzzleEditSystem()
-		systems.FloatingTextEditorSystem()
+		systems.FloatingTextEditorSystem(data.CurrentPlayArea)
 	} else {
 		// todo: add draw selection here?
 	}
@@ -153,10 +156,10 @@ func (s *editorState) Update(win *pixelgl.Window) {
 
 	//s.UpdateViews()
 
-	data.BorderView.Update()
-	data.PuzzleView.Update()
-	data.WorldView.Update()
-	data.PuzzleViewNoShader.Update()
+	data.CurrentPlayArea.BorderView.Update()
+	data.CurrentPlayArea.PuzzleView.Update()
+	data.CurrentPlayArea.WorldView.Update()
+	data.CurrentPlayArea.PuzzleViewNoShader.Update()
 	data.ScreenView.Update()
 
 	if data.Editor.SelectVis && !ui.Dialogs[constants.DialogEditorBlockSelect].Open {
@@ -173,39 +176,39 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	data.ScreenView.Canvas.Clear(constants.ColorBlack)
 	if data.CurrLevel == nil {
 		// draw border
-		data.BorderView.Canvas.Clear(constants.ColorBlack)
-		systems.DrawBorder(ui.PuzzleBorderObject, ui.PuzzleBorder, data.BorderView.Canvas, false)
+		data.CurrentPlayArea.BorderView.Canvas.Clear(constants.ColorBlack)
+		systems.DrawBorder(data.PuzzleBorderObject, data.PuzzleBorder, data.CurrentPlayArea.BorderView.Canvas, false)
 		img.Clear()
-		data.BorderView.Draw(data.ScreenView.Canvas)
+		data.CurrentPlayArea.BorderView.Draw(data.ScreenView.Canvas)
 		// draw puzzle
-		data.WorldView.Canvas.Clear(pixel.RGBA{})
-		data.PuzzleView.Canvas.Clear(constants.ColorBlack)
-		systems.DrawLayerSystem(data.PuzzleView.Canvas, 2) // normal tiles
+		data.CurrentPlayArea.WorldView.Canvas.Clear(pixel.RGBA{})
+		data.CurrentPlayArea.PuzzleView.Canvas.Clear(constants.ColorBlack)
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 2) // normal tiles
 		img.Clear()
-		systems.DrawLayerSystem(data.PuzzleView.Canvas, 3) // selected tiles
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 3) // selected tiles
 		img.Clear()
-		systems.DrawLayerSystem(data.PuzzleView.Canvas, 4) // ui
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 4) // ui
 		img.Clear()
 		//data.PuzzleView.Draw(win)
-		data.PuzzleView.Draw(data.WorldView.Canvas)
-		data.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
-		data.IMDraw.Draw(data.PuzzleViewNoShader.Canvas)
-		systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 36)
-		systems.DrawLayerSystem(data.PuzzleViewNoShader.Canvas, 37)
+		data.CurrentPlayArea.PuzzleView.Draw(data.CurrentPlayArea.WorldView.Canvas)
+		data.CurrentPlayArea.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
+		data.CurrentPlayArea.IMDraw.Draw(data.CurrentPlayArea.PuzzleViewNoShader.Canvas)
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleViewNoShader.Canvas, 36)
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleViewNoShader.Canvas, 37)
 
 		// draw debug
 		if debug.ShowDebug {
-			debug.DrawLines(data.PuzzleViewNoShader.Canvas)
+			debug.DrawLines(data.CurrentPlayArea.PuzzleViewNoShader.Canvas)
 		}
 		//data.PuzzleViewNoShader.Draw(data.WorldView.Canvas)
-		data.WorldView.Draw(data.ScreenView.Canvas)
-		data.PuzzleViewNoShader.Draw(data.ScreenView.Canvas)
+		data.CurrentPlayArea.WorldView.Draw(data.ScreenView.Canvas)
+		data.CurrentPlayArea.PuzzleViewNoShader.Draw(data.ScreenView.Canvas)
 		// dialog draw system
 		systems.DialogDrawSystem(data.ScreenView.Canvas)
 		systems.DrawLayerSystem(data.ScreenView.Canvas, -10)
 		img.Clear()
 		systems.TemporarySystem()
-		data.IMDraw.Clear()
+		data.CurrentPlayArea.IMDraw.Clear()
 	}
 }
 

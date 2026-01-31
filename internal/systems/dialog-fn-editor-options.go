@@ -200,7 +200,7 @@ func OpenOpenPuzzleDialog() {
 	}
 }
 
-func OnOpenPuzzle() {
+func OnOpenPuzzleSet() {
 	if data.Editor != nil &&
 		data.SelectedPuzzleIndex > -1 &&
 		data.SelectedPuzzleIndex < len(data.PuzzleSetFileList) {
@@ -208,6 +208,8 @@ func OnOpenPuzzle() {
 		if err != nil {
 			fmt.Println("ERROR:", err)
 		}
+		SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
+		InitPuzzle(data.CurrentPlayArea)
 	}
 	ui.CloseDialog(constants.DialogOpenPuzzle)
 }
@@ -721,7 +723,7 @@ func OpenRearrangeAdventureDialog() {
 					"puzzle_top_center", "puzzle_top_left", "puzzle_top_right",
 					"puzzle_bot_center", "puzzle_bot_left", "puzzle_bot_right",
 					"puzzle_float_center", "puzzle_float_left", "puzzle_float_right":
-					ele1.Border.Style = ui.ThinBorderWhite
+					ele1.Border.Style = data.ThinBorderWhite
 				}
 			}
 		}
@@ -986,7 +988,8 @@ func ConfirmRearrangedPuzzles() {
 		data.CurrPuzzleSet.Puzzles = newPuzzles
 		// go to currently selected puzzle
 		data.CurrPuzzleSet.SetTo(data.PuzzleSetViewIndex)
-		PuzzleInit()
+		SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
+		InitPuzzle(data.CurrentPlayArea)
 
 		ui.Dispose(constants.DialogRearrangePuzzleSet)
 	}

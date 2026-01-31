@@ -411,9 +411,9 @@ func ConfirmChangeWorld() {
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[data.SelectedWorldIndex])
 		data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor = pixel.ToRGBA(constants.WorldLiquidSecondary[data.SelectedWorldIndex])
 	}
-	UpdateEditorShaders()
-	UpdatePuzzleShaders()
-	UpdateWorldShaders()
+	UpdateEditorShaders(data.CurrentPlayArea.Puzzle)
+	UpdatePuzzleShaders(data.CurrentPlayArea)
+	UpdateWorldShaders(data.CurrentPlayArea)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	data.CurrPuzzleSet.CurrPuzzle.Changed = true
 	ui.Dispose(constants.DialogChangeWorld)

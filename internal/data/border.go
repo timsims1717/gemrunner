@@ -1,4 +1,4 @@
-package ui
+package data
 
 import (
 	"gemrunner/pkg/object"

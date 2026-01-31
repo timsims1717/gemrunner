@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"encoding/json"
+	"gemrunner/internal/data"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/typeface"
@@ -138,7 +139,7 @@ type Element struct {
 	InputType  ValueType
 	MultiLine  bool
 
-	Border     *Border
+	Border     *data.Border
 	ViewPort   *viewport.ViewPort
 	Layer      int
 	Elements   []*Element

@@ -42,12 +42,9 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	ui.CloseDialog(constants.DialogPuzzleTitle)
 	ui.CloseDialog(constants.DialogPuzzleTimer)
 	systems.LevelSessionDispose()
-	systems.LevelDispose()
+	systems.DisposeCurrLevel()
 	systems.ClearTemp()
-	systems.PuzzleViewInit()
-	systems.UpdateEditorShaders()
-	systems.UpdatePuzzleShaders()
-	systems.ChangeWorldShader(data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderMode)
+	systems.InitPuzzle(data.CurrentPlayArea)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
@@ -64,7 +61,7 @@ func (s *testState) Load(win *pixelgl.Window) {
 		}
 	}
 	systems.LevelSessionInit()
-	systems.LevelInit(false)
+	systems.StartLevel(false)
 	systems.UpdateViews()
 	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
@@ -139,10 +136,10 @@ func (s *testState) Update(win *pixelgl.Window) {
 	systems.ObjectSystem()
 	systems.EffectsSystem()
 
-	data.BorderView.Update()
-	data.PuzzleView.Update()
-	data.WorldView.Update()
-	data.PuzzleViewNoShader.Update()
+	data.CurrentPlayArea.BorderView.Update()
+	data.CurrentPlayArea.PuzzleView.Update()
+	data.CurrentPlayArea.WorldView.Update()
+	data.CurrentPlayArea.PuzzleViewNoShader.Update()
 	data.ScreenView.Update()
 
 	myecs.UpdateManager()

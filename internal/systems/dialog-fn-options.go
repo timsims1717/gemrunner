@@ -26,10 +26,10 @@ func OpenOptions() {
 		switch ele.Key {
 		case "gameplay_tab":
 			ele.Get("label_shadow").Text.Show()
-			ele.Border.Style = ui.ThinBorderWhite
+			ele.Border.Style = data.ThinBorderWhite
 		case "graphics_tab", "audio_tab", "input_tab":
 			ele.Get("label_shadow").Text.Hide()
-			ele.Border.Style = ui.ThinBorderBlue
+			ele.Border.Style = data.ThinBorderBlue
 		case "gameplay_tab_display", "graphics_tab_display", "audio_tab_display", "input_tab_display":
 			ele.Object.Hidden = ele.Key != "gameplay_tab_display"
 			for _, e1 := range ele.Elements {
@@ -236,9 +236,9 @@ func customizeOptionsDialog() {
 					case "gameplay_tab", "graphics_tab", "audio_tab", "input_tab":
 						if dle.ElementType == ui.ContainerElement {
 							if ele.Key == dle.Key {
-								dle.Border.Style = ui.ThinBorderWhite
+								dle.Border.Style = data.ThinBorderWhite
 							} else {
-								dle.Border.Style = ui.ThinBorderBlue
+								dle.Border.Style = data.ThinBorderBlue
 							}
 							for _, txt1 := range dle.Elements {
 								if ele.Key == dle.Key && txt1.Key == "label_shadow" {

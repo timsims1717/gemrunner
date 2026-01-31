@@ -46,6 +46,7 @@ var (
 
 type PuzzleMetadata struct {
 	Name                 string     `json:"title"`
+	UUID                 string     `json:"uuid"`
 	Author               string     `json:"author"`
 	Filename             string     `json:"filename"`
 	Width                int        `json:"width"`

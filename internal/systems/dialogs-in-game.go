@@ -45,7 +45,7 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 			constants.DialogPlayer2Inv,
 			constants.DialogPlayer3Inv,
 			constants.DialogPlayer4Inv:
-			dialog.Border.Style = ui.ThinBorder
+			dialog.Border.Style = data.ThinBorder
 			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
 			if dialog.Key != constants.DialogPuzzleTitle {
 				dialog.ViewPort.Canvas.SetUniform("uRedPrimary", float32(1))
@@ -75,7 +75,7 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 				}
 			}
 		case constants.DialogPuzzleTitle, constants.DialogPuzzleTimer:
-			dialog.Border.Style = ui.ThinBorder
+			dialog.Border.Style = data.ThinBorder
 			dialog.Border.Rect = pixel.R(0, 0, float64(dialog.Border.Width)*world.TileSize, float64(dialog.Border.Height)*world.TileSize)
 		case constants.DialogPauseMenu:
 			for _, e := range dialog.Elements {
@@ -90,7 +90,7 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 							}
 							if hvc.Hover && click.Pressed() && dialog.Click {
 								// change border to be reverse, change text to blue
-								ele.Border.Style = ui.ThinBorderReverse
+								ele.Border.Style = data.ThinBorderReverse
 								ele.Elements[0].Text.SetColor(pixel.ToRGBA(constants.ColorBlue))
 							} else {
 								if hvc.Hover && click.JustReleased() && dialog.Click {
@@ -116,11 +116,11 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 								} else if !click.Pressed() && !click.JustReleased() && dialog.Click {
 									dialog.Click = false
 									// change border to be normal, change text to white
-									ele.Border.Style = ui.ThinBorder
+									ele.Border.Style = data.ThinBorder
 									ele.Elements[0].Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
 								} else {
 									// change border to be normal, change text to white
-									ele.Border.Style = ui.ThinBorder
+									ele.Border.Style = data.ThinBorder
 									ele.Elements[0].Text.SetColor(pixel.ToRGBA(constants.ColorWhite))
 								}
 							}
@@ -157,11 +157,10 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 	}
 }
 
-func SetPuzzleTitle() {
-	if data.CurrLevel == nil {
+func SetPuzzleTitle(title string, color pixel.RGBA) {
+	if title == "" {
 		return
 	}
-	title := data.CurrLevel.Metadata.Name
 	dlg := ui.Dialogs[constants.DialogPuzzleTitle]
 	txt := dlg.Get("puzzle_title")
 	width := txt.Text.Text.BoundsOf(title).W() * txt.Text.Scalar
@@ -174,7 +173,7 @@ func SetPuzzleTitle() {
 	dlg.ViewPort.SetRect(pixel.R(0, 0, dlgWidth, dlg.Border.Rect.H()))
 	for _, ele := range dlg.Elements {
 		if ele.Key == "puzzle_title_shadow" {
-			ele.Text.SetColor(data.CurrLevel.Metadata.PrimaryColor)
+			ele.Text.SetColor(color)
 		}
 		ele.Object.Pos.X = width * -0.5
 		ele.Text.SetText(title)
@@ -182,9 +181,6 @@ func SetPuzzleTitle() {
 }
 
 func UpdatePuzzleTimer() {
-	if data.CurrLevel == nil {
-		return
-	}
 	timerText := FormatTimePlayed()
 	dlg := ui.Dialogs[constants.DialogPuzzleTimer]
 	txt := dlg.Get("puzzle_timer")

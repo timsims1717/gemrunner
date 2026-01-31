@@ -4,7 +4,6 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
-	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/world"
@@ -13,35 +12,35 @@ import (
 	"math"
 )
 
-func DrawBorder(obj *object.Object, bord *ui.Border, target pixel.Target, level bool) {
+func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, level bool) {
 	if bord == nil || bord.Hidden {
 		return
 	}
 	switch bord.Style {
-	case ui.FancyBorder:
+	case data.FancyBorder:
 		DrawFancyBorder(bord, obj, level)
-	case ui.ThinBorder:
+	case data.ThinBorder:
 		DrawThinBorder(bord, obj)
-	case ui.ThinBorderReverse:
+	case data.ThinBorderReverse:
 		DrawThinBorderReverse(bord, obj)
-	case ui.ThinBorderWhite:
+	case data.ThinBorderWhite:
 		DrawThinBorderWhite(bord, obj)
-	case ui.ThinBorderBlue:
+	case data.ThinBorderBlue:
 		DrawThinBorderBlue(bord, obj)
-	case ui.ThickBorder:
+	case data.ThickBorder:
 		DrawThickBorder(bord, obj)
-	case ui.ThickBorderReverse:
+	case data.ThickBorderReverse:
 		DrawThickBorderReverse(bord, obj)
-	case ui.ThickBorderWhite:
+	case data.ThickBorderWhite:
 		DrawThickBorderWhite(bord, obj)
-	case ui.ThickBorderBlue:
+	case data.ThickBorderBlue:
 		DrawThickBorderBlue(bord, obj)
 	}
 	img.Batchers[constants.UIBatch].Draw(target)
 	img.Clear()
 }
 
-func DrawFancyBorder(bord *ui.Border, obj *object.Object, level bool) {
+func DrawFancyBorder(bord *data.Border, obj *object.Object, level bool) {
 	for y := 0; y < bord.Height+2; y++ {
 		if y == 0 || y == bord.Height+1 {
 			for x := 0; x < bord.Width+2; x++ {
@@ -65,7 +64,7 @@ func DrawFancyBorder(bord *ui.Border, obj *object.Object, level bool) {
 	}
 }
 
-func DrawFancyBorderSection(x, y int, bord *ui.Border, obj *object.Object, level bool) {
+func DrawFancyBorderSection(x, y int, bord *data.Border, obj *object.Object, level bool) {
 	if level && data.CurrLevel != nil {
 		if x == 0 && y > 0 && y <= bord.Height {
 			if t := data.CurrLevel.Get(x, y-1); !t.IsSolidLevelTrans(data.CurrLevel.DoorsOpen) {
@@ -129,7 +128,7 @@ func DrawFancyBorderSection(x, y int, bord *ui.Border, obj *object.Object, level
 	img.Batchers[constants.UIBatch].DrawSpriteColor(sKey, mat.Moved(obj.PostPos).Moved(offset), colornames.White)
 }
 
-func DrawThinBorder(bord *ui.Border, obj *object.Object) {
+func DrawThinBorder(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	// top
@@ -142,7 +141,7 @@ func DrawThinBorder(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
 }
 
-func DrawThinBorderReverse(bord *ui.Border, obj *object.Object) {
+func DrawThinBorderReverse(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	// top
@@ -155,7 +154,7 @@ func DrawThinBorderReverse(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
 }
 
-func DrawThinBorderWhite(bord *ui.Border, obj *object.Object) {
+func DrawThinBorderWhite(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	// top
@@ -168,7 +167,7 @@ func DrawThinBorderWhite(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
 }
 
-func DrawThinBorderBlue(bord *ui.Border, obj *object.Object) {
+func DrawThinBorderBlue(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	// top
@@ -181,7 +180,7 @@ func DrawThinBorderBlue(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-0.5, 0)))
 }
 
-func DrawThickBorder(bord *ui.Border, obj *object.Object) {
+func DrawThickBorder(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	matTB2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+4, 1.))
@@ -200,7 +199,7 @@ func DrawThickBorder(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR2.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-1.5, 0)))
 }
 
-func DrawThickBorderReverse(bord *ui.Border, obj *object.Object) {
+func DrawThickBorderReverse(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	matTB2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+4, 1.))
@@ -219,7 +218,7 @@ func DrawThickBorderReverse(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR2.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-1.5, 0)))
 }
 
-func DrawThickBorderWhite(bord *ui.Border, obj *object.Object) {
+func DrawThickBorderWhite(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	matTB2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+4, 1.))
@@ -238,7 +237,7 @@ func DrawThickBorderWhite(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderWhite, matLR2.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-1.5, 0)))
 }
 
-func DrawThickBorderBlue(bord *ui.Border, obj *object.Object) {
+func DrawThickBorderBlue(bord *data.Border, obj *object.Object) {
 	matTB := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+2, 1.))
 	matLR := pixel.IM.ScaledXY(pixel.ZV, pixel.V(1., bord.Rect.H()+2))
 	matTB2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(bord.Rect.W()+4, 1.))
@@ -257,7 +256,7 @@ func DrawThickBorderBlue(bord *ui.Border, obj *object.Object) {
 	img.Batchers[constants.UIBatch].DrawSprite(constants.ThinBorderBlue, matLR2.Moved(obj.PostPos).Moved(pixel.V(bord.Rect.W()*-0.5-1.5, 0)))
 }
 
-func DrawBlackSquare(x, y int, bord *ui.Border, obj *object.Object) {
+func DrawBlackSquare(x, y int, bord *data.Border, obj *object.Object) {
 	mat := pixel.IM
 	offset := pixel.V(world.TileSize*(float64(x)-float64(bord.Width+1)*0.5), world.TileSize*(float64(y)-float64(bord.Height+1)*0.5))
 	sKey := "black_square_16"
@@ -265,27 +264,53 @@ func DrawBlackSquare(x, y int, bord *ui.Border, obj *object.Object) {
 }
 
 func InitMainBorder() {
-	if ui.PuzzleBorder == nil {
-		ui.PuzzleBorderObject = object.New()
-		ui.PuzzleBorderObject.Pos.X = world.TileSize * 0.5 * constants.PuzzleWidth
-		ui.PuzzleBorderObject.Pos.Y = world.TileSize * 0.5 * constants.PuzzleHeight
-		ui.PuzzleBorderObject.Layer = 1
-		ui.PuzzleBorder = &ui.Border{
+	if data.PuzzleBorder == nil {
+		data.PuzzleBorderObject = object.New()
+		data.PuzzleBorderObject.Pos.X = world.TileSize * 0.5 * constants.PuzzleWidth
+		data.PuzzleBorderObject.Pos.Y = world.TileSize * 0.5 * constants.PuzzleHeight
+		data.PuzzleBorderObject.Layer = 1
+		data.PuzzleBorder = &data.Border{
 			Width:  constants.PuzzleWidth,
 			Height: constants.PuzzleHeight,
 			Empty:  false,
 		}
-		ui.MainBorder = myecs.Manager.NewEntity()
-		ui.MainBorder.AddComponent(myecs.Object, ui.PuzzleBorderObject).
-			AddComponent(myecs.Border, ui.PuzzleBorder)
+		data.MainBorder = myecs.Manager.NewEntity()
+		data.MainBorder.AddComponent(myecs.Object, data.PuzzleBorderObject).
+			AddComponent(myecs.Border, data.PuzzleBorder)
 	}
 }
 
 func SetMainBorder(w, h int) {
-	if ui.PuzzleBorder != nil {
-		ui.PuzzleBorderObject.Pos.X = world.TileSize * 0.5 * float64(w)
-		ui.PuzzleBorderObject.Pos.Y = world.TileSize * 0.5 * float64(h)
-		ui.PuzzleBorder.Width = w
-		ui.PuzzleBorder.Height = h
+	if data.PuzzleBorder != nil {
+		data.PuzzleBorderObject.Pos.X = world.TileSize * 0.5 * float64(w)
+		data.PuzzleBorderObject.Pos.Y = world.TileSize * 0.5 * float64(h)
+		data.PuzzleBorder.Width = w
+		data.PuzzleBorder.Height = h
+	}
+}
+
+func InitBorder(fp *data.PlayArea) {
+	if fp.Border == nil {
+		fp.BorderObject = object.New()
+		fp.BorderObject.Pos.X = world.TileSize * 0.5 * constants.PuzzleWidth
+		fp.BorderObject.Pos.Y = world.TileSize * 0.5 * constants.PuzzleHeight
+		fp.BorderObject.Layer = 1
+		fp.Border = &data.Border{
+			Width:  constants.PuzzleWidth,
+			Height: constants.PuzzleHeight,
+			Empty:  false,
+		}
+		fp.BorderEntity = myecs.Manager.NewEntity()
+		fp.BorderEntity.AddComponent(myecs.Object, fp.BorderObject).
+			AddComponent(myecs.Border, fp.Border)
+	}
+}
+
+func SetBorder(fp *data.PlayArea) {
+	if fp.Border != nil {
+		fp.BorderObject.Pos.X = world.TileSize * 0.5 * float64(fp.Puzzle.Metadata.Width)
+		fp.BorderObject.Pos.Y = world.TileSize * 0.5 * float64(fp.Puzzle.Metadata.Height)
+		fp.Border.Width = fp.Puzzle.Metadata.Width
+		fp.Border.Height = fp.Puzzle.Metadata.Height
 	}
 }

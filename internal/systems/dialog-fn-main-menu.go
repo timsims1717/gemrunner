@@ -68,10 +68,10 @@ func ConfirmAddPlayers() {
 		switch ele.Key {
 		case "play_custom_tab":
 			ele.Get("custom_tab_text_shadow").Text.Show()
-			ele.Border.Style = ui.ThinBorderWhite
+			ele.Border.Style = data.ThinBorderWhite
 		case "play_main_tab":
 			ele.Get("main_tab_text_shadow").Text.Hide()
-			ele.Border.Style = ui.ThinBorderBlue
+			ele.Border.Style = data.ThinBorderBlue
 		case "main_tab_display":
 		case "custom_tab_display":
 			for _, e1 := range ele.Elements {

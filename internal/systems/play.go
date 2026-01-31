@@ -92,9 +92,9 @@ func PlaySystem() {
 
 func Restart() {
 	record := data.CurrLevel.Recording
-	LevelDispose()
+	DisposeCurrLevel()
 	ClearTemp()
-	LevelInit(record)
+	StartLevel(record)
 	UpdateViews()
 	data.EditorDraw = false
 	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
@@ -105,7 +105,7 @@ func Restart() {
 
 func GoToLevel(i int) {
 	record := data.CurrLevel.Recording
-	LevelDispose()
+	DisposeCurrLevel()
 	ClearTemp()
 	for {
 		if i >= len(data.CurrPuzzleSet.Puzzles) {
@@ -119,8 +119,8 @@ func GoToLevel(i int) {
 		i++
 	}
 	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
-	PuzzleInit()
-	LevelInit(record)
+	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
+	StartLevel(record)
 	UpdateViews()
 	data.EditorDraw = false
 	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)

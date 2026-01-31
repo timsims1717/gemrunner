@@ -28,9 +28,9 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Drawable, spr)
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:   pixel.R(0, 0, r.W(), r.H()),
-		Style:  ThinBorderWhite,
+		Style:  data.ThinBorderWhite,
 		Hidden: true,
 	}
 
@@ -104,9 +104,9 @@ func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport
 	e.AddComponent(myecs.Object, obj).
 		AddComponent(myecs.Drawable, spr)
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:   pixel.R(0, 0, r.W(), r.H()),
-		Style:  ThinBorderWhite,
+		Style:  data.ThinBorderWhite,
 		Hidden: true,
 	}
 
@@ -156,9 +156,9 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:  pixel.R(0, 0, element.Width, element.Height),
-		Style: ThinBorder,
+		Style: data.ThinBorder,
 	}
 
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
@@ -227,9 +227,9 @@ func CreateDropdownElement(element ElementConstructor, dlg *Dialog, parent *Elem
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
-	var bord = &Border{
+	var bord = &data.Border{
 		Rect:  pixel.R(0, 0, element.Width, element.Height),
-		Style: ThinBorder,
+		Style: data.ThinBorder,
 	}
 	tf := typeface.New("main").
 		WithAlign(typeface.NewAlign(typeface.Left, typeface.Top)).
@@ -426,9 +426,9 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:  pixel.R(0, 0, element.Width, element.Height),
-		Style: ThinBorder,
+		Style: data.ThinBorder,
 	}
 
 	tf := typeface.New("main").
@@ -745,9 +745,9 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:  pixel.R(0, 0, element.Width, element.Height),
-		Style: ThinBorder,
+		Style: data.ThinBorder,
 	}
 
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, vpObj)
@@ -1005,9 +1005,9 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 	obj.Layer = 99
 	obj.SetRect(pixel.R(0, 0, element.Width, element.Height))
 
-	bord := &Border{
+	bord := &data.Border{
 		Rect:  pixel.R(0, 0, element.Width, element.Height),
-		Style: ThinBorder,
+		Style: data.ThinBorder,
 	}
 
 	e := myecs.Manager.NewEntity().AddComponent(myecs.Object, obj)

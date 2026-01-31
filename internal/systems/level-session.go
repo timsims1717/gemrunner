@@ -3,7 +3,9 @@ package systems
 import (
 	"fmt"
 	"gemrunner/internal/constants"
+	"gemrunner/internal/content"
 	"gemrunner/internal/data"
+	"gemrunner/internal/random"
 	"gemrunner/internal/ui"
 	"time"
 )
@@ -26,7 +28,6 @@ func LevelSessionInit() {
 		data.CurrLevelSess.Filename = fmt.Sprintf("%s%s", data.CurrPuzzleSet.Metadata.Name, constants.SaveExt)
 	} else {
 		data.CurrPuzzleSet.SetTo(data.CurrLevelSess.PuzzleIndex)
-		PuzzleInit()
 	}
 	data.CurrLevelSess.Metadata = data.CurrPuzzleSet.Metadata
 	data.CurrLevelSess.PuzzleSet = data.CurrPuzzleSet
@@ -48,6 +49,37 @@ func LevelSessionInit() {
 	}
 	if constants.Configuration.Gameplay.ShowTimer {
 		ui.OpenDialog(constants.DialogPuzzleTimer)
+	}
+}
+
+func StartLevel(record bool) {
+	if data.CurrentPlayArea == nil {
+		data.CurrentPlayArea = CreatePlayArea()
+	}
+	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
+	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
+	InitLevel(data.CurrentPlayArea)
+	//InitPlayArea(data.CurrentPlayArea)
+
+	levelSeed := random.RandomSeed()
+	random.SetLevelSeed(levelSeed)
+
+	// set up recording stuff
+	data.CurrentPlayArea.Level.Recording = data.CurrReplay == nil && record
+	data.CurrentPlayArea.Level.SaveRecord = constants.Configuration.Gameplay.AlwaysRecord
+	if data.CurrentPlayArea.Level.Recording {
+		data.CurrentPlayArea.Level.LevelReplay = &data.LevelReplay{
+			PuzzleSet:   data.CurrPuzzleSet.Metadata.Name,
+			Filename:    data.CurrPuzzleSet.Metadata.Filename,
+			ReplayFile:  content.ReplayFile(data.CurrPuzzleSet.Metadata.Name, data.CurrPuzzleSet.PuzzleIndex),
+			PuzzleNum:   data.CurrPuzzleSet.PuzzleIndex,
+			StartCoords: data.CurrLevelSess.StartCoords,
+			Seed:        levelSeed,
+		}
+		data.CurrentPlayArea.Level.ReplayFrame = data.ReplayFrame{}
+	} else if data.CurrReplay != nil {
+		data.CurrReplay.FrameIndex = 0
+		data.CurrentPlayArea.Level.StartCoords = data.CurrReplay.StartCoords
 	}
 }
 

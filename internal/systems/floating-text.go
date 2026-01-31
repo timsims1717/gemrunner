@@ -84,7 +84,7 @@ func FloatingTextSystem() {
 	}
 }
 
-func FloatingTextEditorSystem() {
+func FloatingTextEditorSystem(fp *data.PlayArea) {
 	for _, result := range myecs.Manager.Query(myecs.IsText) {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tf, okTF := result.Components[myecs.Text].(*data.FloatingText)
@@ -127,16 +127,16 @@ func FloatingTextEditorSystem() {
 
 			if data.Editor.Mode == data.ModeText && tf.Tile != nil {
 				if tf.HasShadow {
-					data.IMDraw.Color = tf.ShadowCol
+					fp.IMDraw.Color = tf.ShadowCol
 				} else {
-					data.IMDraw.Color = constants.ColorLightGray
+					fp.IMDraw.Color = constants.ColorLightGray
 				}
-				data.IMDraw.EndShape = imdraw.SharpEndShape
-				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)))
-				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, -world.HalfSize)))
-				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, -world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, -world.HalfSize)))
-				data.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, -world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, world.HalfSize)))
-				data.IMDraw.Line(2)
+				fp.IMDraw.EndShape = imdraw.SharpEndShape
+				fp.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)))
+				fp.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, -world.HalfSize)))
+				fp.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(world.HalfSize, -world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, -world.HalfSize)))
+				fp.IMDraw.Push(tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, -world.HalfSize)), tf.Tile.Object.Pos.Sub(pixel.V(-world.HalfSize, world.HalfSize)))
+				fp.IMDraw.Line(2)
 			}
 		}
 	}

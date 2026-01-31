@@ -10,20 +10,20 @@ import (
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
+	"github.com/bytearena/ecs"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/imdraw"
 	"time"
 )
 
 var (
-	PuzzleView         *viewport.ViewPort
-	PuzzleViewNoShader *viewport.ViewPort
-	WorldView          *viewport.ViewPort
-	BorderView         *viewport.ViewPort
-	ScreenView         *viewport.ViewPort
-	IMDraw             *imdraw.IMDraw
-	ScreenShake        *util.NoiseShaker
+	CurrentPlayArea *PlayArea
+	AllPlayAreas    []*PlayArea
+
+	ScreenView  *viewport.ViewPort
+	ScreenShake *util.NoiseShaker
 
 	CurrLevelSess *LevelSession
 	CurrLevel     *Level
@@ -39,7 +39,23 @@ var (
 	PuzzleShader string
 	WorldShader  string
 	ScreenShader string
+	ShaderTime   float32
 )
+
+type PlayArea struct {
+	PuzzleView         *viewport.ViewPort
+	PuzzleViewNoShader *viewport.ViewPort
+	WorldView          *viewport.ViewPort
+	BorderView         *viewport.ViewPort
+	IMDraw             *imdraw.IMDraw
+
+	Level  *Level
+	Puzzle *Puzzle
+
+	BorderEntity *ecs.Entity
+	Border       *Border
+	BorderObject *object.Object
+}
 
 type LevelSession struct {
 	PlayerStats [constants.MaxPlayers]*PlayerStats `json:"playerStats"`
@@ -76,6 +92,7 @@ type LevelCompletion struct {
 type Level struct {
 	Tiles       *Tiles
 	Enemies     []*Dynamic
+	AllEntities []*ecs.Entity
 	Players     [constants.MaxPlayers]*Dynamic
 	PControls   [constants.MaxPlayers]Controller
 	PLoc        [constants.MaxPlayers]*mgl32.Vec2
@@ -120,8 +137,6 @@ type PuzzleSet struct {
 	PuzzGrid   map[world.Coords]int `json:"-"`
 	GridMin    world.Coords         `json:"-"`
 	GridMax    world.Coords         `json:"-"`
-
-	Elapsed float32 `json:"-"`
 
 	PuzzleIndex int  `json:"-"`
 	NeedToSave  bool `json:"-"`
@@ -584,6 +599,14 @@ func (p *Puzzle) NumPlayers() int {
 		}
 	}
 	return numPlayers
+}
+
+func (set *PuzzleSet) SetUpUUIDs() {
+	for _, pzl := range set.Puzzles {
+		if pzl.Metadata.UUID == "" {
+			pzl.Metadata.UUID = uuid.New().String()
+		}
+	}
 }
 
 func (set *PuzzleSet) SetUpGrid() {

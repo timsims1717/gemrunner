@@ -97,9 +97,9 @@ func CustomizeMainDialog(win *pixelgl.Window, key string) {
 				}
 			} else if ele.ElementType == ui.ContainerElement {
 				if ele.Key == "play_main_tab" {
-					ele.Border.Style = ui.ThinBorderWhite
+					ele.Border.Style = data.ThinBorderWhite
 				} else if ele.Key == "play_custom_tab" {
-					ele.Border.Style = ui.ThinBorderBlue
+					ele.Border.Style = data.ThinBorderBlue
 				}
 				switch ele.Key {
 				case "play_main_tab", "play_custom_tab":
@@ -115,9 +115,9 @@ func CustomizeMainDialog(win *pixelgl.Window, key string) {
 							case "play_main_tab", "play_custom_tab":
 								if dle.ElementType == ui.ContainerElement {
 									if ele.Key == dle.Key {
-										dle.Border.Style = ui.ThinBorderWhite
+										dle.Border.Style = data.ThinBorderWhite
 									} else {
-										dle.Border.Style = ui.ThinBorderBlue
+										dle.Border.Style = data.ThinBorderBlue
 									}
 									for _, txt1 := range dle.Elements {
 										if (ele.Key == "play_main_tab" && txt1.Key == "main_tab_text_shadow") ||

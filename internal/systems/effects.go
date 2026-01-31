@@ -11,16 +11,15 @@ import (
 )
 
 func EffectsSystem() {
-	if data.CurrPuzzleSet != nil {
-		data.CurrPuzzleSet.Elapsed += float32(timing.DT)
-	}
+	data.ShaderTime += float32(timing.DT)
 	// screen shake
-	if data.ScreenShake != nil && constants.Configuration.Gameplay.ScreenShake {
+	if data.ScreenShake != nil && constants.Configuration.Gameplay.ScreenShake &&
+		data.CurrentPlayArea != nil {
 		offset, fin := data.ScreenShake.Shake(timing.DT)
 		if fin {
-			data.WorldView.Offset = pixel.ZV
+			data.CurrentPlayArea.WorldView.Offset = pixel.ZV
 		} else {
-			data.WorldView.Offset = offset
+			data.CurrentPlayArea.WorldView.Offset = offset
 		}
 	}
 	// shadow

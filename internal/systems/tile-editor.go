@@ -138,7 +138,15 @@ func SetBlock(coords world.Coords, block data.Block) {
 					}
 				}
 				if block != data.BlockTurf {
-					tile.Metadata.Color = data.Editor.PaletteColor
+					col := data.Editor.PaletteColor
+					if col == data.ColorDefault {
+						switch block {
+						case data.BlockDoorHidden, data.BlockDoorVisible,
+							data.BlockDoorLocked, data.BlockKey, data.BlockGem:
+							col = data.NonPlayerYellow
+						}
+					}
+					tile.Metadata.Color = col
 				}
 			}
 			data.Editor.LastTiles[tile.Block] = tile
