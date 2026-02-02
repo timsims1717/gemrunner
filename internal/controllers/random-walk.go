@@ -37,24 +37,27 @@ func (rw *RandomWalk) GetActions() data.Actions {
 			tile := data.CurrLevel.Get(x, y)
 			if tile.IsEmpty() {
 				rw.Ch.Object.SetPos(tile.Object.Pos)
+				change = true
 			}
 		}
 	}
-	if rw.Ch.Flags.RightWall && rw.Direction == data.Right {
-		change = true
-	} else if rw.Ch.Flags.LeftWall && rw.Direction == data.Left {
-		change = true
-	} else if rw.Ch.Flags.Ceiling && rw.Direction == data.Up {
-		change = true
-	} else if rw.Ch.Flags.Floor && rw.Direction == data.Down {
-		change = true
-	} else if rw.Direction == data.NoDirection {
-		change = true
+	x, y := world.WorldToMap(rw.Ch.Object.Pos.X, rw.Ch.Object.Pos.Y)
+	currTile := data.CurrLevel.Get(x, y)
+	belowTile := data.CurrLevel.Get(x, y-1)
+	if !change {
+		if rw.Ch.Flags.RightWall && rw.Direction == data.Right {
+			change = true
+		} else if rw.Ch.Flags.LeftWall && rw.Direction == data.Left {
+			change = true
+		} else if (rw.Ch.Flags.Ceiling || !currTile.IsLadder()) && rw.Direction == data.Up {
+			change = true
+		} else if rw.Ch.Flags.Floor && rw.Direction == data.Down {
+			change = true
+		} else if rw.Direction == data.NoDirection {
+			change = true
+		}
 	}
 	if change {
-		x, y := world.WorldToMap(rw.Ch.Object.Pos.X, rw.Ch.Object.Pos.Y)
-		currTile := data.CurrLevel.Get(x, y)
-		belowTile := data.CurrLevel.Get(x, y-1)
 		l := !rw.Ch.Flags.LeftWall
 		r := !rw.Ch.Flags.RightWall
 		u := !rw.Ch.Flags.Ceiling && currTile.IsLadder()

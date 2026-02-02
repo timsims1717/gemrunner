@@ -15,13 +15,12 @@ func FlyAnimation(ch *data.Dynamic) *reanimator.Tree {
 	boom := reanimator.NewBatchAnimation("boom", batch, "fly_boom", reanimator.Tran)
 	boom.SetEndTrigger(func() {
 		ch.State = data.Dead
-		ch.Flags.Death = death.None
 		ch.Flags.NextStep = false
+		ch.Flags.Death = death.None
 	})
 	crush := reanimator.NewBatchAnimation("crush", batch, "fly_crush", reanimator.Tran)
 	crush.SetEndTrigger(func() {
-		ch.Flags.Death = death.None
-		ch.Flags.NextStep = false
+		ch.Flags.NextStep = true
 	})
 	regen := reanimator.NewBatchAnimation("regen", batch, "fly_regen", reanimator.Tran)
 	regen.SetEndTrigger(func() {

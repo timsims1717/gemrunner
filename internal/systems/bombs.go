@@ -154,7 +154,7 @@ func BombAction(theBomb *data.Bomb) *data.Interact {
 		case data.OnBar, data.Jumping, data.Falling:
 			return
 		}
-		DropItem(ch)
+		ClearInv(ch)
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 		tile := data.CurrLevel.Get(x, y)
 		LightBomb(theBomb, tile)

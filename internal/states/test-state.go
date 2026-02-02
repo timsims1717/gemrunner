@@ -12,7 +12,6 @@ import (
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
-	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel/pixelgl"
 )
 
@@ -75,29 +74,8 @@ func (s *testState) Update(win *pixelgl.Window) {
 	data.P4Input.Update(win, viewport.MainCamera.Mat)
 	systems.CursorSystem(true)
 	debug.AddText("Test State")
-	debug.AddText(fmt.Sprintf("Speed: %d", constants.Configuration.Gameplay.FrameRate))
-	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
-	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
-	debug.AddText(fmt.Sprintf("Frame Cycle: %d", data.CurrLevel.FrameCycle))
-	debug.AddTruthText("Frame Change", data.CurrLevel.FrameChange)
-	for i, player := range data.CurrLevel.Players {
-		if player != nil {
-			pos := player.Object.Pos
-			debug.AddIntCoords(fmt.Sprintf("Player %d Pos", i+1), int(pos.X), int(pos.Y))
-			cx, cy := world.WorldToMap(pos.X, pos.Y)
-			debug.AddIntCoords(fmt.Sprintf("Player %d Coords", i+1), cx, cy)
-			debug.AddText(fmt.Sprintf("Player %d Score: %d", i+1, data.CurrLevelSess.PlayerStats[i].Score))
-			debug.AddText(fmt.Sprintf("Player %d Deaths: %d", i+1, data.CurrLevelSess.PlayerStats[i].Deaths))
-			debug.AddText(fmt.Sprintf("Player %d State: %s", i+1, player.State.String()))
-			if player.Inventory == nil {
-				debug.AddText(fmt.Sprintf("Player %d Inv: Empty", i+1))
-			} else {
-				item := player.Inventory.Name
-				debug.AddText(fmt.Sprintf("Player %d Inv: %s", i+1, item))
-			}
-			debug.AddText(fmt.Sprintf("Player %d # of Tiles: %d", i+1, len(player.StoredBlocks)))
-		}
-	}
+	systems.InGameDebugInfo()
+	systems.InGameDebugInput()
 
 	if reanimator.FRate != constants.Configuration.Gameplay.FrameRate {
 		reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)

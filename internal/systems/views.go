@@ -28,7 +28,10 @@ func UpdateViews() {
 		constants.PickedRatio += 1
 	}
 
-	for _, fp := range data.AllPlayAreas {
+	if data.CurrentPlayArea != nil {
+		UpdatePlayAreaView(data.CurrentPlayArea)
+	}
+	for _, fp := range data.OtherPlayAreas {
 		UpdatePlayAreaView(fp)
 	}
 

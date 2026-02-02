@@ -148,17 +148,22 @@ func InitLevelTiles(level *data.Level) {
 	}
 }
 
-func InitContinuity(level *data.Level) {
-	if data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity {
-		var t *data.Tile
-		if data.CurrLevelSess.StartCoords != nil {
-			t = level.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y)
-		}
-		for i, p := range level.Players {
-			if p != nil {
-				if t != nil && !t.IsSolid() {
-					p.Object.SetPos(t.Object.Pos)
-				}
+func InitPlayers(level *data.Level) {
+	cont := data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity
+	var st *data.Tile
+	if data.CurrLevelSess.StartCoords != nil {
+		st = level.Get(data.CurrLevelSess.StartCoords.X, data.CurrLevelSess.StartCoords.Y)
+	}
+	for i, p := range level.Players {
+		if p != nil {
+			if cont && st != nil && !st.IsSolid() {
+				p.Object.SetPos(st.Object.Pos)
+				p.Options.LinkedTiles = []world.Coords{st.Coords}
+				p.State = data.Grounded
+			} else {
+				PlayerPortal(p.Object.Layer+1, p.Object.Pos)
+			}
+			if cont {
 				p.SmallBombs = data.CurrLevelSess.PlayerStats[i].CurrBombs
 				inv := data.CurrLevelSess.PlayerStats[i].Inventory
 				if inv != nil {
@@ -497,10 +502,10 @@ func EnemyOnTile(tile *data.Tile) bool {
 	return false
 }
 
-func SomethingOnTile(tile *data.Tile) bool {
+func SomethingOnTile(tile *data.Tile, id string) bool {
 	for _, result := range myecs.Manager.Query(myecs.IsLvlElement) {
 		obj, ok := result.Components[myecs.Object].(*object.Object)
-		if ok {
+		if ok && !obj.Hidden && id != obj.ID {
 			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
 			if x == tile.Coords.X && y == tile.Coords.Y {
 				return true

@@ -24,7 +24,7 @@ func PlayerCharacter(pos pixel.Vec, pIndex int, replay *data.LevelReplay) *data.
 	obj := object.New().WithFixedID(fmt.Sprintf("player_%d", pIndex)).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 12, 16))
 	obj.Layer = player.Layer
-	PlayerPortal(obj.Layer+1, pos)
+	//PlayerPortal(obj.Layer+1, pos)
 	e := myecs.Manager.NewEntity()
 	e.AddComponent(myecs.Object, obj)
 	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))

@@ -124,6 +124,9 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 }
 
 func DrawBatchThing(draw interface{}, obj *object.Object, batch *img.Batcher) {
+	if obj.Hidden {
+		return
+	}
 	if sprH, ok1 := draw.(*img.Sprite); ok1 {
 		if sprH.Batch != "" && sprH.Batch == batch.Key && sprH.Key != "" && !sprH.Hide {
 			batch.DrawSpriteColor(sprH.Key, obj.Mat.Moved(sprH.Offset), sprH.Color)
@@ -189,6 +192,9 @@ func DrawLayerSystem(target pixel.Target, layer int) {
 }
 
 func DrawThing(draw any, obj *object.Object, target pixel.Target) {
+	if obj.Hidden {
+		return
+	}
 	if spr, ok0 := draw.(*pixel.Sprite); ok0 {
 		spr.DrawColorMask(target, obj.Mat, obj.Mask)
 	} else if sprH, ok1 := draw.(*img.Sprite); ok1 {

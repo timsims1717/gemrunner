@@ -219,9 +219,6 @@ func TileSystem() {
 					}
 				}
 			case data.BlockPhase:
-				if reanimator.FrameSwitch {
-					tile.Counter++
-				}
 				if data.CurrLevel.FrameChange {
 					phaseCycle := (data.CurrLevel.FrameCycle % 8) - tile.Metadata.Phase
 					if phaseCycle == 0 {
@@ -230,23 +227,28 @@ func TileSystem() {
 						tile.Flags.PhaseChange = true
 					}
 				}
-				if reanimator.FrameSwitch && tile.Flags.PhaseChange {
-					if tile.Flags.Collapse {
-						tile.Counter = 0
-						tile.Flags.Collapse = false
-						AddMaskWithTrigger(tile, "phase_1_mask", false, true, func() {
-							RemoveMask(tile)
-						})
-						CrushCharacters(tile)
-						BuryItems(tile)
-					} else {
-						tile.Counter = 0
-						tile.Flags.Collapse = true
-						AddMaskWithTrigger(tile, "phase_1_mask", false, false, func() {
-							RemoveMask(tile)
-						})
+				if reanimator.FrameSwitch {
+					tile.Counter++
+					if tile.Flags.PhaseChange {
+						if tile.Flags.Collapse {
+							tile.Counter = 0
+							tile.Flags.Collapse = false
+							tile.Object.Hidden = false
+							AddMaskWithTrigger(tile, "phase_1_mask", false, true, func() {
+								RemoveMask(tile)
+							})
+							CrushCharacters(tile)
+							BuryItems(tile)
+						} else {
+							tile.Counter = 0
+							tile.Flags.Collapse = true
+							AddMaskWithTrigger(tile, "phase_1_mask", false, false, func() {
+								tile.Object.Hidden = true
+								RemoveMask(tile)
+							})
+						}
+						tile.Flags.PhaseChange = false
 					}
-					tile.Flags.PhaseChange = false
 				}
 			case data.BlockBarrier:
 				if reanimator.FrameSwitch && data.CurrLevel.DoorsOpen && tile.Metadata.Regenerate {

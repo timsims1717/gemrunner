@@ -84,7 +84,7 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	})
 	hit := reanimator.NewBatchAnimation("hit", batch, "demon_hit", reanimator.Tran)
 	hit.SetEndTrigger(func() {
-		ch.Flags.Death = death.None
+		ch.Flags.NextStep = true
 	})
 	pickup := reanimator.NewBatchAnimation("pickup", batch, "demon_pickup", reanimator.Tran)
 	pickup.SetEndTrigger(func() {
@@ -92,14 +92,14 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	})
 	drown := reanimator.NewBatchAnimation("drown", batch, "demon_hit", reanimator.Tran)
 	drown.SetEndTrigger(func() {
-		ch.Flags.Death = death.None
+		ch.Flags.NextStep = true
 	})
 	drown = drown.WithSpriteOffset(pixel.V(0, 6), 0)
 	drown = drown.WithSpriteOffset(pixel.V(0, 4), 1)
 	drown = drown.WithSpriteOffset(pixel.V(0, 2), 2)
 	crush := reanimator.NewBatchAnimation("crush", batch, "demon_crush", reanimator.Tran)
 	crush.SetEndTrigger(func() {
-		ch.Flags.Death = death.None
+		ch.Flags.NextStep = true
 	})
 	transIn := reanimator.NewBatchAnimation("trans_in", batch, "demon_trans_in", reanimator.Hold)
 	transExit := reanimator.NewBatchAnimation("trans_exit", batch, "demon_trans_out", reanimator.Tran)

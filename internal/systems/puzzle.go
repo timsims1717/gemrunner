@@ -258,7 +258,7 @@ func InitLevel(fp *data.PlayArea) {
 	}
 	data.CurrLevel = fp.Level
 	InitLevelTiles(fp.Level)
-	InitContinuity(fp.Level)
+	InitPlayers(fp.Level)
 	CreateFakePlayer(fp.Level)
 	InitLevelDialogs(fp.Level)
 	UpdatePuzzleShaders(fp)

@@ -185,16 +185,16 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 			}
 		})
 		hit.SetEndTrigger(func() {
-			ch.Flags.Death = death.None
+			ch.Flags.NextStep = true
 		})
 		crush.SetEndTrigger(func() {
-			ch.Flags.Death = death.None
+			ch.Flags.NextStep = true
 		})
 		blow.SetEndTrigger(func() {
-			ch.Flags.Death = death.None
+			ch.Flags.NextStep = true
 		})
 		drown.SetEndTrigger(func() {
-			ch.Flags.Death = death.None
+			ch.Flags.NextStep = true
 		})
 		transIn.SetEndTrigger(func() {
 			ch.Flags.Transport = true

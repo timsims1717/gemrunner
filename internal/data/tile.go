@@ -331,7 +331,7 @@ func (t *Tile) IsSolidLevelTrans(doorsOpen bool) bool {
 			t.Block == BlockBedrock ||
 			t.Block == BlockFall ||
 			t.Block == BlockPhase ||
-			(t.Block == BlockBarrier && t.Metadata.Toggle == doorsOpen) ||
+			(t.Block == BlockBarrier && ((t.Metadata.Regenerate && t.Metadata.Toggle == doorsOpen) || (!t.Metadata.Regenerate && !t.Metadata.Toggle))) ||
 			t.Block == BlockCracked ||
 			t.Block == BlockClose ||
 			t.Block == BlockSpike ||

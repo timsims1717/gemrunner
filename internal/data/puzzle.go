@@ -20,7 +20,7 @@ import (
 
 var (
 	CurrentPlayArea *PlayArea
-	AllPlayAreas    []*PlayArea
+	OtherPlayAreas  []*PlayArea
 
 	ScreenView  *viewport.ViewPort
 	ScreenShake *util.NoiseShaker

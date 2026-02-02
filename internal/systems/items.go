@@ -378,7 +378,7 @@ func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		ch.Flags.ItemAction = data.ThrowBox
 		sfx.SoundPlayer.PlaySound(constants.SFXThrow, 2.)
 		// update box
-		DropItem(ch)
+		ClearInv(ch)
 		if c, okC := entity.GetComponentData(myecs.Dynamic); okC {
 			box := c.(*data.Dynamic)
 			chX, chY := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -452,7 +452,7 @@ func CreateKey(pos pixel.Vec, key string, metadata data.TileMetadata, coords wor
 func KeyAction(color data.ItemColor) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		if KeyUnlock(ch.Object.Pos, color) {
-			DropItem(ch)
+			ClearInv(ch)
 			myecs.Manager.DisposeEntity(entity)
 		}
 	})
@@ -540,7 +540,7 @@ func CreateJetpack(pos pixel.Vec, key string, metadata data.TileMetadata, coords
 
 func JetpackAction(jetpack *data.BasicItem) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
-		DropItem(ch)
+		ClearInv(ch)
 		// change the player's state to flying
 		ch.State = data.Flying
 		ch.Flags.Flying = true
@@ -721,7 +721,7 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 		if ch.State == data.Falling || ch.State == data.Jumping {
 			return
 		}
-		DropItem(ch)
+		ClearInv(ch)
 		// remove the pickup component
 		disguise.Item.Entity.RemoveComponent(myecs.PickUp)
 		// set action
@@ -838,7 +838,7 @@ func CreateDrill(pos pixel.Vec, key string, metadata data.TileMetadata, coords w
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
-		if ch.State == data.Grounded {
+		if ch.State == data.Grounded || ch.State == data.Hiding || ch.State == data.OnLadder {
 			// check if on correct ground
 			xa, ya := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tileA := data.CurrLevel.Get(xa, ya)
@@ -988,7 +988,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 						flamethrower.Counter = 0
 						ch.Flags.ItemAction = data.NoItemAction
 						if flamethrower.Metadata.Timer > 0 && flamethrower.Uses >= flamethrower.Metadata.Timer {
-							DropItem(ch)
+							ClearInv(ch)
 							flamethrower.Uses = 0
 							if flamethrower.Metadata.Regenerate {
 								// remove the pickup component
@@ -1236,7 +1236,7 @@ func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
 						goopBucket.Using = false
 						MakeGoopThrow(firstTile, secondTile, thirdTile, flip)
 						goopBucket.Counter = 0
-						DropItem(ch)
+						ClearInv(ch)
 						goopBucket.Uses = 0
 						goopBucket.Object.Hidden = true
 						if goopBucket.Metadata.Regenerate {

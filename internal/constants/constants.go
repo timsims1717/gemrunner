@@ -88,7 +88,7 @@ const (
 	FrameRateMax    = 90
 	FrameRateMin    = 10
 	FrameRateInt    = 5
-	FrameCycle      = 8
+	FrameCycle      = 16
 	NormalGravity   = 2.5
 	MaxPlayers      = 4
 	WaitToSwitch    = 3
@@ -106,7 +106,7 @@ const (
 	ThrownHSpeed    = 3.1
 	SmashDistance   = TileSize * 3
 	BombFuse        = 32
-	ItemRegen       = 16
+	ItemRegen       = 24
 	SpeedMod        = 0.001
 	TextTimer       = 16
 	TextProxDist    = 48

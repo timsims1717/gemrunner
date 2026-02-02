@@ -67,6 +67,7 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.OnLadder:
+					ch.Flags.Landing = false
 					if ch.Flags.Floor && ch.Actions.Up() && !tile.IsLadder() { // just got to the top
 						ch.State = data.Grounded
 						if ch.Actions.Left() { // to the left
@@ -130,6 +131,7 @@ func CharacterStateSystem() {
 						ch.State = data.Falling
 					}
 				case data.OnBar:
+					ch.Flags.Landing = false
 					if tile == nil || tile.Block != data.BlockBar {
 						if below == nil || below.IsRunnable() {
 							ch.State = data.Grounded
@@ -215,6 +217,7 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.DoingAction:
+					ch.Flags.Landing = false
 					if ch.Flags.ItemAction == data.NoItemAction {
 						ch.Object.Layer = ch.Layer
 						if ch.Options.Flying || ch.Flags.Flying {
@@ -246,11 +249,20 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Hit:
-					if ch.Flags.Death == death.None {
-						ch.State = data.Dead
+					ch.Flags.Landing = false
+					if ch.Flags.NextStep {
 						if ch.Player > -1 {
 							data.CurrLevelSess.PlayerStats[ch.Player].Deaths++
+						} else if ch.Enemy > -1 && ch.Inventory != nil {
+							if ch.Flags.Death == death.Drowned || ch.Flags.Death == death.Crushed ||
+								ch.Flags.Death == death.Dying || SomethingOnTile(tile, ch.Object.ID) || !DropItem(ch) {
+								myecs.Manager.DisposeEntity(ch.Inventory.Entity)
+								ch.Inventory = nil
+							}
 						}
+						ch.Flags.NextStep = false
+						ch.State = data.Dead
+						ch.Flags.Death = death.None
 					}
 				case data.Attack:
 					if ch.Flags.NextStep {
@@ -329,10 +341,14 @@ func CharacterStateSystem() {
 						}
 					}
 				case data.Dead:
+					ch.Flags.Landing = false
 					ch.Object.Layer = ch.Layer
 					ch.Flags.Disguised = false
 					ch.Flags.Flying = false
 					ch.Flags.NextStep = false
+					ch.Flags.NoCollision = false
+					ch.Flags.JumpR = false
+					ch.Flags.JumpL = false
 					ch.Flags.Death = death.None
 					ch.ACounter = 0
 					ch.Control.ClearPrev()
@@ -396,7 +412,7 @@ func CharacterStateSystem() {
 					} else if ch.Actions.Bomb && PlaceSmallBomb(ch) {
 					}
 				} else if ch.State == data.Dead {
-					DropItem(ch)
+					ClearInv(ch)
 				}
 				if oldState != ch.State { // a state change happened
 					ch.Flags.NextStep = false

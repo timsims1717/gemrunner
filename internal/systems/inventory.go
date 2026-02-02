@@ -121,7 +121,7 @@ func DropItem(ch *data.Dynamic) bool {
 		y++
 	}
 	tile := data.CurrLevel.Get(x, y)
-	if tile == nil || tile.IsSolid() {
+	if tile == nil || tile.IsSolid() || SomethingOnTile(tile, ch.Object.ID) {
 		return false
 	}
 	ch.Inventory.Object.Hidden = false
@@ -130,6 +130,20 @@ func DropItem(ch *data.Dynamic) bool {
 	ch.Inventory.PickUp.Inventory = -1
 	ch.Inventory = nil
 	return true
+}
+
+// ClearInv removes an item from the inventory without checking anything
+func ClearInv(ch *data.Dynamic) {
+	if ch.Inventory == nil {
+		return
+	}
+	x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+	tile := data.CurrLevel.Get(x, y)
+	ch.Inventory.Object.Hidden = false
+	ch.Inventory.Object.SetPos(tile.Object.Pos)
+	// set the object's pickup data
+	ch.Inventory.PickUp.Inventory = -1
+	ch.Inventory = nil
 }
 
 func DoAction(ch *data.Dynamic) bool {
@@ -158,15 +172,15 @@ func PlaceSmallBomb(ch *data.Dynamic) bool {
 		return false
 	}
 	if ch.Player > -1 && ch.Player < constants.MaxPlayers {
-		if ch.State == data.OnLadder ||
-			ch.State == data.Grounded ||
-			ch.State == data.Flying {
-			ch.Flags.BombBuff = 0
-			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
-			tile := data.CurrLevel.Get(x, y)
-			CreateLitBomb(tile.Object.Pos, constants.ItemSmallBombLit, "small", false, false, false, 0)
-			ch.SmallBombs--
+		switch ch.State {
+		case data.OnBar, data.Jumping, data.Falling:
+			return false
 		}
+		ch.Flags.BombBuff = 0
+		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		tile := data.CurrLevel.Get(x, y)
+		CreateLitBomb(tile.Object.Pos, constants.ItemSmallBombLit, "small", false, false, false, 0)
+		ch.SmallBombs--
 	}
 	return false
 }
@@ -176,7 +190,8 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 		if ch.State == data.OnLadder ||
 			ch.State == data.OnBar ||
 			ch.State == data.Grounded ||
-			ch.State == data.Flying {
+			ch.State == data.Flying ||
+			ch.State == data.Hiding {
 			var sideTile, digTile *data.Tile
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tile := data.CurrLevel.Get(x, y)
@@ -318,7 +333,7 @@ func Place(ch *data.Dynamic, isLeft bool) bool {
 
 // PickUpOrDropGem returns whether a Gem was dropped or picked up
 func PickUpOrDropGem(ch *data.Dynamic, e int) {
-	if e < 0 {
+	if e < 0 || ch.State != data.Grounded {
 		return
 	}
 	if ch.Inventory != nil {

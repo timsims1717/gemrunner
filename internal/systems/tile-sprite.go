@@ -49,15 +49,15 @@ func (sc *spriteChanger) WithOffset(pos pixel.Vec) *spriteChanger {
 
 func TileSpriteSystemPre() {
 	for _, result := range myecs.Manager.Query(myecs.IsTile) {
-		obj, okO := result.Components[myecs.Object].(*object.Object)
+		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok {
 			if tile.Update && !data.CurrPuzzleSet.CurrPuzzle.Click {
 				tile.Update = false
 			}
-			if obj.Hidden {
-				obj.Hidden = false
-			}
+			//if obj.Hidden {
+			//	obj.Hidden = false
+			//}
 		}
 	}
 }
