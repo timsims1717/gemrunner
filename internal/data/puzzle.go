@@ -20,7 +20,7 @@ import (
 
 var (
 	CurrentPlayArea *PlayArea
-	OtherPlayAreas  []*PlayArea
+	OtherPlayArea   *PlayArea
 
 	ScreenView  *viewport.ViewPort
 	ScreenShake *util.NoiseShaker
@@ -55,6 +55,8 @@ type PlayArea struct {
 	BorderEntity *ecs.Entity
 	Border       *Border
 	BorderObject *object.Object
+
+	LayerOffset int
 }
 
 type LevelSession struct {
@@ -159,6 +161,14 @@ type Puzzle struct {
 	Metadata PuzzleMetadata `json:"metadata"`
 }
 
+func NewPuzzle(md PuzzleMetadata) *Puzzle {
+	p := &Puzzle{
+		Metadata: md,
+	}
+	p.Tiles = p.NewTiles(md.Width, md.Height)
+	return p
+}
+
 type Tiles struct {
 	T [][]*Tile
 }
@@ -209,7 +219,7 @@ func (p *Puzzle) SetWidth(w int) {
 	} else if p.Metadata.Width < w { // add width
 		for y, row := range p.Tiles.T {
 			for x := len(row); x < w; x++ {
-				tile := &Tile{}
+				tile := NewTile(p)
 				tile.Coords = world.NewCoords(x, y)
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)
@@ -249,7 +259,7 @@ func (p *Puzzle) SetHeight(h int) {
 		for y := p.Metadata.Height; y < h; y++ {
 			p.Tiles.T = append(p.Tiles.T, []*Tile{})
 			for x := 0; x < p.Metadata.Width; x++ {
-				tile := &Tile{}
+				tile := NewTile(p)
 				tile.Coords = world.NewCoords(x, y)
 				obj := object.New()
 				obj.Pos = world.MapToWorld(tile.Coords)
@@ -277,12 +287,12 @@ func (p *Puzzle) SetHeight(h int) {
 	p.Update = true
 }
 
-func NewTiles(w, h int) *Tiles {
+func (p *Puzzle) NewTiles(w, h int) *Tiles {
 	var t [][]*Tile
 	for y := 0; y < h; y++ {
 		t = append(t, []*Tile{})
 		for x := 0; x < w; x++ {
-			tile := &Tile{}
+			tile := NewTile(p)
 			tile.ToEmpty()
 			t[y] = append(t[y], tile)
 		}
@@ -538,10 +548,7 @@ func CreateBlankPuzzle() *Puzzle {
 		LiquidSecondaryColor: pixel.ToRGBA(constants.WorldLiquidSecondary[worldNum]),
 		MusicTrack:           constants.WorldMusic[worldNum],
 	}
-	puz := &Puzzle{
-		Tiles:    NewTiles(md.Width, md.Height),
-		Metadata: md,
-	}
+	puz := NewPuzzle(md)
 	for y := 0; y < md.Height; y++ {
 		for x := 0; x < md.Width; x++ {
 			c := world.Coords{X: x, Y: y}
@@ -549,18 +556,18 @@ func CreateBlankPuzzle() *Puzzle {
 			if random.Effects.Intn(80) == 0 {
 				alt = 1
 			}
-			puz.Tiles.T[y][x] = &Tile{
-				Block:    Block(BlockEmpty),
-				Coords:   c,
-				AltBlock: alt,
-			}
+			t := NewTile(puz)
+			t.Block = Block(BlockEmpty)
+			t.Coords = c
+			t.AltBlock = alt
+			puz.Tiles.T[y][x] = t
 		}
 	}
 	return puz
 }
 
 func (p *Puzzle) CopyTiles() *Tiles {
-	tiles := NewTiles(p.Metadata.Width, p.Metadata.Height)
+	tiles := p.NewTiles(p.Metadata.Width, p.Metadata.Height)
 	for y := 0; y < p.Metadata.Height; y++ {
 		for x := 0; x < p.Metadata.Width; x++ {
 			tiles.T[y][x] = p.Tiles.T[y][x].Copy()

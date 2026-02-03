@@ -12,7 +12,7 @@ import (
 	"math"
 )
 
-func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, level bool) {
+func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, level *data.Level) {
 	if bord == nil || bord.Hidden {
 		return
 	}
@@ -40,7 +40,7 @@ func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, leve
 	img.Clear()
 }
 
-func DrawFancyBorder(bord *data.Border, obj *object.Object, level bool) {
+func DrawFancyBorder(bord *data.Border, obj *object.Object, level *data.Level) {
 	for y := 0; y < bord.Height+2; y++ {
 		if y == 0 || y == bord.Height+1 {
 			for x := 0; x < bord.Width+2; x++ {
@@ -64,29 +64,49 @@ func DrawFancyBorder(bord *data.Border, obj *object.Object, level bool) {
 	}
 }
 
-func DrawFancyBorderSection(x, y int, bord *data.Border, obj *object.Object, level bool) {
-	if level && data.CurrLevel != nil {
-		if x == 0 && y > 0 && y <= bord.Height {
-			if t := data.CurrLevel.Get(x, y-1); !t.IsSolidLevelTrans(data.CurrLevel.DoorsOpen) {
-				if trans, ok := t.Transitions[data.Left]; ok && (trans.Open || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
+func DrawFancyBorderSection(x, y int, bord *data.Border, obj *object.Object, level *data.Level) {
+	if level != nil {
+		if x == 0 { // left side
+			d := (bord.Height - bord.ExcludeSize) / 2
+			if bord.ExcludeSide == data.Left && y > d && y < d+bord.ExcludeSize {
+				return
+			}
+			t := level.Get(x, y-1)
+			if y > 0 && y <= bord.Height && !t.IsSolidLevelTrans(level.DoorsOpen) {
+				if trans, ok := t.Transitions[data.Left]; ok && (trans.Open || (level.Continuity && level.DoorsOpen)) {
 					return
 				}
 			}
-		} else if x == bord.Width+1 && y > 0 && y <= bord.Height {
-			if t := data.CurrLevel.Get(x-2, y-1); !t.IsSolidLevelTrans(data.CurrLevel.DoorsOpen) {
-				if trans, ok := t.Transitions[data.Right]; ok && (trans.Open || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
+		} else if x == bord.Width+1 { // right side
+			d := (bord.Height - bord.ExcludeSize) / 2
+			if bord.ExcludeSide == data.Right && y > d && y < d+bord.ExcludeSize {
+				return
+			}
+			t := level.Get(x-2, y-1)
+			if y > 0 && y <= bord.Height && !t.IsSolidLevelTrans(level.DoorsOpen) {
+				if trans, ok := t.Transitions[data.Right]; ok && (trans.Open || (level.Continuity && level.DoorsOpen)) {
 					return
 				}
 			}
-		} else if y == 0 && x > 0 && x <= bord.Width {
-			if t := data.CurrLevel.Get(x-1, y); !t.IsSolidLevelTrans(data.CurrLevel.DoorsOpen) {
-				if trans, ok := t.Transitions[data.Down]; ok && (trans.Open || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
+		} else if y == 0 { // bottom side
+			d := (bord.Width - bord.ExcludeSize) / 2
+			if bord.ExcludeSide == data.Down && x > d && x < d+bord.ExcludeSize {
+				return
+			}
+			t := level.Get(x-1, y)
+			if x > 0 && x <= bord.Width && !t.IsSolidLevelTrans(level.DoorsOpen) {
+				if trans, ok := t.Transitions[data.Down]; ok && (trans.Open || (level.Continuity && level.DoorsOpen)) {
 					return
 				}
 			}
-		} else if y == bord.Height+1 && x > 0 && x <= bord.Width {
-			if t := data.CurrLevel.Get(x-1, y-2); !t.IsSolidLevelTrans(data.CurrLevel.DoorsOpen) {
-				if trans, ok := t.Transitions[data.Up]; ok && (trans.Open || (data.CurrLevel.Continuity && data.CurrLevel.DoorsOpen)) {
+		} else if y == bord.Height+1 { // top side
+			d := (bord.Width - bord.ExcludeSize) / 2
+			if bord.ExcludeSide == data.Up && x > d && x < d+bord.ExcludeSize {
+				return
+			}
+			t := level.Get(x-1, y-2)
+			if x > 0 && x <= bord.Width && !t.IsSolidLevelTrans(level.DoorsOpen) {
+				if trans, ok := t.Transitions[data.Up]; ok && (trans.Open || (level.Continuity && level.DoorsOpen)) {
 					return
 				}
 			}

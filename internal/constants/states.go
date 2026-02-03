@@ -5,4 +5,5 @@ const (
 	EditorStateKey = "editor_state"
 	TestStateKey   = "test_state"
 	PlayStateKey   = "play_state"
+	TransStateKey  = "trans_state"
 )

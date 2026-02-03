@@ -31,8 +31,8 @@ func UpdateViews() {
 	if data.CurrentPlayArea != nil {
 		UpdatePlayAreaView(data.CurrentPlayArea)
 	}
-	for _, fp := range data.OtherPlayAreas {
-		UpdatePlayAreaView(fp)
+	if data.OtherPlayArea != nil {
+		UpdatePlayAreaView(data.OtherPlayArea)
 	}
 
 	data.CursorObj.Sca = pixel.V(constants.PickedRatio, constants.PickedRatio)

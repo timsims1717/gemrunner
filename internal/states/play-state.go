@@ -90,9 +90,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 		systems.FloatingTextSystem()
 		systems.AnimationSystem()
 	} else {
-		if data.LevelTrans {
-			systems.LevelTransitionSystem()
-		}
+
 	}
 	// object systems
 	systems.ParentSystem()
@@ -110,47 +108,51 @@ func (s *playState) Update(win *pixelgl.Window) {
 }
 
 func (s *playState) Draw(win *pixelgl.Window) {
-	drawPlayArea(win)
+	drawPlayState(win)
 }
 
-func drawPlayArea(win *pixelgl.Window) {
+func drawPlayState(win *pixelgl.Window) {
 	data.ScreenView.Canvas.Clear(constants.ColorBlack)
-	// draw border
-	data.CurrentPlayArea.BorderView.Canvas.Clear(constants.ColorBlack)
-	systems.DrawBorder(data.PuzzleBorderObject, data.PuzzleBorder, data.CurrentPlayArea.BorderView.Canvas, true)
-	img.Clear()
-	data.CurrentPlayArea.BorderView.Draw(data.ScreenView.Canvas)
-	// draw puzzle
-	data.CurrentPlayArea.WorldView.Canvas.Clear(pixel.RGBA{})
-	data.CurrentPlayArea.PuzzleView.Canvas.Clear(constants.ColorBlack)
-	systems.DrawBatchSystem(data.CurrentPlayArea.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers)
-	img.Clear()
-	data.CurrentPlayArea.PuzzleView.Draw(data.CurrentPlayArea.WorldView.Canvas)
-	// draw collapse/regen
-	data.CurrentPlayArea.PuzzleView.Canvas.Clear(pixel.RGBA{})
-	systems.DrawBatchSystem(data.CurrentPlayArea.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenLayer)
-	data.CurrentPlayArea.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
-	systems.DrawBatchSystem(data.CurrentPlayArea.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask)
-	data.CurrentPlayArea.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
-	data.CurrentPlayArea.PuzzleView.Draw(data.CurrentPlayArea.WorldView.Canvas)
-	// draw effects
-	data.CurrentPlayArea.PuzzleView.Canvas.Clear(pixel.RGBA{})
-	systems.DrawBatchSystem(data.CurrentPlayArea.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer)
-	data.CurrentPlayArea.PuzzleView.Draw(data.CurrentPlayArea.WorldView.Canvas)
-	data.CurrentPlayArea.PuzzleViewNoShader.Canvas.Clear(pixel.RGBA{})
-	systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleViewNoShader.Canvas, 36)
-	systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleViewNoShader.Canvas, 37)
-	// draw debug
-	if debug.ShowDebug {
-		debug.DrawLines(data.CurrentPlayArea.PuzzleViewNoShader.Canvas)
-	}
-	data.CurrentPlayArea.WorldView.Draw(data.ScreenView.Canvas)
-	data.CurrentPlayArea.PuzzleViewNoShader.Draw(data.ScreenView.Canvas)
+	drawPlayArea(win, data.CurrentPlayArea)
 	// dialog draw system
 	systems.DialogDrawSystem(data.ScreenView.Canvas)
 	systems.DrawLayerSystem(data.ScreenView.Canvas, -10)
 	img.Clear()
 	systems.TemporarySystem()
+}
+
+func drawPlayArea(win *pixelgl.Window, pa *data.PlayArea) {
+	// draw border
+	pa.BorderView.Canvas.Clear(constants.ColorClear)
+	systems.DrawBorder(pa.BorderObject, pa.Border, pa.BorderView.Canvas, pa.Level)
+	img.Clear()
+	pa.BorderView.Draw(data.ScreenView.Canvas)
+	// draw puzzle
+	pa.WorldView.Canvas.Clear(constants.ColorClear)
+	pa.PuzzleView.Canvas.Clear(constants.ColorBlack)
+	systems.DrawBatchSystem(pa.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers, pa.LayerOffset)
+	img.Clear()
+	pa.PuzzleView.Draw(pa.WorldView.Canvas)
+	// draw collapse/regen
+	pa.PuzzleView.Canvas.Clear(constants.ColorClear)
+	systems.DrawBatchSystem(pa.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenLayer, pa.LayerOffset)
+	pa.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeRatop)
+	systems.DrawBatchSystem(pa.PuzzleView.Canvas, constants.TileBatch, constants.CollapseRegenMask, pa.LayerOffset)
+	pa.PuzzleView.Canvas.SetComposeMethod(pixel.ComposeOver)
+	pa.PuzzleView.Draw(pa.WorldView.Canvas)
+	// draw effects
+	pa.PuzzleView.Canvas.Clear(constants.ColorClear)
+	systems.DrawBatchSystem(pa.PuzzleView.Canvas, constants.TileBatch, constants.EffectsLayer, pa.LayerOffset)
+	pa.PuzzleView.Draw(pa.WorldView.Canvas)
+	pa.PuzzleViewNoShader.Canvas.Clear(constants.ColorClear)
+	systems.DrawLayerSystem(pa.PuzzleViewNoShader.Canvas, 36+pa.LayerOffset)
+	systems.DrawLayerSystem(pa.PuzzleViewNoShader.Canvas, 37+pa.LayerOffset)
+	// draw debug
+	if debug.ShowDebug {
+		debug.DrawLines(pa.PuzzleViewNoShader.Canvas)
+	}
+	pa.WorldView.Draw(data.ScreenView.Canvas)
+	pa.PuzzleViewNoShader.Draw(data.ScreenView.Canvas)
 }
 
 func (s *playState) SetAbstract(aState *state.AbstractState) {

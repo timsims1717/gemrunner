@@ -262,7 +262,7 @@ func DialogDrawSystem(target pixel.Target) {
 func DrawDialog(dialog *ui.Dialog, target pixel.Target) {
 	if !dialog.NoBorder {
 		dialog.BorderVP.Canvas.Clear(color.RGBA{})
-		DrawBorder(dialog.BorderObject, dialog.Border, dialog.BorderVP.Canvas, false)
+		DrawBorder(dialog.BorderObject, dialog.Border, dialog.BorderVP.Canvas, nil)
 		dialog.BorderVP.Draw(target)
 	}
 	// draw elements w/no sub elements
@@ -294,7 +294,7 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		element.ViewPort.Draw(vp.Canvas)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	case ui.InputElement:
 		// draw input
 		element.ViewPort.Canvas.Clear(element.Background)
@@ -302,7 +302,7 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		element.ViewPort.Draw(vp.Canvas)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	case ui.ScrollElement:
 		// draw scroll elements
 		element.ViewPort.Canvas.Clear(element.Background)
@@ -316,7 +316,7 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		DrawLayerSystem(vp.Canvas, element.Layer-1)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	case ui.ContainerElement:
 		// draw container elements
 		element.ViewPort.Canvas.Clear(element.Background)
@@ -328,7 +328,7 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		element.ViewPort.Draw(vp.Canvas)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	case ui.SliderElement:
 		// draw container elements
 		element.ViewPort.Canvas.Clear(element.Background)
@@ -342,9 +342,9 @@ func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
 		DrawLayerSystem(vp.Canvas, element.Layer-1)
 		img.Clear()
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	default:
 		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, false)
+		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	}
 }

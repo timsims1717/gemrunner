@@ -59,6 +59,7 @@ func run() {
 	state.Register(constants.EditorStateKey, state.New(states.EditorState))
 	state.Register(constants.TestStateKey, state.New(states.TestState))
 	state.Register(constants.PlayStateKey, state.New(states.PlayState))
+	state.Register(constants.TransStateKey, state.New(states.LevelTransState))
 	//state.PushState(states.TestStateKey)
 	//filename := fmt.Sprintf("%s/%s", constants.PuzzlesDir, "Get Those Gems.puzzle")
 	//err = systems.OpenPuzzleFile(filename)

@@ -52,7 +52,7 @@ func TileSpriteSystemPre() {
 		_, okO := result.Components[myecs.Object].(*object.Object)
 		tile, ok := result.Components[myecs.Tile].(*data.Tile)
 		if okO && ok {
-			if tile.Update && !data.CurrPuzzleSet.CurrPuzzle.Click {
+			if tile.Update && !tile.Puzzle.Click {
 				tile.Update = false
 			}
 			//if obj.Hidden {
@@ -91,7 +91,7 @@ func TileSpriteSystem() {
 					hasAnim = true
 				}
 				if !okD || i >= len(currDraws) {
-					currDraws = append(currDraws, buildDrawable(spr, tile.Live))
+					currDraws = append(currDraws, buildDrawable(spr, tile))
 					changed = true
 					continue
 				}
@@ -99,16 +99,16 @@ func TileSpriteSystem() {
 				if cSpr, ok1 := cd.(*img.Sprite); ok1 {
 					if !(cSpr.Key == spr.SprKey && cSpr.Batch == spr.Batch &&
 						cSpr.Offset == spr.Offset && !spr.IsAnim) {
-						currDraws[i] = buildDrawable(spr, tile.Live)
+						currDraws[i] = buildDrawable(spr, tile)
 						changed = true
 					}
 				} else if cAnim, ok2 := cd.(*reanimator.Tree); ok2 {
 					if !(cAnim.Default == spr.SprKey && spr.IsAnim) {
-						currDraws[i] = buildDrawable(spr, tile.Live)
+						currDraws[i] = buildDrawable(spr, tile)
 						changed = true
 					}
 				} else {
-					currDraws[i] = buildDrawable(spr, tile.Live)
+					currDraws[i] = buildDrawable(spr, tile)
 					changed = true
 				}
 			}
@@ -130,7 +130,7 @@ func TileSpriteSystem() {
 	}
 }
 
-func buildDrawable(sprCh *spriteChanger, live bool) any {
+func buildDrawable(sprCh *spriteChanger, tile *data.Tile) any {
 	if sprCh.IsAnim {
 		var a *reanimator.Anim
 		if len(sprCh.Frames) > 0 {
@@ -143,8 +143,8 @@ func buildDrawable(sprCh *spriteChanger, live bool) any {
 		}
 		frames := len(a.S)
 		anim := reanimator.NewSimple(a)
-		if live {
-			anim.SetAnim(sprCh.SprKey, data.CurrLevel.FrameNumber%frames)
+		if tile.Level != nil {
+			anim.SetAnim(sprCh.SprKey, tile.Level.FrameNumber%frames)
 		} else {
 			anim.SetAnim(sprCh.SprKey, data.Editor.FrameCount%frames)
 		}
@@ -178,7 +178,7 @@ func NeedsUpdate(tile *data.Tile) bool {
 func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 	var sprs []*spriteChanger
 	if tile.Metadata.Buried && data.EditorDraw {
-		sprs = append(sprs, newSprChanger(data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBatch))
+		sprs = append(sprs, newSprChanger(tile.Puzzle.Metadata.WorldSprite, constants.TileBatch))
 	}
 	switch tile.Block {
 	case data.BlockEmpty, data.BlockLadder, data.BlockLadderExit, data.BlockLadderCracked:
@@ -225,7 +225,7 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 		}
 	case data.BlockGear:
 		//if tile.Live {
-		//	anim.SetAnim("gear", data.CurrLevel.FrameNumber%4)
+		//	anim.SetAnim("gear", tile.Level.FrameNumber%4)
 		//} else {
 		//	anim.SetAnim("gear", data.Editor.FrameCount%4)
 		//}
@@ -295,9 +295,9 @@ func GetGoopSprite(tile *data.Tile) string {
 	top := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a.IsBlock() || a.Block == data.BlockLiquid {
 		top = false
@@ -318,36 +318,36 @@ func GetLiquidSprites(tile *data.Tile) []*spriteChanger {
 	right := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a != nil && a.Block == data.BlockLiquid {
 		top = false
 	}
 	var b *data.Tile
 	if tile.Live {
-		b = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Level.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b != nil && b.Block == data.BlockLiquid {
 		bottom = false
 	}
 	var c *data.Tile
 	if tile.Live {
-		c = data.CurrLevel.Get(tile.Coords.X-1, tile.Coords.Y)
+		c = tile.Level.Get(tile.Coords.X-1, tile.Coords.Y)
 	} else {
-		c = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X-1, tile.Coords.Y)
+		c = tile.Puzzle.Get(tile.Coords.X-1, tile.Coords.Y)
 	}
 	if c != nil && c.Block == data.BlockLiquid {
 		left = false
 	}
 	var d *data.Tile
 	if tile.Live {
-		d = data.CurrLevel.Get(tile.Coords.X+1, tile.Coords.Y)
+		d = tile.Level.Get(tile.Coords.X+1, tile.Coords.Y)
 	} else {
-		d = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X+1, tile.Coords.Y)
+		d = tile.Puzzle.Get(tile.Coords.X+1, tile.Coords.Y)
 	}
 	if d != nil && d.Block == data.BlockLiquid {
 		right = false
@@ -368,7 +368,7 @@ func GetLiquidSprites(tile *data.Tile) []*spriteChanger {
 		IsAnim: true,
 	}
 	frames := make([]int, 8)
-	switch data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid {
+	switch tile.Puzzle.Metadata.WorldLiquid {
 	case constants.LiquidBubbles:
 		count := 0
 		i := tile.Coords.X
@@ -409,7 +409,7 @@ func GetLiquidSprites(tile *data.Tile) []*spriteChanger {
 		sprChg.SprKey = tile.SpriteString()
 		sprChg.Frames = frames
 	} else {
-		switch data.CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid {
+		switch tile.Puzzle.Metadata.WorldLiquid {
 		case constants.LiquidBubbles, constants.LiquidTiny:
 			sprChg.SprKey = fmt.Sprintf("%s_bottom", sprChg.SprKey)
 			sprChg.Frames = frames
@@ -558,18 +558,18 @@ func GetBlockSprite(tile *data.Tile) string {
 	bottom := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockLiquid {
 		top = false
 	}
 	var b *data.Tile
 	if tile.Live {
-		b = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Level.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b.IsBlock() || b.Metadata.Buried || b.Block == data.BlockHideout {
 		bottom = false
@@ -594,7 +594,7 @@ func GetPhaseSprite(tile *data.Tile, isSelect bool) string {
 	top := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else if isSelect {
 		above := tile.Coords
 		above.Y++
@@ -602,7 +602,7 @@ func GetPhaseSprite(tile *data.Tile, isSelect bool) string {
 			a = data.CurrSelect.Tiles[above.Y][above.X]
 		}
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockLiquid {
 		top = false
@@ -621,9 +621,9 @@ func GetSpikeSprite(tile *data.Tile) string {
 	bottom := true
 	var b *data.Tile
 	if tile.Live {
-		b = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Level.Get(tile.Coords.X, tile.Coords.Y-1)
 	} else {
-		b = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+		b = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y-1)
 	}
 	if b == nil || (b.IsBlock() && b.Block != data.BlockSpike) || b.Metadata.Buried || b.Block == data.BlockHideout {
 		bottom = false
@@ -642,9 +642,9 @@ func GetHideoutSprite(tile *data.Tile) string {
 	top := true
 	var a *data.Tile
 	if tile.Live {
-		a = data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	} else {
-		a = data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+		a = tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	}
 	if a == nil || a.IsBlock() || a.Metadata.Buried || a.Block == data.BlockHideout {
 		top = false
@@ -659,16 +659,16 @@ func GetHideoutSprite(tile *data.Tile) string {
 }
 
 func GetLadderSpriteLive(tile *data.Tile) string {
-	belowTile := data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y-1)
-	aboveTile := data.CurrLevel.Get(tile.Coords.X, tile.Coords.Y+1)
+	belowTile := tile.Level.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := tile.Level.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if !tile.Flags.LCollapse &&
 		(tile.Block == data.BlockLadder ||
 			tile.Block == data.BlockLadderTurf ||
 			(tile.Block == data.BlockLadderCracked && !tile.Flags.LCracked) ||
 			(tile.Block == data.BlockLadderCrackedTurf && !tile.Flags.LCracked) ||
-			(tile.Block == data.BlockLadderExit && data.CurrLevel.DoorsOpen) ||
-			(tile.Block == data.BlockLadderExitTurf && data.CurrLevel.DoorsOpen)) {
+			(tile.Block == data.BlockLadderExit && tile.Level.DoorsOpen) ||
+			(tile.Block == data.BlockLadderExitTurf && tile.Level.DoorsOpen)) {
 		if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 			if tile.IsBlock() &&
 				!aboveTile.IsBlock() {
@@ -729,8 +729,8 @@ func GetLadderSpriteLive(tile *data.Tile) string {
 }
 
 func GetLadderSpriteEditor(tile *data.Tile) string {
-	belowTile := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
-	aboveTile := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+	belowTile := tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+	aboveTile := tile.Puzzle.Get(tile.Coords.X, tile.Coords.Y+1)
 	var sKey string
 	if tile.IsLadder() && belowTile != nil && belowTile.IsLadder() {
 		if tile.IsBlock() &&

@@ -177,7 +177,7 @@ func (s *editorState) Draw(win *pixelgl.Window) {
 	if data.CurrLevel == nil {
 		// draw border
 		data.CurrentPlayArea.BorderView.Canvas.Clear(constants.ColorBlack)
-		systems.DrawBorder(data.PuzzleBorderObject, data.PuzzleBorder, data.CurrentPlayArea.BorderView.Canvas, false)
+		systems.DrawBorder(data.PuzzleBorderObject, data.PuzzleBorder, data.CurrentPlayArea.BorderView.Canvas, nil)
 		img.Clear()
 		data.CurrentPlayArea.BorderView.Draw(data.ScreenView.Canvas)
 		// draw puzzle

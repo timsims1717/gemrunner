@@ -65,7 +65,7 @@ func AnimationSystem() {
 
 var currBatches []string
 
-func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
+func DrawBatchSystem(target pixel.Target, batchKey string, layers []int, lOffset int) {
 	batch := img.Batchers[batchKey]
 	if batch == nil {
 		fmt.Println("WARNING: Batch with key", batchKey, "does not exist")
@@ -76,7 +76,7 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int) {
 	for _, layer := range layers {
 		for _, result := range myecs.Manager.Query(myecs.IsDrawable) {
 			obj, okO := result.Components[myecs.Object].(*object.Object)
-			if okO && obj.Layer == layer && !obj.Hidden && !obj.Unloaded {
+			if okO && obj.Layer == layer+lOffset && !obj.Hidden && !obj.Unloaded {
 				draw := result.Components[myecs.Drawable]
 				if draw == nil {
 					continue

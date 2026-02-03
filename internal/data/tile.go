@@ -25,8 +25,16 @@ type Tile struct {
 	AltBlock     int               `json:"alt"`
 	FloatingText *FloatingText     `json:"-"`
 	TextData     *FloatingTextData `json:"text,omitempty"`
+	Puzzle       *Puzzle           `json:"-"`
+	Level        *Level            `json:"-"`
 
 	Transitions map[Direction]*LevelTransition `json:"-"`
+}
+
+func NewTile(puzzle *Puzzle) *Tile {
+	return &Tile{
+		Puzzle: puzzle,
+	}
 }
 
 func (t *Tile) SpriteString() string {
@@ -71,28 +79,28 @@ func (t *Tile) SpriteString() string {
 	switch t.Block {
 	case BlockTurf, BlockFall, BlockCracked, BlockClose, BlockHideout, BlockGoop,
 		BlockLadderTurf, BlockLadderCrackedTurf, BlockLadderExitTurf:
-		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
-			return CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite
+		if t.Puzzle != nil && t.Puzzle.Metadata.WorldSprite != "" {
+			return t.Puzzle.Metadata.WorldSprite
 		}
 		return constants.WorldSprites[constants.WorldMoss]
 	case BlockBedrock:
-		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
-			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileBedrock)
+		if t.Puzzle != nil && t.Puzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", t.Puzzle.Metadata.WorldSprite, constants.TileBedrock)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileBedrock)
 	case BlockPhase, BlockBarrier:
-		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
-			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TilePhase)
+		if t.Puzzle != nil && t.Puzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", t.Puzzle.Metadata.WorldSprite, constants.TilePhase)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TilePhase)
 	case BlockSpike:
-		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite != "" {
-			return fmt.Sprintf("%s_%s", CurrPuzzleSet.CurrPuzzle.Metadata.WorldSprite, constants.TileSpike)
+		if t.Puzzle != nil && t.Puzzle.Metadata.WorldSprite != "" {
+			return fmt.Sprintf("%s_%s", t.Puzzle.Metadata.WorldSprite, constants.TileSpike)
 		}
 		return fmt.Sprintf("%s_%s", constants.WorldSprites[constants.WorldMoss], constants.TileSpike)
 	case BlockLiquid:
-		if CurrPuzzleSet != nil && CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid != "" {
-			return fmt.Sprintf("%s_%s", constants.TileLiquid, CurrPuzzleSet.CurrPuzzle.Metadata.WorldLiquid)
+		if t.Puzzle != nil && t.Puzzle.Metadata.WorldLiquid != "" {
+			return fmt.Sprintf("%s_%s", constants.TileLiquid, t.Puzzle.Metadata.WorldLiquid)
 		}
 		return constants.TileLiquid
 	case BlockLadder:
@@ -202,6 +210,7 @@ func (t *Tile) Copy() *Tile {
 		Coords:   t.Coords,
 		Metadata: CopyMetadata(t.Metadata),
 		TextData: t.TextData.Copy(),
+		Puzzle:   t.Puzzle,
 	}
 }
 
@@ -251,7 +260,7 @@ func (t *Tile) IsSolid() bool {
 			t.Block == BlockClose ||
 			t.Block == BlockSpike ||
 			t.Block == BlockGoop ||
-			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
+			(t.Block == BlockLadderExitTurf && t.Level != nil && !t.Level.DoorsOpen)))
 }
 
 func (t *Tile) IsSolidPath() bool {
@@ -264,7 +273,7 @@ func (t *Tile) IsSolidPath() bool {
 			t.Block == BlockCracked ||
 			t.Block == BlockSpike ||
 			t.Block == BlockGoop ||
-			(t.Block == BlockLadderExitTurf && CurrLevel != nil && !CurrLevel.DoorsOpen)))
+			(t.Block == BlockLadderExitTurf && t.Level != nil && !t.Level.DoorsOpen)))
 }
 
 func (t *Tile) IsRunnable() bool {
@@ -312,8 +321,8 @@ func (t *Tile) IsLadder() bool {
 			(t.Block == BlockLadderCracked && !t.Flags.LCollapse) ||
 			(t.Block == BlockLadderCrackedTurf && !t.Flags.LCollapse) ||
 			t.Block == BlockLadderCrackedTurf ||
-			(t.Block == BlockLadderExitTurf && CurrLevel.DoorsOpen) ||
-			(t.Block == BlockLadderExit && CurrLevel.DoorsOpen))
+			(t.Block == BlockLadderExitTurf && t.Level != nil && t.Level.DoorsOpen) ||
+			(t.Block == BlockLadderExit && t.Level != nil && t.Level.DoorsOpen))
 	} else {
 		return t.Block == BlockLadder ||
 			t.Block == BlockLadderTurf ||
@@ -354,7 +363,7 @@ func (t *Tile) CanDig() bool {
 	if t == nil {
 		return false
 	}
-	return !t.Flags.Collapse && (t.Block == BlockTurf || (t.Block == BlockLadderExitTurf && !CurrLevel.DoorsOpen))
+	return !t.Flags.Collapse && (t.Block == BlockTurf || (t.Block == BlockLadderExitTurf && t.Level != nil && !t.Level.DoorsOpen))
 }
 
 func (t *Tile) CanBeBuried() bool {
@@ -369,19 +378,19 @@ func (t *Tile) CanBeBuried() bool {
 var PlayerAbove bool
 
 func (t *Tile) PathNeighbors() []astar.Pather {
-	if CurrLevel == nil {
+	if t.Level == nil {
 		return []astar.Pather{}
 	}
 	var neighbors []astar.Pather
 	// Down
-	d := CurrLevel.Get(t.Coords.X, t.Coords.Y-1)
+	d := t.Level.Get(t.Coords.X, t.Coords.Y-1)
 	if !PlayerAbove && d != nil && (d.IsEmpty() || d.IsLadder()) {
 		neighbors = append(neighbors, d)
 	}
 	notFalling := d.IsSolidPath() || d.IsLadder() || t.IsLadder()
 	// Left
-	l := CurrLevel.Get(t.Coords.X-1, t.Coords.Y)
-	//lb := CurrLevel.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
+	l := t.Level.Get(t.Coords.X-1, t.Coords.Y)
+	//lb := t.Level.Tiles.Get(t.Coords.X-1, t.Coords.Y-1)
 	//if notFalling && l != nil && !l.IsSolid() &&
 	//	(l.Ladder || lb == nil || lb.IsSolid()) {
 	//	neighbors = append(neighbors, l)
@@ -390,8 +399,8 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 		neighbors = append(neighbors, l)
 	}
 	// Right
-	r := CurrLevel.Get(t.Coords.X+1, t.Coords.Y)
-	//rb := CurrLevel.Tiles.Get(t.Coords.X+1, t.Coords.Y-1)
+	r := t.Level.Get(t.Coords.X+1, t.Coords.Y)
+	//rb := t.Level.Tiles.Get(t.Coords.X+1, t.Coords.Y-1)
 	//if notFalling && r != nil && !r.IsSolid() &&
 	//	(r.Ladder || rb == nil || rb.IsSolid()) {
 	//	neighbors = append(neighbors, r)
@@ -400,7 +409,7 @@ func (t *Tile) PathNeighbors() []astar.Pather {
 		neighbors = append(neighbors, r)
 	}
 	// Up
-	u := CurrLevel.Get(t.Coords.X, t.Coords.Y+1)
+	u := t.Level.Get(t.Coords.X, t.Coords.Y+1)
 	if PlayerAbove && notFalling && !u.IsSolidPath() && t.IsLadder() {
 		neighbors = append(neighbors, u)
 	}

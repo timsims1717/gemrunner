@@ -5,8 +5,10 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/content"
 	"gemrunner/internal/data"
+	"gemrunner/internal/myecs"
 	"gemrunner/internal/random"
 	"gemrunner/internal/ui"
+	"gemrunner/pkg/state"
 	"time"
 )
 
@@ -61,6 +63,10 @@ func StartLevel(record bool) {
 	InitLevel(data.CurrentPlayArea)
 	//InitPlayArea(data.CurrentPlayArea)
 
+	RandAndRecord(record)
+}
+
+func RandAndRecord(record bool) {
 	levelSeed := random.RandomSeed()
 	random.SetLevelSeed(levelSeed)
 
@@ -88,5 +94,11 @@ func LevelSessionDispose() {
 }
 
 func LevelTransitionSystem() {
-
+	if !data.OtherPlayArea.BorderEntity.HasComponent(myecs.Interpolation) {
+		state.PopState()
+	}
+	if data.DebugInput.Get("debugInv").JustPressed() {
+		state.PopState()
+		data.DebugInput.Get("debugInv").Consume()
+	}
 }

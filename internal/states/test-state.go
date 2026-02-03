@@ -125,7 +125,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 }
 
 func (s *testState) Draw(win *pixelgl.Window) {
-	drawPlayArea(win)
+	drawPlayState(win)
 }
 
 func (s *testState) SetAbstract(aState *state.AbstractState) {

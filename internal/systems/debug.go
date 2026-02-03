@@ -5,6 +5,7 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/pkg/debug"
+	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 )
 
@@ -122,5 +123,17 @@ func PlayDebugInput() {
 			GoToLevelRight()
 			data.DebugInput.Get("debugLevelRight").Consume()
 		}
+	}
+}
+
+func TransitionDebugInput() {
+	if data.DebugInput.Get("debugLevelUp").Pressed() {
+		data.OtherPlayArea.BorderView.PortPos.Y += 200. * timing.DT
+	} else if data.DebugInput.Get("debugLevelDown").Pressed() {
+		data.OtherPlayArea.BorderView.PortPos.Y -= 200. * timing.DT
+	} else if data.DebugInput.Get("debugLevelLeft").Pressed() {
+		data.OtherPlayArea.BorderView.PortPos.X -= 200. * timing.DT
+	} else if data.DebugInput.Get("debugLevelRight").Pressed() {
+		data.OtherPlayArea.BorderView.PortPos.X += 200. * timing.DT
 	}
 }

@@ -79,7 +79,14 @@ func PlaySystem() {
 			} else if util.Abs(next.Grid.X-data.CurrLevel.Puzzle.Grid.X)+
 				util.Abs(next.Grid.Y-data.CurrLevel.Puzzle.Grid.Y) == 1 {
 				// next puzzle is next to this one
-				GoToLevel(exitIndex)
+				for _, p := range data.CurrLevel.Players {
+					if p == nil {
+						continue
+					}
+					sfx.SoundPlayer.KillSound(p.SFX)
+				}
+				data.CurrPuzzleSet.SetTo(exitIndex)
+				state.PushState(constants.TransStateKey)
 			} else {
 				// next puzzle is "far away"
 				ui.OpenDialogInStack(constants.DialogAdventureTrans)
@@ -118,8 +125,6 @@ func GoToLevel(i int) {
 		}
 		i++
 	}
-	data.CurrLevelSess.PuzzleIndex = data.CurrPuzzleSet.PuzzleIndex
-	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	StartLevel(record)
 	UpdateViews()
 	data.EditorDraw = false

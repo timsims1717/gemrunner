@@ -150,9 +150,9 @@ var (
 		A: 255,
 	}
 	ColorClear = color.RGBA{
-		R: 255,
-		G: 255,
-		B: 255,
+		R: 0,
+		G: 0,
+		B: 0,
 		A: 0,
 	}
 	ColorDisable = color.RGBA{

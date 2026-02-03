@@ -17,9 +17,10 @@ type State interface {
 
 type AbstractState struct {
 	State
-	LoadPrc  float64
-	ShowLoad bool
-	loaded   bool
+	LoadPrc    float64
+	ShowLoad   bool
+	loaded     bool
+	AlwaysDraw bool
 }
 
 func New(state State) *AbstractState {
@@ -32,6 +33,7 @@ func New(state State) *AbstractState {
 
 var (
 	pushState  = false
+	popState   = false
 	nextState  = "unknown"
 	stateStack []string
 	stackPtr   = -1
@@ -109,7 +111,7 @@ func Draw(win *pixelgl.Window) {
 			cState, ok1 := states[state]
 			if !ok1 {
 				panic(fmt.Sprintf("state.Draw - state %s doesn't exist\n", state))
-			} else {
+			} else if i == stackPtr || cState.AlwaysDraw {
 				cState.Draw(win)
 			}
 		}
@@ -118,6 +120,13 @@ func Draw(win *pixelgl.Window) {
 
 func updateState(win *pixelgl.Window) {
 	if !loading {
+		if popState {
+			if len(stateStack) == 0 || stackPtr == -1 {
+				panic("state.Pop - tried to pop with an empty state stack")
+			}
+			stackPtr--
+			popState = false
+		}
 		if len(stateStack)-1 > stackPtr {
 			// states need to be popped
 			for si := len(stateStack) - 1; si > stackPtr; si-- {
@@ -166,10 +175,10 @@ func PushState(s string) {
 }
 
 func PopState() {
-	if len(stateStack) == 0 || stackPtr == -1 {
-		panic("state.Pop - tried to pop with an empty state stack")
+	if !popState {
+		popState = true
 	} else {
-		stackPtr--
+		panic(fmt.Sprintf("state.Pop - tried to pop state when a pop is already happening"))
 	}
 }
 

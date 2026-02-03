@@ -21,24 +21,24 @@ func CreatePlayArea() *data.PlayArea {
 	return fp
 }
 
-func SetPuzzle(fp *data.PlayArea, puzzle *data.Puzzle) {
-	if fp == nil {
+func SetPuzzle(playArea *data.PlayArea, puzzle *data.Puzzle) {
+	if playArea == nil {
 		panic("SetPuzzle: puzzle view is nil")
 	} else if puzzle == nil {
 		panic("SetPuzzle: puzzle is nil")
 	}
-	DisposePuzzle(fp.Puzzle)
+	DisposePuzzle(playArea.Puzzle)
 	VerifyPuzzle(puzzle)
-	fp.Puzzle = puzzle
+	playArea.Puzzle = puzzle
 }
 
-func InitPuzzle(fp *data.PlayArea) {
-	if fp == nil {
+func InitPuzzle(playArea *data.PlayArea) {
+	if playArea == nil {
 		panic("InitPuzzle: puzzle view is nil")
-	} else if fp.Puzzle == nil {
+	} else if playArea.Puzzle == nil {
 		panic("InitPuzzle: puzzle is nil")
 	}
-	for y, row := range fp.Puzzle.Tiles.T {
+	for y, row := range playArea.Puzzle.Tiles.T {
 		for x, tile := range row {
 			tile.Coords = world.NewCoords(x, y)
 			obj := object.New()
@@ -57,16 +57,16 @@ func InitPuzzle(fp *data.PlayArea) {
 		}
 	}
 	UpdateEditorOptions()
-	InitPlayArea(fp)
-	UpdateEditorShaders(fp.Puzzle)
+	InitPlayArea(playArea)
+	UpdateEditorShaders(playArea.Puzzle)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 }
 
-func InitPlayArea(fp *data.PlayArea) {
-	InitPlayAreaView(fp)
-	UpdatePuzzleShaders(fp)
-	ChangeFullWorldShader(fp, fp.Puzzle.Metadata.ShaderMode)
-	UpdatePlayAreaView(fp)
+func InitPlayArea(playArea *data.PlayArea) {
+	InitPlayAreaView(playArea)
+	UpdatePuzzleShaders(playArea)
+	ChangeFullWorldShader(playArea, playArea.Puzzle.Metadata.ShaderMode)
+	UpdatePlayAreaView(playArea)
 }
 
 func InitPlayAreaView(fp *data.PlayArea) {
@@ -238,34 +238,48 @@ func VerifyPuzzle(puzzle *data.Puzzle) {
 	if puzzle.Metadata.MusicTrack == "" {
 		puzzle.Metadata.MusicTrack = constants.WorldMusic[num]
 	}
+	for y, row := range puzzle.Tiles.T {
+		for x, tile := range row {
+			tile.Coords = world.NewCoords(x, y)
+			tile.Puzzle = puzzle
+		}
+	}
 }
 
-func InitLevel(fp *data.PlayArea) {
-	if fp == nil {
+func InitLevel(playArea *data.PlayArea) {
+	if playArea == nil {
 		panic("InitLevel: puzzle view is nil")
-	} else if fp.Puzzle == nil {
+	} else if playArea.Puzzle == nil {
 		panic("InitLevel: puzzle is nil")
 	}
-	DisposePuzzle(fp.Puzzle)
-	if fp.Level != nil {
-		DisposeLevel(fp.Level)
+	DisposePuzzle(playArea.Puzzle)
+	if playArea.Level != nil {
+		DisposeLevel(playArea.Level)
 	}
-	InitPlayAreaView(fp)
-	fp.Level = &data.Level{
-		Tiles:    fp.Puzzle.CopyTiles(),
-		Puzzle:   fp.Puzzle,
-		Metadata: fp.Puzzle.Metadata,
+	InitPlayAreaView(playArea)
+	playArea.Level = &data.Level{
+		Tiles:    playArea.Puzzle.CopyTiles(),
+		Puzzle:   playArea.Puzzle,
+		Metadata: playArea.Puzzle.Metadata,
 	}
-	data.CurrLevel = fp.Level
-	InitLevelTiles(fp.Level)
-	InitPlayers(fp.Level)
-	CreateFakePlayer(fp.Level)
-	InitLevelDialogs(fp.Level)
-	UpdatePuzzleShaders(fp)
-	ChangeFullWorldShader(fp, fp.Level.Metadata.ShaderMode)
-	UpdatePlayAreaView(fp)
+	data.CurrLevel = playArea.Level
+	InitLevelTiles(playArea.Level)
+	InitPlayers(playArea.Level)
+	CreateFakePlayer(playArea.Level)
+	InitLevelDialogs(playArea.Level)
+	UpdatePuzzleShaders(playArea)
+	ChangeFullWorldShader(playArea, playArea.Level.Metadata.ShaderMode)
+	UpdatePlayAreaView(playArea)
 
 	FloatingTextStartLevel()
-	SetPuzzleTitle(fp.Level.Metadata.Name, fp.Level.Metadata.PrimaryColor)
+	SetPuzzleTitle(playArea.Level.Metadata.Name, playArea.Level.Metadata.PrimaryColor)
 	UpdatePuzzleTimer()
+}
+
+func UpdateLevelLayer(level *data.Level, offset int) {
+	for _, row := range level.Tiles.T {
+		for _, tile := range row {
+			tile.Object.Layer += offset
+		}
+	}
 }

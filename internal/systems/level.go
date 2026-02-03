@@ -32,10 +32,7 @@ func InitLevelTiles(level *data.Level) {
 			obj.Layer = 10
 			tile.Object = obj
 			tile.Live = true
-			e := myecs.Manager.NewEntity().
-				AddComponent(myecs.Object, obj).
-				AddComponent(myecs.Tile, tile)
-			tile.Entity = e
+			tile.Level = level
 			// replace reanimator and items
 			switch tile.Block {
 			case data.BlockPhase:
@@ -144,6 +141,12 @@ func InitLevelTiles(level *data.Level) {
 				tile.Object.Layer = 30
 			}
 			AddLevelTransition(tile, x, y)
+			if tile.Block != data.BlockEmpty {
+				e := myecs.Manager.NewEntity().
+					AddComponent(myecs.Object, obj).
+					AddComponent(myecs.Tile, tile)
+				tile.Entity = e
+			}
 		}
 	}
 }

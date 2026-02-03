@@ -20,6 +20,9 @@ type Border struct {
 	Empty  bool
 	Style  BorderStyle
 	Hidden bool
+
+	ExcludeSide Direction
+	ExcludeSize int
 }
 
 type BorderStyle int
