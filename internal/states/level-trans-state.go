@@ -25,8 +25,7 @@ type levelTransState struct {
 }
 
 func (s *levelTransState) Unload(win *pixelgl.Window) {
-	data.LevelTrans = false
-	ui.ClearDialogsOpen()
+	//ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
 	systems.DisposeLevel(data.CurrentPlayArea.Level)
 	data.CurrentPlayArea.Level = nil
@@ -45,9 +44,8 @@ func (s *levelTransState) Unload(win *pixelgl.Window) {
 }
 
 func (s *levelTransState) Load(win *pixelgl.Window) {
-	data.LevelTrans = true
 	data.EditorDraw = false
-	ui.ClearDialogsOpen()
+	//ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
 	systems.ClearTemp()
 	data.CurrentPlayArea.LayerOffset = 1000

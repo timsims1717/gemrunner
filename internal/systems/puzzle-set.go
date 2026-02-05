@@ -19,6 +19,7 @@ func AddPuzzle() {
 	data.CurrPuzzleSet.AppendNew()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func InsertPuzzle() {
@@ -26,6 +27,7 @@ func InsertPuzzle() {
 	data.CurrPuzzleSet.Insert(nil, data.CurrPuzzleSet.PuzzleIndex+1)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func AddPuzzleUp() {
@@ -35,6 +37,7 @@ func AddPuzzleUp() {
 	data.CurrPuzzleSet.InsertGrid(nil, grid)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func AddPuzzleDown() {
@@ -44,6 +47,7 @@ func AddPuzzleDown() {
 	data.CurrPuzzleSet.InsertGrid(nil, grid)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func AddPuzzleRight() {
@@ -53,6 +57,7 @@ func AddPuzzleRight() {
 	data.CurrPuzzleSet.InsertGrid(nil, grid)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func AddPuzzleLeft() {
@@ -62,6 +67,7 @@ func AddPuzzleLeft() {
 	data.CurrPuzzleSet.InsertGrid(nil, grid)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func PrevPuzzle() {
@@ -69,6 +75,7 @@ func PrevPuzzle() {
 	data.CurrPuzzleSet.Prev()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func NextPuzzle() {
@@ -76,6 +83,7 @@ func NextPuzzle() {
 	data.CurrPuzzleSet.Next()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func UpPuzzle() {
@@ -83,6 +91,7 @@ func UpPuzzle() {
 	data.CurrPuzzleSet.Up()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func DownPuzzle() {
@@ -90,6 +99,7 @@ func DownPuzzle() {
 	data.CurrPuzzleSet.Down()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func RightPuzzle() {
@@ -97,6 +107,7 @@ func RightPuzzle() {
 	data.CurrPuzzleSet.Right()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func LeftPuzzle() {
@@ -104,6 +115,7 @@ func LeftPuzzle() {
 	data.CurrPuzzleSet.Left()
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func DeletePuzzle() {
@@ -111,10 +123,12 @@ func DeletePuzzle() {
 	data.CurrPuzzleSet.Delete(data.CurrPuzzleSet.PuzzleIndex)
 	SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	InitPuzzle(data.CurrentPlayArea)
+	data.CurrPuzzleSet.NeedToSave = true
 }
 
 func SavePuzzleSet() bool {
 	if data.CurrPuzzleSet != nil {
+		data.CurrPuzzleSet.LastEditedPuzzle = data.CurrPuzzleSet.PuzzleIndex
 		if data.CurrPuzzleSet.Metadata.Name == "" {
 			fmt.Println("ERROR: puzzle set has no name")
 			return false

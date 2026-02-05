@@ -40,6 +40,7 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	ui.CloseDialog(constants.DialogPlayer4Inv)
 	ui.CloseDialog(constants.DialogPuzzleTitle)
 	ui.CloseDialog(constants.DialogPuzzleTimer)
+	systems.DisposeInGameDialogs()
 	systems.LevelSessionDispose()
 	systems.DisposeCurrLevel()
 	systems.ClearTemp()
@@ -59,6 +60,7 @@ func (s *testState) Load(win *pixelgl.Window) {
 			ui.CloseDialog(constants.DialogEditorOptionsRight)
 		}
 	}
+	systems.InGameDialogs(win)
 	systems.LevelSessionInit()
 	systems.StartLevel(false)
 	systems.UpdateViews()

@@ -17,8 +17,6 @@ import (
 func EditorDialogs(win *pixelgl.Window) {
 	ui.NewDialog(load.OpenPuzzleConstructor)
 	ui.NewDialog(load.ChangeNameConstructor)
-	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSettings])
-	ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSetSettings])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogNoPlayersInPuzzle])
 	ui.NewDialog(ui.DialogConstructors[constants.DialogAddPuzzle])
 	ui.NewDialog(load.AreYouSureDeleteConstructor)
@@ -52,6 +50,9 @@ func CustomizeEditorDialogs(win *pixelgl.Window) {
 }
 
 func CustomizeEditorDialog(key string) {
+	if _, ok := ui.Dialogs[key]; !ok {
+		return
+	}
 	switch key {
 	case constants.DialogBarrier:
 		customizeBarrierOptions()
@@ -63,6 +64,8 @@ func CustomizeEditorDialog(key string) {
 		customizeItemOptions()
 	case constants.DialogPuzzleSettings:
 		customizePuzzleSettings()
+	case constants.DialogPuzzleSetSettings:
+		customizePuzzleSetSettings()
 	case constants.DialogEditorOptionsRight, constants.DialogEditorOptionsBot:
 		customizeEditorOptions(key)
 	case constants.DialogAddPuzzle:
@@ -82,8 +85,6 @@ func CustomizeEditorDialog(key string) {
 					switch key {
 					case constants.DialogCombineSets:
 						ele.OnClick = OnCombinePuzzleSet
-					case constants.DialogPuzzleSetSettings:
-						ele.OnClick = ConfirmPuzzleSetSettings
 					case constants.DialogBomb:
 						ele.OnClick = ConfirmBombOptions
 					case constants.DialogUnableToSave, constants.DialogUnableToSaveConfirm:
@@ -125,26 +126,6 @@ func CustomizeEditorDialog(key string) {
 							ele.OnClick = Test(fmt.Sprintf("pressed button %s", ele.Key))
 						}
 					}
-				}
-			} else if ele.ElementType == ui.CheckboxElement {
-				switch ele.Key {
-				case "sequential_check", "adventure_check":
-					ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
-						if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
-							click := hvc.Input.Get("click")
-							if hvc.Hover && click.JustPressed() && !ele.Checked {
-								ui.SetChecked(ele, true)
-								for _, ele2 := range dialog.Elements {
-									if ele2.ElementType == ui.CheckboxElement {
-										if (ele2.Key == "sequential_check" || ele2.Key == "adventure_check") &&
-											ele2.Key != ele.Key {
-											ui.SetChecked(ele2, false)
-										}
-									}
-								}
-							}
-						}
-					}))
 				}
 			} else if ele.ElementType == ui.SpriteElement {
 				switch ele.Key {

@@ -112,6 +112,7 @@ var EditorDialogs = []string{
 	DialogBomb,
 	DialogItemOptions,
 	DialogPalette,
+	DialogFloatingText,
 	DialogEditorPanelLeft,
 	DialogEditorPanelTop,
 	DialogEditorOptionsRight,

@@ -56,6 +56,10 @@ type DialogConstructor struct {
 }
 
 func NewDialog(dc *DialogConstructor) {
+	if _, ok := Dialogs[dc.Key]; ok {
+		fmt.Printf("WARNING: NewDialog %s already exists\n", dc.Key)
+		return
+	}
 	vp := viewport.New(nil)
 	vp.SetRect(pixel.R(0, 0, dc.Width*world.TileSize, dc.Height*world.TileSize))
 	vp.CamPos = pixel.V(0, 0)
@@ -281,14 +285,16 @@ func DisposeDialog(d *Dialog) {
 
 func DisposeSubElements(elements []*Element) {
 	for _, ele := range elements {
-		switch ele.ElementType {
-		case DropdownElement, InputElement, MultiLineInputElement:
+		if ele.TextEntity != nil {
 			myecs.Manager.DisposeEntity(ele.TextEntity)
-		case ScrollElement:
+		}
+		if ele.ScrollUp != nil {
 			myecs.Manager.DisposeEntity(ele.ScrollUp.Entity)
+		}
+		if ele.ScrollDown != nil {
 			myecs.Manager.DisposeEntity(ele.ScrollDown.Entity)
-			myecs.Manager.DisposeEntity(ele.Bar.Entity)
-		case SliderElement:
+		}
+		if ele.Bar != nil {
 			myecs.Manager.DisposeEntity(ele.Bar.Entity)
 		}
 		DisposeSubElements(ele.Elements)

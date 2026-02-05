@@ -29,7 +29,6 @@ var (
 	CurrLevel     *Level
 	CurrPuzzleSet *PuzzleSet
 	CurrReplay    *LevelReplay
-	LevelTrans    bool
 
 	CurrSelect *Selection
 	ClipSelect *Selection
@@ -131,9 +130,10 @@ type LevelTransition struct {
 }
 
 type PuzzleSet struct {
-	Puzzles  []*Puzzle         `json:"puzzles"`
-	Metadata PuzzleSetMetadata `json:"puzzleSetMetadata"`
-	HasGrid  bool              `json:"hasGrid"`
+	Puzzles          []*Puzzle         `json:"puzzles"`
+	Metadata         PuzzleSetMetadata `json:"puzzleSetMetadata"`
+	HasGrid          bool              `json:"hasGrid"`
+	LastEditedPuzzle int               `json:"lastPuzzle"`
 
 	CurrPuzzle *Puzzle              `json:"-"`
 	PuzzGrid   map[world.Coords]int `json:"-"`

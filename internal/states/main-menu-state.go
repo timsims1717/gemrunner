@@ -110,6 +110,7 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 
 	myecs.UpdateManager()
 	debug.AddText(fmt.Sprintf("Entity Count: %d", myecs.FullCount))
+	debug.AddText(fmt.Sprintf("ID'd Count: %d", myecs.IDCount))
 }
 
 func (s *mainMenuState) Draw(win *pixelgl.Window) {

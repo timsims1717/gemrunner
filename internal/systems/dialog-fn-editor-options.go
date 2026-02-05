@@ -53,9 +53,9 @@ func customizeEditorOptions(key string) {
 		case "name_btn":
 			ele.OnClick = OpenDialog(constants.DialogChangeName)
 		case "puzzle_settings_btn":
-			ele.OnClick = OpenDialog(constants.DialogPuzzleSettings)
+			ele.OnClick = OpenPuzzleSettingsDialog
 		case "puzzle_set_settings_btn":
-			ele.OnClick = OpenPuzzleSetSettingsDialog
+			ele.OnClick = OpenPuzzleSetSettings
 		case "exit_editor_btn":
 			ele.OnClick = ExitEditor
 		}
@@ -207,6 +207,11 @@ func OnOpenPuzzleSet() {
 		err := OpenPuzzleSet(data.PuzzleSetFileList[data.SelectedPuzzleIndex].Filename)
 		if err != nil {
 			fmt.Println("ERROR:", err)
+		}
+		if data.CurrPuzzleSet.LastEditedPuzzle > 0 && data.CurrPuzzleSet.LastEditedPuzzle < len(data.CurrPuzzleSet.Puzzles) {
+			data.CurrPuzzleSet.SetTo(data.CurrPuzzleSet.LastEditedPuzzle)
+		} else {
+			data.CurrPuzzleSet.SetToFirst()
 		}
 		SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 		InitPuzzle(data.CurrentPlayArea)
@@ -431,7 +436,6 @@ func OpenAddPuzzleDialog() {
 
 func customizePuzzleSettings() {
 	puzzleSettingsDlg := ui.Dialogs[constants.DialogPuzzleSettings]
-	puzzleSettingsDlg.OnOpen = OpenPuzzleSettingsDialog
 	for _, e := range puzzleSettingsDlg.Elements {
 		ele := e
 		switch ele.Key {
@@ -454,14 +458,17 @@ func customizePuzzleSettings() {
 				ChangeNumberInputWithLimits(puzzleSettingsDlg.Get("puzzle_height_input"), 1, constants.PuzzleMinHeight, constants.PuzzleMaxHeight)
 			}
 		case "cancel":
-			ele.OnClick = CloseDialog(constants.DialogPuzzleSettings)
+			ele.OnClick = DisposeDialog(constants.DialogPuzzleSettings)
 		}
 	}
 }
 
 func OpenPuzzleSettingsDialog() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		for _, ele := range ui.Dialogs[constants.DialogPuzzleSettings].Elements {
+		ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSettings])
+		CustomizeEditorDialog(constants.DialogPuzzleSettings)
+		dlg := ui.Dialogs[constants.DialogPuzzleSettings]
+		for _, ele := range dlg.Elements {
 			switch ele.Key {
 			case "puzzle_name":
 				if data.CurrPuzzleSet.CurrPuzzle.Metadata.Name != "" {
@@ -499,12 +506,15 @@ func OpenPuzzleSettingsDialog() {
 				ui.SetText(ele, fmt.Sprintf("%d", data.CurrPuzzleSet.CurrPuzzle.Metadata.Height))
 			}
 		}
+		UpdateDialogView(dlg)
+		ui.OpenDialogInStack(constants.DialogPuzzleSettings)
 	}
 }
 
 func ConfirmPuzzleSettings() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		for _, ele := range ui.Dialogs[constants.DialogPuzzleSettings].Elements {
+		dlg := ui.Dialogs[constants.DialogPuzzleSettings]
+		for _, ele := range dlg.Elements {
 			switch ele.Key {
 			case "puzzle_name":
 				data.CurrPuzzleSet.CurrPuzzle.Metadata.Name = ele.Value
@@ -532,20 +542,50 @@ func ConfirmPuzzleSettings() {
 				data.CurrPuzzleSet.CurrPuzzle.SetHeight(hi)
 			}
 		}
-		ui.CloseDialog(constants.DialogPuzzleSettings)
+		ui.Dispose(constants.DialogPuzzleSettings)
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		UpdateViews()
-		//if !SavePuzzleSet() {
-		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
-		//}
 	}
 }
 
 // puzzle set settings
 
-func OpenPuzzleSetSettingsDialog() {
+func customizePuzzleSetSettings() {
+	dialog := ui.Dialogs[constants.DialogPuzzleSetSettings]
+	for _, e := range dialog.Elements {
+		ele := e
+		switch ele.Key {
+		case "confirm":
+			ele.OnClick = ConfirmPuzzleSetSettings
+		case "sequential_check", "adventure_check":
+			ele.Entity.AddComponent(myecs.Update, data.NewHoverClickFn(data.MenuInput, dialog.ViewPort, func(hvc *data.HoverClick) {
+				if dialog.Open && dialog.Active && !dialog.Lock && !dialog.Click {
+					click := hvc.Input.Get("click")
+					if hvc.Hover && click.JustPressed() && !ele.Checked {
+						ui.SetChecked(ele, true)
+						for _, ele2 := range dialog.Elements {
+							if ele2.ElementType == ui.CheckboxElement {
+								if (ele2.Key == "sequential_check" || ele2.Key == "adventure_check") &&
+									ele2.Key != ele.Key {
+									ui.SetChecked(ele2, false)
+								}
+							}
+						}
+					}
+				}
+			}))
+		case "cancel":
+			ele.OnClick = DisposeDialog(constants.DialogPuzzleSetSettings)
+		}
+	}
+}
+
+func OpenPuzzleSetSettings() {
 	if data.Editor != nil && data.CurrPuzzleSet != nil {
-		for _, ele := range ui.Dialogs[constants.DialogPuzzleSetSettings].Elements {
+		ui.NewDialog(ui.DialogConstructors[constants.DialogPuzzleSetSettings])
+		CustomizeEditorDialog(constants.DialogPuzzleSetSettings)
+		dlg := ui.Dialogs[constants.DialogPuzzleSetSettings]
+		for _, ele := range dlg.Elements {
 			switch ele.Key {
 			case "puzzle_set_name":
 				if data.CurrPuzzleSet.Metadata.Name != "" {
@@ -569,6 +609,7 @@ func OpenPuzzleSetSettingsDialog() {
 				ui.SetChecked(ele, data.CurrPuzzleSet.Metadata.Adventure)
 			}
 		}
+		UpdateDialogView(dlg)
 		ui.OpenDialogInStack(constants.DialogPuzzleSetSettings)
 	}
 }
@@ -585,12 +626,10 @@ func ConfirmPuzzleSetSettings() {
 				data.CurrPuzzleSet.Metadata.Adventure = ele.Checked
 			}
 		}
-		ui.CloseDialog(constants.DialogPuzzleSetSettings)
+		ui.Dispose(constants.DialogPuzzleSetSettings)
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		UpdateEditorOptions()
-		//if !SavePuzzleSet() {
-		//	ui.OpenDialogInStack(constants.DialogUnableToSave)
-		//}
+		UpdateViews()
 	}
 }
 

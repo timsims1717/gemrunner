@@ -173,9 +173,11 @@ func InitPlayers(level *data.Level) {
 					if inv.Entity == nil || inv.Object == nil { // create item
 						item := CreateItem(inv.Block, pixel.ZV, inv.Key, inv.Metadata, inv.Origin)
 						p.Inventory = item
+						p.Inventory.Object.Hidden = true
 						p.Inventory.PickUp.Inventory = i
 					} else {
 						p.Inventory = inv
+						p.Inventory.Object.Hidden = true
 						p.Inventory.Entity.AddComponent(myecs.Temp, myecs.ClearFlag(false))
 					}
 				}
@@ -463,10 +465,8 @@ func GetRandomRegenTileFromList(coords []world.Coords, exclude *world.Coords) *d
 
 func GetRandomRegenTile() *data.Tile {
 	var tiles []*data.Tile
-	for _, result := range myecs.Manager.Query(myecs.IsTile) {
-		_, okO := result.Components[myecs.Object].(*object.Object)
-		tile, ok := result.Components[myecs.Tile].(*data.Tile)
-		if okO && ok && tile.Live {
+	for _, row := range data.CurrLevel.Tiles.T {
+		for _, tile := range row {
 			if tile.IsEmpty() && tile.Block != data.BlockDemonRegen {
 				tiles = append(tiles, tile)
 			}

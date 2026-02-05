@@ -18,7 +18,7 @@ import (
 
 func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	r := img.Batchers[element.Batch].GetSprite(element.SprKey).Frame()
-	obj := object.New()
+	obj := object.New().WithID(element.Key)
 	obj.Pos = element.Position
 	obj.Layer = 99
 	obj.SetRect(r)
@@ -94,7 +94,7 @@ func CreateButtonElement(element ElementConstructor, dlg *Dialog, vp *viewport.V
 
 func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport.ViewPort) *Element {
 	r := img.Batchers[element.Batch].GetSprite(element.SprKey).Frame()
-	obj := object.New()
+	obj := object.New().WithID(element.Key)
 	obj.Pos = element.Position
 	obj.Layer = 99
 	obj.SetRect(r)
@@ -151,7 +151,7 @@ func CreateContainer(element ElementConstructor, dlg *Dialog, vp *viewport.ViewP
 	ctvp.CamPos = pixel.V(0, 0)
 	ctvp.PortPos = element.Position
 
-	vpObj := object.New()
+	vpObj := object.New().WithID(element.Key)
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
@@ -222,7 +222,7 @@ func CreateDropdownElement(element ElementConstructor, dlg *Dialog, parent *Elem
 	svp.CamPos = pixel.ZV
 	svp.PortPos = element.Position
 
-	vpObj := object.New()
+	vpObj := object.New().WithID(element.Key)
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
@@ -421,7 +421,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 	ivp.CamPos = pixel.V(ivp.Rect.W()*0.5-2, ivp.Rect.H()*-0.5+8)
 	ivp.PortPos = element.Position
 
-	vpObj := object.New()
+	vpObj := object.New().WithID(element.Key)
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
@@ -448,7 +448,7 @@ func CreateInputElement(element ElementConstructor, dlg *Dialog, parent *Element
 	te.AddComponent(myecs.DrawTarget, ivp.Canvas)
 
 	// the cursor
-	cObj := object.New()
+	cObj := object.New().WithID(element.Key + "_cursor")
 	cObj.Pos = tf.GetEndPos()
 	cObj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
 	cObj.Offset.Y = -cObj.HalfHeight
@@ -740,7 +740,7 @@ func CreateScrollElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 	svp.PortPos = element.Position
 	//svp.PortPos.X -= world.HalfSize
 
-	vpObj := object.New()
+	vpObj := object.New().WithID(element.Key)
 	vpObj.SetRect(pixel.R(0, 0, element.Width+1, element.Height+1))
 	vpObj.SetPos(element.Position)
 	vpObj.Layer = 99
@@ -1000,7 +1000,7 @@ func CreateSliderElement(element ElementConstructor, dlg *Dialog, parent *Elemen
 	svp.CamPos = pixel.V(0, 0)
 	svp.PortPos = element.Position
 
-	obj := object.New()
+	obj := object.New().WithID(element.Key)
 	obj.Pos = element.Position
 	obj.Layer = 99
 	obj.SetRect(pixel.R(0, 0, element.Width, element.Height))
@@ -1200,7 +1200,7 @@ func RestrictSlider(s *Element) {
 }
 
 func CreateSpriteElement(element ElementConstructor) *Element {
-	obj := object.New()
+	obj := object.New().WithID(element.Key)
 	obj.Pos = element.Position
 	obj.Layer = 99
 	obj.SetRect(img.Batchers[element.Batch].GetSprite(element.SprKey).Frame())
@@ -1223,7 +1223,7 @@ func CreateSpriteElement(element ElementConstructor) *Element {
 }
 
 func CreatePixelSpriteElement(element ElementConstructor, spr *pixel.Sprite) *Element {
-	obj := object.New()
+	obj := object.New().WithID(element.Key)
 	obj.Pos = element.Position
 	obj.Layer = 99
 	obj.SetRect(spr.Frame())
@@ -1246,6 +1246,7 @@ func CreatePixelSpriteElement(element ElementConstructor, spr *pixel.Sprite) *El
 
 func CreateTextElement(element ElementConstructor, vp *viewport.ViewPort) *Element {
 	tf := typeface.NewOld("main", typeface.NewAlign(typeface.Left, typeface.Top), 1, 0.0625, 0, 0)
+	tf.Obj = tf.Obj.WithID(element.Key)
 	tf.SetPos(element.Position)
 	tf.SetColor(element.Color)
 	tf.SetText(element.Text)

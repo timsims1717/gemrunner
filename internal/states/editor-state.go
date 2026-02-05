@@ -30,7 +30,6 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 	ui.ClearDialogStack()
 	systems.DisposeEditor()
 	systems.DisposeEditorDialogs()
-	systems.DisposeInGameDialogs()
 	systems.DisposePuzzle(data.CurrentPlayArea.Puzzle)
 	data.CurrPuzzleSet = nil
 }
@@ -40,11 +39,14 @@ func (s *editorState) Load(win *pixelgl.Window) {
 	ui.ClearDialogsOpen()
 	ui.ClearDialogStack()
 	systems.EditorDialogs(win)
-	systems.InGameDialogs(win)
 	if data.CurrPuzzleSet == nil {
 		data.CurrPuzzleSet = data.CreatePuzzleSet()
 	}
-	data.CurrPuzzleSet.SetToFirst()
+	if data.CurrPuzzleSet.LastEditedPuzzle > 0 && data.CurrPuzzleSet.LastEditedPuzzle < len(data.CurrPuzzleSet.Puzzles) {
+		data.CurrPuzzleSet.SetTo(data.CurrPuzzleSet.LastEditedPuzzle)
+	} else {
+		data.CurrPuzzleSet.SetToFirst()
+	}
 	if data.CurrentPlayArea == nil {
 		data.CurrentPlayArea = systems.CreatePlayArea()
 	}
