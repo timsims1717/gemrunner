@@ -12,7 +12,7 @@ import (
 	"math"
 )
 
-func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, level *data.Level) {
+func DrawBorder(obj *object.Object, bord *data.Border, level *data.Level) {
 	if bord == nil || bord.Hidden {
 		return
 	}
@@ -36,8 +36,6 @@ func DrawBorder(obj *object.Object, bord *data.Border, target pixel.Target, leve
 	case data.ThickBorderBlue:
 		DrawThickBorderBlue(bord, obj)
 	}
-	img.Batchers[constants.UIBatch].Draw(target)
-	img.Clear()
 }
 
 func DrawFancyBorder(bord *data.Border, obj *object.Object, level *data.Level) {

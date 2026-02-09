@@ -3,6 +3,7 @@ package data
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data/config"
+	"gemrunner/pkg/world"
 	"github.com/google/uuid"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -37,7 +38,10 @@ var (
 	RearrangeRightX       = constants.TileSize * 8
 	RearrangeFloatX       = constants.TileSize * -16
 
-	AdventureViewZoomLevel = 1
+	//AdventureViewZoomLevel = 1
+	AdventureViewGridPos world.Coords
+	AdventureViewGridMap map[world.Coords]AdvViewPzl
+	AdventureViewGridArr map[int]world.Coords
 
 	Players       []Player
 	MenuInputUsed = pxginput.KeyboardMouse
@@ -106,3 +110,8 @@ const (
 	NoContinuity
 	ContinuityAlwaysOn
 )
+
+type AdvViewPzl struct {
+	SetIndex  int
+	ViewIndex int
+}

@@ -124,8 +124,8 @@ func drawPlayState(win *pixelgl.Window) {
 func drawPlayArea(win *pixelgl.Window, pa *data.PlayArea) {
 	// draw border
 	pa.BorderView.Canvas.Clear(constants.ColorClear)
-	systems.DrawBorder(pa.BorderObject, pa.Border, pa.BorderView.Canvas, pa.Level)
-	img.Clear()
+	systems.DrawBorder(pa.BorderObject, pa.Border, pa.Level)
+	img.Batchers[constants.UIBatch].DrawThenClear(pa.BorderView.Canvas)
 	pa.BorderView.Draw(data.ScreenView.Canvas)
 	// draw puzzle
 	pa.WorldView.Canvas.Clear(constants.ColorClear)

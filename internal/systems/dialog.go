@@ -3,6 +3,7 @@ package systems
 import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
+	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/util"
@@ -42,6 +43,21 @@ func DialogSystem(win *pixelgl.Window) {
 					cancel.OnClick()
 				}
 			}
+		case constants.DialogRearrangeAdventureSet:
+			if activeDialog.Focused.Key == "puzzle_set_view" {
+				if data.MenuInput.Get("escape").JustPressed() {
+					data.MenuInput.Get("escape").Consume()
+					cancel := activeDialog.Get("cancel")
+					if cancel != nil && cancel.OnClick != nil {
+						cancel.OnClick()
+					}
+					//} else if data.MenuInput.Get("enter").JustPressed() {
+					//	data.MenuInput.Get("enter").Consume()
+					//	activeDialog.ActionFocus()
+				}
+				break
+			}
+			fallthrough
 		default:
 			if data.MenuInput.Get("escape").JustPressed() {
 				data.MenuInput.Get("escape").Consume()
@@ -262,89 +278,145 @@ func DialogDrawSystem(target pixel.Target) {
 func DrawDialog(dialog *ui.Dialog, target pixel.Target) {
 	if !dialog.NoBorder {
 		dialog.BorderVP.Canvas.Clear(color.RGBA{})
-		DrawBorder(dialog.BorderObject, dialog.Border, dialog.BorderVP.Canvas, nil)
+		DrawBorder(dialog.BorderObject, dialog.Border, nil)
+		img.Batchers[constants.UIBatch].DrawThenClear(dialog.BorderVP.Canvas)
 		dialog.BorderVP.Draw(target)
 	}
 	// draw elements w/no sub elements
 	dialog.ViewPort.Canvas.Clear(constants.ColorBlack)
-	DrawLayerSystem(dialog.ViewPort.Canvas, dialog.Layer)
-	img.Clear()
-	// draw elements w/sub elements
-	for _, e := range dialog.Elements {
-		DrawSubElements(e, dialog.ViewPort)
+	//DrawLayerSystem(dialog.ViewPort.Canvas, dialog.Layer)
+
+	// draw elements
+	currBatches = []string{}
+	for i := len(dialog.Elements) - 1; i >= 0; i-- {
+		e := dialog.Elements[i]
+		DrawElement(e, dialog.ViewPort)
+	}
+	for _, batch := range currBatches {
+		img.Batchers[batch].DrawThenClear(dialog.ViewPort.Canvas)
 	}
 	dialog.ViewPort.Draw(target)
 	img.Clear()
 }
 
-// DrawSubElements draws the border and sub elements of ui elements
+// DrawElement draws the border and sub elements of ui elements
 // with sub elements.
-func DrawSubElements(element *ui.Element, vp *viewport.ViewPort) {
-	if element == nil || element.Object.Hidden || element.Object.Unloaded {
+func DrawElement(element *ui.Element, vp *viewport.ViewPort) {
+	if element == nil || element.Object.Hidden || element.Object.Unloaded || vp == nil {
 		return
 	}
-	switch element.ElementType {
-	case ui.DropdownElement:
-		// draw dropdown
+	if element.ViewPort != nil {
 		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		for _, e := range element.Elements {
-			DrawSubElements(e, element.ViewPort)
+		currBatches = []string{}
+		for i := len(element.Elements) - 1; i >= 0; i-- {
+			e := element.Elements[i]
+			DrawElement(e, element.ViewPort)
+		}
+		for _, batch := range currBatches {
+			img.Batchers[batch].DrawThenClear(element.ViewPort.Canvas)
 		}
 		element.ViewPort.Draw(vp.Canvas)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
-	case ui.InputElement:
-		// draw input
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		element.ViewPort.Draw(vp.Canvas)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
-	case ui.ScrollElement:
-		// draw scroll elements
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		img.Clear()
-		for _, e := range element.Elements {
-			DrawSubElements(e, element.ViewPort)
-		}
-		element.ViewPort.Draw(vp.Canvas)
-		img.Clear()
-		DrawLayerSystem(vp.Canvas, element.Layer-1)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
-	case ui.ContainerElement:
-		// draw container elements
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		img.Clear()
-		for _, e := range element.Elements {
-			DrawSubElements(e, element.ViewPort)
-		}
-		element.ViewPort.Draw(vp.Canvas)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
-	case ui.SliderElement:
-		// draw container elements
-		element.ViewPort.Canvas.Clear(element.Background)
-		DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
-		img.Clear()
-		for _, e := range element.Elements {
-			DrawSubElements(e, element.ViewPort)
-		}
-		element.ViewPort.Draw(vp.Canvas)
-		img.Clear()
-		DrawLayerSystem(vp.Canvas, element.Layer-1)
-		img.Clear()
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
-	default:
-		// draw border
-		DrawBorder(element.Object, element.Border, vp.Canvas, nil)
 	}
+	if element.ScrollUp != nil {
+		if draw, ok := element.ScrollUp.Entity.GetComponentData(myecs.Drawable); ok {
+			DrawThing(draw, element.ScrollUp.Object, vp.Canvas)
+		}
+	}
+	if element.ScrollDown != nil {
+		if draw, ok := element.ScrollDown.Entity.GetComponentData(myecs.Drawable); ok {
+			DrawThing(draw, element.ScrollDown.Object, vp.Canvas)
+		}
+	}
+	if element.Bar != nil {
+		if draw, ok := element.Bar.Entity.GetComponentData(myecs.Drawable); ok {
+			DrawThing(draw, element.Bar.Object, vp.Canvas)
+		}
+	}
+	if element.Entity != nil {
+		if draw, ok := element.Entity.GetComponentData(myecs.Drawable); ok {
+			DrawThing(draw, element.Object, vp.Canvas)
+		}
+	}
+	if element.TextEntity != nil {
+		if draw, ok := element.TextEntity.GetComponentData(myecs.Drawable); ok {
+			DrawThing(draw, element.Text.Obj, vp.Canvas)
+		}
+	}
+
+	if element.Border != nil {
+		DrawBorder(element.Object, element.Border, nil)
+		img.Batchers[constants.UIBatch].DrawThenClear(vp.Canvas)
+	}
+	//switch element.ElementType {
+	//case ui.DropdownElement:
+	//	// draw dropdown
+	//	//DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
+	//	//img.Clear()
+	//	// draw border
+	//case ui.InputElement:
+	//	// draw input
+	//	//DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
+	//	element.ViewPort.Draw(vp.Canvas)
+	//	//img.Clear()
+	//	// draw border
+	//	DrawBorder(element.Object, element.Border, nil)
+	//	img.Batchers[constants.UIBatch].DrawThenClear(vp.Canvas)
+	//case ui.ScrollElement:
+	//	// draw scroll elements
+	//	//DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
+	//	//img.Clear()
+	//	for _, e := range element.Elements {
+	//		DrawElement(e, element.ViewPort)
+	//	}
+	//	for _, batch := range currBatches {
+	//		img.Batchers[batch].DrawThenClear(element.ViewPort.Canvas)
+	//	}
+	//	currBatches = []string{}
+	//	element.ViewPort.Draw(vp.Canvas)
+	//	//img.Clear()
+	//	//DrawLayerSystem(vp.Canvas, element.Layer-1)
+	//	//img.Clear()
+	//	// draw border
+	//	DrawBorder(element.Object, element.Border, nil)
+	//	img.Batchers[constants.UIBatch].DrawThenClear(vp.Canvas)
+	//case ui.ContainerElement:
+	//	// draw container elements
+	//	//DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
+	//	//img.Clear()
+	//	for _, e := range element.Elements {
+	//		DrawElement(e, element.ViewPort)
+	//	}
+	//	for _, batch := range currBatches {
+	//		img.Batchers[batch].DrawThenClear(element.ViewPort.Canvas)
+	//	}
+	//	currBatches = []string{}
+	//	element.ViewPort.Draw(vp.Canvas)
+	//	//img.Clear()
+	//	// draw border
+	//	DrawBorder(element.Object, element.Border, nil)
+	//	img.Batchers[constants.UIBatch].DrawThenClear(vp.Canvas)
+	//case ui.SliderElement:
+	//	// draw container elements
+	//	//DrawLayerSystem(element.ViewPort.Canvas, element.Layer)
+	//	//img.Clear()
+	//	for _, e := range element.Elements {
+	//		DrawElement(e, element.ViewPort)
+	//	}
+	//	for _, batch := range currBatches {
+	//		img.Batchers[batch].DrawThenClear(element.ViewPort.Canvas)
+	//	}
+	//	currBatches = []string{}
+	//	element.ViewPort.Draw(vp.Canvas)
+	//	//img.Clear()
+	//	//DrawLayerSystem(vp.Canvas, element.Layer-1)
+	//	//img.Clear()
+	//	// draw border
+	//	DrawBorder(element.Object, element.Border, nil)
+	//	img.Batchers[constants.UIBatch].DrawThenClear(vp.Canvas)
+	//default:
+	//	if draw, ok := element.Entity.GetComponentData(myecs.Drawable); ok {
+	//		DrawThing(draw, element.Object, vp.Canvas)
+	//		DrawBorder(element.Object, element.Border, nil)
+	//	}
+	//}
 }

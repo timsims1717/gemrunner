@@ -714,6 +714,8 @@ func CreatePuzzlePreviewMedium(pzl *data.Puzzle) *pixel.PictureData {
 			default:
 				if tile.Metadata.Buried {
 					pic.Pix[y*pzl.Metadata.Width+x] = colornames.White
+				} else {
+					pic.Pix[y*pzl.Metadata.Width+x] = colornames.Black
 				}
 			}
 		}

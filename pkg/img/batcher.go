@@ -101,3 +101,8 @@ func (b *Batcher) DrawSpriteColor(key string, mat pixel.Matrix, mask color.Color
 func (b *Batcher) Draw(target pixel.Target) {
 	b.batch.Draw(target)
 }
+
+func (b *Batcher) DrawThenClear(target pixel.Target) {
+	b.batch.Draw(target)
+	b.batch.Clear()
+}

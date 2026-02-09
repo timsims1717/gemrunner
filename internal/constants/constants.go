@@ -36,10 +36,11 @@ const (
 	PuzzleMinHeight = 6
 
 	// Editor Constants
-	BlockSelectWidth  = 8
-	BlockSelectHeight = 11
-	RearrangeMoveDur  = 0.2
-	UndoStackSize     = 50
+	BlockSelectWidth         = 8
+	BlockSelectHeight        = 11
+	RearrangeMoveDur         = 0.2
+	UndoStackSize            = 50
+	AdventureViewScrollSpeed = 60
 
 	// Music Tracks
 	TrackBeach   = "beach"
@@ -82,7 +83,7 @@ const (
 	UIUnlock            = "tile_ui_unlock"
 
 	// UI Constants
-	ScrollSpeed = 250
+	ScrollSpeed = 500
 
 	// In Game Constants
 	FrameRateMax    = 90

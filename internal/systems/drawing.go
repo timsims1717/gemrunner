@@ -71,7 +71,6 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int, lOffset
 		fmt.Println("WARNING: Batch with key", batchKey, "does not exist")
 		return
 	}
-	batch.Clear()
 	count := 0
 	for _, layer := range layers {
 		for _, result := range myecs.Manager.Query(myecs.IsDrawable) {
@@ -120,6 +119,7 @@ func DrawBatchSystem(target pixel.Target, batchKey string, layers []int, lOffset
 		}
 	}
 	batch.Draw(target)
+	batch.Clear()
 	//debug.AddText(fmt.Sprintf("Layer %d: %d entities", layer, count))
 }
 
@@ -141,61 +141,51 @@ func DrawBatchThing(draw interface{}, obj *object.Object, batch *img.Batcher) {
 
 func DrawLayerSystem(target pixel.Target, layer int) {
 	currBatches = []string{}
-	count := 0
 	for _, result := range myecs.Manager.Query(myecs.IsDrawable) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		if okO && obj.Layer == layer && !obj.Hidden && !obj.Unloaded {
 			draw := result.Components[myecs.Drawable]
-			if draw == nil {
-				continue
-			} else if draws, okD := draw.([]*img.Sprite); okD {
-				for _, d := range draws {
-					if d == nil {
-						continue
-					}
-					DrawThing(d, obj, target)
-					count++
-				}
-			} else if anim, okAS := draw.(*reanimator.TreeSet); okAS {
-				for _, d := range anim.Set {
-					if d == nil {
-						continue
-					}
-					DrawThing(d, obj, target)
-					count++
-				}
-			} else if anims, okA := draw.([]*reanimator.Tree); okA {
-				for _, d := range anims {
-					if d == nil {
-						continue
-					}
-					DrawThing(d, obj, target)
-					count++
-				}
-			} else if things, okT := draw.([]interface{}); okT {
-				for _, t := range things {
-					if t == nil {
-						continue
-					}
-					DrawThing(t, obj, target)
-					count++
-				}
-			} else {
-				DrawThing(draw, obj, target)
-				count++
-			}
+			DrawThing(draw, obj, target)
 		}
 	}
 	for _, batch := range currBatches {
-		img.Batchers[batch].Draw(target)
+		img.Batchers[batch].DrawThenClear(target)
 	}
 }
 
 func DrawThing(draw any, obj *object.Object, target pixel.Target) {
-	if obj.Hidden {
+	if draw == nil || obj.Hidden {
 		return
 	}
-	if spr, ok0 := draw.(*pixel.Sprite); ok0 {
+	if draws, okD := draw.([]*img.Sprite); okD {
+		for _, d := range draws {
+			if d == nil {
+				continue
+			}
+			DrawThing(d, obj, target)
+		}
+	} else if treeSet, okAS := draw.(*reanimator.TreeSet); okAS {
+		for _, d := range treeSet.Set {
+			if d == nil {
+				continue
+			}
+			DrawThing(d, obj, target)
+		}
+	} else if anims, okA := draw.([]*reanimator.Tree); okA {
+		for _, d := range anims {
+			if d == nil {
+				continue
+			}
+			DrawThing(d, obj, target)
+		}
+	} else if things, okT := draw.([]interface{}); okT {
+		for _, t := range things {
+			if t == nil {
+				continue
+			}
+			DrawThing(t, obj, target)
+		}
+	} else if spr, ok0 := draw.(*pixel.Sprite); ok0 {
 		spr.DrawColorMask(target, obj.Mat, obj.Mask)
 	} else if sprH, ok1 := draw.(*img.Sprite); ok1 {
 		if sprH.Batch != "" && sprH.Key != "" && !sprH.Hide {

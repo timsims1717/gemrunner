@@ -49,28 +49,42 @@
       "right": "cancel"
     },
     {
-      "key": "zoom_in",
-      "spriteKey": "plus_btn_med",
-      "spriteKey2": "plus_btn_click_med",
-      "batchKey": "ui",
-      "helpText": "Zoom In",
-      "pos": {
-        "X": 115,
-        "Y": 9
+      "key": "puzzle_set_view_title",
+      "text": "Name",
+      "color": {
+        "R": 0.9607843137254902,
+        "G": 0.9607843137254902,
+        "B": 0.9607843137254902,
+        "A": 1
       },
-      "type": "button"
+      "pos": {
+        "X": 0,
+        "Y": 64
+      },
+      "type": "text",
+      "anchor": {
+        "X": 0,
+        "Y": 0.5
+      }
     },
     {
-      "key": "zoom_out",
-      "spriteKey": "minus_btn_med",
-      "spriteKey2": "minus_btn_click_med",
-      "batchKey": "ui",
-      "helpText": "Zoom Out",
-      "pos": {
-        "X": 115,
-        "Y": -9
+      "key": "puzzle_set_view_title_shadow",
+      "text": "Name",
+      "color":{
+        "R":0.29411764705882354,
+        "G":0.47843137254901963,
+        "B":1,
+        "A":1
       },
-      "type": "button"
+      "pos": {
+        "X": 0,
+        "Y": 63
+      },
+      "type": "text",
+      "anchor": {
+        "X": 0,
+        "Y": 0.5
+      }
     },
     {
       "key": "puzzle_set_view",
@@ -82,128 +96,7 @@
         "Y": 4
       },
       "type": "container",
-      "elements": [
-        {
-          "key":"puzzle_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":0
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":0
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":0
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":130
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":130
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":130
-          },
-          "type":"container"
-        }
-      ]
+      "elements": []
     }
   ]
 }
