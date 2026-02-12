@@ -202,7 +202,7 @@ func ClampAdventureView(vp *viewport.ViewPort) {
 }
 
 func AdventureViewZoomOne(key string) {
-	if data.Editor != nil && data.CurrPuzzleSet != nil {
+	if data.CurrPuzzleSet != nil {
 		dialog := ui.Dialogs[key]
 		pzlView := dialog.Get("puzzle_set_view")
 		var keepTheseKeys []string
@@ -212,6 +212,11 @@ func AdventureViewZoomOne(key string) {
 		pzlCoords := data.AdventureViewGridPos
 		vi := 0
 		for grid, i := range data.CurrPuzzleSet.PuzzGrid {
+			if data.CurrLevelSess != nil && data.CurrLevelSess.LevelMap != nil {
+				if _, ok := data.CurrLevelSess.LevelMap[i]; !ok {
+					continue
+				}
+			}
 			pzl := data.CurrPuzzleSet.Puzzles[i]
 			col := pzl.Metadata.PrimaryColor
 

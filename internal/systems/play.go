@@ -73,8 +73,8 @@ func PlaySystem() {
 
 		if data.CurrLevelSess.PuzzleSet.Metadata.Adventure {
 			next := data.CurrLevelSess.PuzzleSet.Puzzles[exitIndex]
-			if next.Grid == data.CurrLevel.Puzzle.Grid {
-				// go to the same puzzle
+			if next.Grid == data.CurrLevel.Puzzle.Grid || constants.LevelTransSpeed == 0. {
+				// go directly to puzzle
 				GoToLevel(exitIndex)
 			} else if util.Abs(next.Grid.X-data.CurrLevel.Puzzle.Grid.X)+
 				util.Abs(next.Grid.Y-data.CurrLevel.Puzzle.Grid.Y) == 1 {
@@ -89,7 +89,10 @@ func PlaySystem() {
 				state.PushState(constants.TransStateKey)
 			} else {
 				// next puzzle is "far away"
-				ui.OpenDialogInStack(constants.DialogAdventureTrans)
+				data.AdventureViewGridPos = data.CurrPuzzleSet.CurrPuzzle.Grid
+				data.CurrPuzzleSet.SetTo(exitIndex)
+				AddToLevelMap(exitIndex)
+				OpenAdventureTransition()
 			}
 		} else {
 			GoToLevel(exitIndex)

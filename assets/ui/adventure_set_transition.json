@@ -1,7 +1,7 @@
 {
   "key": "adventure_set_transition",
-  "width": 16,
-  "height": 12,
+  "width": 14,
+  "height": 10,
   "elements": [
     {
       "key": "adventure_title",
@@ -13,8 +13,8 @@
         "A": 1
       },
       "pos": {
-        "X": -124,
-        "Y": 88
+        "X": -108,
+        "Y": 72
       },
       "type": "text",
       "anchor": {
@@ -25,133 +25,23 @@
     {
       "key": "puzzle_set_view",
       "width": 208,
-      "height": 144,
+      "height": 136,
       "helpText": "Puzzles",
       "pos": {
         "X": 0,
-        "Y": 4
+        "Y": -4
       },
       "type": "container",
       "elements": [
         {
-          "key":"puzzle_center",
-          "width":112,
-          "height":64,
+          "key":"player_symbol",
+          "spriteKey":"preview_player",
+          "batchKey":"ui",
           "pos":{
             "X":0,
             "Y":0
           },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":0
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":0
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_top_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_bot_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":-65
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_center",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":0,
-            "Y":130
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_left",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":-113,
-            "Y":130
-          },
-          "type":"container"
-        },
-        {
-          "key":"puzzle_float_right",
-          "width":112,
-          "height":64,
-          "pos":{
-            "X":113,
-            "Y":130
-          },
-          "type":"container"
+          "type":"sprite"
         }
       ]
     }

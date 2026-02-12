@@ -8,6 +8,7 @@ import (
 	"gemrunner/internal/myecs"
 	"gemrunner/internal/ui"
 	"gemrunner/pkg/state"
+	"gemrunner/pkg/timing"
 	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
@@ -186,4 +187,50 @@ func UpdatePuzzleTimer() {
 	txt := dlg.Get("puzzle_timer")
 	txt.Text.SetText(timerText)
 	txt.Object.Pos.X = txt.Text.GetWidth() * -0.5
+}
+
+// Adventure Transition
+
+func OpenAdventureTransition() {
+	key := constants.DialogAdventureTrans
+	ui.NewDialog(ui.DialogConstructors[key])
+	dlg := ui.Dialogs[key]
+	for _, e := range dlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "adventure_title":
+			ele.Text.SetText(data.CurrPuzzleSet.Metadata.Name)
+		case "puzzle_set_view":
+			ele1 := ele.Get("player_symbol")
+			if data.CurrLevel != nil {
+				grid := data.CurrLevel.Puzzle.Grid
+				ele1.Object.SetPos(AdvPuzzleViewPos(grid))
+			}
+			//blinkTimer := timing.New(0.5)
+			startMoveTimer := timing.New(constants.LevelTransSpeed)
+			finishTimer := timing.New(constants.LevelTransSpeed * 4)
+			nextPos := AdvPuzzleViewPos(data.CurrPuzzleSet.CurrPuzzle.Grid)
+			nextIndex := data.CurrPuzzleSet.PuzzleIndex
+			ele1.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+				//if blinkTimer.UpdateDone() {
+				//	ele1.Sprite.Hide = !ele1.Sprite.Hide
+				//	blinkTimer.Reset()
+				//}
+				if startMoveTimer != nil && startMoveTimer.UpdateDone() {
+					StartLevelTransitionInDialog(ele1, ele, nextPos)
+					startMoveTimer = nil
+				}
+				if finishTimer.UpdateDone() {
+					ele1.Entity.RemoveComponent(myecs.Update)
+					ui.CloseDialog(key)
+					GoToLevel(nextIndex)
+				}
+			}))
+		}
+	}
+	data.AdventureViewGridMap = make(map[world.Coords]data.AdvViewPzl)
+	data.AdventureViewGridArr = make(map[int]world.Coords)
+	AdventureViewZoomOne(key)
+	UpdateDialogView(dlg)
+	ui.OpenDialogInStack(key)
 }

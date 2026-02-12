@@ -64,6 +64,7 @@ func StartLevel(record bool) {
 	//InitPlayArea(data.CurrentPlayArea)
 
 	RandAndRecord(record)
+	AddToLevelMap(data.CurrLevelSess.PuzzleIndex)
 }
 
 func RandAndRecord(record bool) {
@@ -86,6 +87,20 @@ func RandAndRecord(record bool) {
 	} else if data.CurrReplay != nil {
 		data.CurrReplay.FrameIndex = 0
 		data.CurrentPlayArea.Level.StartCoords = data.CurrReplay.StartCoords
+	}
+}
+
+func AddToLevelMap(index int) {
+	if data.CurrLevelSess != nil {
+		if data.CurrLevelSess.LevelMap == nil {
+			data.CurrLevelSess.LevelMap = make(map[int]data.LevelCompletion)
+		}
+		if _, ok := data.CurrLevelSess.LevelMap[index]; !ok {
+			data.CurrLevelSess.LevelMap[index] = data.LevelCompletion{
+				Index:      index,
+				Continuity: data.CurrLevelSess.PuzzleSet.Metadata.Adventure && data.CurrLevelSess.PuzzleSet.Metadata.Continuity != data.NoContinuity,
+			}
+		}
 	}
 }
 

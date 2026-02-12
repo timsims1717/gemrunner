@@ -162,6 +162,7 @@ type Flags struct {
 	EnemyU       bool
 	EnemyD       bool
 	NoLadders    bool
+	WallClimb    bool
 	GoingUp      bool
 	Climbed      bool
 	LeapOn       bool

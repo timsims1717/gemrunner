@@ -57,8 +57,8 @@ func (s *levelTransState) Load(win *pixelgl.Window) {
 	systems.SetPuzzle(data.OtherPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	systems.InitLevel(data.OtherPlayArea)
 	systems.UpdateViews()
-	systems.SetTransitionBorders()
-	systems.StartInterpolation()
+	systems.SetLevelTransitionBorders()
+	systems.StartLevelTransInterpolation()
 }
 
 func (s *levelTransState) Update(win *pixelgl.Window) {

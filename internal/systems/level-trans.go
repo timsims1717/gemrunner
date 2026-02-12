@@ -4,12 +4,14 @@ import (
 	"gemrunner/internal/constants"
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
+	"gemrunner/internal/ui"
 	"gemrunner/pkg/gween64/ease"
 	"gemrunner/pkg/object"
+	"github.com/gopxl/pixel"
 	"math"
 )
 
-func StartInterpolation() {
+func StartLevelTransInterpolation() {
 	oldGrid := data.CurrentPlayArea.Level.Puzzle.Grid
 	newGrid := data.OtherPlayArea.Level.Puzzle.Grid
 	xMove := math.Abs((data.CurrentPlayArea.WorldView.Canvas.Bounds().W() + data.OtherPlayArea.WorldView.Canvas.Bounds().W()) * 0.5)
@@ -82,7 +84,7 @@ func StartInterpolation() {
 		AddComponent(myecs.Interpolation, []*object.Interpolation{interB, interBB})
 }
 
-func SetTransitionBorders() {
+func SetLevelTransitionBorders() {
 	oldGrid := data.CurrentPlayArea.Level.Puzzle.Grid
 	newGrid := data.OtherPlayArea.Level.Puzzle.Grid
 	if oldGrid.X < newGrid.X { // going right, moving play areas left
@@ -106,4 +108,18 @@ func SetTransitionBorders() {
 		data.OtherPlayArea.Border.ExcludeSide = data.Up
 		data.OtherPlayArea.Border.ExcludeSize = data.CurrentPlayArea.Puzzle.Metadata.Width + 2
 	}
+}
+
+func StartLevelTransitionInDialog(player, setView *ui.Element, target pixel.Vec) {
+	interPX := object.NewInterpolation(object.InterpolateX).
+		SetGween(player.Object.Pos.X, target.X, constants.LevelTransSpeed*2, ease.InOutQuad)
+	interPY := object.NewInterpolation(object.InterpolateY).
+		SetGween(player.Object.Pos.Y, target.Y, constants.LevelTransSpeed*2, ease.InOutQuad)
+	interVX := object.NewInterpolation(object.InterpolateCustom).
+		SetValue(&setView.ViewPort.CamPos.X).
+		SetGween(setView.ViewPort.CamPos.X, target.X, constants.LevelTransSpeed*2, ease.InOutQuad)
+	interVY := object.NewInterpolation(object.InterpolateCustom).
+		SetValue(&setView.ViewPort.CamPos.Y).
+		SetGween(setView.ViewPort.CamPos.Y, target.Y, constants.LevelTransSpeed*2, ease.InOutQuad)
+	player.Entity.AddComponent(myecs.Interpolation, []*object.Interpolation{interPX, interPY, interVX, interVY})
 }

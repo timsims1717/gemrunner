@@ -39,9 +39,10 @@ var (
 	RearrangeFloatX       = constants.TileSize * -16
 
 	//AdventureViewZoomLevel = 1
-	AdventureViewGridPos world.Coords
-	AdventureViewGridMap map[world.Coords]AdvViewPzl
-	AdventureViewGridArr map[int]world.Coords
+	AdventureViewGridPos     world.Coords
+	AdventureViewNextGridPos world.Coords
+	AdventureViewGridMap     map[world.Coords]AdvViewPzl
+	AdventureViewGridArr     map[int]world.Coords
 
 	Players       []Player
 	MenuInputUsed = pxginput.KeyboardMouse
