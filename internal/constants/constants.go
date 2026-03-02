@@ -149,8 +149,9 @@ const (
 	DemonLongJumpCounter = 16
 	DemonInHoleCounter   = 56
 
-	// Fly Constants
-	FlySpeed = 2
+	// Other Character Constants
+	FlySpeed  = 1.4
+	SlugSpeed = 1
 )
 
 var (

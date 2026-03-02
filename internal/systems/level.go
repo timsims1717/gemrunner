@@ -83,6 +83,14 @@ func InitLevelTiles(level *data.Level) {
 				} else {
 					tile.ToEmpty()
 				}
+			case data.BlockSlug:
+				SlugCharacter(obj.Pos, tile.Metadata)
+				if tile.Metadata.Buried {
+					tile.Block = data.BlockTurf
+					tile.Metadata = data.DefaultMetadata()
+				} else {
+					tile.ToEmpty()
+				}
 			case data.BlockGem:
 				if !world.CoordsIn(tile.Coords, gemsCollected) {
 					CreateGem(obj.Pos, tile)

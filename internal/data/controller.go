@@ -16,8 +16,8 @@ type Direction int
 const (
 	NoDirection = iota
 	Left
-	Right
 	Up
+	Right
 	Down
 )
 

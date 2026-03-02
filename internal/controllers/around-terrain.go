@@ -9,7 +9,6 @@ type AroundTerrain struct {
 	Ch     *data.Dynamic
 	Left   bool
 	Entity *ecs.Entity
-	Down   data.Direction
 }
 
 func NewAroundTerrain(dyn *data.Dynamic, e *ecs.Entity, left bool) *AroundTerrain {
@@ -25,7 +24,7 @@ func (at *AroundTerrain) ClearPrev() {}
 func (at *AroundTerrain) GetActions() data.Actions {
 	actions := data.NewAction()
 	if at.Left {
-		switch at.Down {
+		switch at.Ch.Flags.Orientation {
 		case data.Down:
 			actions.Direction = data.Left
 		case data.Left:
@@ -36,7 +35,7 @@ func (at *AroundTerrain) GetActions() data.Actions {
 			actions.Direction = data.Down
 		}
 	} else {
-		switch at.Down {
+		switch at.Ch.Flags.Orientation {
 		case data.Down:
 			actions.Direction = data.Right
 		case data.Left:

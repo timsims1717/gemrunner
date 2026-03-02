@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/world"
+	"math"
 )
 
 func CharacterStateSystem() {
@@ -25,44 +26,72 @@ func CharacterStateSystem() {
 				oldState := ch.State
 				switch ch.State {
 				case data.Grounded:
-					if tile != nil && tile.Block == data.BlockBar {
-						ch.State = data.OnBar
-					} else if tile != nil && tile.IsLadder() { // a ladder is here
-						if ch.Actions.Direction == data.Up { // climbed the ladder
-							ch.State = data.OnLadder
+					if ch.Flags.WallClimb {
+						touchingFloor := ch.Flags.Floor
+						switch ch.Flags.Orientation {
+						case data.Up:
+							below = data.CurrLevel.Get(x, y+1)
+							touchingFloor = ch.Flags.Ceiling
+						case data.Left:
+							below = data.CurrLevel.Get(x-1, y)
+							touchingFloor = ch.Flags.LeftWall
+						case data.Right:
+							below = data.CurrLevel.Get(x+1, y)
+							touchingFloor = ch.Flags.RightWall
+						}
+						if below.IsEmpty() || !touchingFloor {
+							if ch.BelowTile != nil && ch.BelowTile != below { // just went over the edge
+								ch.State = data.AroundCorner
+								ch.Flags.NoCollision = true
+							} else { // the tile disappeared
+								ch.State = data.Falling
+								if tile != nil {
+									ch.Object.Pos.X = tile.Object.Pos.X
+								}
+							}
+						} else {
+							ch.BelowTile = below
+						}
+					} else {
+						if tile != nil && tile.Block == data.BlockBar {
+							ch.State = data.OnBar
+						} else if tile != nil && tile.IsLadder() { // a ladder is here
+							if ch.Actions.Direction == data.Up { // climbed the ladder
+								ch.State = data.OnLadder
+								ch.Object.Pos.X = tile.Object.Pos.X
+							} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
+								ch.State = data.OnLadder
+								ch.Object.Pos.X = tile.Object.Pos.X
+							} else if below != nil && !below.IsRunnable() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
+								ch.State = data.Leaping
+								ch.Flags.LeapOn = true
+								ch.NextTile = tile
+							} else if !ch.Flags.Floor {
+								ch.State = data.OnLadder
+								ch.Object.Pos.X = tile.Object.Pos.X
+							}
+						} else if tile != nil && tile.Block == data.BlockHideout && ch.Actions.Direction == data.Up {
+							ch.State = data.DoingAction
+							ch.Flags.ItemAction = data.Hiding
 							ch.Object.Pos.X = tile.Object.Pos.X
 						} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
 							ch.State = data.OnLadder
 							ch.Object.Pos.X = tile.Object.Pos.X
-						} else if below != nil && !below.IsRunnable() && (ch.Actions.Left() || ch.Actions.Right()) { // leaping onto ladder
-							ch.State = data.Leaping
-							ch.Flags.LeapOn = true
-							ch.NextTile = tile
-						} else if !ch.Flags.Floor {
-							ch.State = data.OnLadder
-							ch.Object.Pos.X = tile.Object.Pos.X
-						}
-					} else if tile != nil && tile.Block == data.BlockHideout && ch.Actions.Direction == data.Up {
-						ch.State = data.DoingAction
-						ch.Flags.ItemAction = data.Hiding
-						ch.Object.Pos.X = tile.Object.Pos.X
-					} else if below != nil && below.IsLadder() && ch.Actions.Direction == data.Down { // down the ladder
-						ch.State = data.OnLadder
-						ch.Object.Pos.X = tile.Object.Pos.X
-					} else if !ch.Flags.Floor && (below != nil || data.CurrLevel.Continuity) && !below.IsLadder() {
-						if ch.Enemy > -1 && below.Block == data.BlockTurf && below.Flags.Collapse {
-							ch.State = data.Tripping
-							if ch.Object.Flip {
-								ch.Object.Pos.X -= 1
+						} else if !ch.Flags.Floor && (below != nil || data.CurrLevel.Continuity) && !below.IsLadder() {
+							if ch.Enemy > -1 && below.Block == data.BlockTurf && below.Flags.Collapse {
+								ch.State = data.Tripping
+								if ch.Object.Flip {
+									ch.Object.Pos.X -= 1
+								} else {
+									ch.Object.Pos.X += 1
+								}
+								ch.NextTile = below
+								ch.NextTile.Flags.Occupied = true
 							} else {
-								ch.Object.Pos.X += 1
-							}
-							ch.NextTile = below
-							ch.NextTile.Flags.Occupied = true
-						} else {
-							ch.State = data.Falling
-							if tile != nil {
-								ch.Object.Pos.X = tile.Object.Pos.X
+								ch.State = data.Falling
+								if tile != nil {
+									ch.Object.Pos.X = tile.Object.Pos.X
+								}
 							}
 						}
 					}
@@ -155,6 +184,7 @@ func CharacterStateSystem() {
 					}
 				case data.Falling:
 					if ch.Flags.Floor {
+						ch.Flags.Orientation = data.Down
 						ch.State = data.Grounded
 						if ch.LastTile.Coords.Y > tile.Coords.Y+2 {
 							ch.Flags.Landing = true
@@ -325,11 +355,32 @@ func CharacterStateSystem() {
 							ch.State = data.Falling
 						}
 					}
+				case data.AroundCorner:
+					if ch.Flags.NextStep {
+						ch.Flags.NoCollision = false
+						ch.State = data.Grounded
+						switch ch.Flags.Orientation {
+						case data.Up:
+							ch.Object.Rot = math.Pi
+							ch.Object.Pos.Y = tile.Object.Pos.Y
+						case data.Left:
+							ch.Object.Rot = math.Pi * -0.5
+							ch.Object.Pos.X = tile.Object.Pos.X
+						case data.Right:
+							ch.Object.Rot = math.Pi * 0.5
+							ch.Object.Pos.X = tile.Object.Pos.X
+						default:
+							ch.Object.Rot = 0.
+							ch.Object.Pos.Y = tile.Object.Pos.Y
+						}
+					}
 				case data.Regen:
 					if !ch.Flags.Regen {
 						if ch.Options.Flying {
 							ch.Flags.Flying = true
 							ch.State = data.Flying
+						} else if ch.Flags.WallClimb {
+							ch.State = data.Grounded
 						} else if ch.Flags.Floor || below.IsRunnable() {
 							ch.State = data.Grounded
 						} else if tile != nil && tile.IsLadder() {
@@ -366,6 +417,19 @@ func CharacterStateSystem() {
 							ch.Object.SetPos(t.Object.Pos)
 							if ch.Options.RegenFlip {
 								ch.Object.Flip = random.Level.Intn(2) == 0
+							}
+							if ch.Options.RegenOrient {
+								ch.Flags.Orientation = tile.Metadata.Orientation
+								switch ch.Flags.Orientation {
+								case data.Up:
+									ch.Object.Rot = math.Pi
+								case data.Left:
+									ch.Object.Rot = math.Pi * -0.5
+								case data.Right:
+									ch.Object.Rot = math.Pi * 0.5
+								default:
+									ch.Object.Rot = 0.
+								}
 							}
 							ch.State = data.Waiting
 						}
@@ -419,7 +483,7 @@ func CharacterStateSystem() {
 					ch.ACounter = 0
 					ch.Control.ClearPrev()
 					ch.Actions.PrevDirection = data.NoDirection
-					if tile != nil {
+					if tile != nil && oldState != data.AroundCorner {
 						ch.Object.Pos.Y = tile.Object.Pos.Y
 					}
 					ch.Flags.Climbed = false

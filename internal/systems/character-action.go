@@ -10,6 +10,7 @@ import (
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/util"
 	"gemrunner/pkg/world"
+	"math"
 )
 
 func CharacterActionSystem() {
@@ -147,26 +148,77 @@ func CharacterActionSystem() {
 
 func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 	ch.LastTile = tile
-	//if tile != nil &&
-	//	ch.Actions.Jump { // jump time
-	//	if jump(ch, tile) {
-	//		return
-	//	}
-	//}
-	if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
-		if ch.Flags.Goop {
-			ch.Object.Pos.X -= ch.Vars.GoopSpeed
-		} else {
-			ch.Object.Pos.X -= ch.Vars.WalkSpeed
+	if ch.Flags.WallClimb {
+		if ch.Flags.Orientation == data.NoDirection {
+			ch.Flags.Orientation = data.Down
 		}
-		ch.Object.Flip = true
-	} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
-		if ch.Flags.Goop {
-			ch.Object.Pos.X += ch.Vars.GoopSpeed
-		} else {
-			ch.Object.Pos.X += ch.Vars.WalkSpeed
+		switch ch.Flags.Orientation {
+		case data.Up:
+			ch.Object.Rot = math.Pi
+		case data.Left:
+			ch.Object.Rot = math.Pi * -0.5
+		case data.Right:
+			ch.Object.Rot = math.Pi * 0.5
+		default:
+			ch.Object.Rot = 0.
 		}
-		ch.Object.Flip = false
+		if ch.Actions.Left() {
+			if (ch.Flags.Floor && ch.Flags.Orientation == data.Down) ||
+				(ch.Flags.Ceiling && ch.Flags.Orientation == data.Up) {
+				if ch.Flags.Goop {
+					ch.Object.Pos.X -= ch.Vars.GoopSpeed
+				} else {
+					ch.Object.Pos.X -= ch.Vars.WalkSpeed
+				}
+				ch.Object.Flip = ch.Flags.Orientation == data.Down
+			}
+		} else if ch.Actions.Right() {
+			if (ch.Flags.Floor && ch.Flags.Orientation == data.Down) ||
+				(ch.Flags.Ceiling && ch.Flags.Orientation == data.Up) {
+				if ch.Flags.Goop {
+					ch.Object.Pos.X += ch.Vars.GoopSpeed
+				} else {
+					ch.Object.Pos.X += ch.Vars.WalkSpeed
+				}
+				ch.Object.Flip = ch.Flags.Orientation == data.Up
+			}
+		} else if ch.Actions.Up() {
+			if (ch.Flags.LeftWall && ch.Flags.Orientation == data.Left) ||
+				(ch.Flags.RightWall && ch.Flags.Orientation == data.Right) {
+				if ch.Flags.Goop {
+					ch.Object.Pos.Y += ch.Vars.GoopSpeed
+				} else {
+					ch.Object.Pos.Y += ch.Vars.WalkSpeed
+				}
+				ch.Object.Flip = ch.Flags.Orientation == data.Left
+			}
+		} else if ch.Actions.Down() {
+			if (ch.Flags.LeftWall && ch.Flags.Orientation == data.Left) ||
+				(ch.Flags.RightWall && ch.Flags.Orientation == data.Right) {
+				if ch.Flags.Goop {
+					ch.Object.Pos.Y -= ch.Vars.GoopSpeed
+				} else {
+					ch.Object.Pos.Y -= ch.Vars.WalkSpeed
+				}
+				ch.Object.Flip = ch.Flags.Orientation == data.Right
+			}
+		}
+	} else {
+		if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
+			if ch.Flags.Goop {
+				ch.Object.Pos.X -= ch.Vars.GoopSpeed
+			} else {
+				ch.Object.Pos.X -= ch.Vars.WalkSpeed
+			}
+			ch.Object.Flip = true
+		} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
+			if ch.Flags.Goop {
+				ch.Object.Pos.X += ch.Vars.GoopSpeed
+			} else {
+				ch.Object.Pos.X += ch.Vars.WalkSpeed
+			}
+			ch.Object.Flip = false
+		}
 	}
 }
 
@@ -254,13 +306,11 @@ func falling(ch *data.Dynamic, tile *data.Tile) {
 	}
 	ch.Object.Pos.X = tile.Object.Pos.X
 	ch.Object.Pos.Y -= ch.Vars.Gravity
-	if ch.Actions.Left() {
-		//ch.Object.Pos.X -= ch.Vars.WalkSpeed
-		ch.Object.Flip = true
-	} else if ch.Actions.Right() {
-		//ch.Object.Pos.X += ch.Vars.WalkSpeed
-		ch.Object.Flip = false
-	}
+	//if ch.Actions.Left() {
+	//	ch.Object.Flip = true
+	//} else if ch.Actions.Right() {
+	//	ch.Object.Flip = false
+	//}
 }
 
 func jumping(ch *data.Dynamic, tile *data.Tile) {

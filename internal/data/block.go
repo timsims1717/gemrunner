@@ -39,6 +39,8 @@ const (
 	BlockDemonRegen
 	BlockFly
 	BlockFlyRegen
+	BlockSlug
+	BlockSlugRegen
 
 	BlockGem
 	BlockDoorHidden
@@ -174,10 +176,14 @@ func (b Block) String() string {
 		return constants.CharDemon
 	case BlockFly:
 		return constants.CharFly
+	case BlockSlug:
+		return constants.CharSlug
 	case BlockDemonRegen:
 		return constants.TileDemonRegen
 	case BlockFlyRegen:
 		return constants.TileFlyRegen
+	case BlockSlugRegen:
+		return constants.TileSlugRegen
 	case BlockReeds:
 		return constants.DoodadReeds
 	case BlockFlowers:
@@ -365,8 +371,10 @@ var blockToID = map[string]Block{
 	constants.ItemKey:               BlockKey,
 	constants.CharDemon:             BlockDemon,
 	constants.CharFly:               BlockFly,
+	constants.CharSlug:              BlockSlug,
 	constants.TileDemonRegen:        BlockDemonRegen,
 	constants.TileFlyRegen:          BlockFlyRegen,
+	constants.TileSlugRegen:         BlockSlugRegen,
 	constants.DoodadReeds:           BlockReeds,
 	constants.DoodadFlowers:         BlockFlowers,
 	constants.DoodadMoss:            BlockMoss,

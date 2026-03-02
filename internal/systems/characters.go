@@ -14,6 +14,7 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
+	"math"
 )
 
 func PlayerCharacter(pos pixel.Vec, pIndex int, replay *data.LevelReplay) *data.Dynamic {
@@ -172,7 +173,6 @@ func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	obj.Flip = metadata.Flipped
 	fly.Layer = 29
 	obj.Layer = fly.Layer
-	fly.State = data.Flying
 	fly.Type = "fly"
 	fly.Options.RegenFlip = true
 	fly.Options.Flying = true
@@ -199,6 +199,54 @@ func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	fly.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, fly)
 	return fly
+}
+
+func SlugCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
+	slug := data.NewDynamic()
+	coords := world.NewCoords(world.WorldToMap(pos.X, pos.Y))
+	slug.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
+	obj := object.New().WithID("slug").SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Flip = metadata.Flipped
+	slug.Layer = 29
+	obj.Layer = slug.Layer
+	slug.Object = obj
+	slug.Type = "slug"
+	slug.Options.RegenFlip = true
+	slug.Options.RegenOrient = true
+	slug.Flags.WallClimb = true
+	slug.Options.Regen = metadata.Regenerate
+	slug.Options.LinkedTiles = metadata.LinkedTiles
+	slug.Flags.Orientation = metadata.Orientation
+	switch slug.Flags.Orientation {
+	case data.Up:
+		slug.Object.Rot = math.Pi
+	case data.Left:
+		slug.Object.Rot = math.Pi * -0.5
+	case data.Right:
+		slug.Object.Rot = math.Pi * 0.5
+	default:
+		slug.Object.Rot = 0.
+	}
+	slug.State = data.Regen
+	slug.Flags.Regen = true
+	slug.Anims = reanimator.NewSet().Add(animations.SlugAnimation(slug))
+	slug.Vars = data.SlugVars()
+	e := myecs.Manager.NewEntity()
+	slug.Entity = e
+	slug.Control = controllers.NewAroundTerrain(slug, e, metadata.Flipped)
+	e.AddComponent(myecs.Object, slug.Object)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Animated, slug.Anims)
+	e.AddComponent(myecs.Drawable, slug.Anims)
+	e.AddComponent(myecs.Dynamic, slug)
+	e.AddComponent(myecs.OnTouch, data.NewInteract(KillPlayer))
+	e.AddComponent(myecs.Controller, slug.Control)
+	e.AddComponent(myecs.LvlElement, slug)
+	e.AddComponent(myecs.Enemy, slug.Enemy)
+	slug.Enemy = len(data.CurrLevel.Enemies)
+	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, slug)
+	return slug
 }
 
 func SetEmptyControl(ch *data.Dynamic) {

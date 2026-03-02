@@ -406,6 +406,35 @@ func PuzzleEditSystem() {
 											case data.BlockFly:
 												t.Metadata.Flipped = !t.Metadata.Flipped
 												t.Metadata.Changed = true
+											case data.BlockSlug:
+												if t.Metadata.Toggle {
+													switch t.Metadata.Orientation {
+													case data.Down, data.NoDirection:
+														t.Metadata.Orientation = data.Left
+													case data.Left:
+														t.Metadata.Orientation = data.Up
+													case data.Up:
+														t.Metadata.Orientation = data.Right
+													case data.Right:
+														t.Metadata.Orientation = data.Down
+													}
+												} else {
+													t.Metadata.Flipped = !t.Metadata.Flipped
+												}
+												t.Metadata.Toggle = !t.Metadata.Toggle
+												t.Metadata.Changed = true
+											case data.BlockSlugRegen:
+												switch t.Metadata.Orientation {
+												case data.Down, data.NoDirection:
+													t.Metadata.Orientation = data.Left
+												case data.Left:
+													t.Metadata.Orientation = data.Up
+												case data.Up:
+													t.Metadata.Orientation = data.Right
+												case data.Right:
+													t.Metadata.Orientation = data.Down
+												}
+												t.Metadata.Changed = true
 											case data.BlockCracked, data.BlockLadderCracked,
 												data.BlockBarrier,
 												data.BlockBigBomb, data.BlockBigBombLit, data.BlockSmallBomb, data.BlockSmallBombLit,
@@ -426,7 +455,7 @@ func PuzzleEditSystem() {
 									}
 								}
 								switch tile.Block {
-								case data.BlockFly, data.BlockPhase:
+								case data.BlockFly, data.BlockSlug, data.BlockPhase:
 									data.CurrPuzzleSet.CurrPuzzle.Update = true
 									data.CurrPuzzleSet.CurrPuzzle.Changed = true
 								case data.BlockBarrier:
@@ -451,9 +480,44 @@ func PuzzleEditSystem() {
 								} else {
 									tile.AltBlock = 0
 								}
+								tile.Metadata.Changed = true
 							case data.BlockFly:
 								tile.Metadata.Flipped = !tile.Metadata.Flipped
 								tile.Object.Flip = tile.Metadata.Flipped
+								tile.Metadata.Changed = true
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Changed = true
+							case data.BlockSlug:
+								if tile.Metadata.Toggle {
+									switch tile.Metadata.Orientation {
+									case data.Down, data.NoDirection:
+										tile.Metadata.Orientation = data.Left
+									case data.Left:
+										tile.Metadata.Orientation = data.Up
+									case data.Up:
+										tile.Metadata.Orientation = data.Right
+									case data.Right:
+										tile.Metadata.Orientation = data.Down
+									}
+								} else {
+									tile.Metadata.Flipped = !tile.Metadata.Flipped
+								}
+								tile.Metadata.Toggle = !tile.Metadata.Toggle
+								tile.Object.Flip = tile.Metadata.Flipped
+								tile.Metadata.Changed = true
+								data.CurrPuzzleSet.CurrPuzzle.Update = true
+								data.CurrPuzzleSet.CurrPuzzle.Changed = true
+							case data.BlockSlugRegen:
+								switch tile.Metadata.Orientation {
+								case data.Down, data.NoDirection:
+									tile.Metadata.Orientation = data.Left
+								case data.Left:
+									tile.Metadata.Orientation = data.Up
+								case data.Up:
+									tile.Metadata.Orientation = data.Right
+								case data.Right:
+									tile.Metadata.Orientation = data.Down
+								}
 								tile.Metadata.Changed = true
 								data.CurrPuzzleSet.CurrPuzzle.Update = true
 								data.CurrPuzzleSet.CurrPuzzle.Changed = true
@@ -509,6 +573,10 @@ func PuzzleEditSystem() {
 									match = lt.Block == data.BlockFlyRegen
 								case data.BlockFlyRegen:
 									match = lt.Block == data.BlockFly
+								case data.BlockSlug:
+									match = lt.Block == data.BlockSlugRegen
+								case data.BlockSlugRegen:
+									match = lt.Block == data.BlockSlug
 								case data.BlockTransporter:
 									match = lt.Block == data.BlockTransporterExit
 								case data.BlockTransporterExit:
@@ -536,7 +604,8 @@ func PuzzleEditSystem() {
 						if lt != nil {
 							switch lt.Block {
 							case data.BlockDemon, data.BlockDemonRegen,
-								data.BlockFly, data.BlockFlyRegen:
+								data.BlockFly, data.BlockFlyRegen,
+								data.BlockSlug, data.BlockSlugRegen:
 								data.CurrentPlayArea.IMDraw.Color = constants.ColorOrange
 							case data.BlockTransporter, data.BlockTransporterExit:
 								data.CurrentPlayArea.IMDraw.Color = constants.ColorCyan
@@ -555,6 +624,10 @@ func PuzzleEditSystem() {
 								match = lt.Block == data.BlockFlyRegen
 							case data.BlockFlyRegen:
 								match = lt.Block == data.BlockFly
+							case data.BlockSlug:
+								match = lt.Block == data.BlockSlugRegen
+							case data.BlockSlugRegen:
+								match = lt.Block == data.BlockSlug
 							case data.BlockTransporter:
 								match = lt.Block == data.BlockTransporterExit
 							case data.BlockTransporterExit:
@@ -819,10 +892,12 @@ func PuzzleEditSystem() {
 		switch tile.Block {
 		case data.BlockDemon, data.BlockDemonRegen,
 			data.BlockFly, data.BlockFlyRegen,
+			data.BlockSlug, data.BlockSlugRegen,
 			data.BlockTransporter, data.BlockTransporterExit:
 			switch tile.Block {
 			case data.BlockDemon, data.BlockDemonRegen,
-				data.BlockFly, data.BlockFlyRegen:
+				data.BlockFly, data.BlockFlyRegen,
+				data.BlockSlug, data.BlockSlugRegen:
 				data.CurrentPlayArea.IMDraw.Color = constants.ColorOrange
 			case data.BlockTransporter, data.BlockTransporterExit:
 				data.CurrentPlayArea.IMDraw.Color = constants.ColorCyan

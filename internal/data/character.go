@@ -19,21 +19,22 @@ type Dynamic struct {
 	SmallBombs   int
 	Control      Controller
 
-	Actions  Actions
-	State    CharacterState
-	Flags    Flags
-	Vars     Vars
-	Options  CharacterOptions
-	ACounter int
-	AnInt    int
-	LastTile *Tile
-	NextTile *Tile
-	MoveType MoveType
-	Player   int
-	Enemy    int
-	Type     string
-	Color    ItemColor
-	Layer    int
+	Actions   Actions
+	State     CharacterState
+	Flags     Flags
+	Vars      Vars
+	Options   CharacterOptions
+	ACounter  int
+	AnInt     int
+	LastTile  *Tile
+	NextTile  *Tile
+	BelowTile *Tile
+	MoveType  MoveType
+	Player    int
+	Enemy     int
+	Type      string
+	Color     ItemColor
+	Layer     int
 
 	SFX *uuid.UUID
 }
@@ -97,6 +98,7 @@ const (
 	Tripping
 	InHole
 	ClimbingOut
+	AroundCorner
 )
 
 type ItemAction int
@@ -162,7 +164,6 @@ type Flags struct {
 	EnemyU       bool
 	EnemyD       bool
 	NoLadders    bool
-	WallClimb    bool
 	GoingUp      bool
 	Climbed      bool
 	LeapOn       bool
@@ -194,11 +195,14 @@ type Flags struct {
 	OutsideMap   bool
 	LastRegen    *world.Coords
 	Ignore       bool
+	WallClimb    bool
+	Orientation  Direction
 }
 
 type CharacterOptions struct {
 	Regen       bool
 	RegenFlip   bool
+	RegenOrient bool
 	Flying      bool
 	LinkedTiles []world.Coords
 	StoredCount int
@@ -252,5 +256,13 @@ func DemonVars() Vars {
 func FlyVars() Vars {
 	return Vars{
 		WalkSpeed: constants.FlySpeed,
+	}
+}
+
+func SlugVars() Vars {
+	return Vars{
+		WalkSpeed: constants.SlugSpeed,
+		GoopSpeed: constants.SlugSpeed,
+		Gravity:   constants.NormalGravity,
 	}
 }

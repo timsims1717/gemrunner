@@ -612,7 +612,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			case data.BlockPlayer1, data.BlockPlayer2,
 				data.BlockPlayer3, data.BlockPlayer4:
 				key = constants.PreviewPlayer
-			case data.BlockDemon, data.BlockFly:
+			case data.BlockDemon, data.BlockFly, data.BlockSlug:
 				key = constants.PreviewEnemy
 			case data.BlockDoorVisible, data.BlockDoorLocked:
 				key = constants.PreviewDoor

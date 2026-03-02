@@ -243,6 +243,10 @@ func enemyCollision(ch *data.Dynamic, x, y int) (bool, bool, bool, bool) {
 		if okO && okC && !obj.Hidden &&
 			ch2.State != data.Hit && ch2.State != data.Dead &&
 			ch2.Enemy != ch.Enemy && ch2.Enemy > -1 && ch2.Type == ch.Type {
+			orientationMatch := util.Abs(int(ch.Flags.Orientation%data.Down - ch2.Flags.Orientation%data.Down))
+			if ch.Type == "slug" && (ch.Object.Flip != ch2.Object.Flip || orientationMatch > 1) {
+				continue
+			}
 			pPos := ch2.Object.Pos
 			px, py := world.WorldToMap(pPos.X, pPos.Y)
 			yd := util.Abs(py - y)

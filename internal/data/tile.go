@@ -163,10 +163,14 @@ func (t *Tile) SpriteString() string {
 		return constants.CharDemon
 	case BlockFly:
 		return constants.CharFly
+	case BlockSlug:
+		return constants.CharSlug
 	case BlockDemonRegen:
 		return constants.TileDemonRegen
 	case BlockFlyRegen:
 		return constants.TileFlyRegen
+	case BlockSlugRegen:
+		return constants.TileSlugRegen
 	case BlockReeds:
 		return constants.DoodadReeds
 	case BlockFlowers:
@@ -453,6 +457,7 @@ type TileMetadata struct {
 	Changed     bool           `json:"-"`
 	ExitIndex   int            `json:"exitIndex,omitempty"`
 	Color       ItemColor      `json:"itemColor,omitempty"`
+	Orientation Direction      `json:"orientation,omitempty"`
 }
 
 func DefaultMetadata() TileMetadata {
@@ -478,6 +483,7 @@ func CopyMetadata(m TileMetadata) TileMetadata {
 		Toggle:      m.Toggle,
 		ExitIndex:   m.ExitIndex,
 		Color:       m.Color,
+		Orientation: m.Orientation,
 	}
 	for _, ln := range m.LinkedTiles {
 		cm.LinkedTiles = append(cm.LinkedTiles, ln)

@@ -107,6 +107,61 @@ func SetBlock(coords world.Coords, block data.Block) {
 						}
 					}
 					tile.Block = block
+				case data.BlockSlugRegen:
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockSlug &&
+								t.Metadata.Regenerate &&
+								!t.Metadata.Changed {
+								LinkTiles(tile, t)
+							}
+						}
+					}
+					down := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+					if !down.IsSolid() {
+						right := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X+1, tile.Coords.Y)
+						if !right.IsSolid() {
+							left := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X-1, tile.Coords.Y)
+							if !left.IsSolid() {
+								up := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+								if up.IsSolid() {
+									tile.Metadata.Orientation = data.Up
+								}
+							} else {
+								tile.Metadata.Orientation = data.Left
+							}
+						} else {
+							tile.Metadata.Orientation = data.Right
+						}
+					}
+					tile.Block = block
+				case data.BlockSlug:
+					for _, row := range data.CurrPuzzleSet.CurrPuzzle.Tiles.T {
+						for _, t := range row {
+							if t.Block == data.BlockSlugRegen &&
+								!t.Metadata.Changed {
+								LinkTiles(tile, t)
+							}
+						}
+					}
+					down := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y-1)
+					if !down.IsSolid() {
+						right := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X+1, tile.Coords.Y)
+						if !right.IsSolid() {
+							left := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X-1, tile.Coords.Y)
+							if !left.IsSolid() {
+								up := data.CurrPuzzleSet.CurrPuzzle.Get(tile.Coords.X, tile.Coords.Y+1)
+								if up.IsSolid() {
+									tile.Metadata.Orientation = data.Up
+								}
+							} else {
+								tile.Metadata.Orientation = data.Left
+							}
+						} else {
+							tile.Metadata.Orientation = data.Right
+						}
+					}
+					tile.Block = block
 				case data.BlockTransporter:
 					if exit, ok := data.Editor.LastTiles[data.BlockTransporterExit]; ok {
 						LinkTiles(tile, exit)

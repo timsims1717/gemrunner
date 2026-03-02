@@ -9,6 +9,7 @@ import (
 	"gemrunner/pkg/object"
 	"gemrunner/pkg/reanimator"
 	"github.com/gopxl/pixel"
+	"math"
 )
 
 type spriteChanger struct {
@@ -209,6 +210,32 @@ func GetTileDrawables(tile *data.Tile) []*spriteChanger {
 	case data.BlockHideout:
 		sprs = append(sprs, newSprChanger(GetHideoutSprite(tile), constants.TileBatch))
 		sprs = append(sprs, newSprChanger(constants.TileHideout, constants.TileBatch))
+	case data.BlockSlug:
+		switch tile.Metadata.Orientation {
+		case data.Up:
+			tile.Object.Rot = math.Pi
+		case data.Left:
+			tile.Object.Rot = math.Pi * -0.5
+		case data.Right:
+			tile.Object.Rot = math.Pi * 0.5
+		default:
+			tile.Object.Rot = 0.
+		}
+		sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
+	case data.BlockSlugRegen:
+		if !tile.Live {
+			switch tile.Metadata.Orientation {
+			case data.Up:
+				tile.Object.Rot = math.Pi
+			case data.Left:
+				tile.Object.Rot = math.Pi * -0.5
+			case data.Right:
+				tile.Object.Rot = math.Pi * 0.5
+			default:
+				tile.Object.Rot = 0.
+			}
+			sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
+		}
 	case data.BlockDemonRegen, data.BlockFlyRegen:
 		if !tile.Live {
 			sprs = append(sprs, newSprChanger(tile.SpriteString(), constants.TileBatch))
@@ -470,7 +497,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, exitIndex%100/10), constants.UIBatch))
 				sprs = append(sprs, newSprChanger(fmt.Sprintf(constants.UINumberX, exitIndex%10), constants.UIBatch).WithOffset(pixel.V(6, 0)))
 			}
-		case data.BlockFly, data.BlockDemon,
+		case data.BlockFly, data.BlockSlug, data.BlockDemon,
 			data.BlockCracked,
 			data.BlockLadderCracked, data.BlockLadderCrackedTurf:
 			for i := 0; i < 4; i++ {
@@ -484,6 +511,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 							tile.Block == data.BlockJetpack ||
 							tile.Block == data.BlockDisguise ||
 							tile.Block == data.BlockFly ||
+							tile.Block == data.BlockSlug ||
 							tile.Block == data.BlockDemon) {
 						sprs = append(sprs, newSprChanger(constants.UIRegenerate, constants.UIBatch).WithOffset(offset))
 					}
@@ -495,7 +523,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 							tile.Block == data.BlockLadderCracked) {
 						sprs = append(sprs, newSprChanger(constants.UIShow, constants.UIBatch).WithOffset(offset))
 					} else if tile.Metadata.Flipped &&
-						tile.Block == data.BlockFly {
+						(tile.Block == data.BlockFly || tile.Block == data.BlockSlug) {
 						sprs = append(sprs, newSprChanger(constants.UIFlip, constants.UIBatch).WithOffset(offset))
 					}
 				case 2:

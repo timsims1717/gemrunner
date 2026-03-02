@@ -40,6 +40,7 @@ const (
 
 	TileDemonRegen = "demon_regen_tile"
 	TileFlyRegen   = "fly_regen_tile"
+	TileSlugRegen  = "slug_regen_tile"
 
 	TileFall        = "fall"
 	TilePhase       = "phase"
@@ -77,6 +78,7 @@ const (
 	CharPlayer4 = "player4"
 	CharDemon   = "demon"
 	CharFly     = "fly"
+	CharSlug    = "slug"
 )
 
 // Items
