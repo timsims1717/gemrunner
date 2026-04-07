@@ -128,7 +128,7 @@ func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	return demon
 }
 
-func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
+func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 	if p < 0 ||
 		p >= constants.MaxPlayers ||
 		ch.Flags.Disguised ||
@@ -136,7 +136,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		ch.State == data.Hiding ||
 		ch.State == data.Hit ||
 		ch.State == data.Dead {
-		return
+		return false
 	}
 	bg, ok := entity.GetComponentData(myecs.Dynamic)
 	if ok {
@@ -160,8 +160,10 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) {
 			ch.State = data.Hit
 			enemy.Flags.NextStep = false
 			enemy.State = data.Attack
+			return true
 		}
 	}
+	return false
 }
 
 func FlyCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {

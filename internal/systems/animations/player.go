@@ -9,6 +9,7 @@ import (
 	"gemrunner/pkg/img"
 	"gemrunner/pkg/reanimator"
 	"gemrunner/pkg/timing"
+	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 )
 
@@ -54,18 +55,6 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	jetpack := reanimator.NewBatchAnimationCustom("jetpack", batch, fmt.Sprintf("%s_jetpack", sprPre), jetpackLoop, reanimator.Loop)
 
 	jetpackUp := reanimator.NewBatchAnimationCustom("jetpack_up", batch, fmt.Sprintf("%s_jetpack_up", sprPre), jetpackLoop, reanimator.Loop)
-	jetpackUp.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
-		switch pre {
-		case "jetpack", "jetpack_down":
-			a.Step = f + 1
-			a.Step %= len(jetpackLoop)
-		case "jetpack_up":
-		default:
-			if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
-				a.Step = ch.AnInt
-			}
-		}
-	})
 	jetpackDown := reanimator.NewBatchAnimationCustom("jetpack_down", batch, fmt.Sprintf("%s_jetpack_down", sprPre), jetpackLoop, reanimator.Loop)
 
 	donDisguise := reanimator.NewBatchAnimation("don_disguise", batch, fmt.Sprintf("%s_don", sprPre), reanimator.Tran)
@@ -77,6 +66,9 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	flamethrower := reanimator.NewBatchAnimationCustom("flamethrower", batch, fmt.Sprintf("%s_flamethrower", sprPre), flameframes, reanimator.Loop)
 
 	goopThrow := reanimator.NewBatchAnimation("goop_throw", batch, fmt.Sprintf("%s_goop_throw", sprPre), reanimator.Tran)
+
+	airCannonFrames := []int{0, 0, 0, 1, 2, 3, 3, 3, 3, 4, 5}
+	airCannon := reanimator.NewBatchAnimationCustom("air_cannon", batch, fmt.Sprintf("%s_air_cannon", sprPre), airCannonFrames, reanimator.Tran)
 
 	hiding := reanimator.NewBatchAnimation("hiding", batch, fmt.Sprintf("%s_hiding", sprPre), reanimator.Tran)
 	inHiding := reanimator.NewBatchSprite("in_hiding", batch, fmt.Sprintf("%s_in_hiding", sprPre), reanimator.Hold)
@@ -142,6 +134,29 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		goopThrow.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
 		})
+		airCannon.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+			switch f {
+			case 3, 4, 5, 6:
+				if ch.Object.Flip {
+					if !ch.Flags.RightWall {
+						ch.Object.Pos.X += 8. - float64(f)
+					}
+				} else {
+					if !ch.Flags.LeftWall {
+						ch.Object.Pos.X -= 8. - float64(f)
+					}
+				}
+			case 0, 7:
+				x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+				tile := data.CurrLevel.Get(x, y)
+				if tile != nil {
+					ch.Object.SetPos(tile.Object.Pos)
+				}
+			}
+		})
+		airCannon.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+		})
 		donDisguise.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
 			// set the player to disguised
@@ -166,6 +181,18 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 				a.Step = f + 1
 				a.Step %= len(jetpackLoop)
 			case "jetpack":
+			default:
+				if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
+					a.Step = ch.AnInt
+				}
+			}
+		})
+		jetpackUp.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
+			switch pre {
+			case "jetpack", "jetpack_down":
+				a.Step = f + 1
+				a.Step %= len(jetpackLoop)
+			case "jetpack_up":
 			default:
 				if ch.AnInt > -1 && ch.AnInt < len(jetpackLoop) {
 					a.Step = ch.AnInt
@@ -219,6 +246,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	drilling.Offset.Y--
 	flamethrower.Offset.Y--
 	goopThrow.Offset.Y--
+	airCannon.Offset.Y--
 	hit.Offset.Y--
 
 	tree := reanimator.New().
@@ -247,6 +275,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(drilling).
 		AddAnimation(flamethrower).
 		AddAnimation(goopThrow).
+		AddAnimation(airCannon).
 		AddAnimation(hiding).
 		AddAnimation(inHiding).
 		AddAnimation(hit).
@@ -309,6 +338,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "flamethrower"
 				case data.ThrowingGoop:
 					return "goop_throw"
+				case data.UseAirCannon:
+					return "air_cannon"
 				case data.TransportIn:
 					return "trans_in"
 				case data.TransportExit:

@@ -205,7 +205,7 @@ func CharacterStateSystem() {
 						ch.Object.Pos = tile.Object.Pos
 						DropItem(ch)
 					}
-					if tile != nil {
+					if tile != nil && ch.Pushing == nil {
 						ch.Object.Pos.X = tile.Object.Pos.X
 					}
 				case data.Jumping:

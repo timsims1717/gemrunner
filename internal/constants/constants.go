@@ -99,6 +99,7 @@ const (
 	DrillCounter    = -8
 	FlamethrowerCnt = 8
 	GoopBucketCnt   = 7
+	AirCannonCnt    = 12
 	RegenCounter    = 176
 	RegenACounter   = 7
 	CollapseCounter = 7
@@ -115,6 +116,7 @@ const (
 	TextBobInterval = 16
 	FakePlayerR     = 16
 	PickUpGemChance = 50
+	AirRingSpeed    = 3.
 
 	// Player Constants
 	PlayerWalkSpeed       = 3

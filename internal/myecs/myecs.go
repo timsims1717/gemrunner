@@ -44,6 +44,7 @@ var (
 	Bomb       = Manager.NewComponent()
 	Text       = Manager.NewComponent()
 	Item       = Manager.NewComponent()
+	Pushy      = Manager.NewComponent()
 
 	IsTemp    = ecs.BuildTag(Temp)
 	HasUpdate = ecs.BuildTag(Update)
@@ -73,6 +74,7 @@ var (
 	IsBomb       = ecs.BuildTag(Object, Bomb)
 	IsText       = ecs.BuildTag(Object, Drawable, Text)
 	IsItem       = ecs.BuildTag(Object, Item)
+	IsPushy      = ecs.BuildTag(Object, Dynamic, Pushy)
 )
 
 func UpdateManager() {

@@ -133,6 +133,8 @@ func (t *Tile) SpriteString() string {
 		return constants.ItemFlamethrower + colSuffixTools
 	case BlockGoopBucket:
 		return constants.ItemGoopBucket + colSuffixTools
+	case BlockAirCannon:
+		return constants.ItemAirCannon + colSuffixTools
 	case BlockBigBomb:
 		return constants.ItemBigBomb + colSuffixTools
 	case BlockBigBombLit:

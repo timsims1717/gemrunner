@@ -97,6 +97,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 		systems.InGameSystem()
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
+		systems.PushySystem()
 		systems.CollisionSystem()
 		systems.OutsideMapSystem()
 		systems.CharacterStateSystem()

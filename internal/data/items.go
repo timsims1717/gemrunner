@@ -12,10 +12,10 @@ import (
 )
 
 type Interact struct {
-	Fn func(int, *Dynamic, *ecs.Entity)
+	Fn func(int, *Dynamic, *ecs.Entity) bool
 }
 
-func NewInteract(fn func(int, *Dynamic, *ecs.Entity)) *Interact {
+func NewInteract(fn func(int, *Dynamic, *ecs.Entity) bool) *Interact {
 	return &Interact{Fn: fn}
 }
 

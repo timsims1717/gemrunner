@@ -625,7 +625,7 @@ func CreatePuzzlePreview(cnt *ui.Element, index int) {
 			case data.BlockBigBomb, data.BlockBigBombLit,
 				data.BlockJetpack, data.BlockDisguise,
 				data.BlockDrill, data.BlockFlamethrower,
-				data.BlockGoopBucket,
+				data.BlockGoopBucket, data.BlockAirCannon,
 				data.BlockJumpBoots, data.BlockBox,
 				data.BlockTransporter, data.BlockTransporterExit,
 				data.BlockLever, data.BlockButton:

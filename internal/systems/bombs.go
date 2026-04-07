@@ -134,30 +134,32 @@ func CreateBomb(pos pixel.Vec, key string, metadata data.TileMetadata, coords wo
 }
 
 func CollectSmallBomb(theBomb *data.Bomb) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if p < 0 || p >= constants.MaxPlayers ||
 			(ch.Color != theBomb.Item.Color && theBomb.Item.Color > data.NonPlayerRed) ||
 			data.CurrLevel.Players[p].SmallBombs >= data.CurrLevelSess.PlayerStats[p].MaxBombs+data.CurrLevelSess.PlayerStats[p].LBombs ||
 			theBomb.Item.Waiting || theBomb.Item.Regen || theBomb.Item.Object.Hidden {
-			return
+			return false
 		}
 		theBomb.SymSpr.ToggleHidden(true)
 		data.CurrLevel.Players[p].SmallBombs++
 		sfx.SoundPlayer.PlaySound(constants.SFXItem, -1.)
 		RegenerateOrRemove(theBomb.Item)
+		return true
 	})
 }
 
 func BombAction(theBomb *data.Bomb) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, e *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, e *ecs.Entity) bool {
 		switch ch.State {
 		case data.OnBar, data.Jumping, data.Falling:
-			return
+			return false
 		}
 		ClearInv(ch)
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 		tile := data.CurrLevel.Get(x, y)
 		LightBomb(theBomb, tile)
+		return true
 	})
 }
 

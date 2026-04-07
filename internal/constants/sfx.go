@@ -27,6 +27,7 @@ const (
 	SFXJetpackStart = "jetpack_s"
 	SFXJetpackEnd   = "jetpack_e"
 	SFXFlamethrower = "flamethrower"
+	SFXAirCannon    = "air_cannon"
 	SFXDrill        = "drill"
 	SFXTransIn      = "trans_in"
 	SFXTransOut     = "trans_out"

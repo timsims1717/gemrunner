@@ -56,24 +56,29 @@ func DefaultRegen(item *data.BasicItem) {
 					item.Regen = true
 					item.Waiting = false
 					// smoke animation
-					e := myecs.Manager.NewEntity()
-					obj := object.New()
-					obj.Pos = item.Object.Pos
-					obj.Layer = 33
-					smoke := reanimator.NewBatchAnimation("smoke", img.Batchers[constants.TileBatch], "smoke_regen_anim", reanimator.Tran)
-					smoke.SetEndTrigger(func() {
-						item.Regen = false
-						myecs.Manager.DisposeEntity(e)
-					})
-					anim := reanimator.NewSimple(smoke)
-					e.AddComponent(myecs.Object, obj).
-						AddComponent(myecs.Animated, anim).
-						AddComponent(myecs.Drawable, anim).
-						AddComponent(myecs.Temp, myecs.ClearFlag(false))
+					CreateRegenSmoke(item)
 				}
 			}
 		}))
 	}
+}
+
+func CreateRegenSmoke(item *data.BasicItem) {
+	// smoke animation
+	e := myecs.Manager.NewEntity()
+	obj := object.New()
+	obj.Pos = item.Object.Pos
+	obj.Layer = 33
+	smoke := reanimator.NewBatchAnimation("smoke", img.Batchers[constants.TileBatch], "smoke_regen_anim", reanimator.Tran)
+	smoke.SetEndTrigger(func() {
+		item.Regen = false
+		myecs.Manager.DisposeEntity(e)
+	})
+	anim := reanimator.NewSimple(smoke)
+	e.AddComponent(myecs.Object, obj).
+		AddComponent(myecs.Animated, anim).
+		AddComponent(myecs.Drawable, anim).
+		AddComponent(myecs.Temp, myecs.ClearFlag(false))
 }
 
 func CreateGem(pos pixel.Vec, tile *data.Tile) {
@@ -129,16 +134,17 @@ func CreateGem(pos pixel.Vec, tile *data.Tile) {
 }
 
 func CollectGem(color data.ItemColor, c world.Coords) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if p < 0 || p >= constants.MaxPlayers ||
 			(ch.Color != color && color > data.NonPlayerRed) {
-			return
+			return false
 		}
 		data.CurrLevelSess.PlayerStats[p].LScore += 1
 		data.CurrLevelSess.PlayerStats[p].LGems++
 		data.CurrLevelSess.GemsCollected = append(data.CurrLevelSess.GemsCollected, c)
 		sfx.SoundPlayer.PlaySound(constants.SFXGem, -2.)
 		myecs.Manager.DisposeEntity(entity)
+		return true
 	})
 }
 
@@ -235,16 +241,17 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 //}
 
 func EnterDoor(color data.ItemColor, exitIndex int) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if p < 0 || p >= constants.MaxPlayers ||
 			(color > data.NonPlayerRed && ch.Color != color) ||
 			ch.Actions.Direction != data.Up {
-			return
+			return false
 		}
 		data.CurrLevelSess.PlayerStats[p].LScore += 12
 		sfx.SoundPlayer.PlaySound(constants.SFXExitLevel, 0.)
 		data.CurrLevel.Complete = true
 		data.CurrLevel.ExitIndex = exitIndex
+		return true
 	})
 }
 
@@ -280,7 +287,7 @@ func CreateJumpBoots(pos pixel.Vec, key string, metadata data.TileMetadata, coor
 }
 
 func Jump() *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if ch.State == data.Grounded {
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			left := data.CurrLevel.Get(x-1, y)
@@ -300,7 +307,7 @@ func Jump() *data.Interact {
 				(ch.Actions.Right() && !right.IsSolid()) {
 				ch.Flags.LongJump = true
 			} else {
-				return
+				return false
 			}
 			tile := data.CurrLevel.Get(x, y)
 			ch.LastTile = tile
@@ -321,6 +328,7 @@ func Jump() *data.Interact {
 				ch.Flags.JumpR = false
 			}
 		}
+		return true
 	})
 }
 
@@ -365,11 +373,11 @@ func CreateBox(pos pixel.Vec, key string, metadata data.TileMetadata, coords wor
 	return box
 }
 
-func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
-	switch ch.State {
-	case data.OnLadder, data.OnBar, data.Flying, data.Leaping:
-		return
-	}
+func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+	//switch ch.State {
+	//case data.OnLadder, data.OnBar, data.Flying, data.Leaping:
+	//	return false
+	//}
 	if (ch.Object.Flip && !ch.Flags.LeftWall) ||
 		(!ch.Object.Flip && !ch.Flags.RightWall) {
 		// throw if space to throw
@@ -398,9 +406,10 @@ func BoxAction(p int, ch *data.Dynamic, entity *ecs.Entity) {
 		// just drop
 		DropItem(ch)
 	}
+	return true
 }
 
-func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) {
+func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 	s, ok := entity.GetComponentData(myecs.Smash)
 	d, okD := entity.GetComponentData(myecs.Dynamic)
 	if ok && okD {
@@ -413,6 +422,7 @@ func BoxBonk(p int, ch *data.Dynamic, entity *ecs.Entity) {
 			ch.State = data.Hit
 		}
 	}
+	return true
 }
 
 func CreateKey(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
@@ -450,11 +460,13 @@ func CreateKey(pos pixel.Vec, key string, metadata data.TileMetadata, coords wor
 }
 
 func KeyAction(color data.ItemColor) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if KeyUnlock(ch.Object.Pos, color) {
 			ClearInv(ch)
 			myecs.Manager.DisposeEntity(entity)
+			return true
 		}
+		return false
 	})
 }
 
@@ -539,7 +551,7 @@ func CreateJetpack(pos pixel.Vec, key string, metadata data.TileMetadata, coords
 }
 
 func JetpackAction(jetpack *data.BasicItem) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		ClearInv(ch)
 		// change the player's state to flying
 		ch.State = data.Flying
@@ -627,6 +639,7 @@ func JetpackAction(jetpack *data.BasicItem) *data.Interact {
 				}
 			}
 		}))
+		return true
 	})
 }
 
@@ -717,9 +730,9 @@ func CreateDisguise(pos pixel.Vec, key string, metadata data.TileMetadata, coord
 }
 
 func DonDisguise(disguise *data.Disguise) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if ch.State == data.Falling || ch.State == data.Jumping {
-			return
+			return false
 		}
 		ClearInv(ch)
 		// remove the pickup component
@@ -803,6 +816,7 @@ func DonDisguise(disguise *data.Disguise) *data.Interact {
 				}
 			}
 		}))
+		return true
 	})
 }
 
@@ -837,7 +851,7 @@ func CreateDrill(pos pixel.Vec, key string, metadata data.TileMetadata, coords w
 }
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if ch.State == data.Grounded || ch.State == data.Hiding || ch.State == data.OnLadder {
 			// check if on correct ground
 			xa, ya := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -876,6 +890,7 @@ func UseDrill(drill *data.BasicItem) *data.Interact {
 				}))
 			}
 		}
+		return true
 	})
 }
 
@@ -941,9 +956,12 @@ func CreateFlamethrower(pos pixel.Vec, key string, metadata data.TileMetadata, c
 
 func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 	flamethrower.Uses = 0
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+		if flamethrower.Using {
+			return false
+		}
 		if ch.State == data.Falling || ch.State == data.Jumping || ch.State == data.OnBar {
-			return
+			return false
 		}
 		// check if not directly behind bedrock
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
@@ -959,11 +977,11 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 		}
 		tile := data.CurrLevel.Get(x, y)
 		if ch.State == data.Leaping && !tile.IsLadder() && tile.Block != data.BlockBar {
-			return // can't do it if leaping off ladders or bar
+			return false // can't do it if leaping off ladders or bar
 		}
 		firstTile := data.CurrLevel.Get(x2, y)
 		if firstTile == nil || firstTile.Block == data.BlockBedrock {
-			return // can't do it if directly facing bedrock
+			return false // can't do it if directly facing bedrock
 		}
 		// change the player's state to flamethrower action
 		ch.State = data.DoingAction
@@ -1089,6 +1107,7 @@ func FlamethrowerAction(flamethrower *data.BasicItem) *data.Interact {
 				}
 			}
 		}))
+		return true
 	})
 }
 
@@ -1147,6 +1166,244 @@ func CreateFlames(firstTile, secondTile, thirdTile *data.Tile, flip bool) {
 	}
 }
 
+func CreateAirCannon(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
+	obj := object.New().WithID(key).SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Layer = 12
+	e := myecs.Manager.NewEntity()
+	airCannon := &data.BasicItem{
+		Name:     "Air Cannon",
+		Key:      key,
+		Object:   obj,
+		Sprite:   img.NewSprite(key, constants.TileBatch),
+		PickUp:   data.NewPickUp(5, metadata.Color),
+		Entity:   e,
+		Metadata: metadata,
+		Origin:   coords,
+		Layer:    12,
+	}
+	airCannon.Metadata = data.CopyMetadata(metadata)
+	airCannon.Action = AirCannonAction(airCannon)
+
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.PickUp, airCannon.PickUp)
+	e.AddComponent(myecs.Action, airCannon.Action)
+	e.AddComponent(myecs.LvlElement, airCannon)
+	e.AddComponent(myecs.Item, airCannon)
+	airCannon.Delay = constants.ItemRegen * (airCannon.Metadata.RegenDelay + 2)
+	DefaultRegen(airCannon)
+	DefaultAnim(airCannon)
+	return airCannon
+}
+
+func AirCannonAction(airCannon *data.BasicItem) *data.Interact {
+	airCannon.Uses = 0
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+		if airCannon.Using {
+			return false
+		}
+		xa, ya := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		tileA := data.CurrLevel.Get(xa, ya)
+		if ch.State == data.Jumping || ch.State == data.OnBar || airCannon.Using ||
+			(ch.State == data.Falling && ch.LastTile.Coords == tileA.Coords) {
+			return false
+		}
+		if ch.Actions.Direction == data.Left {
+			ch.Object.Flip = true
+		} else if ch.Actions.Direction == data.Right {
+			ch.Object.Flip = false
+		}
+		// check next tile
+		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		x2 := x + 1
+		flip := false
+		if ch.Object.Flip {
+			x2 = x - 1
+			flip = true
+		}
+		tile := data.CurrLevel.Get(x, y)
+		if ch.State == data.Leaping && !tile.IsLadder() && tile.Block != data.BlockBar {
+			return false // can't do it if leaping off ladders or bar
+		}
+		firstTile := data.CurrLevel.Get(x2, y)
+		// change the player's state to airCannon action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.UseAirCannon
+		ch.Object.SetPos(tile.Object.Pos)
+		// set the airCannon vars
+		airCannon.Using = true
+		airCannon.Counter = 0
+		airCannon.Uses++
+		entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if airCannon.Using {
+				if reanimator.FrameSwitch {
+					airCannon.Counter++
+					if airCannon.Counter > constants.AirCannonCnt {
+						airCannon.Using = false
+						airCannon.Counter = 0
+						ch.Flags.ItemAction = data.NoItemAction
+						x1, y1 := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+						ch.LastTile = data.CurrLevel.Get(x1, y1)
+						if airCannon.Metadata.Timer > 0 && airCannon.Uses >= airCannon.Metadata.Timer {
+							ClearInv(ch)
+							airCannon.Uses = 0
+							if airCannon.Metadata.Regenerate {
+								// remove the pickup component
+								airCannon.Entity.RemoveComponent(myecs.PickUp)
+								airCannon.Waiting = true
+							} else {
+								myecs.Manager.DisposeEntity(airCannon.Entity)
+							}
+						}
+					} else if airCannon.Counter == 3 {
+						// create air animations
+						CreateAirPuff(tile, flip)
+						if firstTile != nil && !firstTile.IsSolid() {
+							CreateAirRing(firstTile, flip)
+						} else {
+							CreateAirRingEnd(tile, flip)
+						}
+						// air cannon sound
+						//sfx.SoundPlayer.PlaySound(constants.SFXAirCannon, 0.)
+					}
+				}
+			} else if airCannon.Waiting {
+				if reanimator.FrameSwitch {
+					airCannon.Counter++
+				}
+				if airCannon.Counter > airCannon.Delay && data.CurrLevel.FrameChange {
+					airCannon.Object.Pos = world.MapToWorld(airCannon.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+					airCannon.Regen = true
+					airCannon.Waiting = false
+					airCannon.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+						if airCannon.Waiting {
+							if reanimator.FrameSwitch {
+								airCannon.Counter++
+							}
+							if airCannon.Counter > airCannon.Delay && data.CurrLevel.FrameChange {
+								airCannon.Object.Pos = world.MapToWorld(airCannon.Origin).Add(pixel.V(world.HalfSize, world.HalfSize))
+								airCannon.Regen = true
+								airCannon.Waiting = false
+								airCannon.Entity.AddComponent(myecs.PickUp, airCannon.PickUp)
+								CreateRegenSmoke(airCannon)
+							}
+						}
+					}))
+					airCannon.Entity.AddComponent(myecs.PickUp, airCannon.PickUp)
+					CreateRegenSmoke(airCannon)
+				}
+			}
+		}))
+		return true
+	})
+}
+
+func CreateAirPuff(tile *data.Tile, flip bool) {
+	obj := object.New()
+	obj.Layer = 34
+	obj.Pos = tile.Object.Pos
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Flip = flip
+	e := myecs.Manager.NewEntity()
+	a := reanimator.NewBatchAnimation("air_puff", img.Batchers[constants.TileBatch], "air_puff", reanimator.Tran)
+	a.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(e)
+	})
+	anim := reanimator.NewSimple(a)
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Drawable, anim)
+	e.AddComponent(myecs.Animated, anim)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+}
+
+func CreateAirRingEnd(tile *data.Tile, flip bool) {
+	obj := object.New()
+	obj.Layer = 34
+	obj.Pos = tile.Object.Pos
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Flip = flip
+	e := myecs.Manager.NewEntity()
+	a := reanimator.NewBatchAnimation("air_ring_end", img.Batchers[constants.TileBatch], "air_ring_end", reanimator.Tran)
+	a.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(e)
+	})
+	anim := reanimator.NewSimple(a)
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Drawable, anim)
+	e.AddComponent(myecs.Animated, anim)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+}
+
+func CreateAirRing(tile *data.Tile, flip bool) {
+	obj := object.New().WithID("air_ring")
+	obj.Layer = 34
+	obj.Pos = tile.Object.Pos
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Flip = flip
+	d := data.NewDynamic()
+	d.LastTile = tile
+	d.Type = "air_ring"
+	d.Flags.NoPush = true
+	s := true
+	e := myecs.Manager.NewEntity()
+	start := reanimator.NewBatchAnimation("air_ring_start", img.Batchers[constants.TileBatch], "air_ring_start", reanimator.Tran)
+	start.SetEndTrigger(func() {
+		s = false
+		if d.Pushing != nil {
+			d.Pushing.NoMove = false
+		}
+	})
+	move := reanimator.NewBatchAnimation("air_ring", img.Batchers[constants.TileBatch], "air_ring", reanimator.Loop)
+	move.Offset.X = 2.
+	end := reanimator.NewBatchAnimation("air_ring_end", img.Batchers[constants.TileBatch], "air_ring_end", reanimator.Tran)
+	end.SetEndTrigger(func() {
+		myecs.Manager.DisposeEntity(e)
+	})
+	anim := reanimator.New().
+		AddAnimation(start).
+		AddAnimation(move).
+		AddAnimation(end).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if s {
+				return "air_ring_start"
+			} else if d.Pushing == nil {
+				return "air_ring_end"
+			} else {
+				return "air_ring"
+			}
+		}).SetDefault("air_ring_start").Finish()
+	anim.Update()
+	d.Object = obj
+	d.Entity = e
+	d.Flags.Flying = true
+	d.State = data.Flying
+	e.AddComponent(myecs.Dynamic, d)
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Drawable, anim)
+	e.AddComponent(myecs.Animated, anim)
+	d.Pushing = &data.Pushy{
+		NoMove:    true,
+		Direction: data.Right,
+		Speed:     constants.AirRingSpeed,
+	}
+	if flip {
+		d.Pushing.Direction = data.Left
+	}
+	e.AddComponent(myecs.Pushy, d.Pushing)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	//dx := constants.AirRingSpeed
+	//if flip {
+	//	dx = -dx
+	//}
+	e.AddComponent(myecs.Update, data.NewFn(func() {
+		if !e.HasComponent(myecs.Pushy) || (!flip && d.Flags.RightWall) || (flip && d.Flags.LeftWall) {
+			d.Pushing = nil
+		}
+	}))
+}
+
 func CreateGoopBucket(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
 	obj := object.New().WithID(key).SetPos(pos)
 	obj.SetRect(pixel.R(0, 0, 16, 16))
@@ -1193,9 +1450,12 @@ func CreateGoopBucket(pos pixel.Vec, key string, metadata data.TileMetadata, coo
 }
 
 func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+		if goopBucket.Using {
+			return false
+		}
 		if ch.State == data.Falling || ch.State == data.Jumping || ch.State == data.OnBar {
-			return
+			return false
 		}
 		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 		x2 := x + 1
@@ -1210,11 +1470,11 @@ func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
 		}
 		tile := data.CurrLevel.Get(x, y)
 		if ch.State == data.Leaping && !tile.IsLadder() && tile.Block != data.BlockBar {
-			return // can't do it if leaping off ladders or bar
+			return false // can't do it if leaping off ladders or bar
 		}
 		firstTile := data.CurrLevel.Get(x2, y)
 		if firstTile.IsSolid() || firstTile.Block == data.BlockLiquid {
-			return // can't do it if facing a wall
+			return false // can't do it if facing a wall
 		}
 		// change the player's state to goop bucket action
 		ch.State = data.DoingAction
@@ -1276,6 +1536,7 @@ func GoopBucketAction(goopBucket *data.BasicItem) *data.Interact {
 				}
 			}
 		}))
+		return true
 	})
 }
 
@@ -1345,6 +1606,7 @@ func CreateFallingGoop(tile *data.Tile, flip bool) {
 	obj.Flip = flip
 	d := data.NewDynamic()
 	d.LastTile = tile
+	d.Flags.NoPush = true
 	e := myecs.Manager.NewEntity()
 	fall := reanimator.NewBatchAnimation("goop_fall", img.Batchers[constants.TileBatch], "goop_fall", reanimator.Loop)
 	land := reanimator.NewBatchAnimation("goop_land", img.Batchers[constants.TileBatch], "goop_land", reanimator.Tran)
@@ -1466,28 +1728,28 @@ func CreateTransporter(pos pixel.Vec, key string, metadata data.TileMetadata, co
 }
 
 func EnterTransporter(trans *data.Transporter) *data.Interact {
-	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 		if ch.Layer == 0 {
-			return
+			return false
 		}
 		// return if being used
 		if trans.Item.Using {
-			return
+			return false
 		}
 		// return if player doesn't match the color of transporter
 		switch trans.Item.Color {
 		case data.NonPlayerRed:
 			if p >= 0 && p < constants.MaxPlayers {
-				return
+				return false
 			}
 		case data.PlayerBlue, data.PlayerGreen, data.PlayerPurple, data.PlayerOrange:
 			if ch.Color != trans.Item.Color && p >= 0 && p < constants.MaxPlayers {
-				return
+				return false
 			}
 		}
 		// return if no linked tiles or if linked tile is empty
 		if trans.Dest == nil || trans.Dest.Block != data.BlockTransporterExit {
-			return
+			return false
 		}
 		trans.Item.Using = true
 		trans.BarUp = false
@@ -1517,6 +1779,7 @@ func EnterTransporter(trans *data.Transporter) *data.Interact {
 				entity.RemoveComponent(myecs.Update)
 			}
 		}))
+		return true
 	})
 }
 

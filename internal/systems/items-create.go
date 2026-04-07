@@ -29,6 +29,8 @@ func CreateItem(block data.Block, pos pixel.Vec, key string, metadata data.TileM
 		item = CreateFlamethrower(pos, key, metadata, coords)
 	case data.BlockGoopBucket:
 		item = CreateGoopBucket(pos, key, metadata, coords)
+	case data.BlockAirCannon:
+		item = CreateAirCannon(pos, key, metadata, coords)
 	case data.BlockTransporter:
 		item = CreateTransporter(pos, key, metadata, coords)
 	}

@@ -152,9 +152,8 @@ func DoAction(ch *data.Dynamic) bool {
 		if fnA, ok := ch.Inventory.Entity.GetComponentData(myecs.Action); ok {
 			if colFn, okC := fnA.(*data.Interact); okC {
 				ch.Flags.CheckAction = false
-				colFn.Fn(ch.Player, ch, ch.Inventory.Entity)
 				ch.Flags.ActionBuff = 0
-				return true
+				return colFn.Fn(ch.Player, ch, ch.Inventory.Entity)
 			}
 		}
 	}

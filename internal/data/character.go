@@ -24,6 +24,7 @@ type Dynamic struct {
 	Flags     Flags
 	Vars      Vars
 	Options   CharacterOptions
+	Pushing   *Pushy
 	ACounter  int
 	AnInt     int
 	LastTile  *Tile
@@ -113,6 +114,7 @@ const (
 	Drilling
 	Hiding
 	FireFlamethrower
+	UseAirCannon
 	ThrowingGoop
 	TransportIn
 	TransportExit
@@ -197,6 +199,7 @@ type Flags struct {
 	Ignore       bool
 	WallClimb    bool
 	Orientation  Direction
+	NoPush       bool
 }
 
 type CharacterOptions struct {
@@ -265,4 +268,13 @@ func SlugVars() Vars {
 		GoopSpeed: constants.SlugSpeed,
 		Gravity:   constants.NormalGravity,
 	}
+}
+
+type Pushy struct {
+	NoMove    bool
+	Direction Direction
+	Speed     float64
+	Pushing   *Dynamic
+	PushNext  *Pushy
+	OrigTile  *Tile
 }

@@ -438,7 +438,8 @@ func PuzzleEditSystem() {
 											case data.BlockCracked, data.BlockLadderCracked,
 												data.BlockBarrier,
 												data.BlockBigBomb, data.BlockBigBombLit, data.BlockSmallBomb, data.BlockSmallBombLit,
-												data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket:
+												data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket,
+												data.BlockAirCannon:
 												data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = append(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles, t)
 											case data.BlockPhase:
 												if rClick.JustReleased() {
@@ -466,7 +467,7 @@ func PuzzleEditSystem() {
 									data.BlockSmallBomb, data.BlockSmallBombLit:
 									ui.OpenDialogInStack(constants.DialogBomb)
 								case data.BlockJetpack, data.BlockDisguise,
-									data.BlockFlamethrower, data.BlockGoopBucket:
+									data.BlockFlamethrower, data.BlockGoopBucket, data.BlockAirCannon:
 									ui.OpenDialogInStack(constants.DialogItemOptions)
 								}
 								break
@@ -528,7 +529,7 @@ func PuzzleEditSystem() {
 								data.BlockSmallBomb, data.BlockSmallBombLit:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogBomb)
-							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket:
+							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket, data.BlockAirCannon:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogItemOptions)
 							case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:

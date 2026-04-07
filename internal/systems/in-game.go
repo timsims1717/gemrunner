@@ -164,73 +164,73 @@ func UpdatePlayerInv() {
 					ele.Object.Hidden = bombs < 3 || bombs > 4
 				case "player_bomb_count_4":
 					ele.Object.Hidden = bombs < 4
-				case "player_inv_item":
-					if p.Inventory == nil {
-						ele.Object.Hidden = true
-						ele.Sprite.Key = ""
+				case "player_inv_regen":
+					if p.Inventory != nil {
+						ele.Object.Hidden = !p.Inventory.Metadata.Regenerate
 					} else {
-						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
-							if a, okA := draw.(*reanimator.Tree); okA {
-								ele.Object.Hidden = false
-								ele.Sprite.Key = a.GetSprite(a.Default).SKey
-							} else if s, okS := draw.(*img.Sprite); okS {
-								ele.Object.Hidden = false
-								ele.Sprite.Key = s.Key
-							} else if sa, okSA := draw.([]interface{}); okSA && len(sa) > 0 {
-								if saSpr, ok2 := sa[0].(*img.Sprite); ok2 {
-									ele.Object.Hidden = false
-									ele.Sprite.Key = saSpr.Key
-								} else if saAnim, ok3 := sa[0].(*reanimator.Tree); ok3 {
-									ele.Object.Hidden = false
-									ele.Sprite.Key = saAnim.GetSprite(saAnim.Default).SKey
-								}
-							}
-						}
+						ele.Object.Hidden = true
 					}
-				case "player_inv_item_2":
-					if p.Inventory == nil {
-						ele.Object.Hidden = true
-						ele.Sprite.Key = ""
+				case "player_inv_timer":
+					if p.Inventory != nil {
+						if p.Inventory.Metadata.Timer == -1 {
+							ele.Object.Hidden = true
+						} else if p.Inventory.Metadata.Timer == 0 {
+							// draw infinity symbol
+							ele.Object.Hidden = true
+						} else {
+							ele.Text.SetText(fmt.Sprintf("%d", p.Inventory.Metadata.Timer-p.Inventory.Uses))
+							ele.Object.Hidden = false
+						}
 					} else {
 						ele.Object.Hidden = true
-						if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
-							if sa, okSA := draw.([]interface{}); okSA && len(sa) > 1 {
-								if saSpr, ok2 := sa[1].(*img.Sprite); ok2 {
-									ele.Object.Hidden = false
-									ele.Object.Offset = saSpr.Offset
-									ele.Sprite.Key = saSpr.Key
-								}
-							}
-						}
+					}
+				case "player_inv_infinity":
+					if p.Inventory != nil {
+						ele.Object.Hidden = p.Inventory.Metadata.Timer != 0
+					} else {
+						ele.Object.Hidden = true
 					}
 				case "player_inv_cnt":
 					for _, ele2 := range ele.Elements {
 						switch ele2.Key {
-						case "player_inv_regen":
-							if p.Inventory != nil {
-								ele2.Object.Hidden = !p.Inventory.Metadata.Regenerate
-							} else {
+						case "player_inv_item":
+							if p.Inventory == nil {
 								ele2.Object.Hidden = true
-							}
-						case "player_inv_timer":
-							if p.Inventory != nil {
-								if p.Inventory.Metadata.Timer == -1 {
-									ele2.Object.Hidden = true
-								} else if p.Inventory.Metadata.Timer == 0 {
-									// draw infinity symbol
-									ele2.Object.Hidden = true
-								} else {
-									ele2.Text.SetText(fmt.Sprintf("%d", p.Inventory.Metadata.Timer-p.Inventory.Uses))
-									ele2.Object.Hidden = false
+								ele2.Sprite.Key = ""
+							} else {
+								if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
+									if a, okA := draw.(*reanimator.Tree); okA {
+										ele2.Object.Hidden = false
+										ele2.Sprite.Key = a.GetSprite(a.Default).SKey
+									} else if s, okS := draw.(*img.Sprite); okS {
+										ele2.Object.Hidden = false
+										ele2.Sprite.Key = s.Key
+									} else if sa, okSA := draw.([]interface{}); okSA && len(sa) > 0 {
+										if saSpr, ok2 := sa[0].(*img.Sprite); ok2 {
+											ele2.Object.Hidden = false
+											ele2.Sprite.Key = saSpr.Key
+										} else if saAnim, ok3 := sa[0].(*reanimator.Tree); ok3 {
+											ele2.Object.Hidden = false
+											ele2.Sprite.Key = saAnim.GetSprite(saAnim.Default).SKey
+										}
+									}
 								}
-							} else {
-								ele2.Object.Hidden = true
 							}
-						case "player_inv_infinity":
-							if p.Inventory != nil {
-								ele2.Object.Hidden = p.Inventory.Metadata.Timer != 0
+						case "player_inv_item_2":
+							if p.Inventory == nil {
+								ele2.Object.Hidden = true
+								ele2.Sprite.Key = ""
 							} else {
 								ele2.Object.Hidden = true
+								if draw, ok := p.Inventory.Entity.GetComponentData(myecs.Drawable); ok {
+									if sa, okSA := draw.([]interface{}); okSA && len(sa) > 1 {
+										if saSpr, ok2 := sa[1].(*img.Sprite); ok2 {
+											ele2.Object.Hidden = false
+											ele2.Object.Offset = saSpr.Offset
+											ele2.Sprite.Key = saSpr.Key
+										}
+									}
+								}
 							}
 						}
 					}

@@ -125,7 +125,7 @@ func InitLevelTiles(level *data.Level) {
 			case data.BlockJumpBoots, data.BlockBox, data.BlockKey,
 				data.BlockBigBomb, data.BlockSmallBomb, data.BlockJetpack,
 				data.BlockDisguise, data.BlockDrill, data.BlockFlamethrower,
-				data.BlockGoopBucket, data.BlockTransporter:
+				data.BlockGoopBucket, data.BlockAirCannon, data.BlockTransporter:
 				CreateItem(tile.Block, obj.Pos, tile.SpriteString(), tile.Metadata, tile.Coords)
 				if tile.Metadata.Buried {
 					tile.Block = data.BlockTurf
@@ -240,24 +240,25 @@ func InitLevelDialogs(level *data.Level) {
 			case 3:
 				dlgKey = constants.DialogPlayer4Inv
 			}
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedPrimary", float32(level.Puzzle.Metadata.PrimaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenPrimary", float32(level.Puzzle.Metadata.PrimaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBluePrimary", float32(level.Puzzle.Metadata.PrimaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedSecondary", float32(level.Puzzle.Metadata.SecondaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenSecondary", float32(level.Puzzle.Metadata.SecondaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueSecondary", float32(level.Puzzle.Metadata.SecondaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedDoodad", float32(level.Puzzle.Metadata.DoodadColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenDoodad", float32(level.Puzzle.Metadata.DoodadColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueDoodad", float32(level.Puzzle.Metadata.DoodadColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedGoop", float32(level.Puzzle.Metadata.GoopColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenGoop", float32(level.Puzzle.Metadata.GoopColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueGoop", float32(level.Puzzle.Metadata.GoopColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.B))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.R))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.G))
-			ui.Dialogs[dlgKey].ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.B))
+			cnt := ui.Dialogs[dlgKey].Get("player_inv_cnt")
+			cnt.ViewPort.Canvas.SetUniform("uRedPrimary", float32(level.Puzzle.Metadata.PrimaryColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(level.Puzzle.Metadata.PrimaryColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBluePrimary", float32(level.Puzzle.Metadata.PrimaryColor.B))
+			cnt.ViewPort.Canvas.SetUniform("uRedSecondary", float32(level.Puzzle.Metadata.SecondaryColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(level.Puzzle.Metadata.SecondaryColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(level.Puzzle.Metadata.SecondaryColor.B))
+			cnt.ViewPort.Canvas.SetUniform("uRedDoodad", float32(level.Puzzle.Metadata.DoodadColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(level.Puzzle.Metadata.DoodadColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(level.Puzzle.Metadata.DoodadColor.B))
+			cnt.ViewPort.Canvas.SetUniform("uRedGoop", float32(level.Puzzle.Metadata.GoopColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenGoop", float32(level.Puzzle.Metadata.GoopColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBlueGoop", float32(level.Puzzle.Metadata.GoopColor.B))
+			cnt.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.B))
+			cnt.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.R))
+			cnt.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.G))
+			cnt.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.B))
 			level.PLoc[p] = &mgl32.Vec2{}
 			level.PLoc[p][0] = float32(level.Players[p].Object.Pos.X)
 			level.PLoc[p][1] = float32(level.Players[p].Object.Pos.Y)

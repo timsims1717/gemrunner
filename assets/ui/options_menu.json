@@ -52,25 +52,6 @@
       "right": "graphics_tab",
       "elements":[
         {
-          "key":"label_shadow",
-          "text":"Gameplay",
-          "color":{
-            "R":0.29411764705882354,
-            "G":0.47843137254901963,
-            "B":1,
-            "A":1
-          },
-          "pos":{
-            "X":-24,
-            "Y":1
-          },
-          "type":"text",
-          "anchor":{
-            "X":0,
-            "Y":0.5
-          }
-        },
-        {
           "key":"gameplay_tab_text",
           "text":"Gameplay",
           "color":{
@@ -82,6 +63,25 @@
           "pos":{
             "X":-24,
             "Y":0
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"label_shadow",
+          "text":"Gameplay",
+          "color":{
+            "R":0.29411764705882354,
+            "G":0.47843137254901963,
+            "B":1,
+            "A":1
+          },
+          "pos":{
+            "X":-24,
+            "Y":1
           },
           "type":"text",
           "anchor":{
@@ -104,25 +104,6 @@
       "right": "audio_tab",
       "elements":[
         {
-          "key":"label_shadow",
-          "text":"Graphics",
-          "color":{
-            "R":0.29411764705882354,
-            "G":0.47843137254901963,
-            "B":1,
-            "A":1
-          },
-          "pos":{
-            "X":-23,
-            "Y":1
-          },
-          "type":"text",
-          "anchor":{
-            "X":0,
-            "Y":0.5
-          }
-        },
-        {
           "key":"graphics_tab_text",
           "text":"Graphics",
           "color":{
@@ -134,6 +115,25 @@
           "pos":{
             "X":-23,
             "Y":0
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"label_shadow",
+          "text":"Graphics",
+          "color":{
+            "R":0.29411764705882354,
+            "G":0.47843137254901963,
+            "B":1,
+            "A":1
+          },
+          "pos":{
+            "X":-23,
+            "Y":1
           },
           "type":"text",
           "anchor":{
@@ -156,25 +156,6 @@
       "right": "input_tab",
       "elements":[
         {
-          "key":"label_shadow",
-          "text":"Audio",
-          "color":{
-            "R":0.29411764705882354,
-            "G":0.47843137254901963,
-            "B":1,
-            "A":1
-          },
-          "pos":{
-            "X":-14,
-            "Y":1
-          },
-          "type":"text",
-          "anchor":{
-            "X":0,
-            "Y":0.5
-          }
-        },
-        {
           "key":"audio_tab_text",
           "text":"Audio",
           "color":{
@@ -186,6 +167,25 @@
           "pos":{
             "X":-14,
             "Y":0
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"label_shadow",
+          "text":"Audio",
+          "color":{
+            "R":0.29411764705882354,
+            "G":0.47843137254901963,
+            "B":1,
+            "A":1
+          },
+          "pos":{
+            "X":-14,
+            "Y":1
           },
           "type":"text",
           "anchor":{
@@ -207,25 +207,6 @@
       "left": "audio_tab",
       "elements":[
         {
-          "key":"label_shadow",
-          "text":"Input",
-          "color":{
-            "R":0.29411764705882354,
-            "G":0.47843137254901963,
-            "B":1,
-            "A":1
-          },
-          "pos":{
-            "X":-14,
-            "Y":1
-          },
-          "type":"text",
-          "anchor":{
-            "X":0,
-            "Y":0.5
-          }
-        },
-        {
           "key":"input_tab_text",
           "text":"Input",
           "color":{
@@ -237,6 +218,25 @@
           "pos":{
             "X":-14,
             "Y":0
+          },
+          "type":"text",
+          "anchor":{
+            "X":0,
+            "Y":0.5
+          }
+        },
+        {
+          "key":"label_shadow",
+          "text":"Input",
+          "color":{
+            "R":0.29411764705882354,
+            "G":0.47843137254901963,
+            "B":1,
+            "A":1
+          },
+          "pos":{
+            "X":-14,
+            "Y":1
           },
           "type":"text",
           "anchor":{
@@ -459,6 +459,31 @@
           }
         },
         {
+          "key":"resolution_dropdown",
+          "text":"Test",
+          "batchKey":"ui",
+          "helpText":"The game's windowed resolution.",
+          "color":{
+            "R":0.9607843137254902,
+            "G":0.9607843137254902,
+            "B":0.9607843137254902,
+            "A":1
+          },
+          "width": 72,
+          "height": 16,
+          "pos":{
+            "X":67,
+            "Y":62
+          },
+          "background": {
+            "R":0.07421875,
+            "G":0.07421875,
+            "B":0.07421875,
+            "A":1
+          },
+          "type":"dropdown"
+        },
+        {
           "key":"scan_lines_label",
           "text":"Scan Lines",
           "color":{
@@ -600,31 +625,6 @@
             "Y":-38
           },
           "type":"checkbox"
-        },
-        {
-          "key":"resolution_dropdown",
-          "text":"Test",
-          "batchKey":"ui",
-          "helpText":"The game's windowed resolution.",
-          "color":{
-            "R":0.9607843137254902,
-            "G":0.9607843137254902,
-            "B":0.9607843137254902,
-            "A":1
-          },
-          "width": 72,
-          "height": 16,
-          "pos":{
-            "X":67,
-            "Y":62
-          },
-          "background": {
-            "R":0.07421875,
-            "G":0.07421875,
-            "B":0.07421875,
-            "A":1
-          },
-          "type":"dropdown"
         }
       ]
     },

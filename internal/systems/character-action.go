@@ -167,7 +167,7 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 				(ch.Flags.Ceiling && ch.Flags.Orientation == data.Up) {
 				if ch.Flags.Goop {
 					ch.Object.Pos.X -= ch.Vars.GoopSpeed
-				} else {
+				} else if ch.Pushing == nil || ch.Pushing.Direction != data.Right {
 					ch.Object.Pos.X -= ch.Vars.WalkSpeed
 				}
 				ch.Object.Flip = ch.Flags.Orientation == data.Down
@@ -177,7 +177,7 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 				(ch.Flags.Ceiling && ch.Flags.Orientation == data.Up) {
 				if ch.Flags.Goop {
 					ch.Object.Pos.X += ch.Vars.GoopSpeed
-				} else {
+				} else if ch.Pushing == nil || ch.Pushing.Direction != data.Left {
 					ch.Object.Pos.X += ch.Vars.WalkSpeed
 				}
 				ch.Object.Flip = ch.Flags.Orientation == data.Up
@@ -207,14 +207,14 @@ func grounded(ch *data.Dynamic, tile, below *data.Tile) {
 		if ch.Actions.Left() && !ch.Flags.LeftWall { // run left
 			if ch.Flags.Goop {
 				ch.Object.Pos.X -= ch.Vars.GoopSpeed
-			} else {
+			} else if ch.Pushing == nil || ch.Pushing.Direction != data.Right {
 				ch.Object.Pos.X -= ch.Vars.WalkSpeed
 			}
 			ch.Object.Flip = true
 		} else if ch.Actions.Right() && !ch.Flags.RightWall { // run right
 			if ch.Flags.Goop {
 				ch.Object.Pos.X += ch.Vars.GoopSpeed
-			} else {
+			} else if ch.Pushing == nil || ch.Pushing.Direction != data.Left {
 				ch.Object.Pos.X += ch.Vars.WalkSpeed
 			}
 			ch.Object.Flip = false
@@ -304,8 +304,10 @@ func falling(ch *data.Dynamic, tile *data.Tile) {
 	if tile == nil {
 		return
 	}
-	ch.Object.Pos.X = tile.Object.Pos.X
-	ch.Object.Pos.Y -= ch.Vars.Gravity
+	if ch.Pushing == nil || ch.Pushing.OrigTile == nil || ch.Pushing.OrigTile != tile {
+		ch.Object.Pos.X = tile.Object.Pos.X
+		ch.Object.Pos.Y -= ch.Vars.Gravity
+	}
 	//if ch.Actions.Left() {
 	//	ch.Object.Flip = true
 	//} else if ch.Actions.Right() {

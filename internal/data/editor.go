@@ -239,7 +239,7 @@ var BlockList = []Block{
 	BlockGoopBucket,
 	BlockDrill,
 	BlockFlamethrower,
-	BlockEmpty,
+	BlockAirCannon,
 
 	BlockReeds,
 	BlockFlowers,

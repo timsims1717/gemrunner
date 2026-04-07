@@ -1,9 +1,9 @@
 {
-  "key":"player2_inv",
+  "key":"player1_inv",
   "width":7,
   "height":1,
   "pos":{
-    "X":168,
+    "X":-168,
     "Y":-144
   },
   "elements":[
@@ -28,9 +28,9 @@
     },
     {
       "key":"player_skull",
-      "spriteKey":"player2_skull",
+      "spriteKey":"player1_skull",
       "batchKey":"ui",
-      "helpText":"Player 2's total deaths",
+      "helpText":"Player 1's total deaths",
       "pos":{
         "X":-46,
         "Y":-4
@@ -58,9 +58,9 @@
     },
     {
       "key":"player_gem",
-      "spriteKey":"player2_gem",
+      "spriteKey":"player1_gem",
       "batchKey":"ui",
-      "helpText":"Player 2's total gems",
+      "helpText":"Player 1's total gems",
       "pos":{
         "X":-52,
         "Y":5
@@ -88,9 +88,9 @@
     },
     {
       "key":"player_bomb_count_1",
-      "spriteKey":"player2_bomb",
+      "spriteKey":"player1_bomb",
       "batchKey":"ui",
-      "helpText":"Player 2's small bomb count",
+      "helpText":"Player 1's small bomb count",
       "pos":{
         "X":35,
         "Y":-4
@@ -99,9 +99,9 @@
     },
     {
       "key":"player_bomb_count_2",
-      "spriteKey":"player2_bomb",
+      "spriteKey":"player1_bomb",
       "batchKey":"ui",
-      "helpText":"Player 2's small bomb count",
+      "helpText":"Player 1's small bomb count",
       "pos":{
         "X":27,
         "Y":-4
@@ -110,9 +110,9 @@
     },
     {
       "key":"player_bomb_count_3",
-      "spriteKey":"player2_bomb",
+      "spriteKey":"player1_bomb",
       "batchKey":"ui",
-      "helpText":"Player 2's small bomb count",
+      "helpText":"Player 1's small bomb count",
       "pos":{
         "X":19,
         "Y":-4
@@ -121,9 +121,9 @@
     },
     {
       "key":"player_bomb_count_4",
-      "spriteKey":"player2_bomb",
+      "spriteKey":"player1_bomb",
       "batchKey":"ui",
-      "helpText":"Player 2's small bomb count",
+      "helpText":"Player 1's small bomb count",
       "pos":{
         "X":11,
         "Y":-4
@@ -133,7 +133,7 @@
     {
       "key":"player_bombs",
       "text":"x00",
-      "helpText":"Player 2's small bomb count",
+      "helpText":"Player 1's small bomb count",
       "color":{
         "R":0.9607843137254902,
         "G":0.9607843137254902,
@@ -190,6 +190,26 @@
       "type":"sprite"
     },
     {
+      "key":"player_inv_item",
+      "spriteKey":"rock",
+      "batchKey":"tiles",
+      "pos":{
+        "X":48,
+        "Y":0
+      },
+      "type":"sprite"
+    },
+    {
+      "key":"player_inv_item_2",
+      "spriteKey":"rock",
+      "batchKey":"tiles",
+      "pos":{
+        "X":48,
+        "Y":0
+      },
+      "type":"sprite"
+    },
+    {
       "key":"player_inv_cnt",
       "width":16,
       "height":16,
@@ -197,35 +217,7 @@
         "X":48,
         "Y":0
       },
-      "background": {
-        "R":0,
-        "G":0,
-        "B":0,
-        "A":0
-      },
-      "type":"container",
-      "elements": [
-        {
-          "key":"player_inv_item",
-          "spriteKey":"rock",
-          "batchKey":"tiles",
-          "pos":{
-            "X":0,
-            "Y":0
-          },
-          "type":"sprite"
-        },
-        {
-          "key":"player_inv_item_2",
-          "spriteKey":"rock",
-          "batchKey":"tiles",
-          "pos":{
-            "X":0,
-            "Y":0
-          },
-          "type":"sprite"
-        }
-      ]
+      "type":"container"
     }
   ]
 }

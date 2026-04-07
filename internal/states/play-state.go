@@ -78,6 +78,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 		systems.PlaySystem()
 		systems.CharacterActionSystem()
 		systems.DynamicSystem()
+		systems.PushySystem()
 		systems.CollisionSystem()
 		systems.OutsideMapSystem()
 		systems.CharacterStateSystem()
