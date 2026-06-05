@@ -169,7 +169,7 @@ func SetClimbed(ch *data.Dynamic) bool {
 }
 
 func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, entityDown bool, chPos pixel.Vec) {
-	standOn, _ := standOnSystem(ch.Object.ID, ch.Player, ch.Enemy, down)
+	standOn, _ := standOnSystem(ch, down)
 	standOnBelow := !ch.Actions.Down() && ch.State != data.OnLadder && standOn
 	touchingFloor := chPos.Y-ch.Object.HalfHeight <= tile.Object.Pos.Y-world.HalfSize && !ch.Flags.HighJump && !ch.Flags.LongJump
 	if touchingFloor && down == nil && ch.Player > -1 {
@@ -180,10 +180,10 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, entityDown bool, c
 		}
 	}
 	if ch.Flags.NoLadders {
-		if (standOnBelow || down.IsSolid() || down.IsRunnable() || down.Block == data.BlockFall) && touchingFloor {
+		if (standOnBelow || down.IsSolid() || (down.IsRunnable() && (!down.IsLadder() || !ch.Flags.WallClimb)) || down.Block == data.BlockFall) && touchingFloor {
 			ch.Flags.Floor = true
 			ch.Flags.Goop = down != nil && down.Block == data.BlockGoop
-			if touchingFloor {
+			if touchingFloor && (!ch.Flags.WallClimb || ch.Flags.Orientation == data.Down || !down.IsLadder()) {
 				ch.Object.Pos.Y = tile.Object.Pos.Y - world.HalfSize + ch.Object.HalfHeight
 			}
 		}
@@ -210,16 +210,15 @@ func floorCollisions(ch *data.Dynamic, tile, down *data.Tile, entityDown bool, c
 	}
 }
 
-func standOnSystem(id string, p, e int, downTile *data.Tile) (bool, bool) {
-	if downTile == nil || p < 0 {
+func standOnSystem(ch *data.Dynamic, downTile *data.Tile) (bool, bool) {
+	if downTile == nil {
 		return false, false
 	}
 	for _, result := range myecs.Manager.Query(myecs.IsStandOn) {
 		obj, okO := result.Components[myecs.Object].(*object.Object)
 		d, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
-		if okO && okC &&
-			!obj.Hidden && obj.ID != id &&
-			(e < 0 || d.Enemy < 0) {
+		if okO && okC && !obj.Hidden && obj.ID != ch.Object.ID &&
+			(ch.Player > -1 || d.Type == "box") && (d.State != data.Snared) {
 			pos := obj.PostPos
 			// adjustment, maybe add to constants
 			if !d.Flags.Floor {
@@ -288,11 +287,11 @@ func entityCollision(ch *data.Dynamic, x, y int) (bool, bool, bool, bool) {
 		ch2, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
 		if okO && okC && !obj.Hidden &&
 			ch.Object.ID != obj.ID &&
-			ch2.State != data.Hit && ch2.State != data.Dead &&
-			((ch.Enemy >= 0 && ch2.Enemy != ch.Enemy && ch2.Enemy > -1 && ch2.Type == ch.Type) ||
+			ch2.State != data.Hit && ch2.State != data.Dead && ch2.State != data.Snared &&
+			((ch.Enemy > -1 && ch2.Enemy > -1 && ch2.Enemy != ch.Enemy && ch2.Type == ch.Type) ||
 				ch2.Type == "air_ring") {
 			orientationMatch := util.Abs(int(ch.Flags.Orientation%data.Down - ch2.Flags.Orientation%data.Down))
-			if ch.Type == "slug" && (ch.Object.Flip != ch2.Object.Flip || orientationMatch > 1) {
+			if ch.Type == "slug" && (ch.Object.Flip != ch2.Object.Flip || orientationMatch > 1 || ch2.State == data.Falling) {
 				continue
 			}
 			if ch.Type == "air_ring" && ch2.Type == "air_ring" && (ch.Pushing == nil || ch2.Pushing == nil || ch.Pushing.Direction == ch2.Pushing.Direction) {
@@ -306,10 +305,12 @@ func entityCollision(ch *data.Dynamic, x, y int) (bool, bool, bool, bool) {
 				continue // too far away to matter
 			}
 			overlap := ch.Object.Rect.Moved(ch.Object.Pos).Intersects(ch2.Object.Rect.Moved(ch2.Object.Pos))
-			if px == x-1 && (py == y || (yd == 1 && overlap)) {
+			if px == x-1 && (py == y || (yd == 1 && overlap)) &&
+				(ch.Pushing == nil || ch.Pushing.Direction != data.Left) {
 				eLeft = true
 			}
-			if px == x+1 && (py == y || (yd == 1 && overlap)) {
+			if px == x+1 && (py == y || (yd == 1 && overlap)) &&
+				(ch.Pushing == nil || ch.Pushing.Direction != data.Right) {
 				eRight = true
 			}
 			if ch2.Type != "air_ring" {

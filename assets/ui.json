@@ -591,6 +591,20 @@
       "w": 16
     },
     {
+      "key": "boss_settings_btn",
+      "x": 160,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
+      "key": "boss_settings_btn_click",
+      "x": 176,
+      "y": 128,
+      "h": 16,
+      "w": 16
+    },
+    {
       "key": "quit_btn",
       "x": 0,
       "y": 144,

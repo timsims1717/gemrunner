@@ -69,11 +69,16 @@ func UpdatePlayAreaView(fp *data.PlayArea) {
 		height = float64(fp.Puzzle.Metadata.Height)
 	}
 
+	if fp.BackgroundView != nil {
+		fp.BackgroundView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
+		fp.BackgroundView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
+		//data.BackgroundView.PortPos = viewport.MainCamera.PostCamPos
+		fp.BackgroundView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
+	}
 	if fp.PuzzleView != nil {
 		fp.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*width, world.TileSize*0.5*height)
 		fp.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*width, world.TileSize*height))
 		//data.PuzzleView.PortPos = viewport.MainCamera.PostCamPos
-		//data.PuzzleViewNoShader.PortPos = viewport.MainCamera.PostCamPos
 		fp.PuzzleView.PortSize = pixel.V(constants.PickedRatio, constants.PickedRatio)
 	}
 	if fp.BorderView != nil {

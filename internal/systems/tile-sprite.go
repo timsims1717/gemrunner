@@ -540,7 +540,7 @@ func GetWrenchSprites(tile *data.Tile) []*spriteChanger {
 					offset.Y = -4
 				}
 			}
-		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockAirCannon, data.BlockGoopBucket:
+		case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockAirCannon, data.BlockGoopBucket, data.BlockSnare:
 			yOffset := 0.
 			if tile.Metadata.Regenerate {
 				sprs = append(sprs, newSprChanger(constants.UIRegenerate, constants.UIBatch).WithOffset(pixel.V(-4, 4)))

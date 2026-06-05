@@ -102,6 +102,9 @@ func PlaySystem() {
 
 func Restart() {
 	record := data.CurrLevel.Recording
+	if data.CurrentBoss != nil {
+		data.CurrentBoss.Reset()
+	}
 	DisposeCurrLevel()
 	ClearTemp()
 	StartLevel(record)

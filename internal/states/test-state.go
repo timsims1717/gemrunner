@@ -45,6 +45,7 @@ func (s *testState) Unload(win *pixelgl.Window) {
 	systems.DisposeCurrLevel()
 	systems.ClearTemp()
 	systems.InitPuzzle(data.CurrentPlayArea)
+	systems.SetEditorBoss(data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss)
 	data.CurrPuzzleSet.CurrPuzzle.Update = true
 	sfx.MusicPlayer.GetStream("game").Stop()
 }
@@ -60,6 +61,7 @@ func (s *testState) Load(win *pixelgl.Window) {
 			ui.CloseDialog(constants.DialogEditorOptionsRight)
 		}
 	}
+	systems.RemoveEditorBoss()
 	systems.InGameDialogs(win)
 	systems.LevelSessionInit()
 	systems.StartLevel(false)
@@ -85,30 +87,34 @@ func (s *testState) Update(win *pixelgl.Window) {
 	reanimator.Update()
 
 	// function systems
-	systems.FunctionSystem()
 	systems.InterpolationSystem()
-	//systems.AnimationTransitionSystem()
+	systems.FunctionSystem()
 	systems.TestSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)
 
 	if !ui.DialogStackOpen {
-		// custom systems
-		systems.InGameSystem()
-		systems.CharacterActionSystem()
-		systems.DynamicSystem()
-		systems.PushySystem()
-		systems.CollisionSystem()
-		systems.OutsideMapSystem()
-		systems.CharacterStateSystem()
-		systems.TouchSystem()
-		systems.SmashSystem()
-		systems.TileSystem()
-		systems.MagicSystem()
-		systems.TileSpriteSystemPre()
-		systems.TileSpriteSystem()
-		systems.FloatingTextSystem()
-		systems.AnimationSystem()
+		if !data.CurrLevel.Paused {
+			// custom systems
+			systems.InGameSystem()
+			systems.CharacterActionSystem()
+			systems.DynamicSystem()
+			systems.PushySystem()
+			systems.CollisionSystem()
+			systems.OutsideMapSystem()
+			systems.CharacterStateSystem()
+			systems.TouchSystem()
+			systems.SmashSystem()
+		}
+		systems.BossSystem()
+		if !data.CurrLevel.Paused {
+			systems.TileSystem()
+			systems.MagicSystem()
+			systems.TileSpriteSystemPre()
+			systems.TileSpriteSystem()
+			systems.FloatingTextSystem()
+			systems.AnimationSystem()
+		}
 	} else {
 
 	}
@@ -118,6 +124,7 @@ func (s *testState) Update(win *pixelgl.Window) {
 	systems.EffectsSystem()
 
 	data.CurrentPlayArea.BorderView.Update()
+	data.CurrentPlayArea.BackgroundView.Update()
 	data.CurrentPlayArea.PuzzleView.Update()
 	data.CurrentPlayArea.WorldView.Update()
 	data.CurrentPlayArea.PuzzleViewNoShader.Update()

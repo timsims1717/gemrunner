@@ -129,6 +129,9 @@ func CreateCheckboxElement(element ElementConstructor, dlg *Dialog, vp *viewport
 			click := hvc.Input.Get("click")
 			if hvc.Hover && click.JustPressed() {
 				SetChecked(x, !x.Checked)
+				if x.OnClick != nil {
+					x.OnClick()
+				}
 			}
 		}
 	}))

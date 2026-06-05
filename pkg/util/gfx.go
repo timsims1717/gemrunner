@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopxl/pixel"
 	"github.com/pkg/errors"
 	"golang.org/x/image/colornames"
@@ -42,6 +43,12 @@ func ParseHexColorFast(s string) (c color.RGBA, err error) {
 		err = errInvalidFormat
 	}
 	return
+}
+
+func RGBAToVec3(col pixel.RGBA) mgl32.Vec3 {
+	return mgl32.Vec3{
+		float32(col.R), float32(col.G), float32(col.B),
+	}
 }
 
 var (

@@ -100,6 +100,7 @@ const (
 	InHole
 	ClimbingOut
 	AroundCorner
+	Snared
 )
 
 type ItemAction int
@@ -116,6 +117,7 @@ const (
 	FireFlamethrower
 	UseAirCannon
 	ThrowingGoop
+	SettingSnare
 	TransportIn
 	TransportExit
 	PickUpGem
@@ -264,17 +266,18 @@ func FlyVars() Vars {
 
 func SlugVars() Vars {
 	return Vars{
-		WalkSpeed: constants.SlugSpeed,
-		GoopSpeed: constants.SlugSpeed,
+		WalkSpeed: constants.SlugStartSpeed,
+		GoopSpeed: constants.SlugStartSpeed,
 		Gravity:   constants.NormalGravity,
 	}
 }
 
 type Pushy struct {
-	NoMove    bool
-	Direction Direction
-	Speed     float64
-	Pushing   *Dynamic
-	PushNext  *Pushy
-	OrigTile  *Tile
+	NoMove         bool
+	CanPushFalling bool
+	Direction      Direction
+	Speed          float64
+	Pushing        *Dynamic
+	PushNext       *Pushy
+	OrigTile       *Tile
 }

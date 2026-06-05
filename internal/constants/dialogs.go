@@ -29,6 +29,7 @@ const (
 	DialogChangeWorld           = "change_world"
 	DialogAreYouSureDelete      = "are_you_sure_delete"
 	DialogPuzzleSettings        = "puzzle_settings"
+	DialogBossSettings          = "boss_settings"
 	DialogPuzzleSetSettings     = "puzzle_set_settings"
 	DialogCombineSets           = "combine_sets"
 	DialogRearrangePuzzleSet    = "rearrange_puzzle_set"
@@ -66,6 +67,7 @@ var DialogKeys = []string{
 	DialogEditorPanelLeft,
 	DialogEditorOptionsRight,
 	DialogPuzzleSettings,
+	DialogBossSettings,
 	DialogPuzzleSetSettings,
 	DialogRearrangePuzzleSet,
 	DialogRearrangeAdventureSet,
@@ -101,6 +103,7 @@ var EditorDialogs = []string{
 	DialogAddPuzzle,
 	DialogChangeName,
 	DialogPuzzleSettings,
+	DialogBossSettings,
 	DialogPuzzleSetSettings,
 	DialogNoPlayersInPuzzle,
 	DialogAreYouSureDelete,

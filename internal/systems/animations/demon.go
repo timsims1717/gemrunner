@@ -188,6 +188,15 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 	climbingOut.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
 	})
+	snareSpring := reanimator.NewBatchAnimation("snare_spring", batch, "demon_snare_spring", reanimator.Tran)
+	snareSpringRev := reanimator.NewBatchAnimation("snare_spring_rev", batch, "demon_snare_spring_rev", reanimator.Tran)
+	snareSwing := reanimator.NewBatchAnimation("snare_swing", batch, "demon_snare_swing", reanimator.Loop)
+	snareSpring.SetEndTrigger(func() {
+		ch.Flags.NextStep = false
+	})
+	snareSpringRev.SetEndTrigger(func() {
+		ch.Flags.NextStep = false
+	})
 	// offsets
 	idle.Offset.Y--
 	regen.Offset.Y--
@@ -225,6 +234,9 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 		AddAnimation(holeLookFore).
 		AddAnimation(holeLookBack).
 		AddAnimation(climbingOut).
+		AddAnimation(snareSpring).
+		AddAnimation(snareSpringRev).
+		AddAnimation(snareSwing).
 		AddNull("none").
 		SetChooseFn(func() string {
 			switch ch.State {
@@ -242,6 +254,16 @@ func DemonAnimation(ch *data.Dynamic) *reanimator.Tree {
 					return "hit"
 				default:
 					return "none"
+				}
+			case data.Snared:
+				if ch.Flags.NextStep {
+					if ch.Flags.JumpR {
+						return "snare_spring_rev"
+					} else {
+						return "snare_spring"
+					}
+				} else {
+					return "snare_swing"
 				}
 			case data.DoingAction:
 				switch ch.Flags.ItemAction {

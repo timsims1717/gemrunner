@@ -251,6 +251,7 @@ func OpenPuzzleSetFile(filename string) error {
 	}
 	data.CurrPuzzleSet.SetUpGrid()
 	data.CurrPuzzleSet.SetUpUUIDs()
+	data.CurrPuzzleSet.SetUpMetadata()
 	return nil
 }
 
@@ -274,6 +275,7 @@ func OpenPuzzleSetFileRt(filename string) (*data.PuzzleSet, error) {
 	}
 	rtPzlSet.SetUpGrid()
 	rtPzlSet.SetUpUUIDs()
+	rtPzlSet.SetUpMetadata()
 	return rtPzlSet, nil
 }
 

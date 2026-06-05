@@ -23,6 +23,14 @@ uniform float uXVar;
 uniform float uYVar;
 uniform float uCustom;
 
+// color uniforms
+uniform vec3 uPrimary;
+uniform vec3 uSecondary;
+uniform vec3 uDoodad;
+uniform vec3 uGoop;
+uniform vec3 uLiquidPrimary;
+uniform vec3 uLiquidSecondary;
+
 // Hardness of scanline.
 //  -8.0 = soft
 // -16.0 = medium
@@ -81,6 +89,23 @@ void main() {
         col = texture(uTexture, dist_tex_coord).rgba;
         break;
     }
+
+    // colors
+    if (col.r == 1. && col.g == 0. && col.b == 1.) {
+        col = vec4(uPrimary.r, uPrimary.g, uPrimary.b, col.a);
+    } else if (col.r == 0. && col.g == 1. && col.b == 1.) {
+        col = vec4(uSecondary.r, uSecondary.g, uSecondary.b, col.a);
+    } else if (col.r == 1. && col.g == 1. && col.b == 0.) {
+        col = vec4(uDoodad.r, uDoodad.g, uDoodad.b, col.a);
+    } else if (col.r == 0. && col.g == 0. && col.b == 1.) {
+        col = vec4(uLiquidPrimary.r, uLiquidPrimary.g, uLiquidPrimary.b, col.a);
+    } else if (col.r == 1. && col.g == 0. && col.b == 0.) {
+        col = vec4(uLiquidSecondary.r, uLiquidSecondary.g, uLiquidSecondary.b, col.a);
+    } else if (col.r == 0. && col.g == 1. && col.b == 0.) {
+        col = vec4(uGoop.r, uGoop.g, uGoop.b, col.a);
+    }
+    fragColor = col;
+
     // darkness
     if (uDarkness == 1) {
         float ar = (uTexBounds.z / uTexBounds.w) * uDarknessWidth;

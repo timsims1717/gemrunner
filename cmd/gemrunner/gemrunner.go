@@ -87,10 +87,11 @@ func run() {
 	//	panic(err)
 	//}
 	//data.ColorShader = sh
-	data.ColorShader = embed.ColorShader
-	data.PuzzleShader = embed.PuzzleShader
-	data.WorldShader = embed.WorldShader
-	data.ScreenShader = embed.ScreenShader
+	load.Shaders()
+	err = load.Backgrounds()
+	if err != nil {
+		panic(err)
+	}
 
 	debug.Initialize(&viewport.MainCamera.PostCamPos)
 	debug.Release = constants.Release

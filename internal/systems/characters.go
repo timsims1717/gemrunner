@@ -99,7 +99,7 @@ func DemonCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	coords := world.NewCoords(world.WorldToMap(pos.X, pos.Y))
 	demon.LastTile = data.CurrLevel.Get(coords.X, coords.Y)
 	obj := object.New().WithID("demon").SetPos(pos)
-	obj.SetRect(pixel.R(0, 0, 12, 16))
+	obj.SetRect(pixel.R(0, 0, 16, 16))
 	demon.Layer = 29
 	obj.Layer = demon.Layer
 	demon.Object = obj
@@ -153,6 +153,7 @@ func KillPlayer(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
 				ch.State == data.OnBar ||
 				ch.State == data.Leaping ||
 				ch.State == data.Jumping ||
+				ch.State == data.Snared ||
 				(ch.State == data.Falling && (enemy.Flags.Flying || enemy.State == data.InHole)) ||
 				ch.State == data.Flying ||
 				ch.State == data.DoingAction) {
@@ -217,6 +218,7 @@ func SlugCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	slug.Options.RegenFlip = true
 	slug.Options.RegenOrient = true
 	slug.Flags.WallClimb = true
+	slug.Flags.NoLadders = true
 	slug.Options.Regen = metadata.Regenerate
 	slug.Options.LinkedTiles = metadata.LinkedTiles
 	slug.Flags.Orientation = metadata.Orientation
@@ -246,6 +248,11 @@ func SlugCharacter(pos pixel.Vec, metadata data.TileMetadata) *data.Dynamic {
 	e.AddComponent(myecs.Controller, slug.Control)
 	e.AddComponent(myecs.LvlElement, slug)
 	e.AddComponent(myecs.Enemy, slug.Enemy)
+	//e.AddComponent(myecs.Update, data.NewFn(func() {
+	//	if reanimator.FrameSwitch {
+	//
+	//	}
+	//}))
 	slug.Enemy = len(data.CurrLevel.Enemies)
 	data.CurrLevel.Enemies = append(data.CurrLevel.Enemies, slug)
 	return slug

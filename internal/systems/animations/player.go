@@ -70,6 +70,15 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	airCannonFrames := []int{0, 0, 0, 1, 2, 3, 3, 3, 3, 4, 5}
 	airCannon := reanimator.NewBatchAnimationCustom("air_cannon", batch, fmt.Sprintf("%s_air_cannon", sprPre), airCannonFrames, reanimator.Tran)
 
+	snareSetFrames := []int{0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 15, 14}
+	snareSet := reanimator.NewBatchAnimationCustom("snare_set", batch, fmt.Sprintf("%s_snare_set", sprPre), snareSetFrames, reanimator.Tran)
+	snareSpring := reanimator.NewBatchAnimation("snare_spring", batch, fmt.Sprintf("%s_snare_spring", sprPre), reanimator.Tran)
+	snareSpringRev := reanimator.NewBatchAnimation("snare_spring_rev", batch, fmt.Sprintf("%s_snare_spring_rev", sprPre), reanimator.Tran)
+
+	swingFrames := []int{1, 2, 2, 1, 0, 0}
+	snareSwing := reanimator.NewBatchAnimationCustom("snare_swing", batch, fmt.Sprintf("%s_snare_swing", sprPre), swingFrames, reanimator.Loop)
+	snareSwingRev := reanimator.NewBatchAnimationCustom("snare_swing_rev", batch, fmt.Sprintf("%s_snare_swing_rev", sprPre), swingFrames, reanimator.Loop)
+
 	hiding := reanimator.NewBatchAnimation("hiding", batch, fmt.Sprintf("%s_hiding", sprPre), reanimator.Tran)
 	inHiding := reanimator.NewBatchSprite("in_hiding", batch, fmt.Sprintf("%s_in_hiding", sprPre), reanimator.Hold)
 
@@ -133,6 +142,15 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		})
 		goopThrow.SetEndTrigger(func() {
 			ch.Flags.ItemAction = data.NoItemAction
+		})
+		snareSet.SetEndTrigger(func() {
+			ch.Flags.ItemAction = data.NoItemAction
+		})
+		snareSpring.SetEndTrigger(func() {
+			ch.Flags.NextStep = false
+		})
+		snareSpringRev.SetEndTrigger(func() {
+			ch.Flags.NextStep = false
 		})
 		airCannon.SetTriggerCAll(func(a *reanimator.Anim, pre string, f int) {
 			switch f {
@@ -246,6 +264,7 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 	drilling.Offset.Y--
 	flamethrower.Offset.Y--
 	goopThrow.Offset.Y--
+	snareSet.Offset.Y--
 	airCannon.Offset.Y--
 	hit.Offset.Y--
 
@@ -276,6 +295,11 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 		AddAnimation(flamethrower).
 		AddAnimation(goopThrow).
 		AddAnimation(airCannon).
+		AddAnimation(snareSet).
+		AddAnimation(snareSpring).
+		AddAnimation(snareSpringRev).
+		AddAnimation(snareSwing).
+		AddAnimation(snareSwingRev).
 		AddAnimation(hiding).
 		AddAnimation(inHiding).
 		AddAnimation(hit).
@@ -310,6 +334,20 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 				default:
 					return "none"
 				}
+			case data.Snared:
+				if ch.Flags.NextStep {
+					if ch.Flags.JumpR {
+						return "snare_spring_rev"
+					} else {
+						return "snare_spring"
+					}
+				} else {
+					if ch.Flags.JumpR {
+						return "snare_swing_rev"
+					} else {
+						return "snare_swing"
+					}
+				}
 			case data.Flying:
 				if ch.Actions.Direction == data.Up {
 					return "jetpack_up"
@@ -340,6 +378,8 @@ func PlayerAnimation(ch *data.Dynamic, sprPre string, triggers bool) *reanimator
 					return "goop_throw"
 				case data.UseAirCannon:
 					return "air_cannon"
+				case data.SettingSnare:
+					return "snare_set"
 				case data.TransportIn:
 					return "trans_in"
 				case data.TransportExit:

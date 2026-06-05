@@ -2,6 +2,17 @@ package constants
 
 import "image/color"
 
+// Bosses
+const (
+	BossBlob = "boss_blob"
+)
+
+var (
+	BossNames = map[string]string{
+		BossBlob: "Slug Mother",
+	}
+)
+
 // Tile Set Names
 const (
 	TileSetRock    = "rock"
@@ -81,6 +92,12 @@ var (
 		R: 94,
 		G: 143,
 		B: 86,
+		A: 255,
+	}
+	ColorDarkGreen = color.RGBA{
+		R: 58,
+		G: 89,
+		B: 54,
 		A: 255,
 	}
 	ColorOrange = color.RGBA{

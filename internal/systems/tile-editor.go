@@ -177,8 +177,9 @@ func SetBlock(coords world.Coords, block data.Block) {
 						}
 					}
 					tile.Block = block
-				case data.BlockGoopBucket:
+				case data.BlockGoopBucket, data.BlockSnare, data.BlockJumpBoots, data.BlockDrill:
 					tile.Metadata.Timer = -1
+					tile.Metadata.Regenerate = false
 					tile.Block = block
 				default:
 					tile.Block = block
@@ -232,6 +233,7 @@ func DeleteBlock(coords world.Coords) {
 				tile.Update = true
 				RemoveLinkedTiles(tile)
 				tile.Metadata = data.DefaultMetadata()
+				tile.Object.Rot = 0.
 			}
 		}
 	} else {

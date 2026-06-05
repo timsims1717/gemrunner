@@ -91,8 +91,8 @@ func (s *mainMenuState) Update(win *pixelgl.Window) {
 	}
 
 	// function systems
-	systems.FunctionSystem()
 	systems.InterpolationSystem()
+	systems.FunctionSystem()
 	//systems.AnimationTransitionSystem()
 
 	ui.DialogStackOpen = len(ui.DialogStack) > 0

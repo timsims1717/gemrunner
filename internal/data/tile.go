@@ -135,6 +135,8 @@ func (t *Tile) SpriteString() string {
 		return constants.ItemGoopBucket + colSuffixTools
 	case BlockAirCannon:
 		return constants.ItemAirCannon + colSuffixTools
+	case BlockSnare:
+		return constants.ItemSnare + colSuffixTools
 	case BlockBigBomb:
 		return constants.ItemBigBomb + colSuffixTools
 	case BlockBigBombLit:
@@ -377,6 +379,13 @@ func (t *Tile) CanBeBuried() bool {
 		return false
 	}
 	return t.Block == BlockGem || t.Block == BlockSmallBomb || t.Block == BlockSmallBombLit
+}
+
+func (t *Tile) IsRegenTile() bool {
+	if t == nil {
+		return false
+	}
+	return t.Block == BlockDemonRegen || t.Block == BlockFlyRegen || t.Block == BlockSlugRegen
 }
 
 // a* implementation

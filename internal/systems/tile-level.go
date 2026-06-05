@@ -360,9 +360,7 @@ func BuryItems(tile *data.Tile) {
 		item, okI := resultC.Components[myecs.Item].(*data.BasicItem)
 		if okO && okI {
 			x, y := world.WorldToMap(item.Object.Pos.X, item.Object.Pos.Y)
-			chTile := data.CurrLevel.Get(x, y)
-			if chTile != nil && chTile.Coords.X == tile.Coords.X &&
-				chTile.Coords.Y == tile.Coords.Y {
+			if tile.Coords == world.NewCoords(x, y) {
 				item.Object.Pos.X = tile.Object.Pos.X
 				item.Object.Pos.Y = tile.Object.Pos.Y
 				item.Object.Layer = 9

@@ -125,7 +125,8 @@ func InitLevelTiles(level *data.Level) {
 			case data.BlockJumpBoots, data.BlockBox, data.BlockKey,
 				data.BlockBigBomb, data.BlockSmallBomb, data.BlockJetpack,
 				data.BlockDisguise, data.BlockDrill, data.BlockFlamethrower,
-				data.BlockGoopBucket, data.BlockAirCannon, data.BlockTransporter:
+				data.BlockGoopBucket, data.BlockAirCannon, data.BlockTransporter,
+				data.BlockSnare:
 				CreateItem(tile.Block, obj.Pos, tile.SpriteString(), tile.Metadata, tile.Coords)
 				if tile.Metadata.Buried {
 					tile.Block = data.BlockTurf
@@ -149,12 +150,12 @@ func InitLevelTiles(level *data.Level) {
 				tile.Object.Layer = 30
 			}
 			AddLevelTransition(tile, x, y)
-			if tile.Block != data.BlockEmpty {
-				e := myecs.Manager.NewEntity().
-					AddComponent(myecs.Object, obj).
-					AddComponent(myecs.Tile, tile)
-				tile.Entity = e
-			}
+			//if tile.Block != data.BlockEmpty {
+			e := myecs.Manager.NewEntity().
+				AddComponent(myecs.Object, obj).
+				AddComponent(myecs.Tile, tile)
+			tile.Entity = e
+			//}
 		}
 	}
 }
@@ -228,7 +229,7 @@ func CreateFakePlayer(level *data.Level) {
 
 func InitLevelDialogs(level *data.Level) {
 	for p := 0; p < constants.MaxPlayers; p++ {
-		if p < data.CurrPuzzleSet.Metadata.NumPlayers {
+		if p < data.CurrPuzzleSet.Metadata.NumPlayers && level.Players[p] != nil {
 			var dlgKey string
 			switch p {
 			case 0:
@@ -241,24 +242,7 @@ func InitLevelDialogs(level *data.Level) {
 				dlgKey = constants.DialogPlayer4Inv
 			}
 			cnt := ui.Dialogs[dlgKey].Get("player_inv_cnt")
-			cnt.ViewPort.Canvas.SetUniform("uRedPrimary", float32(level.Puzzle.Metadata.PrimaryColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(level.Puzzle.Metadata.PrimaryColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBluePrimary", float32(level.Puzzle.Metadata.PrimaryColor.B))
-			cnt.ViewPort.Canvas.SetUniform("uRedSecondary", float32(level.Puzzle.Metadata.SecondaryColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(level.Puzzle.Metadata.SecondaryColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(level.Puzzle.Metadata.SecondaryColor.B))
-			cnt.ViewPort.Canvas.SetUniform("uRedDoodad", float32(level.Puzzle.Metadata.DoodadColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(level.Puzzle.Metadata.DoodadColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(level.Puzzle.Metadata.DoodadColor.B))
-			cnt.ViewPort.Canvas.SetUniform("uRedGoop", float32(level.Puzzle.Metadata.GoopColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenGoop", float32(level.Puzzle.Metadata.GoopColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBlueGoop", float32(level.Puzzle.Metadata.GoopColor.B))
-			cnt.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(level.Puzzle.Metadata.LiquidPrimaryColor.B))
-			cnt.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.R))
-			cnt.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.G))
-			cnt.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(level.Puzzle.Metadata.LiquidSecondaryColor.B))
+			setCanvasShaderColorsFromMD(cnt.ViewPort.Canvas, level.Puzzle.Metadata)
 			level.PLoc[p] = &mgl32.Vec2{}
 			level.PLoc[p][0] = float32(level.Players[p].Object.Pos.X)
 			level.PLoc[p][1] = float32(level.Players[p].Object.Pos.Y)
@@ -271,6 +255,10 @@ func InitLevelDialogs(level *data.Level) {
 }
 
 func DisposeCurrLevel() {
+	if data.CurrentBoss != nil {
+		data.CurrentBoss.Destroy()
+		data.CurrentBoss = nil
+	}
 	DisposeLevel(data.CurrLevel)
 	data.CurrLevel = nil
 	if data.CurrentPlayArea != nil {
@@ -476,7 +464,7 @@ func GetRandomRegenTile() *data.Tile {
 	var tiles []*data.Tile
 	for _, row := range data.CurrLevel.Tiles.T {
 		for _, tile := range row {
-			if tile.IsEmpty() && tile.Block != data.BlockDemonRegen {
+			if tile.IsEmpty() && !tile.IsRegenTile() {
 				tiles = append(tiles, tile)
 			}
 		}
@@ -499,7 +487,7 @@ func DistanceToClosestPlayer(tile *data.Tile) int {
 	return dist
 }
 
-func EnemyOnTile(tile *data.Tile) bool {
+func IsEnemyOnTile(tile *data.Tile) bool {
 	for _, result := range myecs.Manager.Query(myecs.IsEnemy) {
 		obj, ok := result.Components[myecs.Object].(*object.Object)
 		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
@@ -512,6 +500,21 @@ func EnemyOnTile(tile *data.Tile) bool {
 		}
 	}
 	return false
+}
+
+func EnemyOnTile(tile *data.Tile) *data.Dynamic {
+	for _, result := range myecs.Manager.Query(myecs.IsEnemy) {
+		obj, ok := result.Components[myecs.Object].(*object.Object)
+		ch, okC := result.Components[myecs.Dynamic].(*data.Dynamic)
+		if ok && okC {
+			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+			if ch.State != data.Dead && ch.State != data.Waiting &&
+				x == tile.Coords.X && y == tile.Coords.Y {
+				return ch
+			}
+		}
+	}
+	return nil
 }
 
 func SomethingOnTile(tile *data.Tile, id string) bool {

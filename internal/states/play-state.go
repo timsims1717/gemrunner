@@ -13,6 +13,7 @@ import (
 	"gemrunner/pkg/sfx"
 	"gemrunner/pkg/state"
 	"gemrunner/pkg/viewport"
+	"gemrunner/pkg/world"
 	"github.com/gopxl/pixel"
 	"github.com/gopxl/pixel/pixelgl"
 )
@@ -67,29 +68,34 @@ func (s *playState) Update(win *pixelgl.Window) {
 
 	// function systems
 	systems.PlayPauseSystem()
-	systems.FunctionSystem()
 	systems.InterpolationSystem()
+	systems.FunctionSystem()
 	ui.DialogStackOpen = len(ui.DialogStack) > 0
 	systems.DialogSystem(win)
 
 	if !ui.DialogStackOpen {
-		// custom systems
-		systems.InGameSystem()
-		systems.PlaySystem()
-		systems.CharacterActionSystem()
-		systems.DynamicSystem()
-		systems.PushySystem()
-		systems.CollisionSystem()
-		systems.OutsideMapSystem()
-		systems.CharacterStateSystem()
-		systems.TouchSystem()
-		systems.SmashSystem()
-		systems.TileSystem()
-		systems.MagicSystem()
-		systems.TileSpriteSystemPre()
-		systems.TileSpriteSystem()
-		systems.FloatingTextSystem()
-		systems.AnimationSystem()
+		if !data.CurrLevel.Paused {
+			// custom systems
+			systems.InGameSystem()
+			systems.PlaySystem()
+			systems.CharacterActionSystem()
+			systems.DynamicSystem()
+			systems.PushySystem()
+			systems.CollisionSystem()
+			systems.OutsideMapSystem()
+			systems.CharacterStateSystem()
+			systems.TouchSystem()
+			systems.SmashSystem()
+		}
+		systems.BossSystem()
+		if !data.CurrLevel.Paused {
+			systems.TileSystem()
+			systems.MagicSystem()
+			systems.TileSpriteSystemPre()
+			systems.TileSpriteSystem()
+			systems.FloatingTextSystem()
+			systems.AnimationSystem()
+		}
 	} else {
 
 	}
@@ -99,6 +105,7 @@ func (s *playState) Update(win *pixelgl.Window) {
 	systems.EffectsSystem()
 
 	data.CurrentPlayArea.BorderView.Update()
+	data.CurrentPlayArea.BackgroundView.Update()
 	data.CurrentPlayArea.PuzzleView.Update()
 	data.CurrentPlayArea.WorldView.Update()
 	data.CurrentPlayArea.PuzzleViewNoShader.Update()
@@ -123,14 +130,20 @@ func drawPlayState(win *pixelgl.Window) {
 }
 
 func drawPlayArea(win *pixelgl.Window, pa *data.PlayArea) {
+	pa.WorldView.Canvas.Clear(constants.ColorClear)
 	// draw border
 	pa.BorderView.Canvas.Clear(constants.ColorClear)
 	systems.DrawBorder(pa.BorderObject, pa.Border, pa.Level)
 	img.Batchers[constants.UIBatch].DrawThenClear(pa.BorderView.Canvas)
 	pa.BorderView.Draw(data.ScreenView.Canvas)
+	// draw background
+	pa.BackgroundView.Canvas.Clear(constants.ColorBlack)
+	//data.BlackBackground.Draw(pa.BackgroundView.Canvas, pixel.IM)
+	//data.BlackBackground.Draw(pa.BackgroundView.Canvas, pa.Puzzle.Metadata.BackgroundMatrix)
+	data.BlackBackground.Draw(pa.BackgroundView.Canvas, pa.Puzzle.Metadata.BackgroundMatrix.Moved(pixel.V(float64(pa.Puzzle.Metadata.Width)*world.TileSize*0.5, float64(pa.Puzzle.Metadata.Height)*world.TileSize*0.5)))
+	pa.BackgroundView.Draw(pa.WorldView.Canvas)
 	// draw puzzle
-	pa.WorldView.Canvas.Clear(constants.ColorClear)
-	pa.PuzzleView.Canvas.Clear(constants.ColorBlack)
+	pa.PuzzleView.Canvas.Clear(constants.ColorClear)
 	systems.DrawBatchSystem(pa.PuzzleView.Canvas, constants.TileBatch, constants.DrawingLayers, pa.LayerOffset)
 	img.Clear()
 	pa.PuzzleView.Draw(pa.WorldView.Canvas)

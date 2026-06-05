@@ -51,24 +51,7 @@ func CustomizeInGameDialog(win *pixelgl.Window, key string) {
 			if dialog.Key != constants.DialogPuzzleTitle {
 				cnt := dialog.Get("player_inv_cnt")
 				if cnt != nil {
-					cnt.ViewPort.Canvas.SetUniform("uRedPrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBluePrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uRedSecondary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uRedDoodad", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uRedGoop", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenGoop", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBlueGoop", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(1))
-					cnt.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(1))
+					setCanvasShaderColorsDefault(cnt.ViewPort.Canvas)
 					cnt.ViewPort.Canvas.SetFragmentShader(data.ColorShader)
 				}
 			}

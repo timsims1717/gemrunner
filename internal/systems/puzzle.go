@@ -6,6 +6,7 @@ import (
 	"gemrunner/internal/data"
 	"gemrunner/internal/myecs"
 	"gemrunner/pkg/object"
+	"gemrunner/pkg/util"
 	"gemrunner/pkg/viewport"
 	"gemrunner/pkg/world"
 	"github.com/go-gl/mathgl/mgl32"
@@ -64,7 +65,8 @@ func InitPuzzle(playArea *data.PlayArea) {
 
 func InitPlayArea(playArea *data.PlayArea) {
 	InitPlayAreaView(playArea)
-	UpdatePuzzleShaders(playArea)
+	//UpdateBackgroundShaders(playArea)
+	//UpdatePuzzleShaders(playArea)
 	ChangeFullWorldShader(playArea, playArea.Puzzle.Metadata.ShaderMode)
 	UpdatePlayAreaView(playArea)
 }
@@ -99,14 +101,23 @@ func InitPlayAreaView(fp *data.PlayArea) {
 		ChangeFullWorldShader(fp, 0)
 		fp.WorldView.Canvas.SetFragmentShader(data.WorldShader)
 	}
+	if fp.BackgroundView == nil {
+		fp.BackgroundView = viewport.New(nil)
+		fp.BackgroundView.ParentView = fp.WorldView
+		fp.BackgroundView.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
+		fp.BackgroundView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
+		fp.BackgroundView.PortPos = pixel.ZV
+		//UpdateBackgroundShaders(fp)
+		//fp.BackgroundView.Canvas.SetFragmentShader(data.BossBlobShader)
+	}
 	if fp.PuzzleView == nil {
 		fp.PuzzleView = viewport.New(nil)
 		fp.PuzzleView.ParentView = fp.WorldView
 		fp.PuzzleView.SetRect(pixel.R(0, 0, world.TileSize*w, world.TileSize*h))
 		fp.PuzzleView.CamPos = pixel.V(world.TileSize*0.5*w, world.TileSize*0.5*h)
 		fp.PuzzleView.PortPos = pixel.ZV
-		UpdatePuzzleShaders(fp)
-		fp.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
+		//UpdatePuzzleShaders(fp)
+		//fp.PuzzleView.Canvas.SetFragmentShader(data.PuzzleShader)
 	}
 	if fp.PuzzleViewNoShader == nil {
 		fp.PuzzleViewNoShader = viewport.New(nil)
@@ -122,33 +133,26 @@ func InitPlayAreaView(fp *data.PlayArea) {
 	}
 }
 
+func UpdateBackgroundShaders(fp *data.PlayArea) {
+	fp.BackgroundView.Canvas.SetUniform("uTime", &data.ShaderTime)
+	fp.BackgroundView.Canvas.SetUniform("uBallCount", int32(5))
+	fp.BackgroundView.Canvas.SetUniform("uHeadPos", &data.BossPos)
+	fp.BackgroundView.Canvas.SetUniform("uColorInner", util.RGBAToVec3(pixel.ToRGBA(constants.ColorGreen)))
+	fp.BackgroundView.Canvas.SetUniform("uColorOuter", util.RGBAToVec3(pixel.ToRGBA(constants.ColorDarkGreen)))
+}
+
 func UpdatePuzzleShaders(fp *data.PlayArea) {
 	// set puzzle shader uniforms
-	fp.PuzzleView.Canvas.SetUniform("uRedPrimary", float32(fp.Puzzle.Metadata.PrimaryColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenPrimary", float32(fp.Puzzle.Metadata.PrimaryColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBluePrimary", float32(fp.Puzzle.Metadata.PrimaryColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uRedSecondary", float32(fp.Puzzle.Metadata.SecondaryColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenSecondary", float32(fp.Puzzle.Metadata.SecondaryColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBlueSecondary", float32(fp.Puzzle.Metadata.SecondaryColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uRedDoodad", float32(fp.Puzzle.Metadata.DoodadColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenDoodad", float32(fp.Puzzle.Metadata.DoodadColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBlueDoodad", float32(fp.Puzzle.Metadata.DoodadColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uRedGoop", float32(fp.Puzzle.Metadata.GoopColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenGoop", float32(fp.Puzzle.Metadata.GoopColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBlueGoop", float32(fp.Puzzle.Metadata.GoopColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uRedLiquidPrimary", float32(fp.Puzzle.Metadata.LiquidPrimaryColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenLiquidPrimary", float32(fp.Puzzle.Metadata.LiquidPrimaryColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBlueLiquidPrimary", float32(fp.Puzzle.Metadata.LiquidPrimaryColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uRedLiquidSecondary", float32(fp.Puzzle.Metadata.LiquidSecondaryColor.R))
-	fp.PuzzleView.Canvas.SetUniform("uGreenLiquidSecondary", float32(fp.Puzzle.Metadata.LiquidSecondaryColor.G))
-	fp.PuzzleView.Canvas.SetUniform("uBlueLiquidSecondary", float32(fp.Puzzle.Metadata.LiquidSecondaryColor.B))
-	fp.PuzzleView.Canvas.SetUniform("uMode", int32(fp.Puzzle.Metadata.ShaderMode))
-	fp.PuzzleView.Canvas.SetUniform("uTime", &data.ShaderTime)
-	fp.PuzzleView.Canvas.SetUniform("uSpeed", &fp.Puzzle.Metadata.ShaderSpeed)
-	fp.PuzzleView.Canvas.SetUniform("uXVar", &fp.Puzzle.Metadata.ShaderX)
-	fp.PuzzleView.Canvas.SetUniform("uYVar", &fp.Puzzle.Metadata.ShaderY)
-	fp.PuzzleView.Canvas.SetUniform("uCustom", &fp.Puzzle.Metadata.ShaderCustom)
-	fp.PuzzleView.Canvas.SetUniform("uParticle", int32(fp.Puzzle.Metadata.ParticleMode))
+	// colors
+	//setCanvasShaderColorsFromMD(fp.PuzzleView.Canvas, fp.Puzzle.Metadata)
+	// world
+	//fp.PuzzleView.Canvas.SetUniform("uMode", int32(fp.Puzzle.Metadata.ShaderMode))
+	//fp.PuzzleView.Canvas.SetUniform("uTime", &data.ShaderTime)
+	//fp.PuzzleView.Canvas.SetUniform("uSpeed", &fp.Puzzle.Metadata.ShaderSpeed)
+	//fp.PuzzleView.Canvas.SetUniform("uXVar", &fp.Puzzle.Metadata.ShaderX)
+	//fp.PuzzleView.Canvas.SetUniform("uYVar", &fp.Puzzle.Metadata.ShaderY)
+	//fp.PuzzleView.Canvas.SetUniform("uCustom", &fp.Puzzle.Metadata.ShaderCustom)
+	//fp.PuzzleView.Canvas.SetUniform("uParticle", int32(fp.Puzzle.Metadata.ParticleMode))
 }
 
 func ChangeFullWorldShader(fp *data.PlayArea, shaderMode int) {
@@ -161,12 +165,17 @@ func ChangeFullWorldShader(fp *data.PlayArea, shaderMode int) {
 }
 
 func UpdateWorldShaders(fp *data.PlayArea) {
+	// colors
+	setCanvasShaderColorsFromMD(fp.WorldView.Canvas, fp.Puzzle.Metadata)
+	// world
 	fp.WorldView.Canvas.SetUniform("uMode", int32(fp.Puzzle.Metadata.ShaderMode))
 	fp.WorldView.Canvas.SetUniform("uTime", &data.ShaderTime)
 	fp.WorldView.Canvas.SetUniform("uSpeed", &fp.Puzzle.Metadata.ShaderSpeed)
 	fp.WorldView.Canvas.SetUniform("uXVar", &fp.Puzzle.Metadata.ShaderX)
 	fp.WorldView.Canvas.SetUniform("uYVar", &fp.Puzzle.Metadata.ShaderY)
 	fp.WorldView.Canvas.SetUniform("uCustom", &fp.Puzzle.Metadata.ShaderCustom)
+	//fp.WorldView.Canvas.SetUniform("uParticle", int32(fp.Puzzle.Metadata.ParticleMode))
+	// darkness
 	darkness := int32(0)
 	if fp.Puzzle.Metadata.Darkness && !data.EditorDraw {
 		darkness = 1
@@ -267,7 +276,9 @@ func InitLevel(playArea *data.PlayArea) {
 	InitPlayers(playArea.Level)
 	CreateFakePlayer(playArea.Level)
 	InitLevelDialogs(playArea.Level)
-	UpdatePuzzleShaders(playArea)
+	InitBoss(playArea.Level)
+	//UpdateBackgroundShaders(playArea)
+	//UpdatePuzzleShaders(playArea)
 	ChangeFullWorldShader(playArea, playArea.Level.Metadata.ShaderMode)
 	UpdatePlayAreaView(playArea)
 

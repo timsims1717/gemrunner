@@ -213,3 +213,8 @@ type Disguise struct {
 	Item *BasicItem
 	Doff bool
 }
+
+type Snare struct {
+	Item *BasicItem
+	Ch   *Dynamic
+}

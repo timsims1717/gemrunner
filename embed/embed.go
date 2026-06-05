@@ -26,3 +26,8 @@ var WorldShader string
 //
 //go:embed screen-shader.frag.glsl
 var ScreenShader string
+
+// BossBlobShader the shader for the blob boss
+//
+//go:embed boss-blob.frag.glsl
+var BossBlobShader string

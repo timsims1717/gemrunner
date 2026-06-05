@@ -30,18 +30,24 @@ var (
 	CurrPuzzleSet *PuzzleSet
 	CurrReplay    *LevelReplay
 
-	CurrSelect *Selection
-	ClipSelect *Selection
 	EditorDraw bool
 
-	ColorShader  string
-	PuzzleShader string
-	WorldShader  string
-	ScreenShader string
-	ShaderTime   float32
+	ShaderTime     float32
+	ShaderTime64   float64
+	ColorShader    string
+	PuzzleShader   string
+	WorldShader    string
+	ScreenShader   string
+	BossBlobShader string
+
+	BackgroundMat   pixel.Matrix
+	BlackBackground *pixel.Sprite
+
+	BossPos mgl32.Vec2
 )
 
 type PlayArea struct {
+	BackgroundView     *viewport.ViewPort
 	PuzzleView         *viewport.ViewPort
 	PuzzleViewNoShader *viewport.ViewPort
 	WorldView          *viewport.ViewPort
@@ -98,6 +104,7 @@ type Level struct {
 	PControls   [constants.MaxPlayers]Controller
 	PLoc        [constants.MaxPlayers]*mgl32.Vec2
 	Start       bool
+	Paused      bool
 	Failed      bool
 	Complete    bool
 	ExitIndex   int
@@ -546,6 +553,7 @@ func CreateBlankPuzzle() *Puzzle {
 		WorldLiquid:          constants.WorldLiquids[worldNum],
 		LiquidPrimaryColor:   pixel.ToRGBA(constants.WorldLiquidPrimary[worldNum]),
 		LiquidSecondaryColor: pixel.ToRGBA(constants.WorldLiquidSecondary[worldNum]),
+		BackgroundMatrix:     pixel.IM,
 		MusicTrack:           constants.WorldMusic[worldNum],
 	}
 	puz := NewPuzzle(md)
@@ -612,6 +620,15 @@ func (set *PuzzleSet) SetUpUUIDs() {
 	for _, pzl := range set.Puzzles {
 		if pzl.Metadata.UUID == "" {
 			pzl.Metadata.UUID = uuid.New().String()
+		}
+	}
+}
+
+func (set *PuzzleSet) SetUpMetadata() {
+	for _, pzl := range set.Puzzles {
+		m := pixel.Matrix{}
+		if pzl.Metadata.BackgroundMatrix == m {
+			pzl.Metadata.BackgroundMatrix = pixel.IM
 		}
 	}
 }

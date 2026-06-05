@@ -450,7 +450,7 @@ func CharacterStateSystem() {
 						sfx.SoundPlayer.PlaySound(constants.SFXRegen, 0.)
 						ch.Flags.Regen = true
 						PlayerPortal(ch.Object.Layer+1, tile.Object.Pos)
-					} else if ch.Enemy > -1 && !EnemyOnTile(tile) {
+					} else if ch.Enemy > -1 && !IsEnemyOnTile(tile) {
 						ch.State = data.Regen
 						ch.Flags.Regen = true
 					}

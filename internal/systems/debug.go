@@ -72,6 +72,10 @@ func InGameDebugInfo() {
 	debug.AddText(fmt.Sprintf("Frame Number: %d", data.CurrLevel.FrameNumber))
 	debug.AddText(fmt.Sprintf("Frame Counter: %d", data.CurrLevel.FrameCounter))
 	debug.AddText(fmt.Sprintf("Frame Cycle: %d", data.CurrLevel.FrameCycle))
+	if data.CurrentBoss != nil {
+		debug.AddText(fmt.Sprintf("Boss: %s", data.CurrentBoss.GetID()))
+		debug.AddText(fmt.Sprintf("Boss State: %s", data.CurrentBoss.GetState()))
+	}
 	//debug.AddTruthText("Frame Change", data.CurrLevel.FrameChange)
 	for i, player := range data.CurrLevel.Players {
 		if player != nil {

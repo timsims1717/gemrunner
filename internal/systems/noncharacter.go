@@ -27,8 +27,13 @@ func DynamicSystem() {
 							thrown(d, currTile)
 						} else if !d.Flags.Flying {
 							falling(d, currTile)
+							d.State = data.Falling
+							if currTile != nil {
+								d.Object.Pos.X = currTile.Object.Pos.X
+							}
 						}
 					} else {
+						d.State = data.Grounded
 						d.Flags.Thrown = false
 						d.Flags.JumpL = false
 						d.Flags.JumpR = false
@@ -82,7 +87,7 @@ func PushNext(d *data.Dynamic, push *data.Pushy) bool {
 				_, y := world.WorldToMap(d.Object.Pos.X, d.Object.Pos.Y)
 				_, y1 := world.WorldToMap(push.PushNext.Pushing.Object.Pos.X, push.PushNext.Pushing.Object.Pos.Y)
 				if !(y1 == y && !push.PushNext.Pushing.Flags.Goop &&
-					(push.PushNext.Pushing.State == data.Grounded || push.PushNext.Pushing.State == data.Flying || push.PushNext.Pushing.State == data.Falling) &&
+					(push.PushNext.Pushing.State == data.Grounded || push.PushNext.Pushing.State == data.Flying || (push.CanPushFalling && push.PushNext.Pushing.State == data.Falling)) &&
 					((push.Direction == data.Left && d.Object.Pos.X > push.PushNext.Pushing.Object.Pos.X) || (push.Direction == data.Right && d.Object.Pos.X < push.PushNext.Pushing.Object.Pos.X))) {
 					// no longer eligible to push
 					StopPushing(push.PushNext.Pushing, push.PushNext)
@@ -97,8 +102,11 @@ func PushNext(d *data.Dynamic, push *data.Pushy) bool {
 	}
 	x, y := world.WorldToMap(d.Object.Pos.X, d.Object.Pos.Y)
 	tile := data.CurrLevel.Get(x, y)
-	if d.State == data.Falling && push.OrigTile != nil && push.OrigTile != tile {
-		return true
+	if d.State == data.Falling {
+		if push.OrigTile == nil || push.OrigTile != tile {
+			StopPushing(d, push)
+			return true
+		}
 	}
 	xt, yt := world.WorldToMap(d.Object.Pos.X+dx, d.Object.Pos.Y)
 	mTile := data.CurrLevel.Get(xt, yt)
@@ -140,6 +148,10 @@ func PushNext(d *data.Dynamic, push *data.Pushy) bool {
 					case data.UseAirCannon, data.Drilling, data.DrillStart, data.Hiding, data.TransportIn, data.TransportExit:
 						continue
 					}
+				}
+				if d1.State == data.Falling && !push.CanPushFalling {
+					StopPushing(d, push)
+					return false
 				}
 				x1, y1 := world.WorldToMap(obj1.Pos.X, obj1.Pos.Y)
 				if util.Abs(x-x1) < 2 && y1 == y {

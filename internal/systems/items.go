@@ -15,6 +15,7 @@ import (
 	"gemrunner/pkg/world"
 	"github.com/bytearena/ecs"
 	"github.com/gopxl/pixel"
+	"strings"
 )
 
 func RegenerateOrRemove(item *data.BasicItem) {
@@ -156,6 +157,7 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 	obj.Layer = 9
 	door := &data.Door{
 		Item: &data.BasicItem{
+			Name:  "Door",
 			Key:   key,
 			Layer: 9,
 		},
@@ -226,6 +228,7 @@ func CreateDoor(pos pixel.Vec, tile *data.Tile) {
 		return false
 	}))
 	e.AddComponent(myecs.LvlElement, struct{}{})
+	e.AddComponent(myecs.Item, door.Item)
 }
 
 //func EnterPlayerDoor(exitIndex int) *data.Interact {
@@ -367,6 +370,7 @@ func CreateBox(pos pixel.Vec, key string, metadata data.TileMetadata, coords wor
 	dyn.Object = obj
 	dyn.Entity = e
 	dyn.Flags.NoLadders = true
+	dyn.Type = "box"
 	e.AddComponent(myecs.Dynamic, dyn)
 	DefaultRegen(box)
 	DefaultAnim(box)
@@ -852,7 +856,8 @@ func CreateDrill(pos pixel.Vec, key string, metadata data.TileMetadata, coords w
 
 func UseDrill(drill *data.BasicItem) *data.Interact {
 	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
-		if ch.State == data.Grounded || ch.State == data.Hiding || ch.State == data.OnLadder {
+		if ch.State == data.Grounded || ch.State == data.Hiding ||
+			ch.State == data.OnLadder || ch.State == data.Snared {
 			// check if on correct ground
 			xa, ya := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tileA := data.CurrLevel.Get(xa, ya)
@@ -1384,9 +1389,10 @@ func CreateAirRing(tile *data.Tile, flip bool) {
 	e.AddComponent(myecs.Drawable, anim)
 	e.AddComponent(myecs.Animated, anim)
 	d.Pushing = &data.Pushy{
-		NoMove:    true,
-		Direction: data.Right,
-		Speed:     constants.AirRingSpeed,
+		CanPushFalling: true,
+		NoMove:         true,
+		Direction:      data.Right,
+		Speed:          constants.AirRingSpeed,
 	}
 	if flip {
 		d.Pushing.Direction = data.Left
@@ -1655,6 +1661,174 @@ func CreateFallingGoop(tile *data.Tile, flip bool) {
 			myecs.Manager.DisposeEntity(e)
 		}
 	}))
+}
+
+func CreateSnare(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {
+	obj := object.New().WithID(key).SetPos(pos)
+	obj.SetRect(pixel.R(0, 0, 16, 16))
+	obj.Layer = 12
+	e := myecs.Manager.NewEntity()
+	snare := &data.Snare{
+		Item: &data.BasicItem{
+			Name:     "Snare",
+			Key:      key,
+			Object:   obj,
+			Sprite:   img.NewSprite(key, constants.TileBatch),
+			PickUp:   data.NewPickUp(5, metadata.Color),
+			Entity:   e,
+			Metadata: metadata,
+			Origin:   coords,
+			Layer:    12,
+		},
+	}
+	snare.Item.Metadata = data.CopyMetadata(metadata)
+	snare.Item.Action = SnareAction(snare)
+
+	item := reanimator.NewBatchSprite("item", img.Batchers[constants.TileBatch], key, reanimator.Hold)
+	snareSetFrames := []int{0, 0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11}
+	setting := reanimator.NewBatchAnimationCustom("setting", img.Batchers[constants.TileBatch], "snare_setting", snareSetFrames, reanimator.Tran)
+	setting.Offsets = append(setting.Offsets, pixel.V(0., -1.))
+	setting.Offsets = append(setting.Offsets, pixel.V(-1., 0.))
+	setting.Offsets = append(setting.Offsets, pixel.V(-1., -1.))
+	setting.Offsets = append(setting.Offsets, pixel.V(-1., -3.))
+	setting.SetEndTrigger(func() {
+		snare.Item.Counter = 2
+	})
+	set := reanimator.NewBatchSprite("set", img.Batchers[constants.TileBatch], "snare_set", reanimator.Hold)
+	spring := reanimator.NewBatchAnimation("spring", img.Batchers[constants.TileBatch], "snare_spring", reanimator.Tran)
+	spring.SetEndTrigger(func() {
+		snare.Item.Counter = 4
+	})
+	swing := reanimator.NewBatchSprite("swing", img.Batchers[constants.TileBatch], "snare_swing", reanimator.Hold)
+	snare.Item.Anim = reanimator.New().
+		AddAnimation(item).
+		AddAnimation(setting).
+		AddAnimation(set).
+		AddAnimation(spring).
+		AddAnimation(swing).
+		AddNull("none").
+		SetChooseFn(func() string {
+			if snare.Item.Waiting {
+				return "none"
+			} else {
+				switch snare.Item.Counter {
+				case 1:
+					return "setting"
+				case 2:
+					return "set"
+				case 3:
+					return "spring"
+				case 4:
+					return "swing"
+				default:
+					return "item"
+				}
+			}
+		}).SetDefault("item").Finish()
+
+	e.AddComponent(myecs.Object, obj)
+	e.AddComponent(myecs.Temp, myecs.ClearFlag(false))
+	e.AddComponent(myecs.Drawable, snare.Item.Anim)
+	e.AddComponent(myecs.Animated, snare.Item.Anim)
+	e.AddComponent(myecs.PickUp, snare.Item.PickUp)
+	e.AddComponent(myecs.Action, snare.Item.Action)
+	e.AddComponent(myecs.LvlElement, snare.Item)
+	e.AddComponent(myecs.Item, snare.Item)
+	snare.Item.Delay = constants.ItemRegen * (snare.Item.Metadata.RegenDelay + 2)
+	DefaultRegen(snare.Item)
+	return snare.Item
+}
+
+func SnareAction(snare *data.Snare) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+		if snare.Item.Using {
+			return false
+		}
+		if ch.State == data.Falling || ch.State == data.Jumping || ch.State == data.OnBar {
+			return false
+		}
+		x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
+		tile := data.CurrLevel.Get(x, y)
+		if !SetSnareAllowed(tile) {
+			return false
+		}
+		// change the player's state to goop bucket action
+		ch.State = data.DoingAction
+		ch.Flags.ItemAction = data.SettingSnare
+		ch.Object.SetPos(tile.Object.Pos)
+		// set the snare vars
+		snare.Item.Using = true
+		snare.Item.Counter = 1
+		ClearInv(ch)
+		snare.Item.Object.Flip = ch.Object.Flip
+		snare.Item.Entity.RemoveComponent(myecs.PickUp)
+		snare.Item.Object.SetPos(tile.Object.Pos)
+		snare.Ch = ch
+		snare.Item.Object.SetRect(pixel.R(0., 0., 10., 10.))
+		snare.Item.Entity.AddComponent(myecs.OnTouch, SnareTouch(snare))
+		snare.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+			if reanimator.FrameSwitch {
+				if snare.Ch == nil {
+					snare.Item.Entity.RemoveComponent(myecs.Update)
+				} else {
+					xt, yt := world.WorldToMap(snare.Ch.Object.Pos.X, snare.Ch.Object.Pos.Y)
+					if x != xt || y != yt {
+						snare.Ch = nil
+						snare.Item.Entity.RemoveComponent(myecs.Update)
+					}
+				}
+			}
+		}))
+		// snare sound
+		//sfx.SoundPlayer.PlaySound(constants.SFXFlamethrower, 0.)
+		return true
+	})
+}
+
+func SetSnareAllowed(tile *data.Tile) bool {
+	if tile.IsRegenTile() {
+		return false
+	}
+	for _, result := range myecs.Manager.Query(myecs.IsItem) {
+		obj, okO := result.Components[myecs.Object].(*object.Object)
+		item, okI := result.Components[myecs.Item].(*data.BasicItem)
+		if okO && okI && ((item.Name == "Snare" && item.Counter > 0) || strings.Contains(item.Name, "Door")) {
+			x, y := world.WorldToMap(obj.Pos.X, obj.Pos.Y)
+			if tile.Coords == world.NewCoords(x, y) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func SnareTouch(snare *data.Snare) *data.Interact {
+	return data.NewInteract(func(p int, ch *data.Dynamic, entity *ecs.Entity) bool {
+		if snare.Item.Counter == 2 &&
+			(snare.Ch == nil || snare.Ch.Object.ID != snare.Ch.Object.ID) &&
+			((p > -1 && p < constants.MaxPlayers) ||
+				(ch.Enemy > -1 && ch.Type == "demon")) &&
+			(ch.State == data.Grounded || ch.State == data.OnLadder) {
+			ch.State = data.Snared
+			ch.Object.SetPos(snare.Item.Object.Pos)
+			ch.Object.Layer = 13
+			ch.Flags.NextStep = true
+			ch.Flags.JumpR = ch.Object.Flip == snare.Item.Object.Flip
+			ch.Object.Flip = snare.Item.Object.Flip
+			snare.Ch = ch
+			snare.Item.Counter = 3
+			snare.Item.Entity.RemoveComponent(myecs.OnTouch)
+			snare.Item.Entity.AddComponent(myecs.Update, data.NewFn(func() {
+				if data.CurrLevel.FrameChange {
+					if snare.Ch == nil || snare.Ch.State != data.Snared {
+						myecs.Manager.DisposeEntity(snare.Item.Entity)
+					}
+				}
+			}))
+			return true
+		}
+		return false
+	})
 }
 
 func CreateTransporter(pos pixel.Vec, key string, metadata data.TileMetadata, coords world.Coords) *data.BasicItem {

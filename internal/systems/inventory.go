@@ -190,7 +190,8 @@ func Dig(ch *data.Dynamic, isLeft bool) bool {
 			ch.State == data.OnBar ||
 			ch.State == data.Grounded ||
 			ch.State == data.Flying ||
-			ch.State == data.Hiding {
+			ch.State == data.Hiding ||
+			(ch.State == data.Snared && !ch.Flags.NextStep) {
 			var sideTile, digTile *data.Tile
 			x, y := world.WorldToMap(ch.Object.Pos.X, ch.Object.Pos.Y)
 			tile := data.CurrLevel.Get(x, y)

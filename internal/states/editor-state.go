@@ -31,6 +31,7 @@ func (s *editorState) Unload(win *pixelgl.Window) {
 	systems.DisposeEditor()
 	systems.DisposeEditorDialogs()
 	systems.DisposePuzzle(data.CurrentPlayArea.Puzzle)
+	systems.RemoveEditorBoss()
 	data.CurrPuzzleSet = nil
 }
 
@@ -53,6 +54,7 @@ func (s *editorState) Load(win *pixelgl.Window) {
 	systems.EditorInit()
 	systems.SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 	systems.InitPuzzle(data.CurrentPlayArea)
+	systems.SetEditorBoss(data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss)
 	systems.UpdateViews()
 	reanimator.SetFrameRate(constants.Configuration.Gameplay.FrameRate)
 	reanimator.Reset()
@@ -112,7 +114,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	debug.AddText(fmt.Sprintf("Shader Speed: %f, ShaderCustom: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderSpeed, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderCustom))
 	debug.AddText(fmt.Sprintf("ShaderX: %f, ShaderY: %f", data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderX, data.CurrPuzzleSet.CurrPuzzle.Metadata.ShaderY))
 	if data.DebugInput.Get("debugTest").JustPressed() {
-		dKey := constants.DialogRearrangeAdventureSet
+		dKey := constants.DialogBossSettings
 		load.ReloadDialog(dKey)
 		systems.CustomizeEditorDialog(dKey)
 		systems.UpdateDialogView(ui.Dialogs[dKey])
@@ -128,8 +130,8 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	reanimator.Update()
 
 	// function systems
-	systems.FunctionSystem()
 	systems.InterpolationSystem()
+	systems.FunctionSystem()
 	if reanimator.FrameSwitch {
 		data.Editor.FrameCount++
 	}
@@ -151,6 +153,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	systems.DialogSystem(win)
 	systems.UndoStackSystem()
 	// object systems
+	systems.BossEditorSystem()
 	systems.AnimationSystem()
 	systems.ParentSystem()
 	systems.ObjectSystem()
@@ -159,6 +162,7 @@ func (s *editorState) Update(win *pixelgl.Window) {
 	//s.UpdateViews()
 
 	data.CurrentPlayArea.BorderView.Update()
+	data.CurrentPlayArea.BackgroundView.Update()
 	data.CurrentPlayArea.PuzzleView.Update()
 	data.CurrentPlayArea.WorldView.Update()
 	data.CurrentPlayArea.PuzzleViewNoShader.Update()
@@ -177,14 +181,20 @@ func (s *editorState) Update(win *pixelgl.Window) {
 func (s *editorState) Draw(win *pixelgl.Window) {
 	data.ScreenView.Canvas.Clear(constants.ColorBlack)
 	if data.CurrLevel == nil {
+		data.CurrentPlayArea.WorldView.Canvas.Clear(constants.ColorBlack)
 		// draw border
 		data.CurrentPlayArea.BorderView.Canvas.Clear(constants.ColorBlack)
 		systems.DrawBorder(data.PuzzleBorderObject, data.PuzzleBorder, nil)
 		img.Batchers[constants.UIBatch].DrawThenClear(data.CurrentPlayArea.BorderView.Canvas)
 		data.CurrentPlayArea.BorderView.Draw(data.ScreenView.Canvas)
+		// draw background
+		data.CurrentPlayArea.BackgroundView.Canvas.Clear(constants.ColorBlack)
+		data.BlackBackground.Draw(data.CurrentPlayArea.BackgroundView.Canvas, data.CurrentPlayArea.Puzzle.Metadata.BackgroundMatrix.Moved(pixel.V(float64(data.CurrentPlayArea.Puzzle.Metadata.Width)*world.TileSize*0.5, float64(data.CurrentPlayArea.Puzzle.Metadata.Height)*world.TileSize*0.5)))
+		data.CurrentPlayArea.BackgroundView.Draw(data.CurrentPlayArea.WorldView.Canvas)
 		// draw puzzle
-		data.CurrentPlayArea.WorldView.Canvas.Clear(pixel.RGBA{})
-		data.CurrentPlayArea.PuzzleView.Canvas.Clear(constants.ColorBlack)
+		data.CurrentPlayArea.PuzzleView.Canvas.Clear(constants.ColorClear)
+		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 8) // background
+		img.Clear()
 		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 2) // normal tiles
 		img.Clear()
 		systems.DrawLayerSystem(data.CurrentPlayArea.PuzzleView.Canvas, 3) // selected tiles

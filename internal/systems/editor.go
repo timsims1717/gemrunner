@@ -37,62 +37,11 @@ func UpdateEditorShaders(puzzle *data.Puzzle) {
 	}
 	// set editor panel shader uniforms
 	editorPanelLeft := ui.Dialogs[constants.DialogEditorPanelLeft]
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
-	editorPanelLeft.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
+	setCanvasShaderColorsFromMD(editorPanelLeft.ViewPort.Canvas, puzzle.Metadata)
 	editorPanelTop := ui.Dialogs[constants.DialogEditorPanelTop]
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
-	editorPanelTop.ViewPort.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
+	setCanvasShaderColorsFromMD(editorPanelTop.ViewPort.Canvas, puzzle.Metadata)
 	// set editor select shader uniforms
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedPrimary", float32(puzzle.Metadata.PrimaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenPrimary", float32(puzzle.Metadata.PrimaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBluePrimary", float32(puzzle.Metadata.PrimaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedSecondary", float32(puzzle.Metadata.SecondaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenSecondary", float32(puzzle.Metadata.SecondaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueSecondary", float32(puzzle.Metadata.SecondaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedDoodad", float32(puzzle.Metadata.DoodadColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenDoodad", float32(puzzle.Metadata.DoodadColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueDoodad", float32(puzzle.Metadata.DoodadColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedGoop", float32(puzzle.Metadata.GoopColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenGoop", float32(puzzle.Metadata.GoopColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueGoop", float32(puzzle.Metadata.GoopColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidPrimary", float32(puzzle.Metadata.LiquidPrimaryColor.B))
-	data.Editor.BlockSelect.Canvas.SetUniform("uRedLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.R))
-	data.Editor.BlockSelect.Canvas.SetUniform("uGreenLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.G))
-	data.Editor.BlockSelect.Canvas.SetUniform("uBlueLiquidSecondary", float32(puzzle.Metadata.LiquidSecondaryColor.B))
+	setCanvasShaderColorsFromMD(data.Editor.BlockSelect.Canvas, puzzle.Metadata)
 }
 
 func ChangeWorldToNext() {
@@ -118,7 +67,8 @@ func ChangeWorldTo(world int) {
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidPrimaryColor = pixel.ToRGBA(constants.WorldLiquidPrimary[world])
 	data.CurrPuzzleSet.CurrPuzzle.Metadata.LiquidSecondaryColor = pixel.ToRGBA(constants.WorldLiquidSecondary[world])
 	UpdateEditorShaders(data.CurrPuzzleSet.CurrPuzzle)
-	UpdatePuzzleShaders(data.CurrentPlayArea)
+	//UpdateBackgroundShaders(data.CurrentPlayArea)
+	//UpdatePuzzleShaders(data.CurrentPlayArea)
 }
 
 func ChangeWorldShader(shaderMode int) {
@@ -438,7 +388,7 @@ func PuzzleEditSystem() {
 											case data.BlockCracked, data.BlockLadderCracked,
 												data.BlockBarrier,
 												data.BlockBigBomb, data.BlockBigBombLit, data.BlockSmallBomb, data.BlockSmallBombLit,
-												data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket,
+												data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower,
 												data.BlockAirCannon:
 												data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = append(data.CurrPuzzleSet.CurrPuzzle.WrenchTiles, t)
 											case data.BlockPhase:
@@ -467,7 +417,7 @@ func PuzzleEditSystem() {
 									data.BlockSmallBomb, data.BlockSmallBombLit:
 									ui.OpenDialogInStack(constants.DialogBomb)
 								case data.BlockJetpack, data.BlockDisguise,
-									data.BlockFlamethrower, data.BlockGoopBucket, data.BlockAirCannon:
+									data.BlockFlamethrower, data.BlockAirCannon:
 									ui.OpenDialogInStack(constants.DialogItemOptions)
 								}
 								break
@@ -529,7 +479,7 @@ func PuzzleEditSystem() {
 								data.BlockSmallBomb, data.BlockSmallBombLit:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogBomb)
-							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockGoopBucket, data.BlockAirCannon:
+							case data.BlockJetpack, data.BlockDisguise, data.BlockFlamethrower, data.BlockAirCannon:
 								data.CurrPuzzleSet.CurrPuzzle.WrenchTiles = []*data.Tile{tile}
 								ui.OpenDialogInStack(constants.DialogItemOptions)
 							case data.BlockDoorHidden, data.BlockDoorVisible, data.BlockDoorLocked:

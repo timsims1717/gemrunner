@@ -107,6 +107,7 @@ const (
 	ItemFlamethrower = "flamethrower"
 	ItemGoopBucket   = "goop_bucket"
 	ItemAirCannon    = "air_cannon"
+	ItemSnare        = "snare"
 
 	ItemBigBomb      = "big_bomb"
 	ItemBigBombLit   = "big_bomb_lit"

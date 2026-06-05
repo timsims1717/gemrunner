@@ -50,8 +50,8 @@ func customizeEditorOptions(key string) {
 			ele.OnClick = OpenRearrangeDialog
 		case "world_btn":
 			ele.OnClick = OpenChangeWorldDialog
-		case "name_btn":
-			ele.OnClick = OpenDialog(constants.DialogChangeName)
+		case "boss_settings_btn":
+			ele.OnClick = OpenBossSettingsDialog
 		case "puzzle_settings_btn":
 			ele.OnClick = OpenPuzzleSettingsDialog
 		case "puzzle_set_settings_btn":
@@ -215,6 +215,7 @@ func OnOpenPuzzleSet() {
 		}
 		SetPuzzle(data.CurrentPlayArea, data.CurrPuzzleSet.CurrPuzzle)
 		InitPuzzle(data.CurrentPlayArea)
+		SetEditorBoss(data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss)
 	}
 	ui.CloseDialog(constants.DialogOpenPuzzle)
 }
@@ -543,6 +544,85 @@ func ConfirmPuzzleSettings() {
 			}
 		}
 		ui.Dispose(constants.DialogPuzzleSettings)
+		data.CurrPuzzleSet.CurrPuzzle.Changed = true
+		UpdateViews()
+	}
+}
+
+// boss settings dialog
+
+func customizeBossSettings() {
+	bossSettingsDlg := ui.Dialogs[constants.DialogBossSettings]
+	for _, e := range bossSettingsDlg.Elements {
+		ele := e
+		switch ele.Key {
+		case "enable_boss_check":
+			ele.OnClick = ToggleBoss
+		case "boss_id":
+			ele.Object.Hidden = true
+		case "confirm":
+			ele.OnClick = ConfirmBossSettings
+		case "cancel":
+			ele.OnClick = DisposeDialog(constants.DialogBossSettings)
+		}
+	}
+}
+
+func ToggleBoss() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		dlg := ui.Dialogs[constants.DialogBossSettings]
+		if dlg.Open {
+			bossCheck := dlg.Get("enable_boss_check")
+			//currBoss := data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss
+			for _, ele := range dlg.Elements {
+				switch ele.Key {
+				case "boss_name", "select_left", "select_right":
+					ele.Object.Hidden = !bossCheck.Checked
+				}
+			}
+		}
+	}
+}
+
+func OpenBossSettingsDialog() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		ui.NewDialog(ui.DialogConstructors[constants.DialogBossSettings])
+		CustomizeEditorDialog(constants.DialogBossSettings)
+		dlg := ui.Dialogs[constants.DialogBossSettings]
+		currBoss := data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss
+		bossEnabled := currBoss != ""
+		if currBoss == "" {
+			currBoss = constants.BossBlob
+		}
+		for _, ele := range dlg.Elements {
+			switch ele.Key {
+			case "boss_name":
+				ele.Object.Hidden = !bossEnabled
+				ele.Text.SetText(constants.BossNames[currBoss])
+			case "boss_id":
+				ele.Text.SetText(currBoss)
+			case "select_left", "select_right":
+				ele.Object.Hidden = !bossEnabled
+			case "enable_boss_check":
+				ui.SetChecked(ele, bossEnabled)
+			}
+		}
+		UpdateDialogView(dlg)
+		ui.OpenDialogInStack(constants.DialogBossSettings)
+	}
+}
+
+func ConfirmBossSettings() {
+	if data.Editor != nil && data.CurrPuzzleSet != nil {
+		dlg := ui.Dialogs[constants.DialogBossSettings]
+		if dlg.Get("enable_boss_check").Checked {
+			bossId := dlg.Get("boss_id").Text.Raw
+			SetEditorBoss(bossId)
+		} else {
+			RemoveEditorBoss()
+			data.CurrPuzzleSet.CurrPuzzle.Metadata.Boss = ""
+		}
+		ui.Dispose(constants.DialogBossSettings)
 		data.CurrPuzzleSet.CurrPuzzle.Changed = true
 		UpdateViews()
 	}

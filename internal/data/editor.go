@@ -10,6 +10,9 @@ import (
 
 var (
 	Editor *editor
+
+	CurrSelect *Selection
+	ClipSelect *Selection
 )
 
 type editor struct {
@@ -240,6 +243,15 @@ var BlockList = []Block{
 	BlockDrill,
 	BlockFlamethrower,
 	BlockAirCannon,
+
+	BlockSnare,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
+	BlockEmpty,
 
 	BlockReeds,
 	BlockFlowers,

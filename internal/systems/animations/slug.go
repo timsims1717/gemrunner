@@ -13,13 +13,26 @@ import (
 func SlugAnimation(ch *data.Dynamic) *reanimator.Tree {
 	batch := img.Batchers[constants.TileBatch]
 	idle := reanimator.NewBatchSprite("idle", batch, "slug_idle", reanimator.Hold)
-	move := reanimator.NewBatchAnimation("move", batch, "slug_move", reanimator.Loop)
+	moveFrames := []int{0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7}
+	move := reanimator.NewBatchAnimationCustom("move", batch, "slug_move", moveFrames, reanimator.Loop)
 	corner := reanimator.NewBatchAnimation("corner", batch, "slug_corner", reanimator.Tran)
 	edge := reanimator.NewBatchAnimation("edge", batch, "slug_edge", reanimator.Tran)
 	regen := reanimator.NewBatchAnimation("regen", batch, "slug_regen", reanimator.Tran)
 	crush := reanimator.NewBatchAnimation("crush", batch, "slug_crush", reanimator.Tran)
 	explode := reanimator.NewBatchAnimation("explode", batch, "slug_explode", reanimator.Tran)
 
+	move.SetTriggerCAll(func(a *reanimator.Anim, _ string, _ int) {
+		switch a.Step {
+		case 0:
+			ch.Vars.WalkSpeed = constants.SlugStartSpeed
+		default:
+			ch.Vars.WalkSpeed -= constants.SlugSlowdown
+		}
+		if ch.Vars.WalkSpeed < 0 {
+			ch.Vars.WalkSpeed = 0
+		}
+		ch.Vars.GoopSpeed = ch.Vars.WalkSpeed
+	})
 	corner.SetEndTrigger(func() {
 		ch.Flags.NextStep = true
 		switch ch.Flags.Orientation {

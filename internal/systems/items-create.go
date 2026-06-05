@@ -33,6 +33,8 @@ func CreateItem(block data.Block, pos pixel.Vec, key string, metadata data.TileM
 		item = CreateAirCannon(pos, key, metadata, coords)
 	case data.BlockTransporter:
 		item = CreateTransporter(pos, key, metadata, coords)
+	case data.BlockSnare:
+		item = CreateSnare(pos, key, metadata, coords)
 	}
 	if item != nil {
 		item.Block = block

@@ -152,8 +152,13 @@ const (
 	DemonInHoleCounter   = 56
 
 	// Other Character Constants
-	FlySpeed  = 1.4
-	SlugSpeed = 1
+	FlySpeed       = 1.4
+	SlugStartSpeed = 1.6
+	SlugSlowdown   = 0.15
+	BlobSpawnSpeed = 1.75
+	BlobIntroTime  = 2.0
+	BlobDyingTime  = 2.5
+	BlobFadeTime   = 4.0
 )
 
 var (
@@ -182,7 +187,8 @@ var (
 	Scanlines int32
 
 	// In Game Vars
-	DrawingLayers      = []int{9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
+	// 8: background 9: items 10: tiles
+	DrawingLayers      = []int{8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
 	CollapseRegenLayer = []int{31}         // turf that have masks
 	CollapseRegenMask  = []int{32}         // turf masks
 	EffectsLayer       = []int{33, 34, 35} // digging; explosions; deaths from explosions, text

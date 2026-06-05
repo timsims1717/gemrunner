@@ -212,10 +212,12 @@ func OnOpenItemOptions() {
 					name = "Flamethrower"
 				case data.BlockDisguise:
 					name = "Disguise"
-				case data.BlockGoopBucket:
-					name = "Goop Bucket"
+				//case data.BlockGoopBucket:
+				//	name = "Goop Bucket"
 				case data.BlockAirCannon:
 					name = "Air Cannon"
+				//case data.BlockSnare:
+				//	name = "Snare"
 				case data.BlockBigBomb:
 					name = "Big Bomb"
 				case data.BlockSmallBomb:
@@ -226,8 +228,8 @@ func OnOpenItemOptions() {
 				switch firstTile.Block {
 				case data.BlockFlamethrower, data.BlockAirCannon:
 					ele.Text.SetText("Uses")
-				case data.BlockGoopBucket:
-					ele.Text.SetText("")
+				//case data.BlockGoopBucket:
+				//	ele.Text.SetText("")
 				default:
 					ele.Text.SetText("Timer")
 				}
@@ -238,9 +240,9 @@ func OnOpenItemOptions() {
 				ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.RegenDelay))
 			case "item_timer_input":
 				switch firstTile.Block {
-				case data.BlockGoopBucket:
-					ui.SetText(ele, "-1")
-					ele.Object.Hidden = true
+				//case data.BlockGoopBucket:
+				//	ui.SetText(ele, "-1")
+				//	ele.Object.Hidden = true
 				default:
 					ele.InputType = ui.Numeric
 					ui.SetText(ele, fmt.Sprintf("%d", firstTile.Metadata.Timer))
@@ -248,15 +250,15 @@ func OnOpenItemOptions() {
 				}
 			case "item_timer_plus":
 				switch firstTile.Block {
-				case data.BlockGoopBucket:
-					ele.Object.Hidden = true
+				//case data.BlockGoopBucket:
+				//	ele.Object.Hidden = true
 				default:
 					ele.Object.Hidden = false
 				}
 			case "item_timer_minus":
 				switch firstTile.Block {
-				case data.BlockGoopBucket:
-					ele.Object.Hidden = true
+				//case data.BlockGoopBucket:
+				//	ele.Object.Hidden = true
 				default:
 					ele.Object.Hidden = false
 				}

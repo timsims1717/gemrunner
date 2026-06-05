@@ -183,6 +183,18 @@
       "type":"button"
     },
     {
+      "key":"boss_settings_btn",
+      "spriteKey":"boss_settings_btn",
+      "spriteKey2":"boss_settings_btn_click",
+      "batchKey":"ui",
+      "helpText":"Boss Settings (Ctrl+B)",
+      "pos":{
+        "X":-8,
+        "Y":-48
+      },
+      "type":"button"
+    },
+    {
       "key":"puzzle_set_settings_btn",
       "spriteKey":"puzzle_set_settings_btn",
       "spriteKey2":"puzzle_set_settings_btn_click",
@@ -190,7 +202,7 @@
       "helpText":"Puzzle Set Settings (Ctrl+E)",
       "pos":{
         "X":-8,
-        "Y":-48
+        "Y":-64
       },
       "type":"button"
     },
@@ -201,7 +213,7 @@
       "batchKey":"ui",
       "helpText":"Rearrange Puzzle Set",
       "pos":{
-        "X":-8,
+        "X":8,
         "Y":-64
       },
       "type":"button"
@@ -212,10 +224,7 @@
       "spriteKey2":"name_btn_click",
       "batchKey":"ui",
       "helpText":"Change Name",
-      "pos":{
-        "X":8,
-        "Y":-64
-      },
+
       "type":"button"
     },
     {

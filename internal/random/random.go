@@ -10,6 +10,7 @@ import (
 var (
 	Global  *rand.Rand
 	Level   *rand.Rand
+	Control *rand.Rand
 	Effects *rand.Rand
 )
 
@@ -22,6 +23,7 @@ func init() {
 	Effects = rand.New(rand.NewSource(effSeed))
 	PrintSeed(effSeed, "Effects")
 	Level = rand.New(rand.NewSource(RandomSeed()))
+	Control = rand.New(rand.NewSource(RandomSeed()))
 }
 
 func PrintSeed(seed int64, s string) {
@@ -54,6 +56,11 @@ func RandLevelSeed() {
 func SetLevelSeed(seed int64) {
 	Level.Seed(seed)
 	PrintSeed(seed, "Level")
+}
+
+func SetControlSeed(seed int64) {
+	Level.Seed(seed)
+	PrintSeed(seed, "Control")
 }
 
 func RandEffectsSeed() {
